@@ -15,7 +15,6 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
           color: Colors.black,
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          fontFamily: 'Poppins',
         ),
       ),
       backgroundColor: Colors.white,

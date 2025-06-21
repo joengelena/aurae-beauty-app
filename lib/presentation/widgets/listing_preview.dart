@@ -26,36 +26,39 @@ class ListingPreview extends StatelessWidget {
           SizedBox(height: 6),
           Text(
             '2018 Nissan GTR',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           Row(
             children: [
               Icon(Icons.location_on, size: 16),
               SizedBox(width: 4),
-              Text('Christchurch'),
+              Text(
+                'Christchurch',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ],
           ),
           Row(
             children: [
               Icon(Icons.speed, size: 16),
               SizedBox(width: 4),
-              Text('109,000 km'),
+              Text('109,000 km', style: Theme.of(context).textTheme.bodyMedium),
             ],
           ),
           Row(
             children: [
               Icon(Icons.local_gas_station, size: 16),
               SizedBox(width: 4),
-              Text('Plug-in Hybrid'),
+              Text(
+                'Plug-in Hybrid',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ],
           ),
           Row(
             children: [
               Icon(Icons.attach_money, size: 16),
-              Text(
-                '50,450',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
+              Text('50,450', style: Theme.of(context).textTheme.bodyLarge),
             ],
           ),
         ],

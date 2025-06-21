@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 final ThemeData appTheme = ThemeData(
   brightness: Brightness.light,
   scaffoldBackgroundColor: Colors.white,
-  fontFamily: 'Helvetica',
+  fontFamily: 'Poppins',
   colorScheme: ColorScheme.light(
     primary: Colors.black,
     secondary: Color(0xFF1E3A8A), // rose red accent
@@ -20,11 +20,17 @@ final ThemeData appTheme = ThemeData(
     ),
     headlineMedium: TextStyle(
       fontSize: 24,
+      fontWeight: FontWeight.bold,
+      color: Colors.black,
+    ),
+    headlineSmall: TextStyle(
+      fontSize: 20,
       fontWeight: FontWeight.w600,
       color: Colors.black,
     ),
     bodyLarge: TextStyle(fontSize: 16, color: Colors.black87),
     bodyMedium: TextStyle(fontSize: 14, color: Colors.black54),
+    bodySmall: TextStyle(fontSize: 12, color: Colors.black38),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
