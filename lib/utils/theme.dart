@@ -28,9 +28,13 @@ final ThemeData appTheme = ThemeData(
       fontWeight: FontWeight.w600,
       color: Colors.black,
     ),
-    bodyLarge: TextStyle(fontSize: 16, color: Colors.black87),
-    bodyMedium: TextStyle(fontSize: 14, color: Colors.black54),
-    bodySmall: TextStyle(fontSize: 12, color: Colors.black38),
+    bodyLarge: TextStyle(
+      fontSize: 18,
+      color: Colors.black87,
+      fontWeight: FontWeight.w500,
+    ),
+    bodyMedium: TextStyle(fontSize: 16, color: Colors.black87),
+    bodySmall: TextStyle(fontSize: 14, color: Colors.black87),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(

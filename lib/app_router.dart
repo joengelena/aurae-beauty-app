@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/presentation/pages/listing_detail_page.dart';
 import 'package:motorix_app/presentation/pages/listings_page.dart';
 import 'package:motorix_app/presentation/pages/profile_page.dart';
 import 'package:motorix_app/presentation/pages/watchlist_page.dart';
@@ -35,6 +36,12 @@ final GoRouter appRouter = GoRouter(
           parentNavigatorKey: _shellNavigatorKey,
           pageBuilder:
               (context, state) => NoTransitionPage(child: ProfilePage()),
+        ),
+        GoRoute(
+          path: '/listing',
+          parentNavigatorKey: _shellNavigatorKey,
+          pageBuilder:
+              (context, state) => NoTransitionPage(child: ListingDetailPage()),
         ),
       ],
     ),
