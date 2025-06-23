@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/presentation/widgets/listing_preview.dart';
+import 'package:motorix_app/presentation/widgets/listing/listing_preview.dart';
 
 class InfiniteGrid extends StatefulWidget {
   const InfiniteGrid({super.key});
