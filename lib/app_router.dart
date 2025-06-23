@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:motorix_app/presentation/pages/listings_page.dart';
 import 'package:motorix_app/presentation/pages/profile_page.dart';
 import 'package:motorix_app/presentation/pages/watchlist_page.dart';
-import 'package:motorix_app/presentation/app_scaffold.dart';
+import 'package:motorix_app/presentation/widgets/scaffold/app_scaffold.dart';
 
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
