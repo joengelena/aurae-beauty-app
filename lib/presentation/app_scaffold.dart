@@ -1,34 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/presentation/pages/home.dart';
-import 'package:motorix_app/presentation/pages/profile.dart';
-import 'package:motorix_app/presentation/pages/watchlist.dart';
+import 'package:go_router/go_router.dart';
 import 'package:motorix_app/presentation/widgets/title_app_bar.dart';
 
-class MainScaffold extends StatefulWidget {
-  const MainScaffold({super.key});
+class AppScaffold extends StatelessWidget {
+  final Widget child;
+  final GoRouterState state;
 
-  @override
-  State<MainScaffold> createState() => _MainScaffoldState();
-}
+  const AppScaffold({super.key, required this.state, required this.child});
 
-class _MainScaffoldState extends State<MainScaffold> {
-  int _currentPage = 0;
-  final List<Widget> _screens = [HomePage(), WatchlistPage(), ProfilePage()];
-
-  void _onDestinationClick(int index) {
-    setState(() {
-      _currentPage = index;
-    });
+  int _calculateIndex(String uri) {
+    if (uri.startsWith('/watchlist')) return 1;
+    if (uri.startsWith('/profile')) return 2;
+    return 0;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: TitleAppBar(),
-      body: Center(
-        child: IndexedStack(index: _currentPage, children: _screens),
-      ),
+      body: child,
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -36,8 +26,20 @@ class _MainScaffoldState extends State<MainScaffold> {
             child: SizedBox(
               width: 400,
               child: NavigationBar(
-                onDestinationSelected: _onDestinationClick,
-                selectedIndex: _currentPage,
+                onDestinationSelected: (index) {
+                  switch (index) {
+                    case 0:
+                      context.go('/listings');
+                      break;
+                    case 1:
+                      context.go('/watchlist');
+                      break;
+                    case 2:
+                      context.go('/profile');
+                      break;
+                  }
+                },
+                selectedIndex: _calculateIndex(state.uri.toString()),
                 indicatorColor: Colors.grey.shade400,
                 backgroundColor: Colors.white,
                 height: 70,
