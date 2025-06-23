@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:motorix_app/presentation/widgets/listing/image_carousel.dart';
 
 class ListingDetailPage extends StatelessWidget {
-  const ListingDetailPage({super.key});
+  const ListingDetailPage({super.key, required String listingId});
 
   @override
   Widget build(BuildContext context) {

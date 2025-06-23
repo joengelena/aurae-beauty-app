@@ -24,6 +24,19 @@ final GoRouter appRouter = GoRouter(
           parentNavigatorKey: _shellNavigatorKey,
           pageBuilder:
               (context, state) => NoTransitionPage(child: ListingsPage()),
+          routes: [
+            GoRoute(
+              path: ':listingId',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                final listingId = state.pathParameters['listingId'];
+
+                return NoTransitionPage(
+                  child: ListingDetailPage(listingId: listingId ?? ''),
+                );
+              },
+            ),
+          ],
         ),
         GoRoute(
           path: '/watchlist',
@@ -36,12 +49,6 @@ final GoRouter appRouter = GoRouter(
           parentNavigatorKey: _shellNavigatorKey,
           pageBuilder:
               (context, state) => NoTransitionPage(child: ProfilePage()),
-        ),
-        GoRoute(
-          path: '/listing',
-          parentNavigatorKey: _shellNavigatorKey,
-          pageBuilder:
-              (context, state) => NoTransitionPage(child: ListingDetailPage()),
         ),
       ],
     ),

@@ -10,7 +10,7 @@ class ListingPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.go('/listing');
+        context.go('/listings/1');
       },
       child: SizedBox(
         width: width,
