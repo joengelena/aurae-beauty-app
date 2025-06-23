@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/presentation/pages/home.dart';
-import 'package:motorix_app/presentation/pages/profile.dart';
-import 'package:motorix_app/presentation/pages/watchlist.dart';
+import 'package:motorix_app/presentation/pages/listings_page.dart';
+import 'package:motorix_app/presentation/pages/profile_page.dart';
+import 'package:motorix_app/presentation/pages/watchlist_page.dart';
 import 'package:motorix_app/presentation/app_scaffold.dart';
 
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -21,7 +21,8 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: '/listings',
           parentNavigatorKey: _shellNavigatorKey,
-          pageBuilder: (context, state) => NoTransitionPage(child: HomePage()),
+          pageBuilder:
+              (context, state) => NoTransitionPage(child: ListingsPage()),
         ),
         GoRoute(
           path: '/watchlist',

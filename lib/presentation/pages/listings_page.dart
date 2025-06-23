@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/presentation/widgets/infinite_grid.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class ListingsPage extends StatelessWidget {
+  const ListingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
