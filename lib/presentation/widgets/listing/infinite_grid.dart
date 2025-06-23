@@ -56,17 +56,17 @@ class _InfiniteGridState extends State<InfiniteGrid> {
             ? 3
             : 2;
     double previewWidth =
-        (MediaQuery.of(context).size.width - (20 * crossAxisCount)) /
+        (MediaQuery.of(context).size.width - (15 * crossAxisCount)) /
         crossAxisCount;
 
     return ListView(
       controller: _scrollController,
-      padding: const EdgeInsets.only(left: 3, right: 3),
+      padding: EdgeInsets.only(left: 0, right: 0),
       children: [
         Center(
           child: Wrap(
             spacing: 6,
-            runSpacing: 12,
+            runSpacing: 16,
             alignment: WrapAlignment.center,
             children:
                 _items.map((i) => ListingPreview(width: previewWidth)).toList(),
