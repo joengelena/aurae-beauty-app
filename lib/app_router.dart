@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/presentation/pages/forgot_password_page.dart';
 import 'package:motorix_app/presentation/pages/listing_detail_page.dart';
 import 'package:motorix_app/presentation/pages/listings_page.dart';
 import 'package:motorix_app/presentation/pages/profile_page.dart';
@@ -64,6 +65,13 @@ final GoRouter appRouter = GoRouter(
               parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return NoTransitionPage(child: SignInPage());
+              },
+            ),
+            GoRoute(
+              path: '/forgot-password',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return NoTransitionPage(child: ForgotPasswordPage());
               },
             ),
           ],

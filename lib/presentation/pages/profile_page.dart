@@ -23,6 +23,12 @@ class ProfilePage extends StatelessWidget {
           },
           child: Text('Sign In'),
         ),
+        FilledButton(
+          onPressed: () {
+            context.go('/profile/forgot-password');
+          },
+          child: Text('Forgot Password'),
+        ),
       ],
     );
   }
