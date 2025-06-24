@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:motorix_app/presentation/pages/listing_detail_page.dart';
 import 'package:motorix_app/presentation/pages/listings_page.dart';
 import 'package:motorix_app/presentation/pages/profile_page.dart';
+import 'package:motorix_app/presentation/pages/sign_in_page.dart';
+import 'package:motorix_app/presentation/pages/sign_up_page.dart';
 import 'package:motorix_app/presentation/pages/watchlist_page.dart';
 import 'package:motorix_app/presentation/widgets/scaffold/app_scaffold.dart';
 
@@ -49,6 +51,22 @@ final GoRouter appRouter = GoRouter(
           parentNavigatorKey: _shellNavigatorKey,
           pageBuilder:
               (context, state) => NoTransitionPage(child: ProfilePage()),
+          routes: [
+            GoRoute(
+              path: '/signup',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return NoTransitionPage(child: SignUpPage());
+              },
+            ),
+            GoRoute(
+              path: '/signin',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return NoTransitionPage(child: SignInPage());
+              },
+            ),
+          ],
         ),
       ],
     ),

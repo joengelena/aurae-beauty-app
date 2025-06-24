@@ -6,7 +6,7 @@ final ThemeData appTheme = ThemeData(
   fontFamily: 'Poppins',
   colorScheme: ColorScheme.light(
     primary: Colors.black,
-    secondary: Color(0xFF1E3A8A), // rose red accent
+    secondary: Color(0xFF1E3A8A),
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     surface: Colors.white,
