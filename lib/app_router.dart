@@ -4,6 +4,7 @@ import 'package:motorix_app/presentation/pages/profile/forgot_password_page.dart
 import 'package:motorix_app/presentation/pages/listing_detail_page.dart';
 import 'package:motorix_app/presentation/pages/listings_page.dart';
 import 'package:motorix_app/presentation/pages/profile/profile_page.dart';
+import 'package:motorix_app/presentation/pages/profile/reset_password_page.dart';
 import 'package:motorix_app/presentation/pages/profile/sign_in_page.dart';
 import 'package:motorix_app/presentation/pages/profile/sign_up_page.dart';
 import 'package:motorix_app/presentation/pages/watchlist_page.dart';
@@ -72,6 +73,13 @@ final GoRouter appRouter = GoRouter(
               parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return NoTransitionPage(child: ForgotPasswordPage());
+              },
+            ),
+            GoRoute(
+              path: '/reset-password',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return NoTransitionPage(child: ResetPasswordPage());
               },
             ),
           ],

@@ -84,7 +84,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         ? Theme.of(context).colorScheme.secondary
                         : Colors.transparent,
               ),
-              child: Text('Send Email'),
+              child: Text('Send email'),
             ),
           ],
         ),

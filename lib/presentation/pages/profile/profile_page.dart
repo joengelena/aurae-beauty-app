@@ -29,6 +29,12 @@ class ProfilePage extends StatelessWidget {
           },
           child: Text('Forgot Password'),
         ),
+        FilledButton(
+          onPressed: () {
+            context.go('/profile/reset-password');
+          },
+          child: Text('Reset Password'),
+        ),
       ],
     );
   }
