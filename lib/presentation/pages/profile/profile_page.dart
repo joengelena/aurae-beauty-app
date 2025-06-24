@@ -35,6 +35,12 @@ class ProfilePage extends StatelessWidget {
           },
           child: Text('Reset Password'),
         ),
+        FilledButton(
+          onPressed: () {
+            context.go('/profile/email-verified');
+          },
+          child: Text('Email Verified'),
+        ),
       ],
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/presentation/pages/profile/email_verified_page.dart';
 import 'package:motorix_app/presentation/pages/profile/forgot_password_page.dart';
 import 'package:motorix_app/presentation/pages/listing_detail_page.dart';
 import 'package:motorix_app/presentation/pages/listings_page.dart';
@@ -80,6 +81,13 @@ final GoRouter appRouter = GoRouter(
               parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return NoTransitionPage(child: ResetPasswordPage());
+              },
+            ),
+            GoRoute(
+              path: '/email-verified',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return NoTransitionPage(child: EmailVerifiedPage());
               },
             ),
           ],
