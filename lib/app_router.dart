@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/presentation/pages/forgot_password_page.dart';
+import 'package:motorix_app/presentation/pages/profile/forgot_password_page.dart';
 import 'package:motorix_app/presentation/pages/listing_detail_page.dart';
 import 'package:motorix_app/presentation/pages/listings_page.dart';
-import 'package:motorix_app/presentation/pages/profile_page.dart';
-import 'package:motorix_app/presentation/pages/sign_in_page.dart';
-import 'package:motorix_app/presentation/pages/sign_up_page.dart';
+import 'package:motorix_app/presentation/pages/profile/profile_page.dart';
+import 'package:motorix_app/presentation/pages/profile/sign_in_page.dart';
+import 'package:motorix_app/presentation/pages/profile/sign_up_page.dart';
 import 'package:motorix_app/presentation/pages/watchlist_page.dart';
 import 'package:motorix_app/presentation/widgets/scaffold/app_scaffold.dart';
 
