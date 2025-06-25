@@ -50,6 +50,12 @@ final GoRouter appRouter = GoRouter(
               (context, state) => NoTransitionPage(child: WatchlistPage()),
         ),
         GoRoute(
+          path: '/post-listing',
+          parentNavigatorKey: _shellNavigatorKey,
+          pageBuilder:
+              (context, state) => NoTransitionPage(child: Text('Post Listing')),
+        ),
+        GoRoute(
           path: '/profile',
           parentNavigatorKey: _shellNavigatorKey,
           pageBuilder:

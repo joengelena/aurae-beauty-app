@@ -9,7 +9,12 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final showBack =
-        !['/listings', '/watchlist', '/profile'].contains(currentRoute);
+        ![
+          '/listings',
+          '/watchlist',
+          '/profile',
+          '/post-listing',
+        ].contains(currentRoute);
     final showMenu = currentRoute == '/profile';
 
     void onBack() {
