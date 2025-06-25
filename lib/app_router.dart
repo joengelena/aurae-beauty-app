@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/presentation/pages/post_listing_page.dart';
 import 'package:motorix_app/presentation/pages/profile/email_verified_page.dart';
 import 'package:motorix_app/presentation/pages/profile/forgot_password_page.dart';
 import 'package:motorix_app/presentation/pages/listing_detail_page.dart';
@@ -53,7 +54,7 @@ final GoRouter appRouter = GoRouter(
           path: '/post-listing',
           parentNavigatorKey: _shellNavigatorKey,
           pageBuilder:
-              (context, state) => NoTransitionPage(child: Text('Post Listing')),
+              (context, state) => NoTransitionPage(child: PostListingPage()),
         ),
         GoRoute(
           path: '/profile',
