@@ -30,7 +30,7 @@ class ProfilePage extends StatelessWidget {
             FilledButton.icon(
               onPressed: () {},
               icon: const Icon(Icons.edit),
-              label: const Text('Edit Profile'),
+              label: const Text('Edit profile'),
             ),
           ],
         ),
