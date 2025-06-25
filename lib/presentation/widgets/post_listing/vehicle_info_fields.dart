@@ -25,7 +25,7 @@ class VehicleInfoFields extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text('Vehicle Info', style: Theme.of(context).textTheme.titleLarge),
+        Text('Vehicle Info', style: Theme.of(context).textTheme.headlineMedium),
         TextFormField(
           controller: makeController,
           decoration: InputDecoration(labelText: 'Make'),

@@ -36,7 +36,7 @@ class VehicleInfoOptionalFields extends StatelessWidget {
       tilePadding: EdgeInsets.zero,
       title: Text(
         'Extra fields',
-        style: Theme.of(context).textTheme.titleLarge,
+        style: Theme.of(context).textTheme.headlineSmall,
       ),
       children: [
         CheckboxListTile(

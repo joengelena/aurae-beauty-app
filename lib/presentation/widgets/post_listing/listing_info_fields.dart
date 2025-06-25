@@ -21,7 +21,7 @@ class ListingInfoFields extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text('Listing Info', style: Theme.of(context).textTheme.titleLarge),
+        Text('Listing Info', style: Theme.of(context).textTheme.headlineMedium),
         TextFormField(
           controller: locationController,
           decoration: InputDecoration(labelText: 'Location'),
