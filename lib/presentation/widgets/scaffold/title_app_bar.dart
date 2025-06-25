@@ -1,25 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const TitleAppBar({super.key});
+  final String? currentRoute;
 
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  const TitleAppBar({super.key, this.currentRoute});
 
   @override
   Widget build(BuildContext context) {
+    final showBack =
+        !['/listings', '/watchlist', '/profile'].contains(currentRoute);
+    final showMenu = currentRoute == '/profile';
+
+    void onBack() {
+      final currentRouteInSections = currentRoute!.split('/');
+      currentRouteInSections.removeLast();
+      context.go(currentRouteInSections.join('/'));
+    }
+
     return AppBar(
-      title: Text(
-        'AutoMart',
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      backgroundColor: Colors.white,
-      elevation: 0,
+      leading: showBack ? BackButton(onPressed: () => onBack()) : null,
+      title: Text('Motorix'),
       centerTitle: true,
+      actions:
+          showMenu
+              ? [
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert),
+                  onSelected: (value) {
+                    // handle
+                  },
+                  itemBuilder:
+                      (context) => [
+                        const PopupMenuItem(
+                          value: 'logout',
+                          child: Text('Log Out'),
+                        ),
+                      ],
+                ),
+              ]
+              : null,
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

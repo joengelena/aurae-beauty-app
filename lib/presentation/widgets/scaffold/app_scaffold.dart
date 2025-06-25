@@ -17,7 +17,7 @@ class AppScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TitleAppBar(),
+      appBar: TitleAppBar(currentRoute: state.uri.toString()),
       body: child,
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,

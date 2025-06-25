@@ -1,47 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      spacing: 16,
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        FilledButton(
-          onPressed: () {
-            context.go('/profile/signup');
-          },
-          child: Text('Sign Up'),
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            const CircleAvatar(
+              radius: 48,
+              backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+            ),
+            const SizedBox(height: 16),
+            Text('Jane Doe', style: Theme.of(context).textTheme.headlineSmall),
+            const SizedBox(height: 4),
+            Text(
+              'jane.doe@example.com',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '(+64) 20 1234 5678',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.edit),
+              label: const Text('Edit Profile'),
+            ),
+          ],
         ),
-        FilledButton(
-          onPressed: () {
-            context.go('/profile/signin');
-          },
-          child: Text('Sign In'),
-        ),
-        FilledButton(
-          onPressed: () {
-            context.go('/profile/forgot-password');
-          },
-          child: Text('Forgot Password'),
-        ),
-        FilledButton(
-          onPressed: () {
-            context.go('/profile/reset-password');
-          },
-          child: Text('Reset Password'),
-        ),
-        FilledButton(
-          onPressed: () {
-            context.go('/profile/email-verified');
-          },
-          child: Text('Email Verified'),
-        ),
-      ],
+      ),
     );
   }
 }
