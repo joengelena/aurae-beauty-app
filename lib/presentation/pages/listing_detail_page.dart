@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/presentation/widgets/listing/contact_seller.dart';
 import 'package:motorix_app/presentation/widgets/listing/image_carousel.dart';
 
 class ListingDetailPage extends StatelessWidget {
@@ -130,6 +131,7 @@ class ListingDetailPage extends StatelessWidget {
               ),
             ),
           ),
+          ContactSeller(),
         ],
       ),
     );
