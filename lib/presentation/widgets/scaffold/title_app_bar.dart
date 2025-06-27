@@ -27,6 +27,7 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: showBack ? BackButton(onPressed: () => onBack()) : null,
       title: Text('Motorix'),
       centerTitle: true,
+      scrolledUnderElevation: 0,
       actions:
           showMenu
               ? [
