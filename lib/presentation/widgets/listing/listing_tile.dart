@@ -73,7 +73,7 @@ class ListingTile extends StatelessWidget {
                             ),
                             SizedBox(width: 12),
                             Icon(
-                              Icons.electric_car,
+                              Icons.local_gas_station,
                               size: 16,
                               color: Colors.black45,
                             ),
