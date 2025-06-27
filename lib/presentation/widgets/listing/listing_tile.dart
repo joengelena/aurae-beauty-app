@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class WatchlistPreview extends StatelessWidget {
-  const WatchlistPreview({super.key});
+class ListingTile extends StatelessWidget {
+  const ListingTile({super.key});
 
   @override
   Widget build(BuildContext context) {

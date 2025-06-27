@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/presentation/widgets/listing/watchlist_preview.dart';
+import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
 import 'package:go_router/go_router.dart';
 
 class WatchlistPage extends StatelessWidget {
@@ -9,8 +9,8 @@ class WatchlistPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        WatchlistPreview(),
-        WatchlistPreview(),
+        ListingTile(),
+        ListingTile(),
         Align(
           alignment: Alignment.center,
           child: FilledButton(
