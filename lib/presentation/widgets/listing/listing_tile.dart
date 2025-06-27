@@ -95,22 +95,38 @@ class ListingTile extends StatelessWidget {
                           ),
                         ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              '\$22,990',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  '\$22,990',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  '\$25,990',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    decoration: TextDecoration.lineThrough,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(width: 10),
-                            Text(
-                              '\$25,990',
-                              style: TextStyle(
-                                fontSize: 12,
-                                decoration: TextDecoration.lineThrough,
-                                color: Colors.red,
-                              ),
+                            Row(
+                              spacing: 8,
+                              children: [
+                                Icon(Icons.remove_red_eye_outlined),
+                                Text(
+                                  '123',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                SizedBox(width: 12),
+                              ],
                             ),
                           ],
                         ),
