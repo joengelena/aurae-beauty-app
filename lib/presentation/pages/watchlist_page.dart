@@ -7,20 +7,44 @@ class WatchlistPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        ListingTile(),
-        ListingTile(),
-        Align(
-          alignment: Alignment.center,
-          child: FilledButton(
-            onPressed: () {
-              context.go('/listings');
-            },
-            child: Text('Explore more'),
-          ),
+    return Center(
+      child: Container(
+        constraints: BoxConstraints(maxWidth: 600),
+        child: ListView(
+          children: [
+            SizedBox(height: 12),
+            ListingTile(
+              topRightButtom: IconButton(
+                onPressed: () {
+                  // handle delete action
+                },
+                icon: const Icon(Icons.delete_outline),
+                color: Colors.red,
+              ),
+            ),
+            ListingTile(
+              topRightButtom: IconButton(
+                onPressed: () {
+                  // handle delete action
+                },
+                icon: const Icon(Icons.delete_outline),
+                color: Colors.red,
+              ),
+            ),
+            SizedBox(height: 24),
+
+            Align(
+              alignment: Alignment.center,
+              child: FilledButton(
+                onPressed: () {
+                  context.go('/listings');
+                },
+                child: Text('Explore more'),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
