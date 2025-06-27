@@ -2,30 +2,29 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class UploadImage extends StatefulWidget {
-  const UploadImage({super.key});
+class SelectMultipleImages extends StatefulWidget {
+  final List<Uint8List> imageBytesList;
+
+  const SelectMultipleImages({super.key, required this.imageBytesList});
 
   @override
-  State<UploadImage> createState() => _UploadImageState();
+  State<SelectMultipleImages> createState() => _SelectMultipleImagesState();
 }
 
-class _UploadImageState extends State<UploadImage> {
+class _SelectMultipleImagesState extends State<SelectMultipleImages> {
   final picker = ImagePicker();
-  final List<Uint8List> _imageBytesList = [];
+
+  bool canPickImage() => widget.imageBytesList.length < 10;
 
   Future<void> pickImage() async {
-    if (_imageBytesList.length >= 10) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("You can upload up to 10 images.")),
-      );
-      return;
-    }
+    final XFile? pickedImage = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
 
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      final bytes = await pickedFile.readAsBytes();
+    if (pickedImage != null) {
+      final bytes = await pickedImage.readAsBytes();
       setState(() {
-        _imageBytesList.add(bytes);
+        widget.imageBytesList.add(bytes);
       });
     }
   }
@@ -33,18 +32,18 @@ class _UploadImageState extends State<UploadImage> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      spacing: 12,
       children: [
         Text(
-          'Listing Images (${_imageBytesList.length}/10)',
+          'Listing Images (${widget.imageBytesList.length}/10)',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
-        const SizedBox(height: 12),
-        _imageBytesList.isNotEmpty
+        widget.imageBytesList.isNotEmpty
             ? Wrap(
               spacing: 8,
               runSpacing: 8,
               children:
-                  _imageBytesList
+                  widget.imageBytesList
                       .asMap()
                       .entries
                       .map(
@@ -65,10 +64,10 @@ class _UploadImageState extends State<UploadImage> {
                               child: GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    _imageBytesList.removeAt(entry.key);
+                                    widget.imageBytesList.removeAt(entry.key);
                                   });
                                 },
-                                child: const CircleAvatar(
+                                child: CircleAvatar(
                                   radius: 12,
                                   backgroundColor: Colors.black54,
                                   child: Icon(
@@ -85,11 +84,10 @@ class _UploadImageState extends State<UploadImage> {
                       .toList(),
             )
             : Text('No images selected'),
-        SizedBox(height: 12),
         OutlinedButton.icon(
-          onPressed: pickImage,
-          icon: const Icon(Icons.add_photo_alternate),
-          label: const Text('Pick Image'),
+          onPressed: canPickImage() ? pickImage : null,
+          icon: Icon(Icons.add_photo_alternate),
+          label: Text('Pick Image'),
         ),
       ],
     );

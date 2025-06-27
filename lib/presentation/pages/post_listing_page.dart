@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/listing_info_fields.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/select_multiple_images.dart';
@@ -13,6 +15,7 @@ class PostListingPage extends StatefulWidget {
 
 class _PostListingPageState extends State<PostListingPage> {
   final _formKey = GlobalKey<FormState>();
+  final List<Uint8List> imageBytesList = [];
   DateTime? uploadDate;
 
   // Required fields
@@ -89,7 +92,7 @@ class _PostListingPageState extends State<PostListingPage> {
                   listingEndDateController: listingEndDateController,
                   descriptionController: descriptionController,
                 ),
-                UploadImage(),
+                SelectMultipleImages(imageBytesList: imageBytesList),
                 SizedBox(height: 20),
                 FilledButton(
                   onPressed: () {
