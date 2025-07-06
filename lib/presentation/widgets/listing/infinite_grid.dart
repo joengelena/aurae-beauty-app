@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/logic/listings_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_preview.dart';
 import 'package:motorix_app/presentation/widgets/listing/search_and_filter_bar.dart';
 
@@ -12,32 +14,20 @@ class InfiniteGrid extends StatefulWidget {
 
 class _InfiniteGridState extends State<InfiniteGrid> {
   final ScrollController _scrollController = ScrollController();
-  final List<int> _items = List.generate(20, (index) => index); // initial items
-  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
+    context.read<ListingsProvider>().loadMore();
 
+    // Scroll listener
     _scrollController.addListener(() {
+      final provider = context.read<ListingsProvider>();
       if (_scrollController.position.pixels >=
               _scrollController.position.maxScrollExtent - 200 &&
-          !_isLoading) {
-        _loadMoreItems();
+          provider.canLoadMore) {
+        provider.loadMore();
       }
-    });
-  }
-
-  void _loadMoreItems() async {
-    setState(() => _isLoading = true);
-    await Future.delayed(
-      const Duration(seconds: 2),
-    ); // simulate network/API delay
-
-    final nextItems = List.generate(20, (index) => _items.length + index);
-    setState(() {
-      _items.addAll(nextItems);
-      _isLoading = false;
     });
   }
 
@@ -49,21 +39,20 @@ class _InfiniteGridState extends State<InfiniteGrid> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final provider = context.watch<ListingsProvider>();
 
+    final width = MediaQuery.of(context).size.width;
     final crossAxisCount =
-        screenWidth > 1000
+        width > 1000
             ? 4
-            : screenWidth > 600
+            : width > 600
             ? 3
             : 2;
-    double previewWidth =
-        (MediaQuery.of(context).size.width - (15 * crossAxisCount)) /
-        crossAxisCount;
+    final previewWidth = (width - (15 * crossAxisCount)) / crossAxisCount;
 
     return ListView(
       controller: _scrollController,
-      padding: EdgeInsets.only(left: 0, right: 0),
+      padding: EdgeInsets.zero,
       children: [
         SearchAndFiltersBar(searchController: widget.searchController),
         Center(
@@ -72,12 +61,17 @@ class _InfiniteGridState extends State<InfiniteGrid> {
             runSpacing: 16,
             alignment: WrapAlignment.center,
             children:
-                _items.map((i) => ListingPreview(width: previewWidth)).toList(),
+                provider.listings
+                    .map(
+                      (listing) =>
+                          ListingPreview(width: previewWidth, listing: listing),
+                    )
+                    .toList(),
           ),
         ),
-        if (_isLoading)
+        if (provider.isLoading)
           const Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16),
             child: Center(child: CircularProgressIndicator()),
           ),
       ],

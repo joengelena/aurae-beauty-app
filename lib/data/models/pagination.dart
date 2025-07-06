@@ -1,12 +1,12 @@
 class PaginatedResponse<T> {
   final List<T> data;
-  final int currentPage;
+  final int pageNumber;
   final int totalPages;
   final int totalRows;
 
   PaginatedResponse({
     required this.data,
-    required this.currentPage,
+    required this.pageNumber,
     required this.totalPages,
     required this.totalRows,
   });
@@ -22,7 +22,7 @@ class PaginatedResponse<T> {
 
     return PaginatedResponse<T>(
       data: items,
-      currentPage: json['currentPage'] as int,
+      pageNumber: json['pageNumber'] as int,
       totalPages: json['totalPages'] as int,
       totalRows: json['totalRows'] as int,
     );
