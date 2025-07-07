@@ -18,7 +18,11 @@ class _InfiniteGridState extends State<InfiniteGrid> {
   @override
   void initState() {
     super.initState();
-    context.read<ListingsProvider>().loadMore();
+
+    // Wait until the widget has finished building first before "loadMore()"
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ListingsProvider>().loadMore();
+    });
 
     // Scroll listener
     _scrollController.addListener(() {
