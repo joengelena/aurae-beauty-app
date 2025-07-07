@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/logic/listings_provider.dart';
+import 'package:provider/provider.dart';
 
 class SearchAndFiltersBar extends StatefulWidget {
-  final TextEditingController searchController;
-
-  const SearchAndFiltersBar({super.key, required this.searchController});
+  const SearchAndFiltersBar({super.key});
 
   @override
   State<SearchAndFiltersBar> createState() => _SearchAndFiltersBarState();
@@ -14,6 +14,8 @@ class _SearchAndFiltersBarState extends State<SearchAndFiltersBar> {
 
   @override
   Widget build(BuildContext context) {
+    final listingProvider = context.watch<ListingsProvider>();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 12,
@@ -22,6 +24,11 @@ class _SearchAndFiltersBarState extends State<SearchAndFiltersBar> {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: TextField(
+            controller: listingProvider.searchController,
+            textInputAction: TextInputAction.search,
+            onSubmitted: (value) {
+              listingProvider.loadMore();
+            },
             decoration: InputDecoration(
               hintText: "What's your next ride?",
               prefixIcon: Icon(Icons.search),

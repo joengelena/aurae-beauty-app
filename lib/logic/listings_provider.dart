@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 
@@ -8,6 +8,9 @@ class ListingsProvider extends ChangeNotifier {
   int _currentPage = 0;
   int _totalPages = 1;
   bool _isLoading = false;
+
+  TextEditingController searchController = TextEditingController();
+  String prevSearchControllerText = '';
 
   ListingsProvider({this.limit = 10});
 
@@ -21,10 +24,20 @@ class ListingsProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
+    if (newSearchParameters()) {
+      listings.clear();
+      _currentPage = 0;
+    }
+
     try {
       final resp = await ListingsServices().getAllListings(
-        allQueries: {'limit': limit, 'pageNumber': _currentPage + 1},
+        allQueries: {
+          'limit': limit,
+          'pageNumber': _currentPage + 1,
+          'searchString': searchController.text,
+        },
       );
+
       listings.addAll(resp.data);
       _totalPages = resp.totalPages;
       _currentPage = resp.pageNumber;
@@ -34,5 +47,13 @@ class ListingsProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  bool newSearchParameters() {
+    if (prevSearchControllerText != searchController.text) {
+      return true;
+    }
+
+    return false;
   }
 }

@@ -5,8 +5,7 @@ import 'package:motorix_app/presentation/widgets/listing/listing_preview.dart';
 import 'package:motorix_app/presentation/widgets/listing/search_and_filter_bar.dart';
 
 class InfiniteGrid extends StatefulWidget {
-  final TextEditingController searchController;
-  const InfiniteGrid({super.key, required this.searchController});
+  const InfiniteGrid({super.key});
 
   @override
   State<InfiniteGrid> createState() => _InfiniteGridState();
@@ -58,7 +57,6 @@ class _InfiniteGridState extends State<InfiniteGrid> {
       controller: _scrollController,
       padding: EdgeInsets.zero,
       children: [
-        SearchAndFiltersBar(searchController: widget.searchController),
         Center(
           child: Wrap(
             spacing: 6,
@@ -73,8 +71,9 @@ class _InfiniteGridState extends State<InfiniteGrid> {
                     .toList(),
           ),
         ),
+
         if (provider.isLoading)
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(16),
             child: Center(child: CircularProgressIndicator()),
           ),
