@@ -9,6 +9,5 @@ class ListingsPage extends StatelessWidget {
     TextEditingController searchController = TextEditingController();
 
     return InfiniteGrid(searchController: searchController);
-    // return Test();
   }
 }
