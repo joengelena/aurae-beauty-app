@@ -27,7 +27,7 @@ class _SearchAndFiltersBarState extends State<SearchAndFiltersBar> {
             controller: listingProvider.searchController,
             textInputAction: TextInputAction.search,
             onSubmitted: (value) {
-              listingProvider.loadMore();
+              listingProvider.getListings();
             },
             decoration: InputDecoration(
               hintText: "What's your next ride?",

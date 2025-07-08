@@ -5,46 +5,54 @@ import 'package:motorix_app/data/services/listings_services.dart';
 class ListingsProvider extends ChangeNotifier {
   final List<Listing> listings = [];
   final int limit;
-  int _currentPage = 0;
-  int _totalPages = 1;
-  bool _isLoading = false;
+  int currentPage = 0;
+  int totalPages = 1;
+  bool isLoading = false;
 
   TextEditingController searchController = TextEditingController();
   String prevSearchControllerText = '';
 
   ListingsProvider({this.limit = 10});
 
-  bool get onLastPage => _currentPage >= _totalPages;
-  bool get isLoading => _isLoading;
-  bool get canLoadMore =>
-      !onLastPage && !_isLoading && _currentPage <= _totalPages;
+  bool get onLastPage => currentPage >= totalPages;
+  bool get canLoadMore => !onLastPage && !isLoading;
 
-  Future<void> loadMore() async {
-    if (!canLoadMore) return;
-    _isLoading = true;
-    notifyListeners();
-
+  Future<void> getListings() async {
     if (newSearchParameters()) {
+      // get listings with pageNumber 1
       listings.clear();
-      _currentPage = 0;
+      currentPage = 0;
+
+      isLoading = true;
+      notifyListeners();
+
+      await fetchListings();
     }
 
+    if (canLoadMore) {
+      isLoading = true;
+      notifyListeners();
+      await fetchListings();
+    }
+  }
+
+  Future<void> fetchListings() async {
     try {
       final resp = await ListingsServices().getAllListings(
         allQueries: {
           'limit': limit,
-          'pageNumber': _currentPage + 1,
+          'pageNumber': currentPage + 1,
           'searchString': searchController.text,
         },
       );
 
       listings.addAll(resp.data);
-      _totalPages = resp.totalPages;
-      _currentPage = resp.pageNumber;
+      totalPages = resp.totalPages;
+      currentPage = resp.pageNumber;
     } catch (e) {
       debugPrint('Error loading listings: $e');
     } finally {
-      _isLoading = false;
+      isLoading = false;
       notifyListeners();
     }
   }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_preview.dart';
-import 'package:motorix_app/presentation/widgets/listing/search_and_filter_bar.dart';
 
 class InfiniteGrid extends StatefulWidget {
   const InfiniteGrid({super.key});
@@ -20,7 +19,7 @@ class _InfiniteGridState extends State<InfiniteGrid> {
 
     // Wait until the widget has finished building first before "loadMore()"
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ListingsProvider>().loadMore();
+      context.read<ListingsProvider>().getListings();
     });
 
     // Scroll listener
@@ -29,7 +28,7 @@ class _InfiniteGridState extends State<InfiniteGrid> {
       if (_scrollController.position.pixels >=
               _scrollController.position.maxScrollExtent - 200 &&
           provider.canLoadMore) {
-        provider.loadMore();
+        provider.getListings();
       }
     });
   }
