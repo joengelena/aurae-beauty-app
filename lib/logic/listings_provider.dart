@@ -7,6 +7,7 @@ class ListingsProvider extends ChangeNotifier {
   final int limit;
   int currentPage = 0;
   int totalPages = 1;
+  int totalListings = 0;
   bool isLoading = false;
 
   TextEditingController searchController = TextEditingController();
@@ -49,6 +50,7 @@ class ListingsProvider extends ChangeNotifier {
       listings.addAll(resp.data);
       totalPages = resp.totalPages;
       currentPage = resp.pageNumber;
+      totalListings = resp.totalRows;
     } catch (e) {
       debugPrint('Error loading listings: $e');
     } finally {

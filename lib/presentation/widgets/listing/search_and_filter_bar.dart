@@ -70,7 +70,7 @@ class _SearchAndFiltersBarState extends State<SearchAndFiltersBar> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "342 listings",
+                "${listingProvider.totalListings} listings",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               DropdownButton<String>(
