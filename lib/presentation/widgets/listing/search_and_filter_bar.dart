@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
+import 'package:motorix_app/presentation/widgets/listing/filter_bar.dart';
 import 'package:provider/provider.dart';
 
 class SearchAndFiltersBar extends StatefulWidget {
@@ -41,25 +42,7 @@ class _SearchAndFiltersBarState extends State<SearchAndFiltersBar> {
           ),
         ),
 
-        // Filter Chips
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            spacing: 8,
-            children: [
-              FilterChip(
-                label: Text("Filters"),
-                avatar: Icon(Icons.tune, size: 18),
-                onSelected: (_) {},
-              ),
-              _buildChip("Used"),
-              _buildChip("2WD"),
-              _buildChip("Auckland"),
-              _buildChip("Toyota"),
-            ],
-          ),
-        ),
+        FilterBar(),
 
         // Listings Count & Sort Dropdown
         Padding(
@@ -95,9 +78,5 @@ class _SearchAndFiltersBarState extends State<SearchAndFiltersBar> {
         ),
       ],
     );
-  }
-
-  Widget _buildChip(String label) {
-    return FilterChip(label: Text(label), selected: true, onSelected: (_) {});
   }
 }
