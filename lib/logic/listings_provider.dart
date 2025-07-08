@@ -3,8 +3,20 @@ import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 
 class ListingsProvider extends ChangeNotifier {
+  ListingsProvider();
+
+  final Map<String, String> sortByOptions = {
+    'Highest price': 'priceDesc',
+    'Lowest price': 'priceAsc',
+    'Latest listings': 'uploadDateDesc',
+    'Oldest listings': 'uploadDateAsc',
+    'Highest kilometers': 'kilometersDesc',
+    'Lowest kilometers': 'kilometersAsc',
+    'Latest year': 'yearDesc',
+    'Oldest year': 'yearAsc',
+  };
   final List<Listing> listings = [];
-  final int limit;
+  final int limit = 10;
   int currentPage = 0;
   int totalPages = 1;
   int totalListings = 0;
@@ -13,14 +25,13 @@ class ListingsProvider extends ChangeNotifier {
   TextEditingController searchController = TextEditingController();
   String prevSearchControllerText = '';
 
-  ListingsProvider({this.limit = 10});
+  String sortBy = 'uploadDateDesc';
 
   bool get onLastPage => currentPage >= totalPages;
   bool get canLoadMore => !onLastPage && !isLoading;
 
   Future<void> getListings() async {
     if (newSearchParameters()) {
-      // get listings with pageNumber 1
       listings.clear();
       currentPage = 0;
 

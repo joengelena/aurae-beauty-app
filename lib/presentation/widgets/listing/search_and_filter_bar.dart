@@ -10,8 +10,6 @@ class SearchAndFiltersBar extends StatefulWidget {
 }
 
 class _SearchAndFiltersBarState extends State<SearchAndFiltersBar> {
-  String _selectedSort = 'Sort by';
-
   @override
   Widget build(BuildContext context) {
     final listingProvider = context.watch<ListingsProvider>();
@@ -74,19 +72,21 @@ class _SearchAndFiltersBarState extends State<SearchAndFiltersBar> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               DropdownButton<String>(
-                value: _selectedSort,
+                value: listingProvider.sortBy.toString(),
                 underline: SizedBox(),
-                items: [
-                  DropdownMenuItem(value: "Sort by", child: Text("Sort by")),
-                  DropdownMenuItem(value: "Price", child: Text("Price")),
-                  DropdownMenuItem(value: "Newest", child: Text("Newest")),
-                ],
+                items:
+                    listingProvider.sortByOptions.entries
+                        .map<DropdownMenuItem<String>>((entry) {
+                          return DropdownMenuItem(
+                            value: entry.value,
+                            child: Text(entry.key),
+                          );
+                        })
+                        .toList(),
                 onChanged: (value) {
-                  if (value != null) {
-                    setState(() {
-                      _selectedSort = value;
-                    });
-                  }
+                  setState(() {
+                    listingProvider.sortBy = value ?? 'uploadDateDesc';
+                  });
                 },
               ),
             ],
