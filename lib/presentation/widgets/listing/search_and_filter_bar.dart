@@ -87,6 +87,7 @@ class _SearchAndFiltersBarState extends State<SearchAndFiltersBar> {
                   setState(() {
                     listingProvider.sortBy = value ?? 'uploadDateDesc';
                   });
+                  listingProvider.getListings();
                 },
               ),
             ],

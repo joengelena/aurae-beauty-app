@@ -26,6 +26,7 @@ class ListingsProvider extends ChangeNotifier {
   String prevSearchControllerText = '';
 
   String sortBy = 'uploadDateDesc';
+  String prevSortBy = '';
 
   bool get onLastPage => currentPage >= totalPages;
   bool get canLoadMore => !onLastPage && !isLoading;
@@ -55,6 +56,7 @@ class ListingsProvider extends ChangeNotifier {
           'limit': limit,
           'pageNumber': currentPage + 1,
           'searchString': searchController.text,
+          'sortBy': sortBy,
         },
       );
 
@@ -62,6 +64,9 @@ class ListingsProvider extends ChangeNotifier {
       totalPages = resp.totalPages;
       currentPage = resp.pageNumber;
       totalListings = resp.totalRows;
+
+      prevSearchControllerText = searchController.text;
+      prevSortBy = sortBy;
     } catch (e) {
       debugPrint('Error loading listings: $e');
     } finally {
@@ -71,7 +76,8 @@ class ListingsProvider extends ChangeNotifier {
   }
 
   bool newSearchParameters() {
-    if (prevSearchControllerText != searchController.text) {
+    if (prevSearchControllerText != searchController.text ||
+        prevSortBy != sortBy) {
       return true;
     }
 
