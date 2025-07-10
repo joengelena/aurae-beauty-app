@@ -4,7 +4,17 @@ import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:provider/provider.dart';
 
 class FilterBar extends StatelessWidget {
-  const FilterBar({super.key});
+  final Map<String, String> filterNames = {
+    'location': 'Location',
+    'vehicle_condition': 'Condition',
+    'fuel_type': 'Fuel',
+    'body_type': 'Body style',
+    'drive_type': 'Drive type',
+    'transmission': 'Transmission',
+    'cylinders': 'Cylinders',
+  };
+
+  FilterBar({super.key});
 
   Widget _buildChip(String label) {
     return FilterChip(label: Text(label), selected: true, onSelected: (_) {});
@@ -12,7 +22,7 @@ class FilterBar extends StatelessWidget {
 
   void showFiltersBottomSheet(
     BuildContext context,
-    List<ListingFilter> filters,
+    List<ListingFilter> filterOptions,
   ) {
     showModalBottomSheet(
       context: context,
@@ -21,29 +31,60 @@ class FilterBar extends StatelessWidget {
       ),
       builder: (BuildContext context) {
         return Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children:
-                filters
-                    .map(
-                      (filter) => Row(
+          padding: EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children:
+                  filterOptions.map((filterOption) {
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: 16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(filter.name),
-                          DropdownButton<String>(
-                            items:
-                                filter.filterValues.map((val) {
-                                  return DropdownMenuItem(
-                                    value: val,
-                                    child: Text(val),
-                                  );
-                                }).toList(),
-                            onChanged: (value) {},
+                          // Label
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              filterNames[filterOption.name] ??
+                                  filterOption.name,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+
+                          Expanded(
+                            flex: 3,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    items:
+                                        filterOption.filterValues.map((val) {
+                                          return DropdownMenuItem<String>(
+                                            value: val,
+                                            child: Text(val),
+                                          );
+                                        }).toList(),
+                                    onChanged: (newVal) {},
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                    )
-                    .toList(),
+                    );
+                  }).toList(),
+            ),
           ),
         );
       },
@@ -53,7 +94,7 @@ class FilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ListingsProvider>();
-    final filters = provider.filters;
+    final filterOptions = provider.filterOptions;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -80,7 +121,7 @@ class FilterBar extends StatelessWidget {
               style: TextStyle(color: Theme.of(context).primaryColor),
             ),
             onPressed: () {
-              showFiltersBottomSheet(context, filters);
+              showFiltersBottomSheet(context, filterOptions);
             },
           ),
           _buildChip("Used"),

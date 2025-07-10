@@ -8,7 +8,7 @@ class ListingsProvider extends ChangeNotifier {
     _loadFilters();
   }
 
-  List<ListingFilter> filters = [];
+  List<ListingFilter> filterOptions = [];
   final Map<String, String> sortByOptions = {
     'Highest price': 'priceDesc',
     'Lowest price': 'priceAsc',
@@ -90,7 +90,7 @@ class ListingsProvider extends ChangeNotifier {
 
   Future<void> _loadFilters() async {
     try {
-      filters = await ListingsServices().getListingFilters();
+      filterOptions = await ListingsServices().getListingFilters();
     } catch (e) {
       debugPrint('Error loading filters: $e');
     } finally {
