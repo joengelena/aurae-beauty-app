@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/data/models/listing.dart';
-import 'package:motorix_app/data/models/listing_filter.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 
 class ListingsProvider extends ChangeNotifier {
-  ListingsProvider() {
-    _loadFilters();
-  }
+  ListingsProvider();
 
-  List<ListingFilter> filterOptions = [];
   final Map<String, String> sortByOptions = {
     'Highest price': 'priceDesc',
     'Lowest price': 'priceAsc',
@@ -86,15 +82,5 @@ class ListingsProvider extends ChangeNotifier {
     }
 
     return false;
-  }
-
-  Future<void> _loadFilters() async {
-    try {
-      filterOptions = await ListingsServices().getListingFilters();
-    } catch (e) {
-      debugPrint('Error loading filters: $e');
-    } finally {
-      notifyListeners();
-    }
   }
 }

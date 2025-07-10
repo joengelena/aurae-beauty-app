@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/app_router.dart';
+import 'package:motorix_app/logic/listing_filters_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ListingsProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ListingsProvider>(
+          create: (_) => ListingsProvider(),
+        ),
+        ChangeNotifierProvider<ListingFiltersProvider>(
+          create: (_) => ListingFiltersProvider(),
+        ),
+      ],
       child: MyApp(),
     ),
   );

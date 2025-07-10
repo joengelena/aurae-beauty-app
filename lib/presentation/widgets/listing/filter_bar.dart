@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/models/listing_filter.dart';
-import 'package:motorix_app/logic/listings_provider.dart';
+import 'package:motorix_app/logic/listing_filters_provider.dart';
 import 'package:provider/provider.dart';
 
 class FilterBar extends StatelessWidget {
@@ -20,16 +19,17 @@ class FilterBar extends StatelessWidget {
     return FilterChip(label: Text(label), selected: true, onSelected: (_) {});
   }
 
-  void showFiltersBottomSheet(
-    BuildContext context,
-    List<ListingFilter> filterOptions,
-  ) {
+  void showFiltersBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
+        final provider = context.watch<ListingFiltersProvider>();
+        final filterOptions = provider.filterOptions;
+        final selectedFilters = provider.selectedFilters;
+        final updateSelectedFilter = provider.updateFilter;
         return Padding(
           padding: EdgeInsets.all(16),
           child: SingleChildScrollView(
@@ -66,6 +66,7 @@ class FilterBar extends StatelessWidget {
                                 padding: EdgeInsets.symmetric(horizontal: 12),
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<String>(
+                                    value: selectedFilters[filterOption.name],
                                     isExpanded: true,
                                     items:
                                         filterOption.filterValues.map((val) {
@@ -74,7 +75,14 @@ class FilterBar extends StatelessWidget {
                                             child: Text(val),
                                           );
                                         }).toList(),
-                                    onChanged: (newVal) {},
+                                    onChanged: (newVal) {
+                                      if (newVal != null) {
+                                        updateSelectedFilter(
+                                          filterOption.name,
+                                          newVal,
+                                        );
+                                      }
+                                    },
                                   ),
                                 ),
                               ),
@@ -93,9 +101,6 @@ class FilterBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<ListingsProvider>();
-    final filterOptions = provider.filterOptions;
-
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -121,7 +126,7 @@ class FilterBar extends StatelessWidget {
               style: TextStyle(color: Theme.of(context).primaryColor),
             ),
             onPressed: () {
-              showFiltersBottomSheet(context, filterOptions);
+              showFiltersBottomSheet(context);
             },
           ),
           _buildChip("Used"),
