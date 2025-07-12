@@ -27,16 +27,17 @@ class FilterBar extends StatelessWidget {
       ),
       builder: (BuildContext context) {
         final provider = context.watch<ListingFiltersProvider>();
-        final filterOptions = provider.filterOptions;
-        final selectedFilters = provider.selectedFilters;
-        final updateSelectedFilter = provider.updateFilter;
+        final equalFilterOptions = provider.equalFilterOptions;
+        final selectedEqualFilters = provider.selectedEqualFilters;
+        final updateSelectedEqualFilter = provider.updateEqualFilter;
+
         return Padding(
           padding: EdgeInsets.all(16),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children:
-                  filterOptions.map((filterOption) {
+                  equalFilterOptions.map((filterOption) {
                     return Padding(
                       padding: EdgeInsets.only(bottom: 16),
                       child: Row(
@@ -66,7 +67,8 @@ class FilterBar extends StatelessWidget {
                                 padding: EdgeInsets.symmetric(horizontal: 12),
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<String>(
-                                    value: selectedFilters[filterOption.name],
+                                    value:
+                                        selectedEqualFilters[filterOption.name],
                                     isExpanded: true,
                                     items:
                                         filterOption.filterValues.map((val) {
@@ -77,7 +79,7 @@ class FilterBar extends StatelessWidget {
                                         }).toList(),
                                     onChanged: (newVal) {
                                       if (newVal != null) {
-                                        updateSelectedFilter(
+                                        updateSelectedEqualFilter(
                                           filterOption.name,
                                           newVal,
                                         );

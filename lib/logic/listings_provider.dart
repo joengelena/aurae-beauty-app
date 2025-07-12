@@ -23,30 +23,36 @@ class ListingsProvider extends ChangeNotifier {
   bool isLoading = false;
 
   TextEditingController searchController = TextEditingController();
-  String prevSearchControllerText = '';
 
   String sortBy = 'uploadDateDesc';
-  String prevSortBy = '';
+
+  Map<String, String> equalFilters = {};
+
+  Map<String, dynamic> get searchParams => {
+    'searchString': searchController.text,
+    'sortBy': sortBy,
+    ...getEqualFilters(),
+  };
 
   bool get onLastPage => currentPage >= totalPages;
   bool get canLoadMore => !onLastPage && !isLoading;
 
-  Future<void> getListings() async {
-    if (newSearchParameters()) {
-      listings.clear();
-      currentPage = 0;
+  Future<void> getNewListings() async {
+    listings.clear();
+    currentPage = 0;
 
-      isLoading = true;
-      notifyListeners();
+    isLoading = true;
+    notifyListeners();
 
-      await fetchListings();
-    }
+    await fetchListings();
+    return;
+  }
 
-    if (canLoadMore) {
-      isLoading = true;
-      notifyListeners();
-      await fetchListings();
-    }
+  Future<void> getMoreListings() async {
+    isLoading = true;
+    notifyListeners();
+    await fetchListings();
+    return;
   }
 
   Future<void> fetchListings() async {
@@ -57,6 +63,7 @@ class ListingsProvider extends ChangeNotifier {
           'pageNumber': currentPage + 1,
           'searchString': searchController.text,
           'sortBy': sortBy,
+          ...getEqualFilters(),
         },
       );
 
@@ -64,9 +71,6 @@ class ListingsProvider extends ChangeNotifier {
       totalPages = resp.totalPages;
       currentPage = resp.pageNumber;
       totalListings = resp.totalRows;
-
-      prevSearchControllerText = searchController.text;
-      prevSortBy = sortBy;
     } catch (e) {
       debugPrint('Error loading listings: $e');
     } finally {
@@ -75,12 +79,26 @@ class ListingsProvider extends ChangeNotifier {
     }
   }
 
-  bool newSearchParameters() {
-    if (prevSearchControllerText != searchController.text ||
-        prevSortBy != sortBy) {
-      return true;
-    }
+  Map<String, String> getEqualFilters() {
+    final Map<String, String> queryFilterOptions = {
+      'location': 'location',
+      'vehicle_condition': 'vehicleCondition',
+      'fuel_type': 'fuelType',
+      'body_type': 'bodyType',
+      'drive_type': 'driveType',
+      'transmission': 'transmission',
+      'cylinders': 'cylinders',
+    };
 
-    return false;
+    return Map.fromEntries(
+      equalFilters.entries
+          .where((entry) => entry.value != 'None')
+          .map((e) => MapEntry(queryFilterOptions[e.key]!, e.value)),
+    );
+  }
+
+  void updateSelectedEqualFilters(Map<String, String> newEqualFilters) {
+    equalFilters = Map.from(newEqualFilters);
+    getNewListings();
   }
 }

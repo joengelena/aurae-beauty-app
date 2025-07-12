@@ -7,15 +7,15 @@ class ListingFiltersProvider extends ChangeNotifier {
     _loadFilters();
   }
 
-  List<ListingFilter> filterOptions = [];
-  Map<String, String> selectedFilters = {};
+  List<ListingFilter> equalFilterOptions = [];
+  Map<String, String> selectedEqualFilters = {};
 
   Future<void> _loadFilters() async {
     try {
-      filterOptions = await ListingsServices().getListingFilters();
+      equalFilterOptions = await ListingsServices().getListingFilters();
 
-      selectedFilters = {
-        for (var filter in filterOptions)
+      selectedEqualFilters = {
+        for (var filter in equalFilterOptions)
           filter.name: filter.filterValues.first,
       };
     } catch (e) {
@@ -25,12 +25,12 @@ class ListingFiltersProvider extends ChangeNotifier {
     }
   }
 
-  void updateFilter(String filterName, String newValue) {
-    if (!selectedFilters.containsKey(filterName)) return;
+  void updateEqualFilter(String filterName, String newValue) {
+    if (!selectedEqualFilters.containsKey(filterName)) return;
 
-    selectedFilters[filterName] = newValue;
+    selectedEqualFilters[filterName] = newValue;
     notifyListeners();
   }
 
-  String? getSelected(String filterName) => selectedFilters[filterName];
+  String? getSelected(String filterName) => selectedEqualFilters[filterName];
 }

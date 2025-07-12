@@ -17,9 +17,9 @@ class _InfiniteGridState extends State<InfiniteGrid> {
   void initState() {
     super.initState();
 
-    // Wait until the widget has finished building first before "loadMore()"
+    // Wait until the widget has finished building first before "getNewListings()"
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ListingsProvider>().getListings();
+      context.read<ListingsProvider>().getNewListings();
     });
 
     // Scroll listener
@@ -28,7 +28,7 @@ class _InfiniteGridState extends State<InfiniteGrid> {
       if (_scrollController.position.pixels >=
               _scrollController.position.maxScrollExtent - 200 &&
           provider.canLoadMore) {
-        provider.getListings();
+        provider.getMoreListings();
       }
     });
   }

@@ -26,7 +26,7 @@ class _SearchAndFiltersBarState extends State<SearchAndFiltersBar> {
             controller: listingProvider.searchController,
             textInputAction: TextInputAction.search,
             onSubmitted: (value) {
-              listingProvider.getListings();
+              listingProvider.getNewListings();
             },
             decoration: InputDecoration(
               hintText: "What's your next ride?",
@@ -70,7 +70,7 @@ class _SearchAndFiltersBarState extends State<SearchAndFiltersBar> {
                   setState(() {
                     listingProvider.sortBy = value ?? 'uploadDateDesc';
                   });
-                  listingProvider.getListings();
+                  listingProvider.getNewListings();
                 },
               ),
             ],

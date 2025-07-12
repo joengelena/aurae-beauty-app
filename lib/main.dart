@@ -9,11 +9,17 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<ListingsProvider>(
-          create: (_) => ListingsProvider(),
-        ),
         ChangeNotifierProvider<ListingFiltersProvider>(
           create: (_) => ListingFiltersProvider(),
+        ),
+        ChangeNotifierProxyProvider<ListingFiltersProvider, ListingsProvider>(
+          create: (_) => ListingsProvider(),
+          update: (_, listingFiltersProvider, listingsProvider) {
+            listingsProvider!.updateSelectedEqualFilters(
+              listingFiltersProvider.selectedEqualFilters,
+            );
+            return listingsProvider;
+          },
         ),
       ],
       child: MyApp(),
