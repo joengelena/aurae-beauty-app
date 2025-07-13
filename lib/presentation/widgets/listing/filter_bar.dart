@@ -15,8 +15,24 @@ class FilterBar extends StatelessWidget {
 
   FilterBar({super.key});
 
-  Widget _buildChip(String label) {
-    return FilterChip(label: Text(label), selected: true, onSelected: (_) {});
+  Widget selectedFilter(
+    BuildContext context,
+    String filterKey,
+    String filterValue,
+  ) {
+    final provider = context.read<ListingFiltersProvider>();
+
+    return FilledButton(
+      onPressed: () {
+        provider.updateEqualFilter(filterKey, 'None');
+      },
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(
+          Theme.of(context).colorScheme.secondary,
+        ),
+      ),
+      child: Text(filterValue),
+    );
   }
 
   void showFiltersBottomSheet(BuildContext context) {
@@ -103,38 +119,39 @@ class FilterBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedEqualFilters =
+        context.watch<ListingFiltersProvider>().selectedEqualFilters;
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         spacing: 8,
         children: [
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(color: Theme.of(context).primaryColor),
-              ),
-            ),
+          OutlinedButton.icon(
+            onPressed: () => showFiltersBottomSheet(context),
             icon: Icon(
               Icons.tune,
-              size: 22,
               color: Theme.of(context).primaryColor,
+              size: 22,
             ),
             label: Text(
               'Filters',
               style: TextStyle(color: Theme.of(context).primaryColor),
             ),
-            onPressed: () {
-              showFiltersBottomSheet(context);
-            },
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: Theme.of(context).primaryColor),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            ),
           ),
-          _buildChip("Used"),
-          _buildChip("2WD"),
-          _buildChip("Auckland"),
-          _buildChip("Toyota"),
+          ...[
+            for (var entry in selectedEqualFilters.entries)
+              if (entry.value != 'None')
+                selectedFilter(context, entry.key, entry.value),
+          ],
         ],
       ),
     );
