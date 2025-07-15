@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/date_form_field.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/number_form_field.dart';
+import 'package:motorix_app/presentation/widgets/post_listing/string_form_field.dart';
 import 'package:provider/provider.dart';
 
 class VehicleInfoOptionalFields extends StatelessWidget {
@@ -17,50 +18,28 @@ class VehicleInfoOptionalFields extends StatelessWidget {
         'Extra fields',
         style: Theme.of(context).textTheme.headlineSmall,
       ),
+      childrenPadding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
       children: [
         CheckboxListTile(
-          value: provider.orcIncluded,
-          onChanged: (value) => provider.orcIncluded = value ?? false,
+          value: false,
+          onChanged:
+              (value) =>
+                  provider.postListingData['orcIncluded'] = value ?? false,
           title: Text('ORC Included'),
         ),
+
         DateFormField(
-          dateController: provider.regoExpiryDateController,
           labelText: 'Rego Expiry Date',
-          firstDate: DateTime(2020),
+          fieldName: 'regoExpiryDate',
         ),
-        DateFormField(
-          dateController: provider.wofExpiryDateController,
-          labelText: 'WOF Expiry Date',
-          firstDate: DateTime(2020),
-        ),
-        TextFormField(
-          controller: provider.numberPlateController,
-          decoration: InputDecoration(labelText: 'Number Plate'),
-        ),
-        NumberFormField(
-          fieldController: provider.seatsController,
-          labelText: 'Seats',
-        ),
-        NumberFormField(
-          fieldController: provider.doorsController,
-          labelText: 'Doors',
-        ),
-        TextFormField(
-          controller: provider.colorController,
-          decoration: InputDecoration(labelText: 'Color'),
-        ),
-        NumberFormField(
-          fieldController: provider.engineSizeController,
-          labelText: 'Engine Size (cc)',
-        ),
-        TextFormField(
-          controller: provider.transmissionController,
-          decoration: InputDecoration(labelText: 'Transmission'),
-        ),
-        TextFormField(
-          controller: provider.cylindersController,
-          decoration: InputDecoration(labelText: 'Cylinders'),
-        ),
+        DateFormField(labelText: 'WOF Expiry Date', fieldName: 'wofExpiryDate'),
+        StringFormField(labelText: 'Number Plate', fieldName: 'numberPlate'),
+        NumberFormField(labelText: 'Seats', fieldName: 'seats'),
+        NumberFormField(labelText: 'Doors', fieldName: 'doors'),
+        StringFormField(labelText: 'Color', fieldName: 'color'),
+        NumberFormField(labelText: 'Engine Size (cc)', fieldName: 'engineSize'),
+        StringFormField(labelText: 'Transmission', fieldName: 'transmission'),
+        NumberFormField(labelText: 'Cylinders', fieldName: 'cylinders'),
       ],
     );
   }

@@ -1,37 +1,15 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:motorix_app/data/services/listings_services.dart';
 
 class PostListingProvider extends ChangeNotifier {
   PostListingProvider();
 
   final List<Uint8List> imageBytesList = [];
+  final List<String> imagePaths = [];
 
-  // Required fields
-  final locationController = TextEditingController();
-  final conditionController = TextEditingController();
-  final priceController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final makeController = TextEditingController();
-  final modelController = TextEditingController();
-  final yearController = TextEditingController();
-  final kilometersController = TextEditingController();
-  final fuelTypeController = TextEditingController();
-  final bodyTypeController = TextEditingController();
-  final driveTypeController = TextEditingController();
-  final listingEndDateController = TextEditingController();
-
-  // Optional fields
-  final regoExpiryDateController = TextEditingController();
-  final wofExpiryDateController = TextEditingController();
-  final numberPlateController = TextEditingController();
-  final seatsController = TextEditingController();
-  final doorsController = TextEditingController();
-  final colorController = TextEditingController();
-  final engineSizeController = TextEditingController();
-  final transmissionController = TextEditingController();
-  final cylindersController = TextEditingController();
-  bool orcIncluded = false;
+  final Map<String, Object> postListingData = {};
 
   final picker = ImagePicker();
 
@@ -45,29 +23,56 @@ class PostListingProvider extends ChangeNotifier {
     if (pickedImage != null) {
       final bytes = await pickedImage.readAsBytes();
       imageBytesList.add(bytes);
+      imagePaths.add(pickedImage.path);
     }
     notifyListeners();
   }
 
-  @override
-  void dispose() {
-    locationController.dispose();
-    conditionController.dispose();
-    priceController.dispose();
-    descriptionController.dispose();
-    makeController.dispose();
-    modelController.dispose();
-    yearController.dispose();
-    kilometersController.dispose();
-    fuelTypeController.dispose();
-    bodyTypeController.dispose();
-    driveTypeController.dispose();
-    numberPlateController.dispose();
-    seatsController.dispose();
-    doorsController.dispose();
-    colorController.dispose();
-    engineSizeController.dispose();
-    transmissionController.dispose();
-    cylindersController.dispose();
+  void removeImage(int index) {
+    imageBytesList.removeAt(index);
+    imagePaths.removeAt(index);
+    notifyListeners();
+  }
+
+  // type Listing = {
+  // 	id: number;
+  // 	userIdFk: string;
+  // 	viewCount: number;
+  // 	previewImgUrl: string;
+  // 	location: string;
+  // 	vehicleCondition: string;
+  // 	price: number;
+  // 	uploadDate: Date;
+  // 	description: string;
+  // 	endDate: string;
+  // 	make: string;
+  // 	model: string;
+  // 	year: string;
+  // 	kilometers: number;
+  // 	fuelType: string;
+  // 	bodyType: string;
+  // 	driveType: string;
+  // 	orcIncluded: number;
+  // 	numberPlate: string | null;
+  // 	seats: number | null;
+  // 	doors: number | null;
+  // 	previousOwners: number | null;
+  // 	color: string | null;
+  // 	engineSize: number | null;
+  // 	transmission: string | null;
+  // 	cylinders: number | null;
+  // 	regoExpiryDate: string | null;
+  // 	wofExpiryDate: string | null;
+  // };
+
+  bool validatePostListingFields() {
+    return true;
+  }
+
+  Future<void> postListing() async {
+    final result = await ListingsServices().postListing(
+      postListingData,
+      imagePaths,
+    );
   }
 }
