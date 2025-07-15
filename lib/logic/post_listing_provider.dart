@@ -34,37 +34,6 @@ class PostListingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // type Listing = {
-  // 	id: number;
-  // 	userIdFk: string;
-  // 	viewCount: number;
-  // 	previewImgUrl: string;
-  // 	location: string;
-  // 	vehicleCondition: string;
-  // 	price: number;
-  // 	uploadDate: Date;
-  // 	description: string;
-  // 	endDate: string;
-  // 	make: string;
-  // 	model: string;
-  // 	year: string;
-  // 	kilometers: number;
-  // 	fuelType: string;
-  // 	bodyType: string;
-  // 	driveType: string;
-  // 	orcIncluded: number;
-  // 	numberPlate: string | null;
-  // 	seats: number | null;
-  // 	doors: number | null;
-  // 	previousOwners: number | null;
-  // 	color: string | null;
-  // 	engineSize: number | null;
-  // 	transmission: string | null;
-  // 	cylinders: number | null;
-  // 	regoExpiryDate: string | null;
-  // 	wofExpiryDate: string | null;
-  // };
-
   bool validatePostListingFields() {
     return true;
   }
