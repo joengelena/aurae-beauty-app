@@ -46,7 +46,7 @@ class _SelectMultipleImagesState extends State<SelectMultipleImages> {
                               right: 0,
                               child: GestureDetector(
                                 onTap: () {
-                                  provider.imageBytesList.removeAt(entry.key);
+                                  provider.removeImage(entry.key);
                                 },
                                 child: CircleAvatar(
                                   radius: 12,
