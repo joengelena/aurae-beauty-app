@@ -1,46 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/date_form_field.dart';
+import 'package:provider/provider.dart';
 
 class ListingInfoFields extends StatelessWidget {
-  final TextEditingController locationController;
-  final TextEditingController conditionController;
-  final TextEditingController priceController;
-  final TextEditingController listingEndDateController;
-  final TextEditingController descriptionController;
-
-  const ListingInfoFields({
-    super.key,
-    required this.locationController,
-    required this.conditionController,
-    required this.priceController,
-    required this.listingEndDateController,
-    required this.descriptionController,
-  });
+  const ListingInfoFields({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<PostListingProvider>();
+
     return Column(
       children: [
         Text('Listing Info', style: Theme.of(context).textTheme.headlineMedium),
         TextFormField(
-          controller: locationController,
+          controller: provider.locationController,
           decoration: InputDecoration(labelText: 'Location'),
         ),
         TextFormField(
-          controller: conditionController,
+          controller: provider.conditionController,
           decoration: InputDecoration(labelText: 'Vehicle Condition'),
         ),
         TextFormField(
-          controller: priceController,
+          controller: provider.priceController,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(labelText: 'Price'),
         ),
         DateFormField(
-          dateController: listingEndDateController,
+          dateController: provider.listingEndDateController,
           labelText: 'Listing End Date',
         ),
         TextFormField(
-          controller: descriptionController,
+          controller: provider.descriptionController,
           decoration: InputDecoration(labelText: 'Description'),
           maxLines: 4,
         ),

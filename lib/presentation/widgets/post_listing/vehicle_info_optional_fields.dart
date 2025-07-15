@@ -1,37 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/date_form_field.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/number_form_field.dart';
+import 'package:provider/provider.dart';
 
 class VehicleInfoOptionalFields extends StatelessWidget {
-  final bool orcIncluded;
-  final Function(bool) updateOrcIncluded;
-  final TextEditingController regoExpiryDateController;
-  final TextEditingController wofExpiryDateController;
-  final TextEditingController numberPlateController;
-  final TextEditingController seatsController;
-  final TextEditingController doorsController;
-  final TextEditingController colorController;
-  final TextEditingController engineSizeController;
-  final TextEditingController transmissionController;
-  final TextEditingController cylindersController;
-
-  const VehicleInfoOptionalFields({
-    super.key,
-    required this.orcIncluded,
-    required this.updateOrcIncluded,
-    required this.regoExpiryDateController,
-    required this.wofExpiryDateController,
-    required this.numberPlateController,
-    required this.seatsController,
-    required this.doorsController,
-    required this.colorController,
-    required this.engineSizeController,
-    required this.transmissionController,
-    required this.cylindersController,
-  });
+  const VehicleInfoOptionalFields({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<PostListingProvider>();
+
     return ExpansionTile(
       tilePadding: EdgeInsets.zero,
       title: Text(
@@ -40,40 +19,46 @@ class VehicleInfoOptionalFields extends StatelessWidget {
       ),
       children: [
         CheckboxListTile(
-          value: orcIncluded,
-          onChanged: (value) => updateOrcIncluded(value ?? false),
+          value: provider.orcIncluded,
+          onChanged: (value) => provider.orcIncluded = value ?? false,
           title: Text('ORC Included'),
         ),
         DateFormField(
-          dateController: regoExpiryDateController,
+          dateController: provider.regoExpiryDateController,
           labelText: 'Rego Expiry Date',
           firstDate: DateTime(2020),
         ),
         DateFormField(
-          dateController: wofExpiryDateController,
+          dateController: provider.wofExpiryDateController,
           labelText: 'WOF Expiry Date',
           firstDate: DateTime(2020),
         ),
         TextFormField(
-          controller: numberPlateController,
+          controller: provider.numberPlateController,
           decoration: InputDecoration(labelText: 'Number Plate'),
         ),
-        NumberFormField(fieldController: seatsController, labelText: 'Seats'),
-        NumberFormField(fieldController: doorsController, labelText: 'Doors'),
+        NumberFormField(
+          fieldController: provider.seatsController,
+          labelText: 'Seats',
+        ),
+        NumberFormField(
+          fieldController: provider.doorsController,
+          labelText: 'Doors',
+        ),
         TextFormField(
-          controller: colorController,
+          controller: provider.colorController,
           decoration: InputDecoration(labelText: 'Color'),
         ),
         NumberFormField(
-          fieldController: engineSizeController,
+          fieldController: provider.engineSizeController,
           labelText: 'Engine Size (cc)',
         ),
         TextFormField(
-          controller: transmissionController,
+          controller: provider.transmissionController,
           decoration: InputDecoration(labelText: 'Transmission'),
         ),
         TextFormField(
-          controller: cylindersController,
+          controller: provider.cylindersController,
           decoration: InputDecoration(labelText: 'Cylinders'),
         ),
       ],

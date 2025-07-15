@@ -1,49 +1,32 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:provider/provider.dart';
 
 class SelectMultipleImages extends StatefulWidget {
-  final List<Uint8List> imageBytesList;
-
-  const SelectMultipleImages({super.key, required this.imageBytesList});
+  const SelectMultipleImages({super.key});
 
   @override
   State<SelectMultipleImages> createState() => _SelectMultipleImagesState();
 }
 
 class _SelectMultipleImagesState extends State<SelectMultipleImages> {
-  final picker = ImagePicker();
-
-  bool canPickImage() => widget.imageBytesList.length < 10;
-
-  Future<void> pickImage() async {
-    final XFile? pickedImage = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
-
-    if (pickedImage != null) {
-      final bytes = await pickedImage.readAsBytes();
-      setState(() {
-        widget.imageBytesList.add(bytes);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<PostListingProvider>();
+
     return Column(
       spacing: 12,
       children: [
         Text(
-          'Listing Images (${widget.imageBytesList.length}/10)',
+          'Listing Images (${provider.imageBytesList.length}/10)',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
-        widget.imageBytesList.isNotEmpty
+        provider.imageBytesList.isNotEmpty
             ? Wrap(
               spacing: 8,
               runSpacing: 8,
               children:
-                  widget.imageBytesList
+                  provider.imageBytesList
                       .asMap()
                       .entries
                       .map(
@@ -63,9 +46,7 @@ class _SelectMultipleImagesState extends State<SelectMultipleImages> {
                               right: 0,
                               child: GestureDetector(
                                 onTap: () {
-                                  setState(() {
-                                    widget.imageBytesList.removeAt(entry.key);
-                                  });
+                                  provider.imageBytesList.removeAt(entry.key);
                                 },
                                 child: CircleAvatar(
                                   radius: 12,
@@ -85,7 +66,7 @@ class _SelectMultipleImagesState extends State<SelectMultipleImages> {
             )
             : Text('No images selected'),
         OutlinedButton.icon(
-          onPressed: canPickImage() ? pickImage : null,
+          onPressed: provider.canPickImage() ? provider.pickImage : null,
           icon: Icon(Icons.add_photo_alternate),
           label: Text('Pick Image'),
         ),

@@ -1,54 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/number_form_field.dart';
+import 'package:provider/provider.dart';
 
 class VehicleInfoFields extends StatelessWidget {
-  final TextEditingController makeController;
-  final TextEditingController modelController;
-  final TextEditingController yearController;
-  final TextEditingController kilometersController;
-  final TextEditingController fuelTypeController;
-  final TextEditingController bodyTypeController;
-  final TextEditingController driveTypeController;
-
-  const VehicleInfoFields({
-    super.key,
-    required this.makeController,
-    required this.modelController,
-    required this.yearController,
-    required this.kilometersController,
-    required this.fuelTypeController,
-    required this.bodyTypeController,
-    required this.driveTypeController,
-  });
+  const VehicleInfoFields({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<PostListingProvider>();
+
     return Column(
       children: [
         Text('Vehicle Info', style: Theme.of(context).textTheme.headlineMedium),
         TextFormField(
-          controller: makeController,
+          controller: provider.makeController,
           decoration: InputDecoration(labelText: 'Make'),
         ),
         TextFormField(
-          controller: modelController,
+          controller: provider.modelController,
           decoration: InputDecoration(labelText: 'Model'),
         ),
-        NumberFormField(fieldController: yearController, labelText: 'Year'),
         NumberFormField(
-          fieldController: kilometersController,
+          fieldController: provider.yearController,
+          labelText: 'Year',
+        ),
+        NumberFormField(
+          fieldController: provider.kilometersController,
           labelText: 'Kilometers',
         ),
         TextFormField(
-          controller: fuelTypeController,
+          controller: provider.fuelTypeController,
           decoration: InputDecoration(labelText: 'Fuel Type'),
         ),
         TextFormField(
-          controller: bodyTypeController,
+          controller: provider.bodyTypeController,
           decoration: InputDecoration(labelText: 'Body Type'),
         ),
         TextFormField(
-          controller: driveTypeController,
+          controller: provider.driveTypeController,
           decoration: InputDecoration(labelText: 'Drive Type'),
         ),
       ],
