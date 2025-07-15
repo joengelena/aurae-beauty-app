@@ -101,4 +101,10 @@ class ListingsProvider extends ChangeNotifier {
     equalFilters = Map.from(newEqualFilters);
     getNewListings();
   }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 }
