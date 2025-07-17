@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:provider/provider.dart';
 
-class DateFormField extends StatelessWidget {
+class DateFormField extends StatefulWidget {
   final String labelText;
   final String fieldName;
   final bool isRequired;
@@ -18,35 +18,62 @@ class DateFormField extends StatelessWidget {
   });
 
   @override
+  _DateFormFieldState createState() => _DateFormFieldState();
+}
+
+class _DateFormFieldState extends State<DateFormField> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    final saved =
+        context.read<PostListingProvider>().postListingData[widget.fieldName];
+    _controller = TextEditingController(text: saved as String? ?? '');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final provider = context.watch<PostListingProvider>();
-    final DateTime effectiveFirstDate = firstDate ?? DateTime.now();
+    final provider = context.read<PostListingProvider>();
+    final firstDate = widget.firstDate ?? DateTime.now();
 
     return TextFormField(
+      controller: _controller,
       readOnly: true,
       decoration: InputDecoration(
-        labelText: labelText,
-        suffixIcon: Icon(Icons.calendar_today),
+        labelText: widget.labelText,
+        suffixIcon: const Icon(Icons.calendar_today),
       ),
       validator:
-          isRequired
+          widget.isRequired
               ? (val) {
-                if (val == null || val.isEmpty) return 'Required';
+                if (val == null || val.isEmpty) {
+                  return '${widget.labelText} is required';
+                }
                 return null;
               }
               : null,
       onTap: () async {
-        DateTime? pickedDate = await showDatePicker(
+        // Remove focus so the keyboard doesn’t flicker in
+        FocusScope.of(context).unfocus();
+
+        final picked = await showDatePicker(
           context: context,
           initialDate: DateTime.now(),
-          firstDate: effectiveFirstDate,
+          firstDate: firstDate,
           lastDate: DateTime(2035),
         );
 
-        if (pickedDate != null) {
-          provider.postListingData[fieldName] = DateFormat(
-            'yyyy-MM-dd',
-          ).format(pickedDate);
+        if (picked != null) {
+          final formatted = DateFormat('yyyy-MM-dd').format(picked);
+          _controller.text = formatted;
+          provider.postListingData[widget.fieldName] = formatted;
         }
       },
     );
