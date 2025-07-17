@@ -16,7 +16,7 @@ class StringFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<PostListingProvider>();
+    final provider = context.read<PostListingProvider>();
 
     return TextFormField(
       decoration: InputDecoration(labelText: labelText),
@@ -27,10 +27,8 @@ class StringFormField extends StatelessWidget {
                 return null;
               }
               : null,
-      onSaved: (val) {
-        if (val != null && val.isNotEmpty) {
-          provider.postListingData[fieldName] = val;
-        }
+      onChanged: (val) {
+        provider.postListingData[fieldName] = val;
       },
     );
   }

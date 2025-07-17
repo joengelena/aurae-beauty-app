@@ -47,10 +47,8 @@ class NumberFormField extends StatelessWidget {
 
                 return null;
               },
-      onSaved: (val) {
-        if (val != null && val.isNotEmpty) {
-          provider.postListingData[fieldName] = val;
-        }
+      onChanged: (val) {
+        provider.postListingData[fieldName] = val;
       },
     );
   }
