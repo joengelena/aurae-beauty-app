@@ -46,4 +46,29 @@ class ListingsServices {
         .map((item) => ListingFilter.fromJson(item as Map<String, dynamic>))
         .toList();
   }
+
+  Future<void> postListing(
+    Map<String, Object> listingFields,
+    List<http.MultipartFile> images,
+  ) async {
+    final Map<String, String> payload = Map.fromEntries(
+      listingFields.entries.map((e) {
+        return MapEntry(e.key, e.value.toString());
+      }),
+    );
+
+    http.Response response = await apiClient.postMultipart(
+      '/listings',
+      payload,
+      images,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to load listings: ${response.statusCode} ${response.body}',
+      );
+    }
+
+    final List<dynamic> body = json.decode(response.body) as List<dynamic>;
+  }
 }

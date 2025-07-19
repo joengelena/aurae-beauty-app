@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/listing_info_fields.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/select_multiple_images.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/vehicle_info_fields.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/vehicle_info_optional_fields.dart';
+import 'package:provider/provider.dart';
 
 class PostListingPage extends StatefulWidget {
   const PostListingPage({super.key});
@@ -16,6 +18,8 @@ class _PostListingPageState extends State<PostListingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.read<PostListingProvider>();
+
     return SingleChildScrollView(
       padding: EdgeInsets.all(16),
       child: Center(
@@ -35,7 +39,7 @@ class _PostListingPageState extends State<PostListingPage> {
                 FilledButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      // Handle submission logic here
+                      provider.postListing();
                     }
                   },
                   child: Text('Submit listing'),

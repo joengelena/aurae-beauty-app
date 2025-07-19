@@ -58,4 +58,26 @@ class ApiClient {
 
     return response;
   }
+
+  Future<http.Response> postMultipart(
+    String path,
+    Map<String, String> fields,
+    List<http.MultipartFile> files,
+  ) async {
+    final authToken = await SecureStorage.read('authToken');
+    final csrfToken = await SecureStorage.read('csrfToken');
+
+    final uri = Uri.parse('$_baseUrl$path');
+    final request =
+        http.MultipartRequest('POST', uri)
+          ..headers['mtx-auth-token'] = authToken ?? ''
+          ..headers['mtx-csrf-token'] = csrfToken ?? ''
+          ..fields.addAll(fields)
+          ..files.addAll(files);
+
+    final streamed = await request.send();
+    final response = await http.Response.fromStream(streamed);
+
+    return response;
+  }
 }
