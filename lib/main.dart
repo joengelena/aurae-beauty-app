@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/app_router.dart';
-import 'package:motorix_app/logic/listing_filters_provider.dart';
+import 'package:motorix_app/logic/listing_attributes_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/utils/theme.dart';
@@ -10,10 +10,13 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<ListingFiltersProvider>(
-          create: (_) => ListingFiltersProvider(),
+        ChangeNotifierProvider<ListingAttributesProvider>(
+          create: (_) => ListingAttributesProvider(),
         ),
-        ChangeNotifierProxyProvider<ListingFiltersProvider, ListingsProvider>(
+        ChangeNotifierProxyProvider<
+          ListingAttributesProvider,
+          ListingsProvider
+        >(
           create: (_) => ListingsProvider(),
           update: (_, listingFiltersProvider, listingsProvider) {
             listingsProvider!.updateSelectedEqualFilters(

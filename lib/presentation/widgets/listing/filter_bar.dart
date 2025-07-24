@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/listing_filters_provider.dart';
+import 'package:motorix_app/logic/listing_attributes_provider.dart';
 import 'package:provider/provider.dart';
 
 class FilterBar extends StatelessWidget {
@@ -20,7 +20,7 @@ class FilterBar extends StatelessWidget {
     String filterKey,
     String filterValue,
   ) {
-    final provider = context.read<ListingFiltersProvider>();
+    final provider = context.read<ListingAttributesProvider>();
 
     return FilledButton(
       onPressed: () {
@@ -42,7 +42,7 @@ class FilterBar extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
-        final provider = context.watch<ListingFiltersProvider>();
+        final provider = context.watch<ListingAttributesProvider>();
         final equalFilterOptions = provider.equalFilterOptions;
         final selectedEqualFilters = provider.selectedEqualFilters;
         final updateSelectedEqualFilter = provider.updateEqualFilter;
@@ -120,7 +120,7 @@ class FilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedEqualFilters =
-        context.watch<ListingFiltersProvider>().selectedEqualFilters;
+        context.watch<ListingAttributesProvider>().selectedEqualFilters;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,

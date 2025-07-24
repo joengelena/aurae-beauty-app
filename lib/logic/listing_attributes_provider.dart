@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:motorix_app/data/models/listing_filter.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 
-class ListingFiltersProvider extends ChangeNotifier {
-  ListingFiltersProvider() {
+class ListingAttributesProvider extends ChangeNotifier {
+  ListingAttributesProvider() {
     _loadFilters();
   }
 
