@@ -7,6 +7,8 @@ import 'package:motorix_app/data/services/listings_services.dart';
 class PostListingProvider extends ChangeNotifier {
   PostListingProvider();
 
+  late String? errorMessage;
+
   final List<Uint8List> imageBytesList = [];
   final List<String> imagePaths = [];
 
@@ -56,9 +58,18 @@ class PostListingProvider extends ChangeNotifier {
   Future<void> postListing() async {
     final images = await buildFiles(imageBytesList);
     postListingData['currentUserId'] = 'edd5a17b-aa0f-4317-9226-b6bd80acbd84';
+
     final result = await ListingsServices().postListing(
       postListingData,
       images,
     );
+
+    if (!result.isSuccess) {
+      // Show toast that the post listing failed
+      errorMessage = result.error;
+      return;
+    }
+
+    // Success show the user some feedback that the post of successful
   }
 }

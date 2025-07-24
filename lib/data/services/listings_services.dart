@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:motorix_app/data/api_client.dart';
+import 'package:motorix_app/data/models/api_response.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/models/listing_filter.dart';
 import 'package:motorix_app/data/models/pagination.dart';
@@ -17,9 +18,7 @@ class ListingsServices {
     );
 
     if (response.statusCode != 200) {
-      throw Exception(
-        'Failed to load listings: ${response.statusCode} ${response.body}',
-      );
+      throw Exception('Failed to load listings');
     }
 
     final Map<String, dynamic> body =
@@ -35,9 +34,7 @@ class ListingsServices {
     http.Response response = await apiClient.get('/listings/filters');
 
     if (response.statusCode != 200) {
-      throw Exception(
-        'Failed to load listings: ${response.statusCode} ${response.body}',
-      );
+      throw Exception('Failed to get listing filters');
     }
 
     final List<dynamic> body = json.decode(response.body) as List<dynamic>;
@@ -47,7 +44,7 @@ class ListingsServices {
         .toList();
   }
 
-  Future<void> postListing(
+  Future<ApiResponse<Map<String, int>>> postListing(
     Map<String, Object> listingFields,
     List<http.MultipartFile> images,
   ) async {
@@ -64,11 +61,12 @@ class ListingsServices {
     );
 
     if (response.statusCode != 200) {
-      throw Exception(
-        'Failed to load listings: ${response.statusCode} ${response.body}',
-      );
+      return ApiResponse.failure('Failed to post new listing');
     }
 
-    final List<dynamic> body = json.decode(response.body) as List<dynamic>;
+    final Map<String, int> body =
+        json.decode(response.body) as Map<String, int>;
+
+    return ApiResponse.success(body);
   }
 }
