@@ -43,7 +43,7 @@ class FilterBar extends StatelessWidget {
       ),
       builder: (BuildContext context) {
         final provider = context.watch<ListingAttributesProvider>();
-        final equalFilterOptions = provider.equalFilterOptions;
+        final listingAttributeOptions = provider.listingAttributeOptions;
         final selectedEqualFilters = provider.selectedEqualFilters;
         final updateSelectedEqualFilter = provider.updateEqualFilter;
 
@@ -53,7 +53,7 @@ class FilterBar extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children:
-                  equalFilterOptions.map((filterOption) {
+                  listingAttributeOptions.map((attributeOption) {
                     return Padding(
                       padding: EdgeInsets.only(bottom: 16),
                       child: Row(
@@ -63,8 +63,8 @@ class FilterBar extends StatelessWidget {
                           Expanded(
                             flex: 2,
                             child: Text(
-                              filterNames[filterOption.name] ??
-                                  filterOption.name,
+                              filterNames[attributeOption.name] ??
+                                  attributeOption.name,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -84,10 +84,13 @@ class FilterBar extends StatelessWidget {
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<String>(
                                     value:
-                                        selectedEqualFilters[filterOption.name],
+                                        selectedEqualFilters[attributeOption
+                                            .name],
                                     isExpanded: true,
                                     items:
-                                        filterOption.filterValues.map((val) {
+                                        attributeOption.attributeValues.map((
+                                          val,
+                                        ) {
                                           return DropdownMenuItem<String>(
                                             value: val,
                                             child: Text(val),
@@ -96,7 +99,7 @@ class FilterBar extends StatelessWidget {
                                     onChanged: (newVal) {
                                       if (newVal != null) {
                                         updateSelectedEqualFilter(
-                                          filterOption.name,
+                                          attributeOption.name,
                                           newVal,
                                         );
                                       }

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:motorix_app/data/api_client.dart';
 import 'package:motorix_app/data/models/api_response.dart';
 import 'package:motorix_app/data/models/listing.dart';
-import 'package:motorix_app/data/models/listing_filter.dart';
+import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/models/pagination.dart';
 
 class ListingsServices {
@@ -30,17 +30,17 @@ class ListingsServices {
     );
   }
 
-  Future<List<ListingFilter>> getListingFilters() async {
-    http.Response response = await apiClient.get('/listings/filters');
+  Future<List<ListingAttribute>> getListingAttributes() async {
+    http.Response response = await apiClient.get('/listings/attributes');
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to get listing filters');
+      throw Exception('Failed to get listing attributes');
     }
 
     final List<dynamic> body = json.decode(response.body) as List<dynamic>;
 
     return body
-        .map((item) => ListingFilter.fromJson(item as Map<String, dynamic>))
+        .map((item) => ListingAttribute.fromJson(item as Map<String, dynamic>))
         .toList();
   }
 

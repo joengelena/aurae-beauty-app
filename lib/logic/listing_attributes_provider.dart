@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/models/listing_filter.dart';
+import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 
 class ListingAttributesProvider extends ChangeNotifier {
   ListingAttributesProvider() {
-    _loadFilters();
+    _loadAttributes();
   }
 
-  List<ListingFilter> equalFilterOptions = [];
+  List<ListingAttribute> listingAttributeOptions = [];
   Map<String, String> selectedEqualFilters = {};
 
-  Future<void> _loadFilters() async {
+  Future<void> _loadAttributes() async {
     try {
-      equalFilterOptions = await ListingsServices().getListingFilters();
+      listingAttributeOptions = await ListingsServices().getListingAttributes();
 
       selectedEqualFilters = {
-        for (var filter in equalFilterOptions)
-          filter.name: filter.filterValues.first,
+        for (var attribute in listingAttributeOptions)
+          attribute.name: attribute.attributeValues.first,
       };
     } catch (e) {
       debugPrint('Error loading filters: $e');
@@ -25,10 +25,10 @@ class ListingAttributesProvider extends ChangeNotifier {
     }
   }
 
-  void updateEqualFilter(String filterName, String newValue) {
-    if (!selectedEqualFilters.containsKey(filterName)) return;
+  void updateEqualFilter(String listingAttribute, String newValue) {
+    if (!selectedEqualFilters.containsKey(listingAttribute)) return;
 
-    selectedEqualFilters[filterName] = newValue;
+    selectedEqualFilters[listingAttribute] = newValue;
     notifyListeners();
   }
 
