@@ -81,6 +81,7 @@ class ListingsProvider extends ChangeNotifier {
 
   Map<String, String> getEqualFilters() {
     final Map<String, String> queryFilterOptions = {
+      'make': 'make',
       'location': 'location',
       'vehicle_condition': 'vehicleCondition',
       'fuel_type': 'fuelType',
