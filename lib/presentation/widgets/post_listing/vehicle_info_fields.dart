@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/data/models/listing_attribute.dart';
+import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:motorix_app/presentation/widgets/post_listing/dropdown_form_field.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/number_form_field.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/string_form_field.dart';
+import 'package:provider/provider.dart';
 
 class VehicleInfoFields extends StatelessWidget {
   const VehicleInfoFields({super.key});
@@ -11,8 +15,12 @@ class VehicleInfoFields extends StatelessWidget {
       spacing: 12,
       children: [
         Text('Vehicle Info', style: Theme.of(context).textTheme.headlineMedium),
-
-        StringFormField(labelText: 'Make', fieldName: 'make', isRequired: true),
+        DropdownFormField(
+          labelText: 'Make',
+          fieldName: 'make',
+          attributeName: 'make',
+          isRequired: true,
+        ),
         StringFormField(
           labelText: 'Model',
           fieldName: 'model',
@@ -24,19 +32,22 @@ class VehicleInfoFields extends StatelessWidget {
           fieldName: 'kilometers',
           isRequired: true,
         ),
-        StringFormField(
+        DropdownFormField(
           labelText: 'Fuel Type',
           fieldName: 'fuelType',
+          attributeName: 'fuel_type',
           isRequired: true,
         ),
-        StringFormField(
+        DropdownFormField(
           labelText: 'Body Type',
           fieldName: 'bodyType',
+          attributeName: 'body_type',
           isRequired: true,
         ),
-        StringFormField(
+        DropdownFormField(
           labelText: 'Drive Type',
           fieldName: 'driveType',
+          attributeName: 'drive_type',
           isRequired: true,
         ),
       ],

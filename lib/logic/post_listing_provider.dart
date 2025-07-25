@@ -2,21 +2,31 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 
 class PostListingProvider extends ChangeNotifier {
-  PostListingProvider();
+  PostListingProvider() {
+    _loadAttributes();
+  }
 
   late String? errorMessage;
-
+  List<ListingAttribute> listingAttributeOptions = [];
   final List<Uint8List> imageBytesList = [];
   final List<String> imagePaths = [];
-
   final Map<String, Object> postListingData = {};
-
   final picker = ImagePicker();
-
   bool canPickImage() => imageBytesList.length < 10;
+
+  Future<void> _loadAttributes() async {
+    try {
+      listingAttributeOptions = await ListingsServices().getListingAttributes();
+    } catch (e) {
+      debugPrint('Error loading filters: $e');
+    } finally {
+      notifyListeners();
+    }
+  }
 
   Future<void> pickImage() async {
     final XFile? pickedImage = await picker.pickImage(
