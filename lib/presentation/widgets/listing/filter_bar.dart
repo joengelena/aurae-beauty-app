@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 class FilterBar extends StatelessWidget {
   final Map<String, String> filterNames = {
+    'make': 'Make',
     'location': 'Location',
     'vehicle_condition': 'Condition',
     'fuel_type': 'Fuel',
@@ -30,8 +31,18 @@ class FilterBar extends StatelessWidget {
         backgroundColor: WidgetStateProperty.all(
           Theme.of(context).colorScheme.secondary,
         ),
+        padding: WidgetStateProperty.all(
+          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        ),
       ),
-      child: Text(filterValue),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(filterValue),
+          SizedBox(width: 8),
+          Icon(Icons.close, size: 16),
+        ],
+      ),
     );
   }
 
