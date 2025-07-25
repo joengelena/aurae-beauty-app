@@ -18,9 +18,9 @@ void main() {
           ListingsProvider
         >(
           create: (_) => ListingsProvider(),
-          update: (_, listingFiltersProvider, listingsProvider) {
+          update: (_, listingAttributesProvider, listingsProvider) {
             listingsProvider!.updateSelectedEqualFilters(
-              listingFiltersProvider.selectedEqualFilters,
+              listingAttributesProvider.selectedEqualFilters,
             );
             return listingsProvider;
           },
