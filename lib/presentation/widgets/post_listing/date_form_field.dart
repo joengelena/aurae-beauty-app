@@ -49,6 +49,7 @@ class _DateFormFieldState extends State<DateFormField> {
       decoration: InputDecoration(
         labelText: widget.labelText,
         suffixIcon: const Icon(Icons.calendar_today),
+        border: OutlineInputBorder(),
       ),
       validator:
           widget.isRequired

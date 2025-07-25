@@ -19,7 +19,10 @@ class StringFormField extends StatelessWidget {
     final provider = context.read<PostListingProvider>();
 
     return TextFormField(
-      decoration: InputDecoration(labelText: labelText),
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(),
+      ),
       validator:
           isRequired
               ? (val) {

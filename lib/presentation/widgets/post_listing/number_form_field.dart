@@ -22,7 +22,10 @@ class NumberFormField extends StatelessWidget {
     return TextFormField(
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       keyboardType: TextInputType.number,
-      decoration: InputDecoration(labelText: labelText),
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(),
+      ),
       validator:
           isRequired
               ? (val) {
