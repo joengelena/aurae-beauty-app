@@ -20,26 +20,43 @@ class VehicleInfoOptionalFields extends StatelessWidget {
       ),
       childrenPadding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
       children: [
-        CheckboxListTile(
-          value: false,
-          onChanged:
-              (value) =>
-                  provider.postListingData['orcIncluded'] = value ?? false,
-          title: Text('ORC Included'),
-        ),
+        Column(
+          spacing: 12,
+          children: [
+            CheckboxListTile(
+              value: false,
+              onChanged:
+                  (value) =>
+                      provider.postListingData['orcIncluded'] = value ?? false,
+              title: Text('ORC Included'),
+            ),
 
-        DateFormField(
-          labelText: 'Rego Expiry Date',
-          fieldName: 'regoExpiryDate',
+            DateFormField(
+              labelText: 'Rego Expiry Date',
+              fieldName: 'regoExpiryDate',
+            ),
+            DateFormField(
+              labelText: 'WOF Expiry Date',
+              fieldName: 'wofExpiryDate',
+            ),
+            StringFormField(
+              labelText: 'Number Plate',
+              fieldName: 'numberPlate',
+            ),
+            NumberFormField(labelText: 'Seats', fieldName: 'seats'),
+            NumberFormField(labelText: 'Doors', fieldName: 'doors'),
+            StringFormField(labelText: 'Color', fieldName: 'color'),
+            NumberFormField(
+              labelText: 'Engine Size (cc)',
+              fieldName: 'engineSize',
+            ),
+            StringFormField(
+              labelText: 'Transmission',
+              fieldName: 'transmission',
+            ),
+            NumberFormField(labelText: 'Cylinders', fieldName: 'cylinders'),
+          ],
         ),
-        DateFormField(labelText: 'WOF Expiry Date', fieldName: 'wofExpiryDate'),
-        StringFormField(labelText: 'Number Plate', fieldName: 'numberPlate'),
-        NumberFormField(labelText: 'Seats', fieldName: 'seats'),
-        NumberFormField(labelText: 'Doors', fieldName: 'doors'),
-        StringFormField(labelText: 'Color', fieldName: 'color'),
-        NumberFormField(labelText: 'Engine Size (cc)', fieldName: 'engineSize'),
-        StringFormField(labelText: 'Transmission', fieldName: 'transmission'),
-        NumberFormField(labelText: 'Cylinders', fieldName: 'cylinders'),
       ],
     );
   }
