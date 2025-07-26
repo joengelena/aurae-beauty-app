@@ -19,7 +19,7 @@ class DropdownFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<PostListingProvider>();
+    final provider = context.watch<PostListingProvider>();
     final listingAttributeOptions = provider.listingAttributeOptions;
 
     List<String> getAttributeValue() {
