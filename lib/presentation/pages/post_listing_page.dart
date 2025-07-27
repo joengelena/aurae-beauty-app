@@ -42,7 +42,7 @@ class _PostListingPageState extends State<PostListingPage> {
                       provider.postListing();
                     }
                   },
-                  child: Text('Submit listing'),
+                  child: Text('Submit Listing'),
                 ),
               ],
             ),

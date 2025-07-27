@@ -16,7 +16,7 @@ class VehicleInfoOptionalFields extends StatelessWidget {
     return ExpansionTile(
       tilePadding: EdgeInsets.zero,
       title: Text(
-        'Extra fields',
+        'Specifications & Features',
         style: Theme.of(context).textTheme.headlineSmall,
       ),
       childrenPadding: EdgeInsets.only(left: 16, right: 16, bottom: 16),

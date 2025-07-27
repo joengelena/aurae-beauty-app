@@ -12,11 +12,10 @@ class ListingInfoFields extends StatelessWidget {
     return Column(
       spacing: 12,
       children: [
-        Text('Listing Info', style: Theme.of(context).textTheme.headlineMedium),
-        DropdownFormField(
-          labelText: 'Location',
-          fieldName: 'location',
-          attributeName: 'location',
+        Text('Listing Details', style: Theme.of(context).textTheme.headlineMedium),
+        NumberFormField(
+          labelText: 'Price',
+          fieldName: 'price',
           isRequired: true,
         ),
         DropdownFormField(
@@ -25,9 +24,10 @@ class ListingInfoFields extends StatelessWidget {
           attributeName: 'vehicle_condition',
           isRequired: true,
         ),
-        NumberFormField(
-          labelText: 'Price',
-          fieldName: 'price',
+        DropdownFormField(
+          labelText: 'Location',
+          fieldName: 'location',
+          attributeName: 'location',
           isRequired: true,
         ),
         DateFormField(

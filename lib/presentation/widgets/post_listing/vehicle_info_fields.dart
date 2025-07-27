@@ -11,7 +11,7 @@ class VehicleInfoFields extends StatelessWidget {
     return Column(
       spacing: 12,
       children: [
-        Text('Vehicle Info', style: Theme.of(context).textTheme.headlineMedium),
+        Text('Vehicle Details', style: Theme.of(context).textTheme.headlineMedium),
         DropdownFormField(
           labelText: 'Make',
           fieldName: 'make',

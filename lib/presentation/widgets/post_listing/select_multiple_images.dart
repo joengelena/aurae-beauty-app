@@ -18,7 +18,7 @@ class _SelectMultipleImagesState extends State<SelectMultipleImages> {
       spacing: 12,
       children: [
         Text(
-          'Listing Images (${provider.imageBytesList.length}/10)',
+          'Add Photos',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         provider.imageBytesList.isNotEmpty
@@ -65,6 +65,10 @@ class _SelectMultipleImagesState extends State<SelectMultipleImages> {
                       .toList(),
             )
             : Text('No images selected'),
+        Text(
+          '(${provider.imageBytesList.length}/10)',
+          style: Theme.of(context).textTheme.labelMedium,
+        ),
         OutlinedButton.icon(
           onPressed: provider.canPickImage() ? provider.pickImage : null,
           icon: Icon(Icons.add_photo_alternate),
