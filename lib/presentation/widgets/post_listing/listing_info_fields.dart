@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/date_form_field.dart';
+import 'package:motorix_app/presentation/widgets/post_listing/dropdown_form_field.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/number_form_field.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/string_form_field.dart';
 
@@ -12,14 +13,16 @@ class ListingInfoFields extends StatelessWidget {
       spacing: 12,
       children: [
         Text('Listing Info', style: Theme.of(context).textTheme.headlineMedium),
-        StringFormField(
+        DropdownFormField(
           labelText: 'Location',
           fieldName: 'location',
+          attributeName: 'location',
           isRequired: true,
         ),
-        StringFormField(
+        DropdownFormField(
           labelText: 'Vehicle Condition',
           fieldName: 'vehicleCondition',
+          attributeName: 'vehicle_condition',
           isRequired: true,
         ),
         NumberFormField(

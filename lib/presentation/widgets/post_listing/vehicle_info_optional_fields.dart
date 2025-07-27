@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/date_form_field.dart';
+import 'package:motorix_app/presentation/widgets/post_listing/dropdown_form_field.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/number_form_field.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/string_form_field.dart';
 import 'package:provider/provider.dart';
@@ -50,11 +51,16 @@ class VehicleInfoOptionalFields extends StatelessWidget {
               labelText: 'Engine Size (cc)',
               fieldName: 'engineSize',
             ),
-            StringFormField(
+            DropdownFormField(
               labelText: 'Transmission',
               fieldName: 'transmission',
+              attributeName: 'transmission',
             ),
-            NumberFormField(labelText: 'Cylinders', fieldName: 'cylinders'),
+            DropdownFormField(
+              labelText: 'Cylinders',
+              fieldName: 'cylinders',
+              attributeName: 'cylinders',
+            ),
           ],
         ),
       ],

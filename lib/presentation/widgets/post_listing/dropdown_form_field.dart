@@ -46,7 +46,9 @@ class DropdownFormField extends StatelessWidget {
       validator:
           isRequired
               ? (val) {
-                if (val == null || val.isEmpty) return 'Required';
+                if (val == null || val.isEmpty || val == 'None') {
+                  return 'Required';
+                }
                 return null;
               }
               : null,
