@@ -12,7 +12,13 @@ class ListingAttributesProvider extends ChangeNotifier {
 
   Future<void> _loadAttributes() async {
     try {
-      listingAttributeOptions = await ListingsServices().getListingAttributes();
+      final listingAttributeOptionsWithoutNone =
+          await ListingsServices().getListingAttributes();
+
+      for (var attributeWithoutNone in listingAttributeOptionsWithoutNone) {
+        attributeWithoutNone.attributeValues.insert(0, 'None');
+      }
+      listingAttributeOptions = listingAttributeOptionsWithoutNone;
 
       selectedEqualFilters = {
         for (var attribute in listingAttributeOptions)
