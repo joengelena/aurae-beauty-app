@@ -73,7 +73,6 @@ class PostListingProvider extends ChangeNotifier {
     isLoading = false;
     successfulPost = false;
     errorMessage = '';
-    listingAttributeOptions = [];
     imageBytesList.clear();
     imagePaths.clear();
   }
@@ -99,7 +98,7 @@ class PostListingProvider extends ChangeNotifier {
     }
 
     // Success show the user some feedback that the post of successful
-    newListingId = result.data?['listingId'];
+    newListingId = result.data?['listingId'] as int;
     isLoading = false;
     successfulPost = true;
     notifyListeners();

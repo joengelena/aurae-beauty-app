@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:provider/provider.dart';
 
 class PostSuccess extends StatelessWidget {
   const PostSuccess({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.read<PostListingProvider>();
+
     return Center(
       child: Column(
         spacing: 16,
@@ -30,7 +34,7 @@ class PostSuccess extends StatelessWidget {
 
           OutlinedButton(
             onPressed: () {
-              context.go('/listings/1');
+              context.go('/listings/${provider.newListingId}');
             },
             style: OutlinedButton.styleFrom(
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
