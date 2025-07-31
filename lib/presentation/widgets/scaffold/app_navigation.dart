@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:provider/provider.dart';
 
 class AppNavigation extends StatelessWidget {
   final GoRouterState state;
@@ -15,6 +17,8 @@ class AppNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final postListingProvider = context.watch<PostListingProvider>();
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -31,6 +35,7 @@ class AppNavigation extends StatelessWidget {
                     context.go('/watchlist');
                     break;
                   case 2:
+                    postListingProvider.resetProvider();
                     context.go('/post-listing');
                     break;
                   case 3:

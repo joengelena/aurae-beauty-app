@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:motorix_app/data/api_client.dart';
 import 'package:motorix_app/data/models/api_response.dart';
@@ -44,7 +45,7 @@ class ListingsServices {
         .toList();
   }
 
-  Future<ApiResponse<Map<String, int>>> postListing(
+  Future<ApiResponse<Map<String, dynamic>>> postListing(
     Map<String, Object> listingFields,
     List<http.MultipartFile> images,
   ) async {
@@ -60,12 +61,12 @@ class ListingsServices {
       images,
     );
 
-    if (response.statusCode != 200) {
-      return ApiResponse.failure('Failed to post new listing');
+    if (response.statusCode != HttpStatus.created) {
+      return ApiResponse.failure('Failed to post list please try again later');
     }
 
-    final Map<String, int> body =
-        json.decode(response.body) as Map<String, int>;
+    final Map<String, dynamic> body =
+        json.decode(response.body) as Map<String, dynamic>;
 
     return ApiResponse.success(body);
   }

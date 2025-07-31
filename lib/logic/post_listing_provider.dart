@@ -10,7 +10,10 @@ class PostListingProvider extends ChangeNotifier {
     _loadAttributes();
   }
 
-  late String? errorMessage;
+  int? newListingId;
+  bool isLoading = false;
+  bool successfulPost = false;
+  String errorMessage = '';
   List<ListingAttribute> listingAttributeOptions = [];
   final List<Uint8List> imageBytesList = [];
   final List<String> imagePaths = [];
@@ -65,7 +68,20 @@ class PostListingProvider extends ChangeNotifier {
     return true;
   }
 
+  void resetProvider() {
+    newListingId = null;
+    isLoading = false;
+    successfulPost = false;
+    errorMessage = '';
+    listingAttributeOptions = [];
+    imageBytesList.clear();
+    imagePaths.clear();
+  }
+
   Future<void> postListing() async {
+    isLoading = true;
+    notifyListeners();
+
     final images = await buildFiles(imageBytesList);
     postListingData['currentUserId'] = 'edd5a17b-aa0f-4317-9226-b6bd80acbd84';
 
@@ -74,12 +90,19 @@ class PostListingProvider extends ChangeNotifier {
       images,
     );
 
-    if (!result.isSuccess) {
+    if (!result.isSuccess && result.error != null) {
       // Show toast that the post listing failed
-      errorMessage = result.error;
+      isLoading = false;
+      errorMessage = result.error!;
+      notifyListeners();
       return;
     }
 
     // Success show the user some feedback that the post of successful
+    newListingId = result.data?['listingId'];
+    isLoading = false;
+    successfulPost = true;
+    notifyListeners();
+    return;
   }
 }

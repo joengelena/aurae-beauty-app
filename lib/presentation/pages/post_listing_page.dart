@@ -1,54 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/listing_info_fields.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/select_multiple_images.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/vehicle_info_fields.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/vehicle_info_optional_fields.dart';
+import 'package:motorix_app/presentation/widgets/post_listing/post_listing_form.dart';
+import 'package:motorix_app/presentation/widgets/post_listing/post_success.dart';
 import 'package:provider/provider.dart';
 
-class PostListingPage extends StatefulWidget {
+class PostListingPage extends StatelessWidget {
   const PostListingPage({super.key});
 
   @override
-  State<PostListingPage> createState() => _PostListingPageState();
-}
-
-class _PostListingPageState extends State<PostListingPage> {
-  final _formKey = GlobalKey<FormState>();
-
-  @override
   Widget build(BuildContext context) {
-    final provider = context.read<PostListingProvider>();
+    final provider = context.watch<PostListingProvider>();
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 600),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              spacing: 32,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                VehicleInfoFields(),
-                VehicleInfoOptionalFields(),
-                ListingInfoFields(),
-                SelectMultipleImages(),
-                SizedBox(height: 20),
-                FilledButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      provider.postListing();
-                    }
-                  },
-                  child: Text('Submit Listing'),
-                ),
-              ],
-            ),
+    // Trigger SnackBar after build if there's an error
+    if (!provider.successfulPost && provider.errorMessage.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(provider.errorMessage),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
           ),
-        ),
-      ),
-    );
+        );
+        // Optional: Clear the error after showing it once
+        provider.errorMessage = ''; // Implement this method in your provider
+      });
+    }
+
+    if (provider.successfulPost) {
+      return PostSuccess();
+    }
+
+    return PostListingForm();
   }
 }
