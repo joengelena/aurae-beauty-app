@@ -11,7 +11,6 @@ class PostListingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<PostListingProvider>();
 
-    // Trigger SnackBar after build if there's an error
     if (!provider.successfulPost && provider.errorMessage.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -21,8 +20,8 @@ class PostListingPage extends StatelessWidget {
             behavior: SnackBarBehavior.floating,
           ),
         );
-        // Optional: Clear the error after showing it once
-        provider.errorMessage = ''; // Implement this method in your provider
+
+        provider.errorMessage = '';
       });
     }
 
