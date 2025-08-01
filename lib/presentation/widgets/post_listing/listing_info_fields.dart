@@ -12,10 +12,15 @@ class ListingInfoFields extends StatelessWidget {
     return Column(
       spacing: 12,
       children: [
-        Text('Listing Details', style: Theme.of(context).textTheme.headlineMedium),
+        Text(
+          'Listing Details',
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
         NumberFormField(
           labelText: 'Price',
           fieldName: 'price',
+          min: 0,
+          max: 100000000,
           isRequired: true,
         ),
         DropdownFormField(

@@ -11,7 +11,10 @@ class VehicleInfoFields extends StatelessWidget {
     return Column(
       spacing: 12,
       children: [
-        Text('Vehicle Details', style: Theme.of(context).textTheme.headlineMedium),
+        Text(
+          'Vehicle Details',
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
         DropdownFormField(
           labelText: 'Make',
           fieldName: 'make',
@@ -23,10 +26,18 @@ class VehicleInfoFields extends StatelessWidget {
           fieldName: 'model',
           isRequired: true,
         ),
-        NumberFormField(labelText: 'Year', fieldName: 'year', isRequired: true),
+        NumberFormField(
+          labelText: 'Year',
+          fieldName: 'year',
+          min: 1800,
+          max: 2050,
+          isRequired: true,
+        ),
         NumberFormField(
           labelText: 'Kilometers',
           fieldName: 'kilometers',
+          min: 0,
+          max: 1000000,
           isRequired: true,
         ),
         DropdownFormField(

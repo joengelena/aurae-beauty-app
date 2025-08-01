@@ -44,12 +44,24 @@ class VehicleInfoOptionalFields extends StatelessWidget {
               labelText: 'Number Plate',
               fieldName: 'numberPlate',
             ),
-            NumberFormField(labelText: 'Seats', fieldName: 'seats'),
-            NumberFormField(labelText: 'Doors', fieldName: 'doors'),
+            NumberFormField(
+              labelText: 'Seats',
+              fieldName: 'seats',
+              min: 1,
+              max: 100,
+            ),
+            NumberFormField(
+              labelText: 'Doors',
+              fieldName: 'doors',
+              min: 1,
+              max: 20,
+            ),
             StringFormField(labelText: 'Color', fieldName: 'color'),
             NumberFormField(
               labelText: 'Engine Size (cc)',
               fieldName: 'engineSize',
+              min: 0,
+              max: 20000,
             ),
             DropdownFormField(
               labelText: 'Transmission',

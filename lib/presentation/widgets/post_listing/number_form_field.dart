@@ -6,14 +6,36 @@ import 'package:provider/provider.dart';
 class NumberFormField extends StatelessWidget {
   final String labelText;
   final String fieldName;
+  final int min;
+  final int max;
   final bool isRequired;
 
   const NumberFormField({
     super.key,
     required this.labelText,
     required this.fieldName,
+    required this.min,
+    required this.max,
     this.isRequired = false,
   });
+
+  String? validator(String? value) {
+    if (value == null || value.isEmpty) {
+      return isRequired ? 'Required' : null;
+    }
+
+    final intVal = int.tryParse(value);
+
+    if (intVal == null) {
+      return 'Must be a number';
+    }
+
+    if (intVal < min || intVal > max) {
+      return 'Must be between $min and $max';
+    }
+
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,30 +48,7 @@ class NumberFormField extends StatelessWidget {
         labelText: labelText,
         border: OutlineInputBorder(),
       ),
-      validator:
-          isRequired
-              ? (val) {
-                if (val == null || val.isEmpty) {
-                  return 'Required';
-                }
-
-                final intVal = int.tryParse(val);
-                if (intVal == null) {
-                  return 'Must be a number';
-                }
-
-                return null;
-              }
-              : (val) {
-                if (val != null && val.isNotEmpty) {
-                  final year = int.tryParse(val);
-                  if (year == null) {
-                    return 'Must be a number';
-                  }
-                }
-
-                return null;
-              },
+      validator: (value) => validator(value),
       onChanged: (val) {
         provider.postListingData[fieldName] = val;
       },
