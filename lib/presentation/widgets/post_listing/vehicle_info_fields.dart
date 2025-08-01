@@ -29,8 +29,8 @@ class VehicleInfoFields extends StatelessWidget {
         NumberFormField(
           labelText: 'Year',
           fieldName: 'year',
-          min: 1800,
-          max: 2050,
+          min: 1900,
+          max: DateTime.now().year + 1,
           isRequired: true,
         ),
         NumberFormField(
