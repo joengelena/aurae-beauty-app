@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:motorix_app/data/api_client.dart';
 import 'package:motorix_app/data/models/api_response.dart';
-import 'package:motorix_app/data/models/listing.dart';
+import 'package:motorix_app/data/models/preview_listing.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/models/pagination.dart';
 
 class ListingsServices {
   static final ApiClient apiClient = ApiClient();
 
-  Future<PaginatedResponse<Listing>> getAllListings({
+  Future<PaginatedResponse<PreviewListing>> getAllListings({
     Map<String, dynamic>? allQueries,
   }) async {
     http.Response response = await apiClient.get(
@@ -25,9 +25,9 @@ class ListingsServices {
     final Map<String, dynamic> body =
         json.decode(response.body) as Map<String, dynamic>;
 
-    return PaginatedResponse<Listing>.fromJson(
+    return PaginatedResponse<PreviewListing>.fromJson(
       body,
-      (json) => Listing.fromJson(json),
+      (json) => PreviewListing.fromJson(json),
     );
   }
 

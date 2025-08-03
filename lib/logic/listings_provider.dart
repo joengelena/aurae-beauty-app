@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/models/listing.dart';
+import 'package:motorix_app/data/models/preview_listing.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 
 class ListingsProvider extends ChangeNotifier {
@@ -15,7 +15,7 @@ class ListingsProvider extends ChangeNotifier {
     'Latest year': 'yearDesc',
     'Oldest year': 'yearAsc',
   };
-  final List<Listing> listings = [];
+  final List<PreviewListing> listings = [];
   final int limit = 10;
   int currentPage = 0;
   int totalPages = 1;
