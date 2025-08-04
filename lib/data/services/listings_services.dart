@@ -10,6 +10,16 @@ import 'package:motorix_app/data/models/pagination.dart';
 class ListingsServices {
   static final ApiClient apiClient = ApiClient();
 
+  Future<Listing> getListing(int listingId) async {
+    http.Response response = await apiClient.get('/listings/$listingId');
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception('Failed to load listing');
+    }
+
+    return Listing.fromJsonString(response.body);
+  }
+
   Future<PaginatedResponse<Listing>> getAllListings({
     Map<String, dynamic>? allQueries,
   }) async {
