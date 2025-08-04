@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/data/models/preview_listing.dart';
+import 'package:motorix_app/data/models/listing.dart';
 
 class ListingPreview extends StatelessWidget {
   final double width;
-  final PreviewListing listing;
+  final Listing listing;
 
   const ListingPreview({super.key, required this.width, required this.listing});
 

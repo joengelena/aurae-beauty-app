@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class PreviewListing {
+class Listing {
   final int id;
   final String userIdFk;
   final int viewCount;
@@ -30,7 +30,7 @@ class PreviewListing {
   final String? regoExpiryDate;
   final String? wofExpiryDate;
 
-  PreviewListing({
+  Listing({
     required this.id,
     required this.userIdFk,
     required this.viewCount,
@@ -62,8 +62,8 @@ class PreviewListing {
   });
 
   /// Creates a new Listing from a JSON map.
-  factory PreviewListing.fromJson(Map<String, dynamic> json) {
-    return PreviewListing(
+  factory Listing.fromJson(Map<String, dynamic> json) {
+    return Listing(
       id: json['id'] as int,
       userIdFk: json['userIdFk'] as String,
       viewCount: json['viewCount'] as int,
@@ -130,8 +130,8 @@ class PreviewListing {
   }
 
   /// Convenience to parse directly from a JSON string.
-  factory PreviewListing.fromJsonString(String jsonString) =>
-      PreviewListing.fromJson(json.decode(jsonString) as Map<String, dynamic>);
+  factory Listing.fromJsonString(String jsonString) =>
+      Listing.fromJson(json.decode(jsonString) as Map<String, dynamic>);
 
   /// Convenience to convert to a JSON string.
   String toJsonString() => json.encode(toJson());
