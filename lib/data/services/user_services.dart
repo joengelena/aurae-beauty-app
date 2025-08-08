@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:motorix_app/data/api_client.dart';
+import 'package:motorix_app/data/models/user.dart';
 
 class UserServices {
   static final ApiClient apiClient = ApiClient();
@@ -39,9 +41,13 @@ class UserServices {
     return response;
   }
 
-  Future<http.Response> getUserWithId(String userId) async {
+  Future<User> getUserWithId(String userId) async {
     http.Response response = await apiClient.post('/user/$userId', {});
 
-    return response;
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception('Failed to get user');
+    }
+
+    return User.fromJsonString(response.body);
   }
 }
