@@ -5,6 +5,7 @@ class Listing {
   final String userIdFk;
   final int viewCount;
   final String previewImgUrl;
+  final List<String> imageUrls;
   final String location;
   final String vehicleCondition;
   final int price;
@@ -35,6 +36,7 @@ class Listing {
     required this.userIdFk,
     required this.viewCount,
     required this.previewImgUrl,
+    required this.imageUrls,
     required this.location,
     required this.vehicleCondition,
     required this.price,
@@ -61,13 +63,13 @@ class Listing {
     this.wofExpiryDate,
   });
 
-  /// Creates a new Listing from a JSON map.
   factory Listing.fromJson(Map<String, dynamic> json) {
     return Listing(
       id: json['id'] as int,
       userIdFk: json['userIdFk'] as String,
       viewCount: json['viewCount'] as int,
       previewImgUrl: json['previewImgUrl'] as String,
+      imageUrls: json['imageUrls'] as List<String>,
       location: json['location'] as String,
       vehicleCondition: json['vehicleCondition'] as String,
       price: json['price'] as int,
@@ -95,46 +97,8 @@ class Listing {
     );
   }
 
-  /// Converts this Listing into a JSON map.
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'userIdFk': userIdFk,
-      'viewCount': viewCount,
-      'previewImgUrl': previewImgUrl,
-      'location': location,
-      'vehicleCondition': vehicleCondition,
-      'price': price,
-      'uploadDate': uploadDate.toIso8601String(),
-      'description': description,
-      'endDate': endDate.toIso8601String(),
-      'make': make,
-      'model': model,
-      'year': year,
-      'kilometers': kilometers,
-      'fuelType': fuelType,
-      'bodyType': bodyType,
-      'driveType': driveType,
-      'orcIncluded': orcIncluded,
-      'numberPlate': numberPlate,
-      'seats': seats,
-      'doors': doors,
-      'previousOwners': previousOwners,
-      'color': color,
-      'engineSize': engineSize,
-      'transmission': transmission,
-      'cylinders': cylinders,
-      'regoExpiryDate': regoExpiryDate,
-      'wofExpiryDate': wofExpiryDate,
-    };
-  }
-
-  /// Convenience to parse directly from a JSON string.
   factory Listing.fromJsonString(String jsonString) =>
       Listing.fromJson(json.decode(jsonString) as Map<String, dynamic>);
-
-  /// Convenience to convert to a JSON string.
-  String toJsonString() => json.encode(toJson());
 
   @override
   String toString() {
