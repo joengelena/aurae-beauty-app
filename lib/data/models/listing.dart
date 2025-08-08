@@ -5,7 +5,7 @@ class Listing {
   final String userIdFk;
   final int viewCount;
   final String previewImgUrl;
-  final List<String> imageUrls;
+  final List<dynamic> imageUrls;
   final String location;
   final String vehicleCondition;
   final int price;
@@ -69,7 +69,7 @@ class Listing {
       userIdFk: json['userIdFk'] as String,
       viewCount: json['viewCount'] as int,
       previewImgUrl: json['previewImgUrl'] as String,
-      imageUrls: json['imageUrls'] as List<String>,
+      imageUrls: json['imageUrls'] as List<dynamic>,
       location: json['location'] as String,
       vehicleCondition: json['vehicleCondition'] as String,
       price: json['price'] as int,
