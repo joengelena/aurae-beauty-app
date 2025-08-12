@@ -63,7 +63,7 @@ class Listing {
     this.wofExpiryDate,
   });
 
-  factory Listing.fromJson(Map<String, dynamic> json) {
+  factory Listing.fromJson(json) {
     return Listing(
       id: json['id'] as int,
       userIdFk: json['userIdFk'] as String,
@@ -98,7 +98,7 @@ class Listing {
   }
 
   factory Listing.fromJsonString(String jsonString) =>
-      Listing.fromJson(json.decode(jsonString) as Map<String, dynamic>);
+      Listing.fromJson(json.decode(jsonString));
 
   @override
   String toString() {
