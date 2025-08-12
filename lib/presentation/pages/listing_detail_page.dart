@@ -1,14 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/presentation/widgets/listing/action_bar.dart';
 import 'package:motorix_app/presentation/widgets/listing/contact_seller.dart';
 import 'package:motorix_app/presentation/widgets/listing/image_carousel.dart';
+import 'package:provider/provider.dart';
 
-class ListingDetailPage extends StatelessWidget {
-  const ListingDetailPage({super.key, required String listingId});
+class ListingDetailPage extends StatefulWidget {
+  const ListingDetailPage({super.key, required this.listingId});
+  final String listingId;
+
+  @override
+  State<ListingDetailPage> createState() => _ListingDetailPageState();
+}
+
+class _ListingDetailPageState extends State<ListingDetailPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Schedule after first frame so we’re not in the middle of a build.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ListingDetailProvider>().getListing(
+        int.parse(widget.listingId),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<ListingDetailProvider>();
+    final listing = provider.listing;
     final screenWidth = MediaQuery.of(context).size.width;
+
+    if (provider.isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    if (provider.listing == null || listing == null) {
+      return Center(child: Text('Not Found'));
+    }
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -31,7 +60,7 @@ class ListingDetailPage extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
-                  '2022 Toyota Corolla WXB Hybrid Touring',
+                  '${listing.year} ${listing.make} ${listing.model}',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
@@ -50,7 +79,7 @@ class ListingDetailPage extends StatelessWidget {
                       spacing: 10,
                       children: [
                         Text(
-                          '\$37,990',
+                          '\$${listing.price}',
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         Text(
@@ -87,9 +116,18 @@ class ListingDetailPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 10,
                       children: [
-                        _DetailColumn(label: 'Year', value: '2022'),
-                        _DetailColumn(label: 'Fuel type', value: 'Hybrid'),
-                        _DetailColumn(label: 'Drive type', value: '2WD'),
+                        _DetailColumn(
+                          label: 'Year',
+                          value: listing.year.toString(),
+                        ),
+                        _DetailColumn(
+                          label: 'Fuel type',
+                          value: listing.fuelType,
+                        ),
+                        _DetailColumn(
+                          label: 'Drive type',
+                          value: listing.driveType,
+                        ),
                       ],
                     ),
                   ),
@@ -98,10 +136,13 @@ class ListingDetailPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 10,
                       children: [
-                        _DetailColumn(label: 'Kilometers', value: '23,480km'),
+                        _DetailColumn(
+                          label: 'Kilometers',
+                          value: '${listing.kilometers}km',
+                        ),
                         _DetailColumn(
                           label: 'Body style',
-                          value: 'Station wagon',
+                          value: listing.bodyType,
                         ),
                         _DetailColumn(label: 'ORC Included', value: 'No'),
                       ],
@@ -127,20 +168,7 @@ class ListingDetailPage extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    '''
-                Experience the perfect blend of performance and style with the 2019 Thunderbolt VXR. Finished in an elegant midnight graphite, this 5-door hatchback turns heads wherever it goes. With only 48,000 km on the clock and a full-service history, this vehicle has been meticulously maintained.
-                2.0L Turbocharged Petrol Engine\n
-                8-Speed Automatic Transmission\n
-                Apple CarPlay & Android Auto\n
-                Leather Interior with Heated Seats\n
-                Reverse Camera & Blind Spot Monitoring\n
-                Keyless Entry and Push Start\n
-                New Tyres (Installed 5,000km ago)\n
-                Whether you're commuting, road-tripping, or simply enjoying the drive, the Thunderbolt VXR delivers a smooth, responsive ride and outstanding fuel efficiency.\n
-                📍Located in Christchurch – viewing by appointment.\n
-                💰 Asking price: \$23,500 (ONO)\n
-
-                Contact now to arrange a test drive – don’t miss out on this reliable and stylish ride!''',
+                    listing.description,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),

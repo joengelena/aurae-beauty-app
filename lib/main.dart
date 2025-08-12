@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/app_router.dart';
 import 'package:motorix_app/logic/listing_attributes_provider.dart';
+import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/utils/theme.dart';
@@ -27,6 +28,9 @@ void main() {
         ),
         ChangeNotifierProvider<PostListingProvider>(
           create: (_) => PostListingProvider(),
+        ),
+        ChangeNotifierProvider<ListingDetailProvider>(
+          create: (_) => ListingDetailProvider(),
         ),
       ],
       child: MyApp(),

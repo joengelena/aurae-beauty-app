@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/presentation/pages/post_listing_page.dart';
 import 'package:motorix_app/presentation/pages/profile/email_verified_page.dart';
 import 'package:motorix_app/presentation/pages/profile/forgot_password_page.dart';
@@ -11,6 +12,7 @@ import 'package:motorix_app/presentation/pages/profile/sign_in_page.dart';
 import 'package:motorix_app/presentation/pages/profile/sign_up_page.dart';
 import 'package:motorix_app/presentation/pages/watchlist_page.dart';
 import 'package:motorix_app/presentation/widgets/scaffold/app_scaffold.dart';
+import 'package:provider/provider.dart';
 
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -36,9 +38,17 @@ final GoRouter appRouter = GoRouter(
               parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 final listingId = state.pathParameters['listingId'];
+                if (listingId == null) {
+                  return NoTransitionPage(child: Text('Not Found'));
+                }
+
+                final listingDetailProvider =
+                    context.read<ListingDetailProvider>();
+
+                listingDetailProvider.isLoading = true;
 
                 return NoTransitionPage(
-                  child: ListingDetailPage(listingId: listingId ?? ''),
+                  child: ListingDetailPage(listingId: listingId),
                 );
               },
             ),

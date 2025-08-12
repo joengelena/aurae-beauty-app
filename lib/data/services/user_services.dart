@@ -42,7 +42,7 @@ class UserServices {
   }
 
   Future<User> getUserWithId(String userId) async {
-    http.Response response = await apiClient.post('/user/$userId', {});
+    http.Response response = await apiClient.get('/users/$userId');
 
     if (response.statusCode != HttpStatus.ok) {
       throw Exception('Failed to get user');
