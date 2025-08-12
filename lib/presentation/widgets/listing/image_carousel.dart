@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class ImageCarousel extends StatefulWidget {
-  const ImageCarousel({super.key});
+  final List<dynamic> imageUrls;
+  const ImageCarousel({super.key, required this.imageUrls});
 
   @override
   State<ImageCarousel> createState() => _ImageCarousel();
@@ -10,17 +11,12 @@ class ImageCarousel extends StatefulWidget {
 
 class _ImageCarousel extends State<ImageCarousel> {
   final PageController _controller = PageController();
-  final List<String> _images = [
-    'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    'https://plus.unsplash.com/premium_photo-1686730540277-c7e3a5571553?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    'https://images.unsplash.com/photo-1711196732969-1163620f6ce4?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  ];
   bool _hovering = false;
 
   void _nextPage() {
-    if (_controller.page! < _images.length - 1) {
+    if (_controller.page! < widget.imageUrls.length - 1) {
       _controller.nextPage(
-        duration: const Duration(milliseconds: 300),
+        duration: Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
@@ -29,7 +25,7 @@ class _ImageCarousel extends State<ImageCarousel> {
   void _prevPage() {
     if (_controller.page! > 0) {
       _controller.previousPage(
-        duration: const Duration(milliseconds: 300),
+        duration: Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
@@ -49,10 +45,10 @@ class _ImageCarousel extends State<ImageCarousel> {
                 height: 300,
                 child: PageView.builder(
                   controller: _controller,
-                  itemCount: _images.length,
+                  itemCount: widget.imageUrls.length,
                   itemBuilder: (context, index) {
                     return Image.network(
-                      _images[index],
+                      widget.imageUrls[index],
                       fit: BoxFit.cover,
                       width: double.infinity,
                     );
@@ -77,8 +73,8 @@ class _ImageCarousel extends State<ImageCarousel> {
           ),
           SmoothPageIndicator(
             controller: _controller,
-            count: _images.length,
-            effect: const WormEffect(
+            count: widget.imageUrls.length,
+            effect: WormEffect(
               dotHeight: 10,
               dotWidth: 10,
               activeDotColor: Colors.black,
@@ -91,13 +87,13 @@ class _ImageCarousel extends State<ImageCarousel> {
 
   Widget _navButton(IconData icon, VoidCallback onPressed) {
     return Material(
-      color: const Color.fromARGB(148, 0, 0, 0),
-      shape: const CircleBorder(),
+      color: Color.fromARGB(148, 0, 0, 0),
+      shape: CircleBorder(),
       child: InkWell(
-        customBorder: const CircleBorder(),
+        customBorder: CircleBorder(),
         onTap: onPressed,
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(12),
           child: Icon(icon, color: Colors.white),
         ),
       ),

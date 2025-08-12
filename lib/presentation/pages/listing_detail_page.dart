@@ -47,7 +47,7 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
           child: Column(
             spacing: 16,
             children: [
-              ImageCarousel(),
+              ImageCarousel(imageUrls: listing.imageUrls),
 
               ActionBar(
                 onCall: () {},
