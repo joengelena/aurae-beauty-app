@@ -193,22 +193,3 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
     );
   }
 }
-
-class _DetailColumn extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _DetailColumn({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: Theme.of(context).textTheme.bodySmall),
-        const SizedBox(height: 4),
-        Text(value, style: Theme.of(context).textTheme.bodyMedium),
-      ],
-    );
-  }
-}
