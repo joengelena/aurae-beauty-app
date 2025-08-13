@@ -28,8 +28,8 @@ class Listing {
   final int? engineSize;
   final String? transmission;
   final int? cylinders;
-  final String? regoExpiryDate;
-  final String? wofExpiryDate;
+  final DateTime? regoExpiryDate;
+  final DateTime? wofExpiryDate;
 
   Listing({
     required this.id,
@@ -92,8 +92,8 @@ class Listing {
       engineSize: json['engineSize'] as int?,
       transmission: json['transmission'] as String?,
       cylinders: json['cylinders'] as int?,
-      regoExpiryDate: json['regoExpiryDate'] as String?,
-      wofExpiryDate: json['wofExpiryDate'] as String?,
+      regoExpiryDate: json['regoExpiryDate'] as DateTime?,
+      wofExpiryDate: json['wofExpiryDate'] as DateTime?,
     );
   }
 

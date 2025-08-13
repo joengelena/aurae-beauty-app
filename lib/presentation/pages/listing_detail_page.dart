@@ -3,6 +3,7 @@ import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/presentation/widgets/listing/action_bar.dart';
 import 'package:motorix_app/presentation/widgets/listing/contact_seller.dart';
 import 'package:motorix_app/presentation/widgets/listing/image_carousel.dart';
+import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class ListingDetailPage extends StatefulWidget {
@@ -38,6 +39,37 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
     if (provider.listing == null || listing == null) {
       return Center(child: Text('Not Found'));
     }
+
+    final listingDetails = {
+      'Make': listing.make,
+      'Model': listing.model,
+      'Year': listing.year,
+      'Kilometers': listing.kilometers,
+      'Fuel Type': listing.fuelType,
+      'Body Type': listing.bodyType,
+      'Drive Type': listing.driveType,
+      'ORC Included': listing.orcIncluded,
+      'Number Plate': listing.numberPlate,
+      'Seats': listing.seats,
+      'Doors': listing.doors,
+      'Previous Owners': listing.previousOwners,
+      'Color': listing.color,
+      'Engine Size': listing.engineSize,
+      'Transmission': listing.transmission,
+      'Cylinders': listing.cylinders,
+      'Rego Expiry Date':
+          listing.regoExpiryDate != null
+              ? formatDate(listing.regoExpiryDate!)
+              : null,
+      'WOF Expiry Date':
+          listing.wofExpiryDate != null
+              ? formatDate(listing.wofExpiryDate!)
+              : null,
+      'Location': listing.location,
+      'Vehicle Condition': listing.vehicleCondition,
+      'Upload Date': formatDate(listing.uploadDate),
+      'End Date': formatDate(listing.endDate),
+    };
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -107,49 +139,29 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                 ),
               ),
 
-              Row(
-                children: [
-                  SizedBox(width: 16),
-                  SizedBox(
-                    width: screenWidth > 600 ? 300 : screenWidth * 0.4,
-                    child: Column(
+              for (var entry in listingDetails.entries)
+                if (entry.value != null)
+                  Padding(
+                    padding: EdgeInsets.only(left: 16, right: 16),
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 10,
                       children: [
-                        _DetailColumn(
-                          label: 'Year',
-                          value: listing.year.toString(),
+                        Text(
+                          entry.key,
+                          style: Theme.of(context).textTheme.labelLarge,
                         ),
-                        _DetailColumn(
-                          label: 'Fuel type',
-                          value: listing.fuelType,
-                        ),
-                        _DetailColumn(
-                          label: 'Drive type',
-                          value: listing.driveType,
+                        SizedBox(
+                          width: 8.0,
+                        ), // Adds a small space between label and value
+                        Expanded(
+                          child: Text(
+                            '${entry.value}',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 10,
-                      children: [
-                        _DetailColumn(
-                          label: 'Kilometers',
-                          value: '${listing.kilometers}km',
-                        ),
-                        _DetailColumn(
-                          label: 'Body style',
-                          value: listing.bodyType,
-                        ),
-                        _DetailColumn(label: 'ORC Included', value: 'No'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
 
               // Description
               Padding(
@@ -169,7 +181,7 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     listing.description,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
               ),
