@@ -30,7 +30,6 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
   Widget build(BuildContext context) {
     final provider = context.watch<ListingDetailProvider>();
     final listing = provider.listing;
-    final screenWidth = MediaQuery.of(context).size.width;
 
     if (provider.isLoading) {
       return Center(child: CircularProgressIndicator());
