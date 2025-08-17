@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -9,6 +11,7 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+  final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -40,88 +43,114 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = context.watch<AuthProvider>();
+
     return Center(
       child: SizedBox(
         width: 300,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 24,
-          children: [
-            Center(
-              child: Text(
-                'Sign In',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-            ),
-
-            // Email
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.cancel_outlined),
-                  onPressed: () => emailController.clear(),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 24,
+            children: [
+              Center(
+                child: Text(
+                  'Sign In',
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
-            ),
 
-            // Password
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.cancel_outlined),
-                  onPressed: () => passwordController.clear(),
-                ),
-              ),
-            ),
-
-            OutlinedButton(
-              onPressed: isFormValid ? () {} : null,
-              style: OutlinedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                foregroundColor: isFormValid ? Colors.white : Colors.grey,
-                side: BorderSide(
-                  color:
-                      isFormValid
-                          ? Theme.of(context).colorScheme.secondary
-                          : Colors.grey,
-                ),
-                backgroundColor:
-                    isFormValid
-                        ? Theme.of(context).colorScheme.secondary
-                        : Colors.transparent,
-              ),
-              child: Text('Sign in'),
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Don\'t have an account? ',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    context.go('/profile/signup');
-                  },
-                  child: Text(
-                    'Sign up',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: Colors.blue[700]),
+              TextFormField(
+                controller: emailController,
+                validator: (val) {
+                  if (val == null || val.isEmpty) return 'Required';
+                  return null;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.cancel_outlined),
+                    onPressed: () => emailController.clear(),
                   ),
                 ),
-              ],
-            ),
-          ],
+              ),
+
+              TextFormField(
+                controller: passwordController,
+                validator: (val) {
+                  if (val == null || val.isEmpty) return 'Required';
+                  return null;
+                },
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.cancel_outlined),
+                    onPressed: () => passwordController.clear(),
+                  ),
+                ),
+              ),
+
+              OutlinedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    await authProvider.signIn(
+                      emailController.text,
+                      passwordController.text,
+                    );
+                  }
+                },
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  foregroundColor: isFormValid ? Colors.white : Colors.grey,
+                  side: BorderSide(
+                    color:
+                        isFormValid
+                            ? Theme.of(context).colorScheme.secondary
+                            : Colors.grey,
+                  ),
+                  backgroundColor:
+                      isFormValid
+                          ? Theme.of(context).colorScheme.secondary
+                          : Colors.transparent,
+                ),
+                child:
+                    authProvider.isLoading
+                        ? CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Theme.of(context).colorScheme.onPrimary,
+                          ),
+                        )
+                        : Text('Sign in'),
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Don\'t have an account? ',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      context.go('/profile/signup');
+                    },
+                    child: Text(
+                      'Sign up',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.blue[700]),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

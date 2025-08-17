@@ -88,6 +88,13 @@ GoRouter getAppRouter(AuthProvider authProvider) {
               GoRoute(
                 path: 'signup',
                 parentNavigatorKey: _shellNavigatorKey,
+                redirect: (context, state) async {
+                  bool signedIn = await authProvider.isSignedIn();
+                  if (signedIn) {
+                    return '/profile';
+                  }
+                  return null;
+                },
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: SignUpPage());
                 },
@@ -95,6 +102,13 @@ GoRouter getAppRouter(AuthProvider authProvider) {
               GoRoute(
                 path: 'signin',
                 parentNavigatorKey: _shellNavigatorKey,
+                redirect: (context, state) async {
+                  bool signedIn = await authProvider.isSignedIn();
+                  if (signedIn) {
+                    return '/profile';
+                  }
+                  return null;
+                },
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: SignInPage());
                 },
@@ -109,6 +123,13 @@ GoRouter getAppRouter(AuthProvider authProvider) {
               GoRoute(
                 path: 'reset-password',
                 parentNavigatorKey: _shellNavigatorKey,
+                redirect: (context, state) async {
+                  bool signedIn = await authProvider.isSignedIn();
+                  if (signedIn) {
+                    return '/profile';
+                  }
+                  return null;
+                },
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: ResetPasswordPage());
                 },
