@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -98,6 +99,27 @@ class _SignInPageState extends State<SignInPage> {
                         : Colors.transparent,
               ),
               child: Text('Sign in'),
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Don\'t have an account? ',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    context.go('/profile/signup');
+                  },
+                  child: Text(
+                    'Sign up',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.blue[700]),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
