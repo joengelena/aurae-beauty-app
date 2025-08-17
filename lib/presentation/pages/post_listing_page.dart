@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:motorix_app/presentation/widgets/sign_in_to_access.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/post_listing_form.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/post_success.dart';
 import 'package:provider/provider.dart';
@@ -10,25 +12,39 @@ class PostListingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<PostListingProvider>();
+    final authProvider = context.watch<AuthProvider>();
 
-    if (!provider.successfulPost && provider.errorMessage.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(provider.errorMessage),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+    return FutureBuilder<bool>(
+      future: authProvider.isSignedIn(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
 
-        provider.errorMessage = '';
-      });
-    }
+        if (snapshot.hasData && snapshot.data == true) {
+          if (!provider.successfulPost && provider.errorMessage.isNotEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(provider.errorMessage),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
 
-    if (provider.successfulPost) {
-      return PostSuccess();
-    }
+              provider.errorMessage = '';
+            });
+          }
 
-    return PostListingForm();
+          if (provider.successfulPost) {
+            return PostSuccess();
+          }
+
+          return PostListingForm();
+        } else {
+          return SignInToAccess(message: 'Ready to post your listing?');
+        }
+      },
+    );
   }
 }
