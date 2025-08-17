@@ -1,12 +1,13 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:motorix_app/data/api_client.dart';
+import 'package:motorix_app/data/models/api_response.dart';
 import 'package:motorix_app/data/models/user.dart';
 
 class UserServices {
   static final ApiClient apiClient = ApiClient();
 
-  Future<http.Response> signUp(
+  Future<ApiResponse> signUp(
     String firstName,
     String lastName,
     String username,
@@ -23,31 +24,43 @@ class UserServices {
       'phoneNumber': phoneNumber,
     });
 
-    return response;
+    if (response.statusCode != HttpStatus.created) {
+      return ApiResponse.failure('Failed to sign up');
+    }
+
+    return ApiResponse.success(response.body);
   }
 
-  Future<http.Response> signIn(String email, String password) async {
+  Future<ApiResponse> signIn(String email, String password) async {
     http.Response response = await apiClient.post('/user/signin', {
       'email': email,
       'password': password,
     });
 
-    return response;
+    if (response.statusCode != HttpStatus.ok) {
+      return ApiResponse.failure('Failed to sign in');
+    }
+
+    return ApiResponse.success(response.body);
   }
 
-  Future<http.Response> signOut() async {
+  Future<ApiResponse> signOut() async {
     http.Response response = await apiClient.post('/user/signout', {});
 
-    return response;
+    if (response.statusCode != HttpStatus.ok) {
+      return ApiResponse.failure('Failed to sign out');
+    }
+
+    return ApiResponse.success(response.body);
   }
 
-  Future<User> getUserWithId(String userId) async {
+  Future<ApiResponse<User>> getUserWithId(String userId) async {
     http.Response response = await apiClient.get('/users/$userId');
 
     if (response.statusCode != HttpStatus.ok) {
-      throw Exception('Failed to get user');
+      return ApiResponse.failure('Failed to get user');
     }
 
-    return User.fromJsonString(response.body);
+    return ApiResponse<User>.success(User.fromJsonString(response.body));
   }
 }

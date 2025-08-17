@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:motorix_app/data/models/api_response.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/models/user.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
@@ -18,9 +19,17 @@ class ListingDetailProvider extends ChangeNotifier {
       notifyListeners();
 
       listing = await ListingsServices().getListing(listingId);
-      listingOwner = await UserServices().getUserWithId(
+      ApiResponse<User> userResponse = await UserServices().getUserWithId(
         listing?.userIdFk ?? '',
       );
+
+      if (!userResponse.isSuccess) {
+        // Failed to get user
+        isLoading = false;
+        notifyListeners();
+      }
+
+      listingOwner = userResponse.data;
     } catch (e) {
       debugPrint('Error loading listings: $e');
     } finally {
