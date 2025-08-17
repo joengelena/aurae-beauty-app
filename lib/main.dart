@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/app_router.dart';
+import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/listing_attributes_provider.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
@@ -11,6 +12,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
         ChangeNotifierProvider<ListingAttributesProvider>(
           create: (_) => ListingAttributesProvider(),
         ),
@@ -43,10 +45,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: appTheme,
-      routerConfig: appRouter,
+      routerConfig: getAppRouter(auth),
     );
   }
 }

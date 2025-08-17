@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/presentation/pages/post_listing_page.dart';
 import 'package:motorix_app/presentation/pages/profile/email_verified_page.dart';
@@ -17,99 +18,112 @@ import 'package:provider/provider.dart';
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-final GoRouter appRouter = GoRouter(
-  navigatorKey: _rootNavigatorKey,
-  initialLocation: '/listings',
-  routes: [
-    ShellRoute(
-      navigatorKey: _shellNavigatorKey,
-      builder: (context, GoRouterState state, child) {
-        return AppScaffold(state: state, child: child);
-      },
-      routes: [
-        GoRoute(
-          path: '/listings',
-          parentNavigatorKey: _shellNavigatorKey,
-          pageBuilder:
-              (context, state) => NoTransitionPage(child: ListingsPage()),
-          routes: [
-            GoRoute(
-              path: ':listingId',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                final listingId = state.pathParameters['listingId'];
-                if (listingId == null) {
-                  return NoTransitionPage(child: Text('Not Found'));
-                }
+GoRouter getAppRouter(AuthProvider authProvider) {
+  return GoRouter(
+    navigatorKey: _rootNavigatorKey,
+    initialLocation: '/listings',
+    refreshListenable: authProvider,
+    redirect: (context, state) {
+      final signedIn = authProvider.isSignedIn;
+      final path = state.uri.path;
 
-                final listingDetailProvider =
-                    context.read<ListingDetailProvider>();
+      if (path == '/profile' && !signedIn) {
+        return '/profile/signup';
+      }
 
-                listingDetailProvider.isLoading = true;
+      return path;
+    },
+    routes: [
+      ShellRoute(
+        navigatorKey: _shellNavigatorKey,
+        builder: (context, GoRouterState state, child) {
+          return AppScaffold(state: state, child: child);
+        },
+        routes: [
+          GoRoute(
+            path: '/listings',
+            parentNavigatorKey: _shellNavigatorKey,
+            pageBuilder:
+                (context, state) => NoTransitionPage(child: ListingsPage()),
+            routes: [
+              GoRoute(
+                path: ':listingId',
+                parentNavigatorKey: _shellNavigatorKey,
+                pageBuilder: (context, state) {
+                  final listingId = state.pathParameters['listingId'];
+                  if (listingId == null) {
+                    return NoTransitionPage(child: Text('Not Found'));
+                  }
 
-                return NoTransitionPage(
-                  child: ListingDetailPage(listingId: listingId),
-                );
-              },
-            ),
-          ],
-        ),
-        GoRoute(
-          path: '/watchlist',
-          parentNavigatorKey: _shellNavigatorKey,
-          pageBuilder:
-              (context, state) => NoTransitionPage(child: WatchlistPage()),
-        ),
-        GoRoute(
-          path: '/post-listing',
-          parentNavigatorKey: _shellNavigatorKey,
-          pageBuilder:
-              (context, state) => NoTransitionPage(child: PostListingPage()),
-        ),
-        GoRoute(
-          path: '/profile',
-          parentNavigatorKey: _shellNavigatorKey,
-          pageBuilder:
-              (context, state) => NoTransitionPage(child: ProfilePage()),
-          routes: [
-            GoRoute(
-              path: '/signup',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return NoTransitionPage(child: SignUpPage());
-              },
-            ),
-            GoRoute(
-              path: '/signin',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return NoTransitionPage(child: SignInPage());
-              },
-            ),
-            GoRoute(
-              path: '/forgot-password',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return NoTransitionPage(child: ForgotPasswordPage());
-              },
-            ),
-            GoRoute(
-              path: '/reset-password',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return NoTransitionPage(child: ResetPasswordPage());
-              },
-            ),
-            GoRoute(
-              path: '/email-verified',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return NoTransitionPage(child: EmailVerifiedPage());
-              },
-            ),
-          ],
-        ),
-      ],
-    ),
-  ],
-);
+                  final listingDetailProvider =
+                      context.read<ListingDetailProvider>();
+
+                  listingDetailProvider.isLoading = true;
+
+                  return NoTransitionPage(
+                    child: ListingDetailPage(listingId: listingId),
+                  );
+                },
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/watchlist',
+            parentNavigatorKey: _shellNavigatorKey,
+            pageBuilder:
+                (context, state) => NoTransitionPage(child: WatchlistPage()),
+          ),
+          GoRoute(
+            path: '/post-listing',
+            parentNavigatorKey: _shellNavigatorKey,
+            pageBuilder:
+                (context, state) => NoTransitionPage(child: PostListingPage()),
+          ),
+          GoRoute(
+            path: '/profile',
+            parentNavigatorKey: _shellNavigatorKey,
+            pageBuilder:
+                (context, state) => NoTransitionPage(child: ProfilePage()),
+            routes: [
+              GoRoute(
+                path: 'signup',
+                parentNavigatorKey: _shellNavigatorKey,
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: SignUpPage());
+                },
+              ),
+              GoRoute(
+                path: 'signin',
+                parentNavigatorKey: _shellNavigatorKey,
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: SignInPage());
+                },
+              ),
+              GoRoute(
+                path: 'forgot-password',
+                parentNavigatorKey: _shellNavigatorKey,
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: ForgotPasswordPage());
+                },
+              ),
+              GoRoute(
+                path: 'reset-password',
+                parentNavigatorKey: _shellNavigatorKey,
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: ResetPasswordPage());
+                },
+              ),
+              GoRoute(
+                path: 'email-verified',
+                parentNavigatorKey: _shellNavigatorKey,
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: EmailVerifiedPage());
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
+}
