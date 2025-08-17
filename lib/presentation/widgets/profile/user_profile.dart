@@ -9,7 +9,7 @@ class UserProfile extends StatelessWidget {
       children: [
         const CircleAvatar(
           radius: 48,
-          backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+          backgroundImage: AssetImage('assets/imgs/default_profile.jpg'),
         ),
         const SizedBox(height: 16),
         Text('Jane Doe', style: Theme.of(context).textTheme.headlineSmall),

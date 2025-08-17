@@ -24,7 +24,10 @@ class ContactSeller extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Avatar
-            CircleAvatar(radius: 44),
+            CircleAvatar(
+              radius: 48,
+              backgroundImage: AssetImage('assets/imgs/default_profile.jpg'),
+            ),
             SizedBox(height: 16),
 
             // Name
