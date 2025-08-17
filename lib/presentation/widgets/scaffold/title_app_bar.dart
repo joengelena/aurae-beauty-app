@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? currentRoute;
@@ -8,6 +10,7 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = context.watch<AuthProvider>();
     final showBack =
         ![
           '/listings',
@@ -32,15 +35,17 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
           showMenu
               ? [
                 PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert),
-                  onSelected: (value) {
-                    // handle
+                  icon: Icon(Icons.more_vert),
+                  onSelected: (value) async {
+                    if (value == 'Sign out') {
+                      await authProvider.signOut();
+                    }
                   },
                   itemBuilder:
                       (context) => [
-                        const PopupMenuItem(
-                          value: 'logout',
-                          child: Text('Log Out'),
+                        PopupMenuItem(
+                          value: 'Sign out',
+                          child: Text('Sign out'),
                         ),
                       ],
                 ),
