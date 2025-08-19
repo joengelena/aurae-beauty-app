@@ -23,16 +23,6 @@ GoRouter getAppRouter(AuthProvider authProvider) {
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/listings',
     refreshListenable: authProvider,
-    redirect: (context, state) async {
-      final signedIn = await authProvider.isSignedIn();
-      final path = state.uri.path;
-
-      if (path == '/profile' && !signedIn) {
-        return '/profile/signup';
-      }
-
-      return path;
-    },
     routes: [
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
@@ -82,6 +72,16 @@ GoRouter getAppRouter(AuthProvider authProvider) {
           GoRoute(
             path: '/profile',
             parentNavigatorKey: _shellNavigatorKey,
+            redirect: (context, state) async {
+              final signedIn = await authProvider.isSignedIn();
+              final path = state.uri.path;
+
+              if (path == '/profile' && !signedIn) {
+                return '/profile/signup';
+              }
+
+              return null;
+            },
             pageBuilder:
                 (context, state) => NoTransitionPage(child: ProfilePage()),
             routes: [
