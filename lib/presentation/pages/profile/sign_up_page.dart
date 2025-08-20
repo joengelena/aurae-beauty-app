@@ -85,7 +85,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
 
-                // First Name
                 TextFormField(
                   controller: firstNameController,
                   validator: (val) {
@@ -101,7 +100,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
 
-                // Last Name
                 TextFormField(
                   controller: lastNameController,
                   validator: (val) {
@@ -117,7 +115,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
 
-                // Username
                 TextFormField(
                   controller: usernameController,
                   validator: (val) {
@@ -133,7 +130,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
 
-                // Email
                 TextFormField(
                   controller: emailController,
                   validator: (val) {
@@ -150,7 +146,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
 
-                // Phone Number
                 TextFormField(
                   controller: phoneNumberController,
                   validator: (val) {
@@ -168,7 +163,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
 
-                // Password
                 TextFormField(
                   controller: passwordController,
                   validator: (val) {
@@ -185,7 +179,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
 
-                // Confirm Password
                 TextFormField(
                   controller: confirmPasswordController,
                   validator: (val) {
@@ -205,7 +198,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
 
-                // Checkbox
                 Row(
                   children: [
                     Checkbox(
