@@ -225,9 +225,9 @@ class _SignUpPageState extends State<SignUpPage> {
                         firstNameController.text,
                         lastNameController.text,
                         usernameController.text,
-                        phoneNumberController.text,
                         emailController.text,
                         passwordController.text,
+                        phoneNumberController.text,
                       );
                     }
                   },
