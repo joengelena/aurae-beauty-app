@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -9,7 +11,12 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  final _formKey = GlobalKey<FormState>();
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final usernameController = TextEditingController();
   final emailController = TextEditingController();
+  final phoneNumberController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   bool agreedToTermsAndConditions = false;
@@ -18,14 +25,22 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   void initState() {
     super.initState();
+    firstNameController.addListener(_validateForm);
+    lastNameController.addListener(_validateForm);
+    usernameController.addListener(_validateForm);
     emailController.addListener(_validateForm);
+    phoneNumberController.addListener(_validateForm);
     passwordController.addListener(_validateForm);
     confirmPasswordController.addListener(_validateForm);
   }
 
   @override
   void dispose() {
+    firstNameController.dispose();
+    lastNameController.dispose();
+    usernameController.dispose();
     emailController.dispose();
+    phoneNumberController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.dispose();
@@ -34,7 +49,11 @@ class _SignUpPageState extends State<SignUpPage> {
   void _validateForm() {
     final valid =
         agreedToTermsAndConditions &&
+        firstNameController.text.isNotEmpty &&
+        lastNameController.text.isNotEmpty &&
+        usernameController.text.isNotEmpty &&
         emailController.text.isNotEmpty &&
+        phoneNumberController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
         confirmPasswordController.text.isNotEmpty;
 
@@ -47,121 +66,222 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: 300,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 24,
-          children: [
-            Center(
-              child: Text(
-                'Sign Up',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-            ),
+    AuthProvider authProvider = context.watch<AuthProvider>();
 
-            // Email
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.cancel_outlined),
-                  onPressed: () => emailController.clear(),
-                ),
-              ),
-            ),
-
-            // Password
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.cancel_outlined),
-                  onPressed: () => passwordController.clear(),
-                ),
-              ),
-            ),
-
-            // Confirm Password
-            TextField(
-              controller: confirmPasswordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Confirm password',
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.cancel_outlined),
-                  onPressed: () => confirmPasswordController.clear(),
-                ),
-              ),
-            ),
-
-            // Checkbox
-            Row(
-              children: [
-                Checkbox(
-                  value: agreedToTermsAndConditions,
-                  onChanged: (value) {
-                    setState(() {
-                      agreedToTermsAndConditions = value!;
-                    });
-                  },
-                ),
-                Expanded(
-                  child: Text(
-                    'I agree to the Auto Mart Terms of Use and Privacy Policy',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ),
-              ],
-            ),
-
-            OutlinedButton(
-              onPressed: isFormValid ? () {} : null,
-              style: OutlinedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                foregroundColor: isFormValid ? Colors.white : Colors.grey,
-                side: BorderSide(
-                  color:
-                      isFormValid
-                          ? ColorScheme.of(context).secondary
-                          : Colors.grey,
-                ),
-                backgroundColor:
-                    isFormValid
-                        ? ColorScheme.of(context).secondary
-                        : Colors.transparent,
-              ),
-              child: Text('Sign up'),
-            ),
-
-            Row(
+    return SingleChildScrollView(
+      child: Center(
+        child: SizedBox(
+          width: 300,
+          child: Form(
+            key: _formKey,
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 24,
               children: [
-                Text(
-                  'Already have an account? ',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    context.go('/profile/signin');
-                  },
+                Center(
                   child: Text(
-                    'Sign in',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: Colors.blue[700]),
+                    'Sign Up',
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
+                ),
+
+                // First Name
+                TextFormField(
+                  controller: firstNameController,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) return 'Required';
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'First Name',
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.cancel_outlined),
+                      onPressed: () => firstNameController.clear(),
+                    ),
+                  ),
+                ),
+
+                // Last Name
+                TextFormField(
+                  controller: lastNameController,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) return 'Required';
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Last Name',
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.cancel_outlined),
+                      onPressed: () => lastNameController.clear(),
+                    ),
+                  ),
+                ),
+
+                // Username
+                TextFormField(
+                  controller: usernameController,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) return 'Required';
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Username',
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.cancel_outlined),
+                      onPressed: () => usernameController.clear(),
+                    ),
+                  ),
+                ),
+
+                // Email
+                TextFormField(
+                  controller: emailController,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) return 'Required';
+                    // Add more email validation if needed
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.cancel_outlined),
+                      onPressed: () => emailController.clear(),
+                    ),
+                  ),
+                ),
+
+                // Phone Number
+                TextFormField(
+                  controller: phoneNumberController,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) return 'Required';
+                    // Add more phone validation if needed
+                    return null;
+                  },
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    labelText: 'Phone Number',
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.cancel_outlined),
+                      onPressed: () => phoneNumberController.clear(),
+                    ),
+                  ),
+                ),
+
+                // Password
+                TextFormField(
+                  controller: passwordController,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) return 'Required';
+                    return null;
+                  },
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.cancel_outlined),
+                      onPressed: () => passwordController.clear(),
+                    ),
+                  ),
+                ),
+
+                // Confirm Password
+                TextFormField(
+                  controller: confirmPasswordController,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) return 'Required';
+                    if (val != passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Confirm password',
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.cancel_outlined),
+                      onPressed: () => confirmPasswordController.clear(),
+                    ),
+                  ),
+                ),
+
+                // Checkbox
+                Row(
+                  children: [
+                    Checkbox(
+                      value: agreedToTermsAndConditions,
+                      onChanged: (value) {
+                        setState(() {
+                          agreedToTermsAndConditions = value!;
+                          _validateForm();
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        'I agree to the Auto Mart Terms of Use and Privacy Policy',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                  ],
+                ),
+
+                OutlinedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      await authProvider.signUp(
+                        firstNameController.text,
+                        lastNameController.text,
+                        usernameController.text,
+                        phoneNumberController.text,
+                        emailController.text,
+                        passwordController.text,
+                      );
+                    }
+                  },
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    foregroundColor: isFormValid ? Colors.white : Colors.grey,
+                    side: BorderSide(
+                      color:
+                          isFormValid
+                              ? Theme.of(context).colorScheme.secondary
+                              : Colors.grey,
+                    ),
+                    backgroundColor:
+                        isFormValid
+                            ? Theme.of(context).colorScheme.secondary
+                            : Colors.transparent,
+                  ),
+                  child: Text('Sign up'),
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Already have an account? ',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        context.go('/profile/signin');
+                      },
+                      child: Text(
+                        'Sign in',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.blue[700],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
