@@ -10,57 +10,48 @@ class WatchlistPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = AuthProvider();
-    return FutureBuilder<bool>(
-      future: authProvider.isSignedIn(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasData && snapshot.data == true) {
-          return Center(
-            child: Container(
-              constraints: BoxConstraints(maxWidth: 600),
-              child: ListView(
-                children: [
-                  SizedBox(height: 12),
-                  ListingTile(
-                    topRightButtom: IconButton(
-                      onPressed: () {
-                        // handle delete action
-                      },
-                      icon: const Icon(Icons.delete_outline),
-                      color: Colors.red,
-                    ),
-                  ),
-                  ListingTile(
-                    topRightButtom: IconButton(
-                      onPressed: () {
-                        // handle delete action
-                      },
-                      icon: const Icon(Icons.delete_outline),
-                      color: Colors.red,
-                    ),
-                  ),
-                  SizedBox(height: 24),
-                  Align(
-                    alignment: Alignment.center,
-                    child: FilledButton(
-                      onPressed: () {
-                        context.go('/listings');
-                      },
-                      child: Text('Explore more'),
-                    ),
-                  ),
-                ],
+
+    if (!authProvider.isSignedIn) {
+      return const SignInToAccess(message: 'Sign in to view your watchlist.');
+    }
+
+    return Center(
+      child: Container(
+        constraints: BoxConstraints(maxWidth: 600),
+        child: ListView(
+          children: [
+            SizedBox(height: 12),
+            ListingTile(
+              topRightButtom: IconButton(
+                onPressed: () {
+                  // handle delete action
+                },
+                icon: const Icon(Icons.delete_outline),
+                color: Colors.red,
               ),
             ),
-          );
-        } else {
-          return const SignInToAccess(
-            message: 'Sign in to view your watchlist.',
-          );
-        }
-      },
+            ListingTile(
+              topRightButtom: IconButton(
+                onPressed: () {
+                  // handle delete action
+                },
+                icon: const Icon(Icons.delete_outline),
+                color: Colors.red,
+              ),
+            ),
+            SizedBox(height: 24),
+            Align(
+              alignment: Alignment.center,
+              child: FilledButton(
+                onPressed: () {
+                  context.go('/listings');
+                },
+                child: Text('Explore more'),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -14,37 +14,13 @@ class PostListingPage extends StatelessWidget {
     final provider = context.watch<PostListingProvider>();
     final authProvider = context.watch<AuthProvider>();
 
-    return FutureBuilder<bool>(
-      future: authProvider.isSignedIn(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
+    if (!authProvider.isSignedIn) {
+      return SignInToAccess(message: 'Ready to post your listing?');
+    }
+    if (provider.successfulPost) {
+      return PostSuccess();
+    }
 
-        if (snapshot.hasData && snapshot.data == true) {
-          if (!provider.successfulPost && provider.errorMessage.isNotEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(provider.errorMessage),
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-
-              provider.errorMessage = '';
-            });
-          }
-
-          if (provider.successfulPost) {
-            return PostSuccess();
-          }
-
-          return PostListingForm();
-        } else {
-          return SignInToAccess(message: 'Ready to post your listing?');
-        }
-      },
-    );
+    return PostListingForm();
   }
 }

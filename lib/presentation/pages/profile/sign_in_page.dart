@@ -93,14 +93,17 @@ class _SignInPageState extends State<SignInPage> {
               ),
 
               OutlinedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    await authProvider.signIn(
-                      emailController.text,
-                      passwordController.text,
-                    );
-                  }
-                },
+                onPressed:
+                    authProvider.isLoading
+                        ? null
+                        : () {
+                          if (_formKey.currentState!.validate()) {
+                            authProvider.signIn(
+                              emailController.text,
+                              passwordController.text,
+                            );
+                          }
+                        },
                 style: OutlinedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
                   shape: RoundedRectangleBorder(

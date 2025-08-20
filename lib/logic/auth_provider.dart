@@ -1,20 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/data/models/api_response.dart';
 import 'package:motorix_app/data/services/user_services.dart';
-import 'package:motorix_app/utils/secure_storage.dart';
 
 class AuthProvider extends ChangeNotifier {
   bool isLoading = false;
-
-  Future<bool> isSignedIn() async {
-    String? authToken = await SecureStorage.read('authToken');
-
-    if (authToken == null) {
-      return false;
-    }
-
-    return true;
-  }
+  bool isSignedIn = false;
 
   Future<void> signUp(
     String firstName,
@@ -54,11 +44,11 @@ class AuthProvider extends ChangeNotifier {
 
     if (!response.isSuccess) {
       isLoading = false;
-      // Failed to sign in
       notifyListeners();
       return;
     }
 
+    isSignedIn = true;
     isLoading = false;
     notifyListeners();
   }
@@ -76,6 +66,7 @@ class AuthProvider extends ChangeNotifier {
       return;
     }
 
+    isSignedIn = false;
     isLoading = false;
     notifyListeners();
   }
