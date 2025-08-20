@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:motorix_app/app_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/listing_attributes_provider.dart';
@@ -40,17 +41,29 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
+  State<MyApp> createState() => _MyAppState();
+}
 
+class _MyAppState extends State<MyApp> {
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    final auth = context.read<AuthProvider>();
+    _router = getAppRouter(auth);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
+      routerConfig: _router,
       theme: appTheme,
-      routerConfig: getAppRouter(auth),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
