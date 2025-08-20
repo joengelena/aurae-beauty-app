@@ -22,7 +22,6 @@ GoRouter getAppRouter(AuthProvider authProvider) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/listings',
-    refreshListenable: authProvider,
     routes: [
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
