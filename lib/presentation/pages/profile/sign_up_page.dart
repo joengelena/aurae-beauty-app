@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -134,7 +135,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   controller: emailController,
                   validator: (val) {
                     if (val == null || val.isEmpty) return 'Required';
-                    // Add more email validation if needed
+                    if (!emailRegex.hasMatch(val)) return 'Enter a valid email';
                     return null;
                   },
                   decoration: InputDecoration(
@@ -192,7 +193,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   decoration: InputDecoration(
                     labelText: 'Confirm password',
                     suffixIcon: IconButton(
-                      icon: const Icon(Icons.cancel_outlined),
+                      icon: Icon(Icons.cancel_outlined),
                       onPressed: () => confirmPasswordController.clear(),
                     ),
                   ),
@@ -219,18 +220,21 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
 
                 OutlinedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      await authProvider.signUp(
-                        firstNameController.text,
-                        lastNameController.text,
-                        usernameController.text,
-                        emailController.text,
-                        passwordController.text,
-                        phoneNumberController.text,
-                      );
-                    }
-                  },
+                  onPressed:
+                      authProvider.isLoading
+                          ? null
+                          : () {
+                            if (_formKey.currentState!.validate()) {
+                              authProvider.signUp(
+                                firstNameController.text,
+                                lastNameController.text,
+                                usernameController.text,
+                                emailController.text,
+                                passwordController.text,
+                                phoneNumberController.text,
+                              );
+                            }
+                          },
                   style: OutlinedButton.styleFrom(
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -248,7 +252,19 @@ class _SignUpPageState extends State<SignUpPage> {
                             ? Theme.of(context).colorScheme.secondary
                             : Colors.transparent,
                   ),
-                  child: Text('Sign up'),
+                  child:
+                      authProvider.isLoading
+                          ? SizedBox(
+                            width: 50,
+                            height: 20, // Adjust to match text height
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Theme.of(context).colorScheme.onPrimary,
+                              ),
+                            ),
+                          )
+                          : Text('Sign up'),
                 ),
 
                 Row(

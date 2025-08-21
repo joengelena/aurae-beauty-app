@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class SignInPage extends StatefulWidget {
@@ -76,9 +77,6 @@ class _SignInPageState extends State<SignInPage> {
                 controller: emailController,
                 validator: (val) {
                   if (val == null || val.isEmpty) return 'Required';
-                  final emailRegex = RegExp(
-                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                  );
                   if (!emailRegex.hasMatch(val)) return 'Enter a valid email';
                   return null;
                 },
