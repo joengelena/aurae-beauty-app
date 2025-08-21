@@ -38,7 +38,7 @@ class UserServices {
     });
 
     if (response.statusCode != HttpStatus.ok) {
-      return ApiResponse.failure('Failed to sign in');
+      return ApiResponse.failure(response.body);
     }
 
     return ApiResponse.success(response.body);

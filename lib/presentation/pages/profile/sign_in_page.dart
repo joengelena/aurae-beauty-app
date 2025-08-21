@@ -61,10 +61,25 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
 
+              if (authProvider.signInErrorMessage.isNotEmpty &&
+                  !authProvider.isLoading)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    authProvider.signInErrorMessage,
+                    style: TextStyle(color: Colors.red, fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+
               TextFormField(
                 controller: emailController,
                 validator: (val) {
                   if (val == null || val.isEmpty) return 'Required';
+                  final emailRegex = RegExp(
+                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                  );
+                  if (!emailRegex.hasMatch(val)) return 'Enter a valid email';
                   return null;
                 },
                 decoration: InputDecoration(
