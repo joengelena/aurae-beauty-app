@@ -5,6 +5,7 @@ import 'package:motorix_app/data/services/user_services.dart';
 class AuthProvider extends ChangeNotifier {
   bool isLoading = false;
   bool isSignedIn = false;
+  String signInErrorMessage = '';
 
   Future<void> signUp(
     String firstName,
@@ -42,7 +43,8 @@ class AuthProvider extends ChangeNotifier {
 
     ApiResponse response = await UserServices().signIn(email, password);
 
-    if (!response.isSuccess) {
+    if (!response.isSuccess && response.error != null) {
+      signInErrorMessage = response.error ?? 'Error signing in';
       isLoading = false;
       notifyListeners();
       return;
@@ -51,6 +53,7 @@ class AuthProvider extends ChangeNotifier {
     isSignedIn = true;
     isLoading = false;
     notifyListeners();
+    return;
   }
 
   Future<void> signOut() async {

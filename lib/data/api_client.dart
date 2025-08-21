@@ -45,10 +45,10 @@ class ApiClient {
       body: jsonEncode(data),
     );
 
-    if (path == '/user/signin') {
+    if (path == '/user/signin' && response.statusCode == 200) {
       final res = jsonDecode(response.body);
-      await SecureStorage.write('authToken', res['authToken']);
-      await SecureStorage.write('csrfToken', res['csrfToken']);
+      await SecureStorage.write('authToken', res['authToken'] ?? '');
+      await SecureStorage.write('csrfToken', res['csrfToken'] ?? '');
     }
 
     if (path == '/user/signout') {

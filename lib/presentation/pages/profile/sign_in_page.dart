@@ -123,10 +123,14 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 child:
                     authProvider.isLoading
-                        ? CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Theme.of(context).colorScheme.onPrimary,
+                        ? SizedBox(
+                          width: 50,
+                          height: 20, // Adjust to match text height
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).colorScheme.onPrimary,
+                            ),
                           ),
                         )
                         : Text('Sign in'),
