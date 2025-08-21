@@ -21,6 +21,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   bool agreedToTermsAndConditions = false;
+  bool showCheckboxError = false;
   bool isFormValid = false;
 
   @override
@@ -206,9 +207,17 @@ class _SignUpPageState extends State<SignUpPage> {
                       onChanged: (value) {
                         setState(() {
                           agreedToTermsAndConditions = value!;
+                          showCheckboxError = false;
                           _validateForm();
                         });
                       },
+                      side:
+                          showCheckboxError
+                              ? BorderSide(
+                                color: Theme.of(context).colorScheme.error,
+                                width: 2,
+                              )
+                              : BorderSide(color: Colors.grey),
                     ),
                     Expanded(
                       child: Text(
@@ -219,12 +228,25 @@ class _SignUpPageState extends State<SignUpPage> {
                   ],
                 ),
 
+                if (showCheckboxError)
+                  Padding(
+                    padding: EdgeInsets.only(left: 8.0, bottom: 8.0),
+                    child: Text(
+                      'You must agree to the Terms of Use and Privacy Policy.',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+
                 OutlinedButton(
                   onPressed:
                       authProvider.isLoading
                           ? null
                           : () {
-                            if (_formKey.currentState!.validate()) {
+                            if (_formKey.currentState!.validate() &&
+                                agreedToTermsAndConditions) {
                               authProvider.signUp(
                                 firstNameController.text,
                                 lastNameController.text,
@@ -233,6 +255,10 @@ class _SignUpPageState extends State<SignUpPage> {
                                 passwordController.text,
                                 phoneNumberController.text,
                               );
+                            } else if (!agreedToTermsAndConditions) {
+                              setState(() {
+                                showCheckboxError = true;
+                              });
                             }
                           },
                   style: OutlinedButton.styleFrom(
@@ -255,7 +281,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   child:
                       authProvider.isLoading
                           ? SizedBox(
-                            width: 50,
                             height: 20, // Adjust to match text height
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
