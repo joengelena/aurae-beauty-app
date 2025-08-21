@@ -93,13 +93,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     if (val == null || val.isEmpty) return 'Required';
                     return null;
                   },
-                  decoration: InputDecoration(
-                    labelText: 'First Name',
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.cancel_outlined),
-                      onPressed: () => firstNameController.clear(),
-                    ),
-                  ),
+                  decoration: InputDecoration(labelText: 'First Name'),
                 ),
 
                 TextFormField(
@@ -108,13 +102,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     if (val == null || val.isEmpty) return 'Required';
                     return null;
                   },
-                  decoration: InputDecoration(
-                    labelText: 'Last Name',
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.cancel_outlined),
-                      onPressed: () => lastNameController.clear(),
-                    ),
-                  ),
+                  decoration: InputDecoration(labelText: 'Last Name'),
                 ),
 
                 TextFormField(
@@ -123,13 +111,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     if (val == null || val.isEmpty) return 'Required';
                     return null;
                   },
-                  decoration: InputDecoration(
-                    labelText: 'Username',
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.cancel_outlined),
-                      onPressed: () => usernameController.clear(),
-                    ),
-                  ),
+                  decoration: InputDecoration(labelText: 'Username'),
                 ),
 
                 TextFormField(
@@ -139,13 +121,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     if (!emailRegex.hasMatch(val)) return 'Enter a valid email';
                     return null;
                   },
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.cancel_outlined),
-                      onPressed: () => emailController.clear(),
-                    ),
-                  ),
+                  decoration: InputDecoration(labelText: 'Email'),
                 ),
 
                 TextFormField(
@@ -156,13 +132,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     return null;
                   },
                   keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
-                    labelText: 'Phone Number',
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.cancel_outlined),
-                      onPressed: () => phoneNumberController.clear(),
-                    ),
-                  ),
+                  decoration: InputDecoration(labelText: 'Phone Number'),
                 ),
 
                 TextFormField(
@@ -172,13 +142,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     return null;
                   },
                   obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.cancel_outlined),
-                      onPressed: () => passwordController.clear(),
-                    ),
-                  ),
+                  decoration: InputDecoration(labelText: 'Password'),
                 ),
 
                 TextFormField(
@@ -191,13 +155,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     return null;
                   },
                   obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm password',
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.cancel_outlined),
-                      onPressed: () => confirmPasswordController.clear(),
-                    ),
-                  ),
+                  decoration: InputDecoration(labelText: 'Confirm password'),
                 ),
 
                 Row(

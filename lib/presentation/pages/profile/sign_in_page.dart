@@ -80,13 +80,7 @@ class _SignInPageState extends State<SignInPage> {
                   if (!emailRegex.hasMatch(val)) return 'Enter a valid email';
                   return null;
                 },
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.cancel_outlined),
-                    onPressed: () => emailController.clear(),
-                  ),
-                ),
+                decoration: InputDecoration(labelText: 'Email'),
               ),
 
               TextFormField(
@@ -96,13 +90,7 @@ class _SignInPageState extends State<SignInPage> {
                   return null;
                 },
                 obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.cancel_outlined),
-                    onPressed: () => passwordController.clear(),
-                  ),
-                ),
+                decoration: InputDecoration(labelText: 'Password'),
               ),
 
               OutlinedButton(
