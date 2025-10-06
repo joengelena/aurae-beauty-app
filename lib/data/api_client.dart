@@ -4,6 +4,7 @@ import 'package:motorix_app/utils/secure_storage.dart';
 
 class ApiClient {
   final String _baseUrl = 'http://localhost:4941/api/v1';
+  final String _baseUrlV2 = 'http://localhost:4941/api/v1/v2'; // Supabase routes
   static final http.Client _client = http.Client();
 
   Future<http.Response> get(
@@ -79,5 +80,34 @@ class ApiClient {
     final response = await http.Response.fromStream(streamed);
 
     return response;
+  }
+
+  // V2 API methods for Supabase authentication
+  Future<http.Response> postV2(String path, Map<String, dynamic> data) async {
+    final response = await _client.post(
+      Uri.parse('$_baseUrlV2$path'),
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: jsonEncode(data),
+    );
+
+    // Store user ID from successful signin
+    if (path == '/user/signin' && response.statusCode == 200) {
+      final res = jsonDecode(response.body);
+      await SecureStorage.write('userId', res['userId'] ?? '');
+    }
+
+    // Clear user ID on signout
+    if (path == '/user/signout') {
+      await SecureStorage.delete('userId');
+    }
+
+    return response;
+  }
+
+  // Get stored user ID
+  Future<String?> getUserId() async {
+    return await SecureStorage.read('userId');
   }
 }

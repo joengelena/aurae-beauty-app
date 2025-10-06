@@ -15,7 +15,7 @@ class UserServices {
     String password,
     String phoneNumber,
   ) async {
-    http.Response response = await apiClient.post('/user/signup', {
+    http.Response response = await apiClient.postV2('/user/signup', {
       'firstName': firstName,
       'lastName': lastName,
       'username': username,
@@ -32,7 +32,7 @@ class UserServices {
   }
 
   Future<ApiResponse> signIn(String email, String password) async {
-    http.Response response = await apiClient.post('/user/signin', {
+    http.Response response = await apiClient.postV2('/user/signin', {
       'email': email,
       'password': password,
     });
@@ -45,7 +45,17 @@ class UserServices {
   }
 
   Future<ApiResponse> signOut() async {
-    http.Response response = await apiClient.post('/user/signout', {});
+    // Get userId from secure storage
+    final apiClient = ApiClient();
+    final userId = await apiClient.getUserId();
+
+    if (userId == null) {
+      return ApiResponse.failure('User not signed in');
+    }
+
+    http.Response response = await apiClient.postV2('/user/signout', {
+      'currentUserId': userId,
+    });
 
     if (response.statusCode != HttpStatus.ok) {
       return ApiResponse.failure('Failed to sign out');
