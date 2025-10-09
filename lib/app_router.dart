@@ -22,6 +22,7 @@ GoRouter getAppRouter(AuthProvider authProvider) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/listings',
+    refreshListenable: authProvider,
     redirect: (context, state) {
       final signedIn = authProvider.isSignedIn;
       final path = state.uri.path;
