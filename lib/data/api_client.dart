@@ -43,6 +43,11 @@ class ApiClient {
       body: jsonEncode(data),
     );
 
+    if (path == '/user/signin' && response.statusCode == 200) {
+      final res = jsonDecode(response.body);
+      await SecureStorage.write('userId', res['userId']);
+    }
+
     if (!kIsWeb) {
       if (path == '/user/signin' && response.statusCode == 200) {
         final res = jsonDecode(response.body);
@@ -50,11 +55,13 @@ class ApiClient {
           'accessToken',
           "Bearer ${res['accessToken']}",
         );
-        await SecureStorage.write('refreshToken', res['refreshToken'] ?? '');
+        await SecureStorage.write('refreshToken', res['refreshToken']);
       }
 
       if (path == '/user/signout') {
         await SecureStorage.delete('accessToken');
+        await SecureStorage.delete('refreshToken');
+        await SecureStorage.delete('userId');
       }
     }
 
