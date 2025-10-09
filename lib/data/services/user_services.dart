@@ -15,7 +15,7 @@ class UserServices {
     String password,
     String phoneNumber,
   ) async {
-    http.Response response = await apiClient.postV2('/user/signup', {
+    http.Response response = await apiClient.post('/user/signup', {
       'firstName': firstName,
       'lastName': lastName,
       'username': username,
@@ -32,7 +32,7 @@ class UserServices {
   }
 
   Future<ApiResponse> signIn(String email, String password) async {
-    http.Response response = await apiClient.postV2('/user/signin', {
+    http.Response response = await apiClient.post('/user/signin', {
       'email': email,
       'password': password,
     });
@@ -53,7 +53,7 @@ class UserServices {
       return ApiResponse.failure('User not signed in');
     }
 
-    http.Response response = await apiClient.postV2('/user/signout', {
+    http.Response response = await apiClient.post('/user/signout', {
       'currentUserId': userId,
     });
 
