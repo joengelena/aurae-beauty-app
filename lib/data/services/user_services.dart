@@ -133,4 +133,33 @@ class UserServices {
 
     return ApiResponse<User>.success(User.fromJsonString(response.body));
   }
+
+  Future<bool> refreshSession() async {
+    try {
+      final Map<String, dynamic> requestBody = {};
+
+      if (!kIsWeb) {
+        final refreshToken = await SecureStorage.read('refreshToken');
+        if (refreshToken == null || refreshToken.isEmpty) {
+          return false;
+        }
+        requestBody['refreshToken'] = refreshToken;
+      }
+
+      http.Response response = await apiClient.post(
+        '/user/refresh-token',
+        requestBody,
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        return false;
+      }
+
+      final data = json.decode(response.body);
+      await _storeAuthData(data);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }

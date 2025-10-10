@@ -2,10 +2,18 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:motorix_app/utils/secure_storage.dart';
+import 'package:fetch_client/fetch_client.dart';
 
 class ApiClient {
   final String _baseUrl = 'http://localhost:4941/api/v1';
-  static final http.Client _client = http.Client();
+
+  static final _client =
+      kIsWeb
+          ? FetchClient(
+            mode: RequestMode.cors,
+            credentials: RequestCredentials.cors,
+          )
+          : http.Client();
 
   Future<http.Response> get(
     String path, {
@@ -17,9 +25,7 @@ class ApiClient {
       ),
     );
 
-    final headers = <String, String>{
-      'Content-Type': 'application/json',
-    };
+    final headers = <String, String>{'Content-Type': 'application/json'};
 
     // Only add authorization header for mobile (web uses cookies)
     if (!kIsWeb) {

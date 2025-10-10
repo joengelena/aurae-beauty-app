@@ -10,40 +10,55 @@ class AuthProvider extends ChangeNotifier {
   String signInErrorMessage = '';
 
   /// Check if user is already authenticated on app start
-  /// For mobile: checks for accessToken in secure storage
-  /// For web: makes a test API call (cookie automatically sent by browser)
+  /// Attempts to refresh the session using refresh token
+  /// For mobile: uses refreshToken from secure storage
+  /// For web: uses refreshToken cookie automatically sent by browser
   Future<void> checkAuthStatus() async {
     isLoading = true;
     notifyListeners();
 
     try {
-      if (kIsWeb) {
-        // Web: check if userId exists (cookies handled by browser)
-        // The server will validate the cookie automatically
-        final userId = await SecureStorage.read('userId');
+      final userId = await SecureStorage.read('userId');
 
-        if (userId != null && userId.isNotEmpty) {
-          // Optionally: make a test API call to verify cookie is still valid
-          // For now, trust that userId exists means user was signed in
+      if (userId != null && userId.isNotEmpty) {
+        // Attempt to refresh the session silently
+        // This validates that the refresh token is still valid
+        final refreshSuccess = await UserServices().refreshSession();
+
+        if (refreshSuccess) {
+          // Session refreshed successfully, user is authenticated
           isSignedIn = true;
+        } else {
+          // Refresh failed (token expired or invalid), clear stored data
+          await _clearStoredAuthData();
+          isSignedIn = false;
         }
       } else {
-        final accessToken = await SecureStorage.read('accessToken');
-        final userId = await SecureStorage.read('userId');
-
-        if (accessToken != null &&
-            accessToken.isNotEmpty &&
-            userId != null &&
-            userId.isNotEmpty) {
-          isSignedIn = true;
-        }
+        // No userId stored, user is not authenticated
+        isSignedIn = false;
       }
     } catch (e) {
       debugPrint('Error checking auth status: $e');
+      await _clearStoredAuthData();
       isSignedIn = false;
     } finally {
       isLoading = false;
       notifyListeners();
+    }
+  }
+
+  /// Clear stored authentication data
+  /// Helper method for checkAuthStatus when refresh fails
+  Future<void> _clearStoredAuthData() async {
+    try {
+      await SecureStorage.delete('userId');
+
+      if (!kIsWeb) {
+        await SecureStorage.delete('accessToken');
+        await SecureStorage.delete('refreshToken');
+      }
+    } catch (e) {
+      debugPrint('Error clearing stored auth data: $e');
     }
   }
 
