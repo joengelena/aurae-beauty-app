@@ -3,13 +3,14 @@ import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/presentation/widgets/sign_in_to_access.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class WatchlistPage extends StatelessWidget {
   const WatchlistPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = AuthProvider();
+    final authProvider = context.watch<AuthProvider>();
 
     if (!authProvider.isSignedIn) {
       return const SignInToAccess(message: 'Sign in to view your watchlist.');
