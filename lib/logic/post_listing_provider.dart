@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 
@@ -79,29 +80,31 @@ class PostListingProvider extends ChangeNotifier {
 
   Future<void> postListing() async {
     isLoading = true;
+    errorMessage = '';
+    successfulPost = false;
     notifyListeners();
 
-    final images = await buildFiles(imageBytesList);
-    postListingData['currentUserId'] = 'edd5a17b-aa0f-4317-9226-b6bd80acbd84';
+    try {
+      final images = await buildFiles(imageBytesList);
+      postListingData['currentUserId'] = 'edd5a17b-aa0f-4317-9226-b6bd80acbd84';
 
-    final result = await ListingsServices().postListing(
-      postListingData,
-      images,
-    );
+      final result = await ListingsServices().postListing(
+        postListingData,
+        images,
+      );
 
-    if (!result.isSuccess && result.error != null) {
-      // Show toast that the post listing failed
+      newListingId = result['listingId'] as int?;
+      successfulPost = true;
+    } on NetworkException catch (e) {
+      errorMessage = e.message;
+    } on DataParseException catch (e) {
+      errorMessage = 'Data error: ${e.message}';
+    } catch (e) {
+      errorMessage = 'Failed to post listing';
+      debugPrint('Post listing error: $e');
+    } finally {
       isLoading = false;
-      errorMessage = result.error!;
       notifyListeners();
-      return;
     }
-
-    // Success show the user some feedback that the post of successful
-    newListingId = result.data?['listingId'] as int;
-    isLoading = false;
-    successfulPost = true;
-    notifyListeners();
-    return;
   }
 }

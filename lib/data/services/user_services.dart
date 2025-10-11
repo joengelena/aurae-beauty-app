@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:motorix_app/data/api_client.dart';
-import 'package:motorix_app/data/models/api_response.dart';
+import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/user.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 
 class UserServices {
   static final ApiClient apiClient = ApiClient();
 
-  Future<ApiResponse> signUp(
+  Future<String> signUp(
     String firstName,
     String lastName,
     String username,
@@ -18,55 +18,64 @@ class UserServices {
     String password,
     String phoneNumber,
   ) async {
-    http.Response response = await apiClient.post('/user/signup', {
-      'firstName': firstName,
-      'lastName': lastName,
-      'username': username,
-      'email': email,
-      'password': password,
-      'phoneNumber': phoneNumber,
-    });
-
-    if (response.statusCode != HttpStatus.created) {
-      return ApiResponse.failure('Failed to sign up');
-    }
-
-    return ApiResponse.success(response.body);
-  }
-
-  Future<ApiResponse> signIn(String email, String password) async {
-    http.Response response = await apiClient.post('/user/signin', {
-      'email': email,
-      'password': password,
-    });
-
-    if (response.statusCode != HttpStatus.ok) {
-      return ApiResponse.failure(response.body);
-    }
-
-    // Parse and store authentication data
     try {
-      final data = json.decode(response.body);
+      http.Response response = await apiClient.post('/user/signup', {
+        'firstName': firstName,
+        'lastName': lastName,
+        'username': username,
+        'email': email,
+        'password': password,
+        'phoneNumber': phoneNumber,
+      });
 
-      // Store authentication data based on platform
-      await _storeAuthData(data);
+      if (response.statusCode != HttpStatus.created) {
+        throw AuthException('Failed to sign up', details: response.body);
+      }
 
-      return ApiResponse.success(data);
+      return response.body;
     } catch (e) {
-      return ApiResponse.failure('Invalid response format');
+      if (e is AuthException) rethrow;
+      throw NetworkException(
+        'Network error during sign up',
+        details: e.toString(),
+      );
     }
   }
 
-  /// Store authentication data after successful sign-in
-  /// For mobile: stores userId, accessToken, and refreshToken
-  /// For web: only stores userId (cookies handled by browser)
+  Future<Map<String, dynamic>> signIn(String email, String password) async {
+    try {
+      http.Response response = await apiClient.post('/user/signin', {
+        'email': email,
+        'password': password,
+      });
+
+      if (response.statusCode != HttpStatus.ok) {
+        throw AuthException('Failed to sign in', details: response.body);
+      }
+
+      try {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        await _storeAuthData(data);
+        return data;
+      } catch (e) {
+        throw DataParseException(
+          'Invalid response format',
+          details: e.toString(),
+        );
+      }
+    } catch (e) {
+      if (e is AuthException || e is DataParseException) rethrow;
+      throw NetworkException(
+        'Network error during sign in',
+        details: e.toString(),
+      );
+    }
+  }
+
   Future<void> _storeAuthData(Map<String, dynamic> responseData) async {
     try {
-      // Store userId for both platforms (needed for business logic)
       await SecureStorage.write('userId', responseData['userId'] ?? '');
 
-      // For mobile: store tokens in secure storage
-      // For web: tokens are in httpOnly cookies (handled by browser)
       if (!kIsWeb) {
         await SecureStorage.write(
           'accessToken',
@@ -83,37 +92,38 @@ class UserServices {
     }
   }
 
-  Future<ApiResponse> signOut() async {
-    // Get userId from secure storage
-    final userId = await apiClient.getUserId();
+  Future<String> signOut() async {
+    try {
+      final userId = await apiClient.getUserId();
 
-    if (userId == null) {
-      return ApiResponse.failure('User not signed in');
+      if (userId == null) {
+        throw UnauthenticatedException('User not signed in');
+      }
+
+      http.Response response = await apiClient.post('/user/signout', {
+        'currentUserId': userId,
+      });
+
+      if (response.statusCode != HttpStatus.ok) {
+        throw AuthException('Failed to sign out', details: response.body);
+      }
+
+      await _clearAuthData();
+
+      return response.body;
+    } catch (e) {
+      if (e is UnauthenticatedException || e is AuthException) rethrow;
+      throw NetworkException(
+        'Network error during sign out',
+        details: e.toString(),
+      );
     }
-
-    http.Response response = await apiClient.post('/user/signout', {
-      'currentUserId': userId,
-    });
-
-    if (response.statusCode != HttpStatus.ok) {
-      return ApiResponse.failure('Failed to sign out');
-    }
-
-    // Clear authentication data after successful sign-out
-    await _clearAuthData();
-
-    return ApiResponse.success(response.body);
   }
 
-  /// Clear authentication data after sign-out
-  /// For mobile: deletes userId, accessToken, and refreshToken
-  /// For web: only deletes userId (cookies cleared by server)
   Future<void> _clearAuthData() async {
     try {
       await SecureStorage.delete('userId');
 
-      // For mobile: also delete tokens
-      // For web: cookies are cleared by server (Set-Cookie with expired date)
       if (!kIsWeb) {
         await SecureStorage.delete('accessToken');
         await SecureStorage.delete('refreshToken');
@@ -124,25 +134,56 @@ class UserServices {
     }
   }
 
-  Future<ApiResponse<User>> getUserWithId(String userId) async {
-    http.Response response = await apiClient.get('/users/$userId');
+  Future<User> getUserWithId(String userId) async {
+    try {
+      http.Response response = await apiClient.get('/users/$userId');
 
-    if (response.statusCode != HttpStatus.ok) {
-      return ApiResponse.failure('Failed to get user');
+      if (response.statusCode == HttpStatus.notFound) {
+        throw NotFoundException('User not found with ID: $userId');
+      }
+
+      if (response.statusCode != HttpStatus.ok) {
+        throw NetworkException(
+          'Failed to get user',
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+
+      try {
+        return User.fromJsonString(response.body);
+      } catch (e) {
+        throw DataParseException(
+          'Failed to parse user data',
+          details: e.toString(),
+        );
+      }
+    } catch (e) {
+      if (e is NotFoundException ||
+          e is NetworkException ||
+          e is DataParseException) {
+        rethrow;
+      }
+      throw NetworkException(
+        'Network error getting user',
+        details: e.toString(),
+      );
     }
-
-    return ApiResponse<User>.success(User.fromJsonString(response.body));
   }
 
-  Future<bool> refreshSession() async {
+  Future<void> refreshSession() async {
     try {
       final Map<String, dynamic> requestBody = {};
 
       if (!kIsWeb) {
         final refreshToken = await SecureStorage.read('refreshToken');
         if (refreshToken == null || refreshToken.isEmpty) {
-          return false;
+          throw UnauthenticatedException(
+            'No refresh token available',
+            details: 'User needs to sign in again',
+          );
         }
+
         requestBody['refreshToken'] = refreshToken;
       }
 
@@ -151,15 +192,39 @@ class UserServices {
         requestBody,
       );
 
-      if (response.statusCode != HttpStatus.ok) {
-        return false;
+      if (response.statusCode == HttpStatus.unauthorized) {
+        throw UnauthenticatedException(
+          'Refresh token expired or invalid',
+          details: response.body,
+        );
       }
 
-      final data = json.decode(response.body);
-      await _storeAuthData(data);
-      return true;
+      if (response.statusCode != HttpStatus.ok) {
+        throw AuthException(
+          'Failed to refresh session',
+          details: response.body,
+        );
+      }
+
+      try {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        await _storeAuthData(data);
+      } catch (e) {
+        throw DataParseException(
+          'Failed to parse refresh response',
+          details: e.toString(),
+        );
+      }
     } catch (e) {
-      return false;
+      if (e is UnauthenticatedException ||
+          e is AuthException ||
+          e is DataParseException) {
+        rethrow;
+      }
+      throw NetworkException(
+        'Network error during session refresh',
+        details: e.toString(),
+      );
     }
   }
 }

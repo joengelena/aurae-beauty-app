@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/models/api_response.dart';
+import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/services/user_services.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 
@@ -8,11 +8,8 @@ class AuthProvider extends ChangeNotifier {
   bool isLoading = false;
   bool isSignedIn = false;
   String signInErrorMessage = '';
+  String signUpErrorMessage = '';
 
-  /// Check if user is already authenticated on app start
-  /// Attempts to refresh the session using refresh token
-  /// For mobile: uses refreshToken from secure storage
-  /// For web: uses refreshToken cookie automatically sent by browser
   Future<void> checkAuthStatus() async {
     isLoading = true;
     notifyListeners();
@@ -21,20 +18,22 @@ class AuthProvider extends ChangeNotifier {
       final userId = await SecureStorage.read('userId');
 
       if (userId != null && userId.isNotEmpty) {
-        // Attempt to refresh the session silently
-        // This validates that the refresh token is still valid
-        final refreshSuccess = await UserServices().refreshSession();
-
-        if (refreshSuccess) {
-          // Session refreshed successfully, user is authenticated
+        try {
+          await UserServices().refreshSession();
           isSignedIn = true;
-        } else {
-          // Refresh failed (token expired or invalid), clear stored data
+        } on UnauthenticatedException catch (e) {
+          debugPrint('Unauthenticated on startup: ${e.message}');
           await _clearStoredAuthData();
           isSignedIn = false;
+        } on AuthException catch (e) {
+          debugPrint('Auth error on startup: ${e.message}');
+          await _clearStoredAuthData();
+          isSignedIn = false;
+        } on NetworkException catch (e) {
+          debugPrint('Network error on startup: ${e.message}');
+          isSignedIn = true;
         }
       } else {
-        // No userId stored, user is not authenticated
         isSignedIn = false;
       }
     } catch (e) {
@@ -47,8 +46,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Clear stored authentication data
-  /// Helper method for checkAuthStatus when refresh fails
   Future<void> _clearStoredAuthData() async {
     try {
       await SecureStorage.delete('userId');
@@ -71,62 +68,74 @@ class AuthProvider extends ChangeNotifier {
     String phoneNumber,
   ) async {
     isLoading = true;
+    signUpErrorMessage = '';
     notifyListeners();
 
-    ApiResponse response = await UserServices().signUp(
-      firstName,
-      lastName,
-      username,
-      email,
-      password,
-      phoneNumber,
-    );
+    try {
+      await UserServices().signUp(
+        firstName,
+        lastName,
+        username,
+        email,
+        password,
+        phoneNumber,
+      );
 
-    if (!response.isSuccess) {
+      await signIn(email, password);
+    } on AuthException catch (e) {
+      signUpErrorMessage = e.message;
+    } on NetworkException catch (e) {
+      signUpErrorMessage = 'Network error: ${e.message}';
+    } catch (e) {
+      signUpErrorMessage = 'Unexpected error during sign up';
+      debugPrint('Sign up error: $e');
+    } finally {
       isLoading = false;
-      // Failed to sign out
       notifyListeners();
-      return;
     }
-
-    signIn(email, password);
   }
 
   Future<void> signIn(String email, String password) async {
     isLoading = true;
-    signInErrorMessage = ''; // Clear previous errors
+    signInErrorMessage = '';
     notifyListeners();
 
-    ApiResponse response = await UserServices().signIn(email, password);
-
-    if (!response.isSuccess && response.error != null) {
-      signInErrorMessage = response.error ?? 'Error signing in';
+    try {
+      await UserServices().signIn(email, password);
+      isSignedIn = true;
+    } on AuthException catch (e) {
+      signInErrorMessage = e.message;
+    } on DataParseException catch (e) {
+      signInErrorMessage = 'Data error: ${e.message}';
+    } on NetworkException catch (e) {
+      signInErrorMessage = 'Network error: ${e.message}';
+    } catch (e) {
+      signInErrorMessage = 'Unexpected error during sign in';
+      debugPrint('Sign in error: $e');
+    } finally {
       isLoading = false;
       notifyListeners();
-      return;
     }
-
-    isSignedIn = true;
-    isLoading = false;
-    notifyListeners();
-    return;
   }
 
   Future<void> signOut() async {
     isLoading = true;
     notifyListeners();
 
-    ApiResponse response = await UserServices().signOut();
-
-    if (!response.isSuccess) {
+    try {
+      await UserServices().signOut();
+    } on UnauthenticatedException catch (e) {
+      debugPrint('Unauthenticated during sign out: ${e.message}');
+    } on AuthException catch (e) {
+      debugPrint('Auth error during sign out: ${e.message}');
+    } on NetworkException catch (e) {
+      debugPrint('Network error during sign out: ${e.message}');
+    } catch (e) {
+      debugPrint('Unexpected error during sign out: $e');
+    } finally {
+      isSignedIn = false;
       isLoading = false;
-      // Failed to sign out
       notifyListeners();
-      return;
     }
-
-    isSignedIn = false;
-    isLoading = false;
-    notifyListeners();
   }
 }
