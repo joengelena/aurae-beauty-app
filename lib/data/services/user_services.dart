@@ -6,6 +6,7 @@ import 'package:motorix_app/data/api_client.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/user.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
+import 'package:motorix_app/utils/utils.dart';
 
 class UserServices {
   static final ApiClient apiClient = ApiClient();
@@ -29,7 +30,8 @@ class UserServices {
       });
 
       if (response.statusCode != HttpStatus.created) {
-        throw AuthException('Failed to sign up', details: response.body);
+        final errorMessage = extractErrorMessage(response.body);
+        throw AuthException(errorMessage, details: response.body);
       }
 
       return response.body;
@@ -50,7 +52,8 @@ class UserServices {
       });
 
       if (response.statusCode != HttpStatus.ok) {
-        throw AuthException('Failed to sign in', details: response.body);
+        final errorMessage = extractErrorMessage(response.body);
+        throw AuthException(errorMessage, details: response.body);
       }
 
       try {
@@ -105,7 +108,8 @@ class UserServices {
       });
 
       if (response.statusCode != HttpStatus.ok) {
-        throw AuthException('Failed to sign out', details: response.body);
+        final errorMessage = extractErrorMessage(response.body);
+        throw AuthException(errorMessage, details: response.body);
       }
 
       await _clearAuthData();
@@ -193,17 +197,13 @@ class UserServices {
       );
 
       if (response.statusCode == HttpStatus.unauthorized) {
-        throw UnauthenticatedException(
-          'Refresh token expired or invalid',
-          details: response.body,
-        );
+        final errorMessage = extractErrorMessage(response.body);
+        throw UnauthenticatedException(errorMessage, details: response.body);
       }
 
       if (response.statusCode != HttpStatus.ok) {
-        throw AuthException(
-          'Failed to refresh session',
-          details: response.body,
-        );
+        final errorMessage = extractErrorMessage(response.body);
+        throw AuthException(errorMessage, details: response.body);
       }
 
       try {

@@ -6,6 +6,7 @@ import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/models/pagination.dart';
+import 'package:motorix_app/utils/utils.dart';
 
 class ListingsServices {
   static final ApiClient apiClient = ApiClient();
@@ -15,12 +16,14 @@ class ListingsServices {
       http.Response response = await apiClient.get('/listings/$listingId');
 
       if (response.statusCode == HttpStatus.notFound) {
-        throw NotFoundException('Listing not found with ID: $listingId');
+        final errorMessage = extractErrorMessage(response.body);
+        throw NotFoundException(errorMessage);
       }
 
       if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
         throw NetworkException(
-          'Failed to load listing',
+          errorMessage,
           statusCode: response.statusCode,
           details: response.body,
         );
@@ -57,8 +60,9 @@ class ListingsServices {
       );
 
       if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
         throw NetworkException(
-          'Failed to load listings',
+          errorMessage,
           statusCode: response.statusCode,
           details: response.body,
         );
@@ -92,8 +96,9 @@ class ListingsServices {
       http.Response response = await apiClient.get('/listings/attributes');
 
       if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
         throw NetworkException(
-          'Failed to get listing attributes',
+          errorMessage,
           statusCode: response.statusCode,
           details: response.body,
         );
@@ -140,8 +145,9 @@ class ListingsServices {
       );
 
       if (response.statusCode != HttpStatus.created) {
+        final errorMessage = extractErrorMessage(response.body);
         throw NetworkException(
-          'Failed to post listing',
+          errorMessage,
           statusCode: response.statusCode,
           details: response.body,
         );
