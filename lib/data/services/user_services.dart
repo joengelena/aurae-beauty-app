@@ -196,6 +196,27 @@ class UserServices {
     }
   }
 
+  Future<String> resetPassword(String newPassword) async {
+    try {
+      http.Response response = await apiClient.post('/user/change-password', {
+        'newPassword': newPassword,
+      }, forceAuthHeader: true);
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw AuthException(errorMessage, details: response.body);
+      }
+
+      return response.body;
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw NetworkException(
+        'Network error during password reset',
+        details: e.toString(),
+      );
+    }
+  }
+
   Future<void> refreshSession() async {
     try {
       final Map<String, dynamic> requestBody = {};

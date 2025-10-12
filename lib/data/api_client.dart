@@ -38,16 +38,22 @@ class ApiClient {
     return response;
   }
 
-  Future<http.Response> post(String path, Map<String, dynamic> data) async {
+  Future<http.Response> post(
+    String path,
+    Map<String, dynamic> data, {
+    bool forceAuthHeader = false,
+  }) async {
     final headers = <String, String>{
       'content-type': 'application/json',
       'x-client-type': kIsWeb ? 'web' : 'flutter',
     };
 
-    // Only add authorization header for mobile (web uses cookies)
-    if (!kIsWeb) {
+    // Add authorization header for mobile, or when forced (e.g., password reset)
+    if (!kIsWeb || forceAuthHeader) {
       final String? accessToken = await SecureStorage.read('accessToken');
-      headers['authorization'] = accessToken ?? '';
+      if (accessToken != null && accessToken.isNotEmpty) {
+        headers['authorization'] = accessToken;
+      }
     }
 
     final response = await _client.post(
