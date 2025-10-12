@@ -13,6 +13,8 @@ class AuthProvider extends ChangeNotifier {
   bool forgotPasswordSuccess = false;
   String resetPasswordMessage = '';
   bool resetPasswordSuccess = false;
+  String changePasswordMessage = '';
+  bool changePasswordSuccess = false;
 
   Future<void> checkAuthStatus() async {
     isLoading = true;
@@ -192,10 +194,49 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Clear forgot password state - call when navigating away from forgot password page
+  void clearForgotPasswordState() {
+    forgotPasswordMessage = '';
+    forgotPasswordSuccess = false;
+    // No need to notify listeners since this is called during dispose
+  }
+
   /// Clear reset password state - call when navigating away from reset page
   void clearResetPasswordState() {
     resetPasswordMessage = '';
     resetPasswordSuccess = false;
+    // No need to notify listeners since this is called during dispose
+  }
+
+  Future<void> changePassword(String newPassword) async {
+    isLoading = true;
+    changePasswordMessage = '';
+    changePasswordSuccess = false;
+    notifyListeners();
+
+    try {
+      await UserServices().changePassword(newPassword);
+      changePasswordSuccess = true;
+      changePasswordMessage = 'Your password has been changed successfully.';
+    } on UnauthenticatedException catch (e) {
+      changePasswordMessage = e.message;
+    } on AuthException catch (e) {
+      changePasswordMessage = e.message;
+    } on NetworkException catch (e) {
+      changePasswordMessage = 'Network error: ${e.message}';
+    } catch (e) {
+      changePasswordMessage = 'Unexpected error during password change';
+      debugPrint('Change password error: $e');
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Clear change password state - call when navigating away from change password page
+  void clearChangePasswordState() {
+    changePasswordMessage = '';
+    changePasswordSuccess = false;
     // No need to notify listeners since this is called during dispose
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:motorix_app/presentation/widgets/common/password_field.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -146,18 +147,23 @@ class _SignUpPageState extends State<SignUpPage> {
                   decoration: InputDecoration(labelText: 'Phone Number'),
                 ),
 
-                TextFormField(
+                PasswordField(
                   controller: passwordController,
+                  labelText: 'Password',
+                  textInputAction: TextInputAction.next,
                   validator: (val) {
                     if (val == null || val.isEmpty) return 'Required';
+                    if (val.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
                     return null;
                   },
-                  obscureText: true,
-                  decoration: InputDecoration(labelText: 'Password'),
                 ),
 
-                TextFormField(
+                PasswordField(
                   controller: confirmPasswordController,
+                  labelText: 'Confirm password',
+                  textInputAction: TextInputAction.done,
                   validator: (val) {
                     if (val == null || val.isEmpty) return 'Required';
                     if (val != passwordController.text) {
@@ -165,8 +171,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     }
                     return null;
                   },
-                  obscureText: true,
-                  decoration: InputDecoration(labelText: 'Confirm password'),
                 ),
 
                 Row(

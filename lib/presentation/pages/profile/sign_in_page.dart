@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:motorix_app/presentation/widgets/common/password_field.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -83,14 +84,22 @@ class _SignInPageState extends State<SignInPage> {
                 decoration: InputDecoration(labelText: 'Email'),
               ),
 
-              TextFormField(
+              PasswordField(
                 controller: passwordController,
+                labelText: 'Password',
+                textInputAction: TextInputAction.done,
                 validator: (val) {
                   if (val == null || val.isEmpty) return 'Required';
                   return null;
                 },
-                obscureText: true,
-                decoration: InputDecoration(labelText: 'Password'),
+                onFieldSubmitted: () {
+                  if (_formKey.currentState!.validate()) {
+                    context.read<AuthProvider>().signIn(
+                      emailController.text,
+                      passwordController.text,
+                    );
+                  }
+                },
               ),
 
               Align(

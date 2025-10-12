@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/app_dialog.dart';
+import 'package:motorix_app/presentation/widgets/common/password_field.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
@@ -24,8 +25,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   bool isFormValid = false;
-  bool obscurePassword = true;
-  bool obscureConfirmPassword = true;
   bool hasValidToken = false;
   bool isExtractingToken = true;
 
@@ -320,32 +319,25 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 ),
 
               // New Password
-              TextFormField(
+              PasswordField(
                 controller: passwordController,
-                obscureText: obscurePassword,
+                labelText: 'New Password',
+                autofocus: true,
+                textInputAction: TextInputAction.next,
                 validator: (val) {
                   if (val == null || val.isEmpty) return 'Required';
+                  if (val.length < 6) {
+                    return 'Password must be at least 6 characters';
+                  }
                   return null;
                 },
-                decoration: InputDecoration(
-                  labelText: 'New Password',
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      obscurePassword ? Icons.visibility : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        obscurePassword = !obscurePassword;
-                      });
-                    },
-                  ),
-                ),
               ),
 
               // Confirm Password
-              TextFormField(
+              PasswordField(
                 controller: confirmPasswordController,
-                obscureText: obscureConfirmPassword,
+                labelText: 'Confirm Password',
+                textInputAction: TextInputAction.done,
                 validator: (val) {
                   if (val == null || val.isEmpty) return 'Required';
                   if (val != passwordController.text) {
@@ -353,21 +345,13 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   }
                   return null;
                 },
-                decoration: InputDecoration(
-                  labelText: 'Confirm Password',
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      obscureConfirmPassword
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        obscureConfirmPassword = !obscureConfirmPassword;
-                      });
-                    },
-                  ),
-                ),
+                onFieldSubmitted: () {
+                  if (_formKey.currentState!.validate() && isFormValid) {
+                    context.read<AuthProvider>().resetPassword(
+                      passwordController.text,
+                    );
+                  }
+                },
               ),
 
               OutlinedButton(
