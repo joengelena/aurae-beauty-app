@@ -8,6 +8,31 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const TitleAppBar({super.key, this.currentRoute});
 
+  void _showSignOutDialog(BuildContext context, AuthProvider authProvider) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Sign Out'),
+          content: const Text('Are you sure you want to sign out?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                await authProvider.signOut();
+              },
+              child: const Text('Sign Out'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = context.watch<AuthProvider>();
@@ -38,16 +63,32 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
               ? [
                 PopupMenuButton<String>(
                   icon: Icon(Icons.more_vert),
-                  onSelected: (value) async {
+                  enabled: !authProvider.isLoading,
+                  onSelected: (value) {
                     if (value == 'Sign out') {
-                      await authProvider.signOut();
+                      _showSignOutDialog(context, authProvider);
                     }
                   },
                   itemBuilder:
                       (context) => [
                         PopupMenuItem(
                           value: 'Sign out',
-                          child: Text('Sign out'),
+                          enabled: !authProvider.isLoading,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.logout, size: 20),
+                              const SizedBox(width: 12),
+                              const Text('Sign out'),
+                              if (authProvider.isLoading) ...[
+                                const SizedBox(width: 8),
+                                const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                ),
+                              ],
+                            ],
+                          ),
                         ),
                       ],
                 ),

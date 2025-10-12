@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/models/api_response.dart';
+import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/models/user.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
@@ -19,19 +19,25 @@ class ListingDetailProvider extends ChangeNotifier {
       notifyListeners();
 
       listing = await ListingsServices().getListing(listingId);
-      ApiResponse<User> userResponse = await UserServices().getUserWithId(
-        listing?.userIdFk ?? '',
-      );
 
-      if (!userResponse.isSuccess) {
-        // Failed to get user
-        isLoading = false;
-        notifyListeners();
+      if (listing?.userIdFk != null && listing!.userIdFk.isNotEmpty) {
+        try {
+          listingOwner = await UserServices().getUserWithId(listing!.userIdFk);
+        } on NotFoundException catch (e) {
+          debugPrint('Listing owner not found: ${e.message}');
+          listingOwner = null;
+        } on NetworkException catch (e) {
+          debugPrint('Network error loading user: ${e.message}');
+          listingOwner = null;
+        } on DataParseException catch (e) {
+          debugPrint('Error parsing user data: ${e.message}');
+          listingOwner = null;
+        }
       }
-
-      listingOwner = userResponse.data;
     } catch (e) {
-      debugPrint('Error loading listings: $e');
+      debugPrint('Error loading listing: $e');
+      listing = null;
+      listingOwner = null;
     } finally {
       isLoading = false;
       notifyListeners();

@@ -2,82 +2,173 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:motorix_app/data/api_client.dart';
-import 'package:motorix_app/data/models/api_response.dart';
+import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/models/pagination.dart';
+import 'package:motorix_app/utils/utils.dart';
 
 class ListingsServices {
   static final ApiClient apiClient = ApiClient();
 
   Future<Listing> getListing(int listingId) async {
-    http.Response response = await apiClient.get('/listings/$listingId');
+    try {
+      http.Response response = await apiClient.get('/listings/$listingId');
 
-    if (response.statusCode != HttpStatus.ok) {
-      throw Exception('Failed to load listing');
+      if (response.statusCode == HttpStatus.notFound) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NotFoundException(errorMessage);
+      }
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NetworkException(
+          errorMessage,
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+
+      try {
+        return Listing.fromJsonString(response.body);
+      } catch (e) {
+        throw DataParseException(
+          'Failed to parse listing data',
+          details: e.toString(),
+        );
+      }
+    } catch (e) {
+      if (e is NotFoundException ||
+          e is NetworkException ||
+          e is DataParseException) {
+        rethrow;
+      }
+      throw NetworkException(
+        'Network error getting listing',
+        details: e.toString(),
+      );
     }
-
-    return Listing.fromJsonString(response.body);
   }
 
   Future<PaginatedResponse<Listing>> getAllListings({
     Map<String, dynamic>? allQueries,
   }) async {
-    http.Response response = await apiClient.get(
-      '/listings',
-      queryParameters: allQueries,
-    );
+    try {
+      http.Response response = await apiClient.get(
+        '/listings',
+        queryParameters: allQueries,
+      );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to load listings');
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NetworkException(
+          errorMessage,
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+
+      try {
+        final Map<String, dynamic> body =
+            json.decode(response.body) as Map<String, dynamic>;
+
+        return PaginatedResponse<Listing>.fromJson(
+          body,
+          (json) => Listing.fromJson(json),
+        );
+      } catch (e) {
+        throw DataParseException(
+          'Failed to parse listings data',
+          details: e.toString(),
+        );
+      }
+    } catch (e) {
+      if (e is NetworkException || e is DataParseException) rethrow;
+      throw NetworkException(
+        'Network error getting listings',
+        details: e.toString(),
+      );
     }
-
-    final Map<String, dynamic> body =
-        json.decode(response.body) as Map<String, dynamic>;
-
-    return PaginatedResponse<Listing>.fromJson(
-      body,
-      (json) => Listing.fromJson(json),
-    );
   }
 
   Future<List<ListingAttribute>> getListingAttributes() async {
-    http.Response response = await apiClient.get('/listings/attributes');
+    try {
+      http.Response response = await apiClient.get('/listings/attributes');
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to get listing attributes');
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NetworkException(
+          errorMessage,
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+
+      try {
+        final List<dynamic> body = json.decode(response.body) as List<dynamic>;
+
+        return body
+            .map(
+              (item) => ListingAttribute.fromJson(item as Map<String, dynamic>),
+            )
+            .toList();
+      } catch (e) {
+        throw DataParseException(
+          'Failed to parse listing attributes',
+          details: e.toString(),
+        );
+      }
+    } catch (e) {
+      if (e is NetworkException || e is DataParseException) rethrow;
+      throw NetworkException(
+        'Network error getting listing attributes',
+        details: e.toString(),
+      );
     }
-
-    final List<dynamic> body = json.decode(response.body) as List<dynamic>;
-
-    return body
-        .map((item) => ListingAttribute.fromJson(item as Map<String, dynamic>))
-        .toList();
   }
 
-  Future<ApiResponse<Map<String, dynamic>>> postListing(
+  Future<Map<String, dynamic>> postListing(
     Map<String, Object> listingFields,
     List<http.MultipartFile> images,
   ) async {
-    final Map<String, String> payload = Map.fromEntries(
-      listingFields.entries.map((e) {
-        return MapEntry(e.key, e.value.toString());
-      }),
-    );
+    try {
+      final Map<String, String> payload = Map.fromEntries(
+        listingFields.entries.map((e) {
+          return MapEntry(e.key, e.value.toString());
+        }),
+      );
 
-    http.Response response = await apiClient.postMultipart(
-      '/listings',
-      payload,
-      images,
-    );
+      http.Response response = await apiClient.postMultipart(
+        '/listings',
+        payload,
+        images,
+      );
 
-    if (response.statusCode != HttpStatus.created) {
-      return ApiResponse.failure('Failed to post list please try again later');
+      if (response.statusCode != HttpStatus.created) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NetworkException(
+          errorMessage,
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+
+      try {
+        final Map<String, dynamic> body =
+            json.decode(response.body) as Map<String, dynamic>;
+        return body;
+      } catch (e) {
+        throw DataParseException(
+          'Failed to parse listing response',
+          details: e.toString(),
+        );
+      }
+    } catch (e) {
+      if (e is NetworkException || e is DataParseException) rethrow;
+      throw NetworkException(
+        'Network error posting listing',
+        details: e.toString(),
+      );
     }
-
-    final Map<String, dynamic> body =
-        json.decode(response.body) as Map<String, dynamic>;
-
-    return ApiResponse.success(body);
   }
 }

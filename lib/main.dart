@@ -56,6 +56,12 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     final auth = context.read<AuthProvider>();
     _router = getAppRouter(auth);
+
+    // Check if user is already authenticated (e.g., from previous session)
+    // This must happen after the first frame to avoid calling notifyListeners during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      auth.checkAuthStatus();
+    });
   }
 
   @override

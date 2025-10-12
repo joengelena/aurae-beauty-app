@@ -1,60 +1,60 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:motorix_app/utils/secure_storage.dart';
+import 'package:fetch_client/fetch_client.dart';
 
 class ApiClient {
   final String _baseUrl = 'http://localhost:4941/api/v1';
-  static final http.Client _client = http.Client();
+
+  static final _client =
+      kIsWeb
+          ? FetchClient(
+            mode: RequestMode.cors,
+            credentials: RequestCredentials.cors,
+          )
+          : http.Client();
 
   Future<http.Response> get(
     String path, {
     Map<String, dynamic>? queryParameters,
   }) async {
-    final String? authToken = await SecureStorage.read('authToken');
-    final String? csrfToken = await SecureStorage.read('csrfToken');
-
     final uri = Uri.parse('$_baseUrl$path').replace(
       queryParameters: queryParameters?.map(
         (key, value) => MapEntry(key, value.toString()),
       ),
     );
 
-    final response = await _client.get(
-      uri,
-      headers: {
-        'Content-Type': 'application/json',
-        'mtx-auth-token': authToken ?? '',
-        'mtx-csrf-token': csrfToken ?? '',
-      },
-    );
+    final headers = <String, String>{'Content-Type': 'application/json'};
+
+    // Only add authorization header for mobile (web uses cookies)
+    if (!kIsWeb) {
+      final String? accessToken = await SecureStorage.read('accessToken');
+      headers['authorization'] = accessToken ?? '';
+    }
+
+    final response = await _client.get(uri, headers: headers);
 
     return response;
   }
 
   Future<http.Response> post(String path, Map<String, dynamic> data) async {
-    String? authToken = await SecureStorage.read('authToken');
-    String? csrfToken = await SecureStorage.read('csrfToken');
+    final headers = <String, String>{
+      'content-type': 'application/json',
+      'x-client-type': kIsWeb ? 'web' : 'flutter',
+    };
+
+    // Only add authorization header for mobile (web uses cookies)
+    if (!kIsWeb) {
+      final String? accessToken = await SecureStorage.read('accessToken');
+      headers['authorization'] = accessToken ?? '';
+    }
 
     final response = await _client.post(
       Uri.parse('$_baseUrl$path'),
-      headers: {
-        'content-type': 'application/json',
-        'mtx-auth-token': authToken ?? '',
-        'mtx-csrf-token': csrfToken ?? '',
-      },
+      headers: headers,
       body: jsonEncode(data),
     );
-
-    if (path == '/user/signin' && response.statusCode == 200) {
-      final res = jsonDecode(response.body);
-      await SecureStorage.write('authToken', res['authToken'] ?? '');
-      await SecureStorage.write('csrfToken', res['csrfToken'] ?? '');
-    }
-
-    if (path == '/user/signout') {
-      await SecureStorage.delete('authToken');
-      await SecureStorage.delete('csrfToken');
-    }
 
     return response;
   }
@@ -64,20 +64,26 @@ class ApiClient {
     Map<String, String> fields,
     List<http.MultipartFile> files,
   ) async {
-    final authToken = await SecureStorage.read('authToken');
-    final csrfToken = await SecureStorage.read('csrfToken');
-
     final uri = Uri.parse('$_baseUrl$path');
-    final request =
-        http.MultipartRequest('POST', uri)
-          ..headers['mtx-auth-token'] = authToken ?? ''
-          ..headers['mtx-csrf-token'] = csrfToken ?? ''
-          ..fields.addAll(fields)
-          ..files.addAll(files);
+    final request = http.MultipartRequest('POST', uri);
+
+    // Only add authorization header for mobile (web uses cookies)
+    if (!kIsWeb) {
+      final String? accessToken = await SecureStorage.read('accessToken');
+      request.headers['authorization'] = accessToken ?? '';
+    }
+
+    request.fields.addAll(fields);
+    request.files.addAll(files);
 
     final streamed = await request.send();
     final response = await http.Response.fromStream(streamed);
 
     return response;
+  }
+
+  // Get stored user ID
+  Future<String?> getUserId() async {
+    return await SecureStorage.read('userId');
   }
 }

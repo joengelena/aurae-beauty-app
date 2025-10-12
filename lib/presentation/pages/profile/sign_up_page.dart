@@ -87,6 +87,17 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
 
+                if (authProvider.signUpErrorMessage.isNotEmpty &&
+                    !authProvider.isLoading)
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      authProvider.signUpErrorMessage,
+                      style: TextStyle(color: Colors.red, fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+
                 TextFormField(
                   controller: firstNameController,
                   validator: (val) {
