@@ -9,6 +9,10 @@ class AuthProvider extends ChangeNotifier {
   bool isSignedIn = false;
   String signInErrorMessage = '';
   String signUpErrorMessage = '';
+  String forgotPasswordMessage = '';
+  bool forgotPasswordSuccess = false;
+  String resetPasswordMessage = '';
+  bool resetPasswordSuccess = false;
 
   Future<void> checkAuthStatus() async {
     isLoading = true;
@@ -137,5 +141,61 @@ class AuthProvider extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> forgotPassword(String email) async {
+    isLoading = true;
+    forgotPasswordMessage = '';
+    forgotPasswordSuccess = false;
+    notifyListeners();
+
+    try {
+      await UserServices().forgotPassword(email);
+      forgotPasswordSuccess = true;
+      forgotPasswordMessage =
+          'If an account exists with this email, a password reset link has been sent.';
+    } on AuthException catch (e) {
+      forgotPasswordMessage = e.message;
+    } on NetworkException catch (e) {
+      forgotPasswordMessage = 'Network error: ${e.message}';
+    } catch (e) {
+      forgotPasswordMessage = 'Unexpected error during password reset request';
+      debugPrint('Forgot password error: $e');
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> resetPassword(String newPassword) async {
+    isLoading = true;
+    resetPasswordMessage = '';
+    resetPasswordSuccess = false;
+    notifyListeners();
+
+    try {
+      await UserServices().resetPassword(newPassword);
+      resetPasswordSuccess = true;
+      resetPasswordMessage = 'Your password has been reset successfully.';
+    } on UnauthenticatedException catch (e) {
+      resetPasswordMessage = e.message;
+    } on AuthException catch (e) {
+      resetPasswordMessage = e.message;
+    } on NetworkException catch (e) {
+      resetPasswordMessage = 'Network error: ${e.message}';
+    } catch (e) {
+      resetPasswordMessage = 'Unexpected error during password reset';
+      debugPrint('Reset password error: $e');
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Clear reset password state - call when navigating away from reset page
+  void clearResetPasswordState() {
+    resetPasswordMessage = '';
+    resetPasswordSuccess = false;
+    // No need to notify listeners since this is called during dispose
   }
 }
