@@ -175,6 +175,27 @@ class UserServices {
     }
   }
 
+  Future<String> forgotPassword(String email) async {
+    try {
+      http.Response response = await apiClient.post('/user/forgot-password', {
+        'email': email,
+      });
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw AuthException(errorMessage, details: response.body);
+      }
+
+      return response.body;
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw NetworkException(
+        'Network error during password reset request',
+        details: e.toString(),
+      );
+    }
+  }
+
   Future<void> refreshSession() async {
     try {
       final Map<String, dynamic> requestBody = {};

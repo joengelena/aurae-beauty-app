@@ -93,6 +93,21 @@ class _SignInPageState extends State<SignInPage> {
                 decoration: InputDecoration(labelText: 'Password'),
               ),
 
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    context.go('/profile/forgot-password');
+                  },
+                  child: Text(
+                    'Forgot Password?',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.blue[700],
+                    ),
+                  ),
+                ),
+              ),
+
               OutlinedButton(
                 onPressed:
                     authProvider.isLoading
