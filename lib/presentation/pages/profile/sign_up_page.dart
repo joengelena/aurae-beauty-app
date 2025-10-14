@@ -46,6 +46,7 @@ class _SignUpPageState extends State<SignUpPage> {
     phoneNumberController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    context.read<AuthProvider>().clearSignUpState();
     super.dispose();
   }
 
@@ -70,6 +71,20 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = context.watch<AuthProvider>();
+
+    if (authProvider.signUpSuccess && authProvider.signUpMessage.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Welcome to Motorix!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 5),
+            behavior: SnackBarBehavior.floating,
+            width: 220,
+          ),
+        );
+      });
+    }
 
     return SingleChildScrollView(
       child: Center(

@@ -9,6 +9,8 @@ class AuthProvider extends ChangeNotifier {
   bool isSignedIn = false;
   String signInErrorMessage = '';
   String signUpErrorMessage = '';
+  String signUpMessage = '';
+  bool signUpSuccess = false;
   String forgotPasswordMessage = '';
   bool forgotPasswordSuccess = false;
   String resetPasswordMessage = '';
@@ -75,6 +77,8 @@ class AuthProvider extends ChangeNotifier {
   ) async {
     isLoading = true;
     signUpErrorMessage = '';
+    signUpMessage = '';
+    signUpSuccess = false;
     notifyListeners();
 
     try {
@@ -86,6 +90,10 @@ class AuthProvider extends ChangeNotifier {
         password,
         phoneNumber,
       );
+
+      signUpSuccess = true;
+      signUpMessage = 'Account created successfully!';
+      notifyListeners();
 
       await signIn(email, password);
     } on AuthException catch (e) {
@@ -194,20 +202,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Clear forgot password state - call when navigating away from forgot password page
-  void clearForgotPasswordState() {
-    forgotPasswordMessage = '';
-    forgotPasswordSuccess = false;
-    // No need to notify listeners since this is called during dispose
-  }
-
-  /// Clear reset password state - call when navigating away from reset page
-  void clearResetPasswordState() {
-    resetPasswordMessage = '';
-    resetPasswordSuccess = false;
-    // No need to notify listeners since this is called during dispose
-  }
-
   Future<void> changePassword(String newPassword) async {
     isLoading = true;
     changePasswordMessage = '';
@@ -233,10 +227,26 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Clear change password state - call when navigating away from change password page
+  // The following methods are used by the UI to clear state when navigating away from certain pages
+
   void clearChangePasswordState() {
     changePasswordMessage = '';
     changePasswordSuccess = false;
-    // No need to notify listeners since this is called during dispose
+  }
+
+  void clearSignUpState() {
+    signUpMessage = '';
+    signUpSuccess = false;
+    signUpErrorMessage = '';
+  }
+
+  void clearForgotPasswordState() {
+    forgotPasswordMessage = '';
+    forgotPasswordSuccess = false;
+  }
+
+  void clearResetPasswordState() {
+    resetPasswordMessage = '';
+    resetPasswordSuccess = false;
   }
 }
