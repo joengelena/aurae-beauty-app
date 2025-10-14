@@ -295,4 +295,58 @@ class UserServices {
       );
     }
   }
+
+  Future<void> signUpAndSignIn(
+    String firstName,
+    String lastName,
+    String username,
+    String email,
+    String password,
+    String phoneNumber,
+  ) async {
+    await signUp(firstName, lastName, username, email, password, phoneNumber);
+    await signIn(email, password);
+  }
+
+  Future<bool> checkAuthenticationStatus() async {
+    try {
+      final userId = await SecureStorage.read('userId');
+
+      if (userId == null || userId.isEmpty) {
+        return false;
+      }
+
+      try {
+        await refreshSession();
+        return true;
+      } on UnauthenticatedException catch (_) {
+        await clearAuthData();
+        return false;
+      } on AuthException catch (_) {
+        await clearAuthData();
+        return false;
+      } on NetworkException catch (_) {
+        // Network error - assume user is still authenticated
+        // (offline mode support)
+        return true;
+      }
+    } catch (e) {
+      await clearAuthData();
+      return false;
+    }
+  }
+
+  Future<void> clearAuthData() async {
+    try {
+      await SecureStorage.delete('userId');
+
+      if (!kIsWeb) {
+        await SecureStorage.delete('accessToken');
+        await SecureStorage.delete('refreshToken');
+      }
+    } catch (e) {
+      // Log error but don't fail
+      // In production, use a proper logging framework
+    }
+  }
 }

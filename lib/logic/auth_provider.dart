@@ -1,10 +1,11 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/services/user_services.dart';
-import 'package:motorix_app/utils/secure_storage.dart';
 
 class AuthProvider extends ChangeNotifier {
+  final UserServices _userServices = UserServices();
+
+  // State properties
   bool isLoading = false;
   bool isSignedIn = false;
   String signInErrorMessage = '';
@@ -18,35 +19,15 @@ class AuthProvider extends ChangeNotifier {
   String changePasswordMessage = '';
   bool changePasswordSuccess = false;
 
+  /// Check if user is authenticated on app startup
   Future<void> checkAuthStatus() async {
     isLoading = true;
     notifyListeners();
 
     try {
-      final userId = await SecureStorage.read('userId');
-
-      if (userId != null && userId.isNotEmpty) {
-        try {
-          await UserServices().refreshSession();
-          isSignedIn = true;
-        } on UnauthenticatedException catch (e) {
-          debugPrint('Unauthenticated on startup: ${e.message}');
-          await _clearStoredAuthData();
-          isSignedIn = false;
-        } on AuthException catch (e) {
-          debugPrint('Auth error on startup: ${e.message}');
-          await _clearStoredAuthData();
-          isSignedIn = false;
-        } on NetworkException catch (e) {
-          debugPrint('Network error on startup: ${e.message}');
-          isSignedIn = true;
-        }
-      } else {
-        isSignedIn = false;
-      }
+      isSignedIn = await _userServices.checkAuthenticationStatus();
     } catch (e) {
       debugPrint('Error checking auth status: $e');
-      await _clearStoredAuthData();
       isSignedIn = false;
     } finally {
       isLoading = false;
@@ -54,19 +35,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> _clearStoredAuthData() async {
-    try {
-      await SecureStorage.delete('userId');
-
-      if (!kIsWeb) {
-        await SecureStorage.delete('accessToken');
-        await SecureStorage.delete('refreshToken');
-      }
-    } catch (e) {
-      debugPrint('Error clearing stored auth data: $e');
-    }
-  }
-
+  /// Sign up a new user and automatically sign them in
   Future<void> signUp(
     String firstName,
     String lastName,
@@ -82,7 +51,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await UserServices().signUp(
+      await _userServices.signUpAndSignIn(
         firstName,
         lastName,
         username,
@@ -93,11 +62,11 @@ class AuthProvider extends ChangeNotifier {
 
       signUpSuccess = true;
       signUpMessage = 'Account created successfully!';
-      notifyListeners();
-
-      await signIn(email, password);
+      isSignedIn = true;
     } on AuthException catch (e) {
       signUpErrorMessage = e.message;
+    } on DataParseException catch (e) {
+      signUpErrorMessage = 'Data error: ${e.message}';
     } on NetworkException catch (e) {
       signUpErrorMessage = 'Network error: ${e.message}';
     } catch (e) {
@@ -109,13 +78,14 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Sign in an existing user
   Future<void> signIn(String email, String password) async {
     isLoading = true;
     signInErrorMessage = '';
     notifyListeners();
 
     try {
-      await UserServices().signIn(email, password);
+      await _userServices.signIn(email, password);
       isSignedIn = true;
     } on AuthException catch (e) {
       signInErrorMessage = e.message;
@@ -132,20 +102,16 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Sign out the current user
   Future<void> signOut() async {
     isLoading = true;
     notifyListeners();
 
     try {
-      await UserServices().signOut();
-    } on UnauthenticatedException catch (e) {
-      debugPrint('Unauthenticated during sign out: ${e.message}');
-    } on AuthException catch (e) {
-      debugPrint('Auth error during sign out: ${e.message}');
-    } on NetworkException catch (e) {
-      debugPrint('Network error during sign out: ${e.message}');
+      await _userServices.signOut();
     } catch (e) {
-      debugPrint('Unexpected error during sign out: $e');
+      // Log errors but always sign out locally even if API call fails
+      debugPrint('Error during sign out: $e');
     } finally {
       isSignedIn = false;
       isLoading = false;
@@ -153,6 +119,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Request a password reset email
   Future<void> forgotPassword(String email) async {
     isLoading = true;
     forgotPasswordMessage = '';
@@ -160,7 +127,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await UserServices().forgotPassword(email);
+      await _userServices.forgotPassword(email);
       forgotPasswordSuccess = true;
       forgotPasswordMessage =
           'If an account exists with this email, a password reset link has been sent.';
@@ -177,6 +144,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Reset password using a reset token
   Future<void> resetPassword(String newPassword) async {
     isLoading = true;
     resetPasswordMessage = '';
@@ -184,7 +152,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await UserServices().resetPassword(newPassword);
+      await _userServices.resetPassword(newPassword);
       resetPasswordSuccess = true;
       resetPasswordMessage = 'Your password has been reset successfully.';
     } on UnauthenticatedException catch (e) {
@@ -202,6 +170,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Change password for authenticated user
   Future<void> changePassword(String newPassword) async {
     isLoading = true;
     changePasswordMessage = '';
@@ -209,7 +178,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await UserServices().changePassword(newPassword);
+      await _userServices.changePassword(newPassword);
       changePasswordSuccess = true;
       changePasswordMessage = 'Your password has been changed successfully.';
     } on UnauthenticatedException catch (e) {
