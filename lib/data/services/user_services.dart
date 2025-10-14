@@ -269,4 +269,30 @@ class UserServices {
       );
     }
   }
+
+  Future<String> changePassword(String newPassword) async {
+    try {
+      http.Response response = await apiClient.post('/user/change-password', {
+        'newPassword': newPassword,
+      });
+
+      if (response.statusCode == HttpStatus.unauthorized) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw UnauthenticatedException(errorMessage, details: response.body);
+      }
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw AuthException(errorMessage, details: response.body);
+      }
+
+      return response.body;
+    } catch (e) {
+      if (e is UnauthenticatedException || e is AuthException) rethrow;
+      throw NetworkException(
+        'Network error during password change',
+        details: e.toString(),
+      );
+    }
+  }
 }

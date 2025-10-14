@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:motorix_app/presentation/widgets/common/password_field.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -45,6 +46,7 @@ class _SignUpPageState extends State<SignUpPage> {
     phoneNumberController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    context.read<AuthProvider>().clearSignUpState();
     super.dispose();
   }
 
@@ -69,6 +71,20 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = context.watch<AuthProvider>();
+
+    if (authProvider.signUpSuccess && authProvider.signUpMessage.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Welcome to Motorix!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 5),
+            behavior: SnackBarBehavior.floating,
+            width: 220,
+          ),
+        );
+      });
+    }
 
     return SingleChildScrollView(
       child: Center(
@@ -146,18 +162,23 @@ class _SignUpPageState extends State<SignUpPage> {
                   decoration: InputDecoration(labelText: 'Phone Number'),
                 ),
 
-                TextFormField(
+                PasswordField(
                   controller: passwordController,
+                  labelText: 'Password',
+                  textInputAction: TextInputAction.next,
                   validator: (val) {
                     if (val == null || val.isEmpty) return 'Required';
+                    if (val.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
                     return null;
                   },
-                  obscureText: true,
-                  decoration: InputDecoration(labelText: 'Password'),
                 ),
 
-                TextFormField(
+                PasswordField(
                   controller: confirmPasswordController,
+                  labelText: 'Confirm password',
+                  textInputAction: TextInputAction.done,
                   validator: (val) {
                     if (val == null || val.isEmpty) return 'Required';
                     if (val != passwordController.text) {
@@ -165,8 +186,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     }
                     return null;
                   },
-                  obscureText: true,
-                  decoration: InputDecoration(labelText: 'Confirm password'),
                 ),
 
                 Row(

@@ -58,7 +58,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     emailController.dispose();
     // Clean up listener if still active
     try {
-      context.read<AuthProvider>().removeListener(_onAuthStateChanged);
+      final authProvider = context.read<AuthProvider>();
+      authProvider.removeListener(_onAuthStateChanged);
+      authProvider.clearForgotPasswordState();
     } catch (e) {
       // Listener already removed or context unavailable
     }
