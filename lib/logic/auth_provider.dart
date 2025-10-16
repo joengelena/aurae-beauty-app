@@ -63,15 +63,13 @@ class AuthProvider extends ChangeNotifier {
       signUpSuccess = true;
       signUpMessage = 'Account created successfully!';
       isSignedIn = true;
-    } on AuthException catch (e) {
-      signUpErrorMessage = e.message;
-    } on DataParseException catch (e) {
-      signUpErrorMessage = 'Data error: ${e.message}';
-    } on NetworkException catch (e) {
-      signUpErrorMessage = 'Network error: ${e.message}';
     } catch (e) {
-      signUpErrorMessage = 'Unexpected error during sign up';
-      debugPrint('Sign up error: $e');
+      if (e is AppException) {
+        signUpErrorMessage = e.message;
+      } else {
+        signUpErrorMessage = 'Unexpected error occurred';
+        debugPrint('Sign up error: $e');
+      }
     } finally {
       isLoading = false;
       notifyListeners();
@@ -87,15 +85,13 @@ class AuthProvider extends ChangeNotifier {
     try {
       await _userServices.signIn(email, password);
       isSignedIn = true;
-    } on AuthException catch (e) {
-      signInErrorMessage = e.message;
-    } on DataParseException catch (e) {
-      signInErrorMessage = 'Data error: ${e.message}';
-    } on NetworkException catch (e) {
-      signInErrorMessage = 'Network error: ${e.message}';
     } catch (e) {
-      signInErrorMessage = 'Unexpected error during sign in';
-      debugPrint('Sign in error: $e');
+      if (e is AppException) {
+        signInErrorMessage = e.message;
+      } else {
+        signInErrorMessage = 'Unexpected error occurred';
+        debugPrint('Sign in error: $e');
+      }
     } finally {
       isLoading = false;
       notifyListeners();
@@ -131,13 +127,13 @@ class AuthProvider extends ChangeNotifier {
       forgotPasswordSuccess = true;
       forgotPasswordMessage =
           'If an account exists with this email, a password reset link has been sent.';
-    } on AuthException catch (e) {
-      forgotPasswordMessage = e.message;
-    } on NetworkException catch (e) {
-      forgotPasswordMessage = 'Network error: ${e.message}';
     } catch (e) {
-      forgotPasswordMessage = 'Unexpected error during password reset request';
-      debugPrint('Forgot password error: $e');
+      if (e is AppException) {
+        forgotPasswordMessage = e.message;
+      } else {
+        forgotPasswordMessage = 'Unexpected error occurred';
+        debugPrint('Forgot password error: $e');
+      }
     } finally {
       isLoading = false;
       notifyListeners();
@@ -155,15 +151,13 @@ class AuthProvider extends ChangeNotifier {
       await _userServices.resetPassword(newPassword);
       resetPasswordSuccess = true;
       resetPasswordMessage = 'Your password has been reset successfully.';
-    } on UnauthenticatedException catch (e) {
-      resetPasswordMessage = e.message;
-    } on AuthException catch (e) {
-      resetPasswordMessage = e.message;
-    } on NetworkException catch (e) {
-      resetPasswordMessage = 'Network error: ${e.message}';
     } catch (e) {
-      resetPasswordMessage = 'Unexpected error during password reset';
-      debugPrint('Reset password error: $e');
+      if (e is AppException) {
+        resetPasswordMessage = e.message;
+      } else {
+        resetPasswordMessage = 'Unexpected error occurred';
+        debugPrint('Reset password error: $e');
+      }
     } finally {
       isLoading = false;
       notifyListeners();
@@ -181,15 +175,13 @@ class AuthProvider extends ChangeNotifier {
       await _userServices.changePassword(newPassword);
       changePasswordSuccess = true;
       changePasswordMessage = 'Your password has been changed successfully.';
-    } on UnauthenticatedException catch (e) {
-      changePasswordMessage = e.message;
-    } on AuthException catch (e) {
-      changePasswordMessage = e.message;
-    } on NetworkException catch (e) {
-      changePasswordMessage = 'Network error: ${e.message}';
     } catch (e) {
-      changePasswordMessage = 'Unexpected error during password change';
-      debugPrint('Change password error: $e');
+      if (e is AppException) {
+        changePasswordMessage = e.message;
+      } else {
+        changePasswordMessage = 'Unexpected error occurred';
+        debugPrint('Change password error: $e');
+      }
     } finally {
       isLoading = false;
       notifyListeners();

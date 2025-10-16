@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 
@@ -25,7 +26,11 @@ class ListingAttributesProvider extends ChangeNotifier {
           attribute.name: attribute.attributeValues.first,
       };
     } catch (e) {
-      debugPrint('Error loading filters: $e');
+      if (e is AppException) {
+        debugPrint('Error loading filters: ${e.message}');
+      } else {
+        debugPrint('Error loading filters: $e');
+      }
     } finally {
       notifyListeners();
     }

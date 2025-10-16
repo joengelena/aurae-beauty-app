@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 
@@ -72,7 +73,11 @@ class ListingsProvider extends ChangeNotifier {
       currentPage = resp.pageNumber;
       totalListings = resp.totalRows;
     } catch (e) {
-      debugPrint('Error loading listings: $e');
+      if (e is AppException) {
+        debugPrint('Error loading listings: ${e.message}');
+      } else {
+        debugPrint('Error loading listings: $e');
+      }
     } finally {
       isLoading = false;
       notifyListeners();

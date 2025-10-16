@@ -35,15 +35,13 @@ class ProfileProvider extends ChangeNotifier {
 
     try {
       currentUser = await _userServices.getUserWithId(userId);
-    } on NotFoundException catch (e) {
-      errorMessage = e.message;
-    } on NetworkException catch (e) {
-      errorMessage = 'Network error: ${e.message}';
-    } on DataParseException catch (e) {
-      errorMessage = 'Data error: ${e.message}';
     } catch (e) {
-      errorMessage = 'Failed to load profile';
-      debugPrint('Profile fetch error: $e');
+      if (e is AppException) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = 'Failed to load profile';
+        debugPrint('Profile fetch error: $e');
+      }
     } finally {
       isLoading = false;
       notifyListeners();

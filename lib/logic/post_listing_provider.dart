@@ -26,7 +26,11 @@ class PostListingProvider extends ChangeNotifier {
     try {
       listingAttributeOptions = await ListingsServices().getListingAttributes();
     } catch (e) {
-      debugPrint('Error loading filters: $e');
+      if (e is AppException) {
+        debugPrint('Error loading filters: ${e.message}');
+      } else {
+        debugPrint('Error loading filters: $e');
+      }
     } finally {
       notifyListeners();
     }
@@ -95,13 +99,13 @@ class PostListingProvider extends ChangeNotifier {
 
       newListingId = result['listingId'] as int?;
       successfulPost = true;
-    } on NetworkException catch (e) {
-      errorMessage = e.message;
-    } on DataParseException catch (e) {
-      errorMessage = 'Data error: ${e.message}';
     } catch (e) {
-      errorMessage = 'Failed to post listing';
-      debugPrint('Post listing error: $e');
+      if (e is AppException) {
+        errorMessage = e.message;
+      } else {
+        errorMessage = 'Failed to post listing';
+        debugPrint('Post listing error: $e');
+      }
     } finally {
       isLoading = false;
       notifyListeners();
