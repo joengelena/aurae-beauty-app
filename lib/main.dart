@@ -25,17 +25,8 @@ void main() {
         ChangeNotifierProvider<ListingAttributesProvider>(
           create: (_) => ListingAttributesProvider(),
         ),
-        ChangeNotifierProxyProvider<
-          ListingAttributesProvider,
-          ListingsProvider
-        >(
+        ChangeNotifierProvider<ListingsProvider>(
           create: (_) => ListingsProvider(),
-          update: (_, listingAttributesProvider, listingsProvider) {
-            listingsProvider!.updateSelectedEqualFilters(
-              listingAttributesProvider.selectedEqualFilters,
-            );
-            return listingsProvider;
-          },
         ),
         ChangeNotifierProvider<PostListingProvider>(
           create: (_) => PostListingProvider(),

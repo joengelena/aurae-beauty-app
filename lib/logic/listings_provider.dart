@@ -103,7 +103,7 @@ class ListingsProvider extends ChangeNotifier {
     );
   }
 
-  void updateSelectedEqualFilters(Map<String, String> newEqualFilters) {
+  void applyFilters(Map<String, String> newEqualFilters) {
     equalFilters = Map.from(newEqualFilters);
     getNewListings();
   }

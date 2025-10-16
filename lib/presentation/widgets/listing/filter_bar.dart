@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/listing_attributes_provider.dart';
+import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:provider/provider.dart';
 
 class FilterBar extends StatelessWidget {
@@ -21,11 +22,13 @@ class FilterBar extends StatelessWidget {
     String filterKey,
     String filterValue,
   ) {
-    final provider = context.read<ListingAttributesProvider>();
+    final attributesProvider = context.read<ListingAttributesProvider>();
+    final listingsProvider = context.read<ListingsProvider>();
 
     return FilledButton(
       onPressed: () {
-        provider.updateEqualFilter(filterKey, 'None');
+        attributesProvider.updateEqualFilter(filterKey, 'None');
+        listingsProvider.applyFilters(attributesProvider.selectedEqualFilters);
       },
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.all(
@@ -52,11 +55,11 @@ class FilterBar extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (BuildContext context) {
-        final provider = context.watch<ListingAttributesProvider>();
-        final listingAttributeOptions = provider.listingAttributeOptions;
-        final selectedEqualFilters = provider.selectedEqualFilters;
-        final updateSelectedEqualFilter = provider.updateEqualFilter;
+      builder: (BuildContext modalContext) {
+        final attributesProvider = context.watch<ListingAttributesProvider>();
+        final listingsProvider = context.read<ListingsProvider>();
+        final listingAttributeOptions = attributesProvider.listingAttributeOptions;
+        final selectedEqualFilters = attributesProvider.selectedEqualFilters;
 
         return Padding(
           padding: EdgeInsets.all(16),
@@ -109,9 +112,12 @@ class FilterBar extends StatelessWidget {
                                         }).toList(),
                                     onChanged: (newVal) {
                                       if (newVal != null) {
-                                        updateSelectedEqualFilter(
+                                        attributesProvider.updateEqualFilter(
                                           attributeOption.name,
                                           newVal,
+                                        );
+                                        listingsProvider.applyFilters(
+                                          attributesProvider.selectedEqualFilters,
                                         );
                                       }
                                     },

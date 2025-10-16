@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/logic/listing_attributes_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_preview.dart';
@@ -12,14 +13,15 @@ class InfiniteGrid extends StatefulWidget {
 
 class _InfiniteGridState extends State<InfiniteGrid> {
   final ScrollController _scrollController = ScrollController();
+  bool _hasInitialized = false;
 
   @override
   void initState() {
     super.initState();
 
-    // Wait until the widget has finished building first before "getNewListings()"
+    // Wait until the widget has finished building first
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ListingsProvider>().getNewListings();
+      _initializeListings();
     });
 
     // Scroll listener
@@ -31,6 +33,25 @@ class _InfiniteGridState extends State<InfiniteGrid> {
         provider.getMoreListings();
       }
     });
+  }
+
+  Future<void> _initializeListings() async {
+    if (_hasInitialized) return;
+    _hasInitialized = true;
+
+    final attributesProvider = context.read<ListingAttributesProvider>();
+    final listingsProvider = context.read<ListingsProvider>();
+
+    // Wait for attributes to load (if not already loaded)
+    while (attributesProvider.listingAttributeOptions.isEmpty) {
+      await Future.delayed(Duration(milliseconds: 50));
+    }
+
+    // Set initial filters from attributes provider
+    listingsProvider.equalFilters = Map.from(attributesProvider.selectedEqualFilters);
+
+    // Now fetch listings with the initialized filters
+    await listingsProvider.getNewListings();
   }
 
   @override
