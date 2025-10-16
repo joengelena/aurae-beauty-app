@@ -6,6 +6,7 @@ import 'package:motorix_app/logic/listing_attributes_provider.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:motorix_app/logic/profile_provider.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +15,13 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
+        ChangeNotifierProxyProvider<AuthProvider, ProfileProvider>(
+          create: (_) => ProfileProvider(),
+          update: (context, authProvider, profileProvider) {
+            profileProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return profileProvider;
+          },
+        ),
         ChangeNotifierProvider<ListingAttributesProvider>(
           create: (_) => ListingAttributesProvider(),
         ),
