@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
@@ -17,7 +18,7 @@ class PostListingProvider extends ChangeNotifier {
   String errorMessage = '';
   List<ListingAttribute> listingAttributeOptions = [];
   final List<Uint8List> imageBytesList = [];
-  final List<String> imagePaths = [];
+  final List<String> imageNames = [];
   final Map<String, Object> postListingData = {};
   final picker = ImagePicker();
   bool canPickImage() => imageBytesList.length < 10;
@@ -44,20 +45,42 @@ class PostListingProvider extends ChangeNotifier {
     if (pickedImage != null) {
       final bytes = await pickedImage.readAsBytes();
       imageBytesList.add(bytes);
-      imagePaths.add(pickedImage.path);
+      imageNames.add(pickedImage.name);
     }
     notifyListeners();
+  }
+
+  MediaType _getMediaType(String filename) {
+    final extension = filename.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'jpg':
+      case 'jpeg':
+        return MediaType('image', 'jpeg');
+      case 'png':
+        return MediaType('image', 'png');
+      case 'webp':
+        return MediaType('image', 'webp');
+      case 'heic':
+        return MediaType('image', 'heic');
+      case 'heif':
+        return MediaType('image', 'heif');
+      default:
+        return MediaType('image', 'jpeg'); // Default fallback
+    }
   }
 
   Future<List<http.MultipartFile>> buildFiles(
     List<Uint8List> pickedImageBytes,
   ) {
     return Future.wait(
-      pickedImageBytes.map((imageBytes) async {
+      List.generate(pickedImageBytes.length, (index) async {
+        final imageBytes = pickedImageBytes[index];
+        final imageName = imageNames[index];
         return http.MultipartFile.fromBytes(
           'images',
           imageBytes,
-          filename: 'images',
+          filename: imageName,
+          contentType: _getMediaType(imageName),
         );
       }),
     );
@@ -65,7 +88,7 @@ class PostListingProvider extends ChangeNotifier {
 
   void removeImage(int index) {
     imageBytesList.removeAt(index);
-    imagePaths.removeAt(index);
+    imageNames.removeAt(index);
     notifyListeners();
   }
 
@@ -79,7 +102,7 @@ class PostListingProvider extends ChangeNotifier {
     successfulPost = false;
     errorMessage = '';
     imageBytesList.clear();
-    imagePaths.clear();
+    imageNames.clear();
   }
 
   Future<void> postListing() async {

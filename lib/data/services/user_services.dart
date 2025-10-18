@@ -82,7 +82,7 @@ class UserServices {
       if (!kIsWeb) {
         await SecureStorage.write(
           'accessToken',
-          "Bearer ${responseData['accessToken'] ?? ''}",
+          responseData['accessToken'] ?? '',
         );
         await SecureStorage.write(
           'refreshToken',

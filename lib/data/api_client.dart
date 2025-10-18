@@ -30,7 +30,9 @@ class ApiClient {
     // Only add authorization header for mobile (web uses cookies)
     if (!kIsWeb) {
       final String? accessToken = await SecureStorage.read('accessToken');
-      headers['authorization'] = accessToken ?? '';
+      if (accessToken != null && accessToken.isNotEmpty) {
+        headers['authorization'] = 'Bearer $accessToken';
+      }
     }
 
     final response = await _client.get(uri, headers: headers);
@@ -52,7 +54,7 @@ class ApiClient {
     if (!kIsWeb || forceAuthHeader) {
       final String? accessToken = await SecureStorage.read('accessToken');
       if (accessToken != null && accessToken.isNotEmpty) {
-        headers['authorization'] = accessToken;
+        headers['authorization'] = 'Bearer $accessToken';
       }
     }
 
@@ -73,16 +75,18 @@ class ApiClient {
     final uri = Uri.parse('$_baseUrl$path');
     final request = http.MultipartRequest('POST', uri);
 
-    // Only add authorization header for mobile (web uses cookies)
+    // Only add authorization header for mobile (web uses cookies via FetchClient)
     if (!kIsWeb) {
       final String? accessToken = await SecureStorage.read('accessToken');
-      request.headers['authorization'] = accessToken ?? '';
+      if (accessToken != null && accessToken.isNotEmpty) {
+        request.headers['authorization'] = 'Bearer $accessToken';
+      }
     }
 
     request.fields.addAll(fields);
     request.files.addAll(files);
 
-    final streamed = await request.send();
+    final streamed = await _client.send(request);
     final response = await http.Response.fromStream(streamed);
 
     return response;
