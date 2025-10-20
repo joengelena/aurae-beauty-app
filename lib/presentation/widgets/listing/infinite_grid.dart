@@ -75,21 +75,19 @@ class _InfiniteGridState extends State<InfiniteGrid> {
 
     return ListView(
       controller: _scrollController,
-      padding: EdgeInsets.zero,
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       children: [
-        Center(
-          child: Wrap(
-            spacing: 6,
-            runSpacing: 16,
-            alignment: WrapAlignment.center,
-            children:
-                provider.listings
-                    .map(
-                      (listing) =>
-                          ListingPreview(width: previewWidth, listing: listing),
-                    )
-                    .toList(),
-          ),
+        Wrap(
+          spacing: 6,
+          runSpacing: 16,
+          alignment: WrapAlignment.start,
+          children:
+              provider.listings
+                  .map(
+                    (listing) =>
+                        ListingPreview(width: previewWidth, listing: listing),
+                  )
+                  .toList(),
         ),
 
         if (provider.isLoading)
