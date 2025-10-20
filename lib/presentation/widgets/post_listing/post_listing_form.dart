@@ -15,12 +15,88 @@ class PostListingForm extends StatefulWidget {
 
 class _PostListingFormState extends State<PostListingForm> {
   final _formKey = GlobalKey<FormState>();
+  final _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _scrollToFirstError() async {
+    // Allow time for validation error states to be applied
+    await Future.delayed(Duration(milliseconds: 50));
+
+    final formContext = _formKey.currentContext;
+    if (formContext == null) return;
+
+    final firstErrorField = _findFirstErrorField(formContext);
+    if (firstErrorField == null) return;
+
+    await _scrollToField(firstErrorField);
+  }
+
+  RenderBox? _findFirstErrorField(BuildContext formContext) {
+    RenderBox? firstErrorField;
+
+    void visitor(Element element) {
+      if (element.widget is FormField) {
+        final fieldState = element as StatefulElement;
+        final state = fieldState.state;
+
+        if (state is FormFieldState && state.hasError) {
+          final renderObject = element.renderObject;
+          if (renderObject is RenderBox && renderObject.attached) {
+            firstErrorField ??= renderObject;
+            return; // Found the first error, stop searching
+          }
+        }
+      }
+      element.visitChildElements(visitor);
+    }
+
+    formContext.visitChildElements(visitor);
+    return firstErrorField;
+  }
+
+  Future<void> _scrollToField(RenderBox fieldRenderBox) async {
+    try {
+      final scrollableRenderBox = _scrollController
+          .position.context.notificationContext?.findRenderObject() as RenderBox?;
+
+      if (scrollableRenderBox == null) return;
+
+      // Calculate field position relative to scrollable viewport
+      final fieldGlobalPosition = fieldRenderBox.localToGlobal(Offset.zero);
+      final scrollableGlobalPosition = scrollableRenderBox.localToGlobal(Offset.zero);
+      final relativePosition = fieldGlobalPosition.dy - scrollableGlobalPosition.dy;
+
+      // Calculate target scroll with padding from top
+      const topPadding = 150.0;
+      final currentScroll = _scrollController.position.pixels;
+      final targetScroll = currentScroll + relativePosition - topPadding;
+
+      await _scrollController.animateTo(
+        targetScroll.clamp(0.0, _scrollController.position.maxScrollExtent),
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    } catch (e) {
+      // Fallback: scroll to top if calculation fails
+      await _scrollController.animateTo(
+        0,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.read<PostListingProvider>();
 
     return SingleChildScrollView(
+      controller: _scrollController,
       padding: EdgeInsets.all(16),
       child: Center(
         child: ConstrainedBox(
@@ -43,6 +119,9 @@ class _PostListingFormState extends State<PostListingForm> {
                           : () {
                             if (_formKey.currentState!.validate()) {
                               provider.postListing();
+                            } else {
+                              // Validation failed, scroll to first error
+                              _scrollToFirstError();
                             }
                           },
                   child:
