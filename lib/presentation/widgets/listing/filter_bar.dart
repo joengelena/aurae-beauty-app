@@ -56,8 +56,8 @@ class FilterBar extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext modalContext) {
-        final attributesProvider = context.watch<ListingAttributesProvider>();
-        final listingsProvider = context.read<ListingsProvider>();
+        final attributesProvider = modalContext.watch<ListingAttributesProvider>();
+        final listingsProvider = modalContext.read<ListingsProvider>();
         final listingAttributeOptions = attributesProvider.listingAttributeOptions;
         final selectedEqualFilters = attributesProvider.selectedEqualFilters;
 
