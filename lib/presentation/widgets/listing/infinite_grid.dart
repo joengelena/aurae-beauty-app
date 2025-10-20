@@ -12,87 +12,134 @@ class InfiniteGrid extends StatefulWidget {
 }
 
 class _InfiniteGridState extends State<InfiniteGrid> {
+  static const _scrollThreshold = 200.0;
+  static const _largeScreenWidth = 1000.0;
+  static const _mediumScreenWidth = 600.0;
+  static const _itemSpacing = 6.0;
+  static const _itemRunSpacing = 16.0;
+  static const _gridPadding = EdgeInsets.symmetric(horizontal: 8, vertical: 8);
+  static const _loadingPadding = EdgeInsets.all(16);
+  static const _initTimeout = Duration(seconds: 5);
+
   final ScrollController _scrollController = ScrollController();
   bool _hasInitialized = false;
 
   @override
   void initState() {
     super.initState();
-
-    // Wait until the widget has finished building first
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeListings();
     });
-
-    // Scroll listener
-    _scrollController.addListener(() {
-      final provider = context.read<ListingsProvider>();
-      if (_scrollController.position.pixels >=
-              _scrollController.position.maxScrollExtent - 200 &&
-          provider.canLoadMore) {
-        provider.getMoreListings();
-      }
-    });
-  }
-
-  Future<void> _initializeListings() async {
-    if (_hasInitialized) return;
-    _hasInitialized = true;
-
-    final attributesProvider = context.read<ListingAttributesProvider>();
-    final listingsProvider = context.read<ListingsProvider>();
-
-    // Wait for attributes to load (if not already loaded)
-    while (attributesProvider.listingAttributeOptions.isEmpty) {
-      await Future.delayed(Duration(milliseconds: 50));
-    }
-
-    // Set initial filters from attributes provider
-    listingsProvider.equalFilters = Map.from(attributesProvider.selectedEqualFilters);
-
-    // Now fetch listings with the initialized filters
-    await listingsProvider.getNewListings();
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (!mounted || !_scrollController.hasClients) return;
+
+    final provider = context.read<ListingsProvider>();
+    final position = _scrollController.position;
+    final isNearBottom =
+        position.pixels >= position.maxScrollExtent - _scrollThreshold;
+
+    if (isNearBottom && provider.canLoadMore && !provider.isLoading) {
+      provider.getMoreListings();
+    }
+  }
+
+  Future<void> _initializeListings() async {
+    if (_hasInitialized || !mounted) return;
+    _hasInitialized = true;
+
+    try {
+      final attributesProvider = context.read<ListingAttributesProvider>();
+      final listingsProvider = context.read<ListingsProvider>();
+
+      await _waitForAttributes(attributesProvider).timeout(
+        _initTimeout,
+        onTimeout: () {
+          debugPrint('Timeout waiting for listing attributes');
+        },
+      );
+
+      if (!mounted) return;
+
+      // Set initial filters
+      listingsProvider.equalFilters = Map.from(
+        attributesProvider.selectedEqualFilters,
+      );
+
+      // Fetch listings
+      await listingsProvider.getNewListings();
+    } catch (e) {
+      if (mounted) {
+        debugPrint('Error initializing listings: $e');
+        // TODO: Show error state to user
+      }
+    }
+  }
+
+  Future<void> _waitForAttributes(ListingAttributesProvider provider) async {
+    while (provider.listingAttributeOptions.isEmpty) {
+      await Future.delayed(const Duration(milliseconds: 50));
+    }
+  }
+
+  int _getCrossAxisCount(double width) {
+    if (width > _largeScreenWidth) return 4;
+    if (width > _mediumScreenWidth) return 3;
+    return 2;
+  }
+
+  double _calculateItemWidth(double screenWidth, int crossAxisCount) {
+    final horizontalPadding = _gridPadding.horizontal;
+    final totalSpacing =
+        horizontalPadding + (_itemSpacing * (crossAxisCount - 1));
+    return (screenWidth - totalSpacing) / crossAxisCount;
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ListingsProvider>();
+    final screenWidth = MediaQuery.of(context).size.width;
+    final crossAxisCount = _getCrossAxisCount(screenWidth);
+    final itemWidth = _calculateItemWidth(screenWidth, crossAxisCount);
 
-    final width = MediaQuery.of(context).size.width;
-    final crossAxisCount =
-        width > 1000
-            ? 4
-            : width > 600
-            ? 3
-            : 2;
-    final previewWidth = (width - (15 * crossAxisCount)) / crossAxisCount;
+    // Handle empty state
+    if (provider.listings.isEmpty && !provider.isLoading) {
+      return Center(
+        child: Text(
+          'No listings found',
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      );
+    }
 
     return ListView(
       controller: _scrollController,
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: _gridPadding,
       children: [
         Wrap(
-          spacing: 6,
-          runSpacing: 16,
+          spacing: _itemSpacing,
+          runSpacing: _itemRunSpacing,
           alignment: WrapAlignment.start,
-          children:
-              provider.listings
-                  .map(
-                    (listing) =>
-                        ListingPreview(width: previewWidth, listing: listing),
-                  )
-                  .toList(),
+          children: List.generate(
+            provider.listings.length,
+            (index) => ListingPreview(
+              width: itemWidth,
+              listing: provider.listings[index],
+            ),
+          ),
         ),
-
         if (provider.isLoading)
-          Padding(
-            padding: EdgeInsets.all(16),
+          const Padding(
+            padding: _loadingPadding,
             child: Center(child: CircularProgressIndicator()),
           ),
       ],
