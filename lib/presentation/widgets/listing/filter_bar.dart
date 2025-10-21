@@ -27,7 +27,9 @@ class FilterBar extends StatelessWidget {
 
     return FilledButton(
       onPressed: () {
+        // Update pending filter to 'None'
         attributesProvider.updateEqualFilter(filterKey, 'None');
+        // Immediately apply the change (removing a filter should be instant)
         listingsProvider.applyFilters(attributesProvider.selectedEqualFilters);
       },
       style: ButtonStyle(
@@ -50,6 +52,21 @@ class FilterBar extends StatelessWidget {
   }
 
   void showFiltersBottomSheet(BuildContext context) {
+    // Sync pending filters with applied filters when opening the sheet
+    final attributesProvider = context.read<ListingAttributesProvider>();
+    final listingsProvider = context.read<ListingsProvider>();
+
+    // Copy applied filters to pending filters
+    for (var key in attributesProvider.selectedEqualFilters.keys) {
+      if (listingsProvider.equalFilters.containsKey(key)) {
+        attributesProvider.selectedEqualFilters[key] =
+            listingsProvider.equalFilters[key]!;
+      } else {
+        // If filter not in applied filters, reset to 'None'
+        attributesProvider.selectedEqualFilters[key] = 'None';
+      }
+    }
+
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -63,74 +80,107 @@ class FilterBar extends StatelessWidget {
 
         return Padding(
           padding: EdgeInsets.all(16),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children:
-                  listingAttributeOptions.map((attributeOption) {
-                    return Padding(
-                      padding: EdgeInsets.only(bottom: 16),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // Label
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              filterNames[attributeOption.name] ??
-                                  attributeOption.name,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-
-                          Expanded(
-                            flex: 3,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 12),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<String>(
-                                    value:
-                                        selectedEqualFilters[attributeOption
-                                            .name],
-                                    isExpanded: true,
-                                    items:
-                                        attributeOption.attributeValues.map((
-                                          val,
-                                        ) {
-                                          return DropdownMenuItem<String>(
-                                            value: val,
-                                            child: Text(val),
-                                          );
-                                        }).toList(),
-                                    onChanged: (newVal) {
-                                      if (newVal != null) {
-                                        attributesProvider.updateEqualFilter(
-                                          attributeOption.name,
-                                          newVal,
-                                        );
-                                        listingsProvider.applyFilters(
-                                          attributesProvider.selectedEqualFilters,
-                                        );
-                                      }
-                                    },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children:
+                        listingAttributeOptions.map((attributeOption) {
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: 16),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // Label
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    filterNames[attributeOption.name] ??
+                                        attributeOption.name,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
-                              ),
+
+                                Expanded(
+                                  flex: 3,
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.grey.shade300),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 12),
+                                      child: DropdownButtonHideUnderline(
+                                        child: DropdownButton<String>(
+                                          value:
+                                              selectedEqualFilters[attributeOption
+                                                  .name],
+                                          isExpanded: true,
+                                          items:
+                                              attributeOption.attributeValues.map((
+                                                val,
+                                              ) {
+                                                return DropdownMenuItem<String>(
+                                                  value: val,
+                                                  child: Text(val),
+                                                );
+                                              }).toList(),
+                                          onChanged: (newVal) {
+                                            if (newVal != null) {
+                                              attributesProvider.updateEqualFilter(
+                                                attributeOption.name,
+                                                newVal,
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
+                          );
+                        }).toList(),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(modalContext),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 12),
                       ),
-                    );
-                  }).toList(),
-            ),
+                      child: Text('Cancel'),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () {
+                        listingsProvider.applyFilters(
+                          attributesProvider.selectedEqualFilters,
+                        );
+                        Navigator.pop(modalContext);
+                      },
+                      style: FilledButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: Text('Apply Filters'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         );
       },
@@ -139,8 +189,9 @@ class FilterBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedEqualFilters =
-        context.watch<ListingAttributesProvider>().selectedEqualFilters;
+    // Show badges based on APPLIED filters, not pending selections
+    final appliedFilters =
+        context.watch<ListingsProvider>().equalFilters;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -168,7 +219,7 @@ class FilterBar extends StatelessWidget {
             ),
           ),
           ...[
-            for (var entry in selectedEqualFilters.entries)
+            for (var entry in appliedFilters.entries)
               if (entry.value != 'None')
                 selectedFilter(context, entry.key, entry.value),
           ],
