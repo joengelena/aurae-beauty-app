@@ -14,7 +14,6 @@ class UserServices {
   Future<String> signUp(
     String firstName,
     String lastName,
-    String username,
     String email,
     String password,
     String phoneNumber,
@@ -23,7 +22,6 @@ class UserServices {
       http.Response response = await apiClient.post('/user/signup', {
         'firstName': firstName,
         'lastName': lastName,
-        'username': username,
         'email': email,
         'password': password,
         'phoneNumber': phoneNumber,
@@ -299,12 +297,11 @@ class UserServices {
   Future<void> signUpAndSignIn(
     String firstName,
     String lastName,
-    String username,
     String email,
     String password,
     String phoneNumber,
   ) async {
-    await signUp(firstName, lastName, username, email, password, phoneNumber);
+    await signUp(firstName, lastName, email, password, phoneNumber);
     await signIn(email, password);
   }
 

@@ -16,7 +16,6 @@ class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
-  final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneNumberController = TextEditingController();
   final passwordController = TextEditingController();
@@ -30,7 +29,6 @@ class _SignUpPageState extends State<SignUpPage> {
     super.initState();
     firstNameController.addListener(_validateForm);
     lastNameController.addListener(_validateForm);
-    usernameController.addListener(_validateForm);
     emailController.addListener(_validateForm);
     phoneNumberController.addListener(_validateForm);
     passwordController.addListener(_validateForm);
@@ -41,7 +39,6 @@ class _SignUpPageState extends State<SignUpPage> {
   void dispose() {
     firstNameController.dispose();
     lastNameController.dispose();
-    usernameController.dispose();
     emailController.dispose();
     phoneNumberController.dispose();
     passwordController.dispose();
@@ -55,7 +52,6 @@ class _SignUpPageState extends State<SignUpPage> {
         agreedToTermsAndConditions &&
         firstNameController.text.isNotEmpty &&
         lastNameController.text.isNotEmpty &&
-        usernameController.text.isNotEmpty &&
         emailController.text.isNotEmpty &&
         phoneNumberController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
@@ -130,15 +126,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     return null;
                   },
                   decoration: InputDecoration(labelText: 'Last Name'),
-                ),
-
-                TextFormField(
-                  controller: usernameController,
-                  validator: (val) {
-                    if (val == null || val.isEmpty) return 'Required';
-                    return null;
-                  },
-                  decoration: InputDecoration(labelText: 'Username'),
                 ),
 
                 TextFormField(
@@ -238,7 +225,6 @@ class _SignUpPageState extends State<SignUpPage> {
                               authProvider.signUp(
                                 firstNameController.text,
                                 lastNameController.text,
-                                usernameController.text,
                                 emailController.text,
                                 passwordController.text,
                                 phoneNumberController.text,

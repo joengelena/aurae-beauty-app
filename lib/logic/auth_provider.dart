@@ -39,7 +39,6 @@ class AuthProvider extends ChangeNotifier {
   Future<void> signUp(
     String firstName,
     String lastName,
-    String username,
     String email,
     String password,
     String phoneNumber,
@@ -54,7 +53,6 @@ class AuthProvider extends ChangeNotifier {
       await _userServices.signUpAndSignIn(
         firstName,
         lastName,
-        username,
         email,
         password,
         phoneNumber,
