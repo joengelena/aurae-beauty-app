@@ -4,6 +4,7 @@ import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/presentation/pages/post_listing_page.dart';
 import 'package:motorix_app/presentation/pages/profile/change_password_page.dart';
+import 'package:motorix_app/presentation/pages/profile/edit_profile_page.dart';
 import 'package:motorix_app/presentation/pages/profile/email_verified_page.dart';
 import 'package:motorix_app/presentation/pages/profile/forgot_password_page.dart';
 import 'package:motorix_app/presentation/pages/listing_detail_page.dart';
@@ -132,6 +133,13 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                 parentNavigatorKey: _shellNavigatorKey,
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: ChangePasswordPage());
+                },
+              ),
+              GoRoute(
+                path: 'edit',
+                parentNavigatorKey: _shellNavigatorKey,
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: EditProfilePage());
                 },
               ),
             ],

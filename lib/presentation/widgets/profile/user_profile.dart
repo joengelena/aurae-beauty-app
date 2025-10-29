@@ -70,7 +70,9 @@ class UserProfile extends StatelessWidget {
           spacing: 12,
           children: [
             FilledButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                context.go('/profile/edit');
+              },
               icon: const Icon(Icons.edit),
               label: const Text('Edit profile'),
             ),

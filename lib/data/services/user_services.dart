@@ -346,4 +346,40 @@ class UserServices {
       // In production, use a proper logging framework
     }
   }
+
+  Future<String> updateUser(
+    String firstName,
+    String lastName,
+    String phoneNumber,
+  ) async {
+    try {
+      http.Response response = await apiClient.patch('/user', {
+        'firstName': firstName,
+        'lastName': lastName,
+        'phoneNumber': phoneNumber,
+      });
+
+      if (response.statusCode == HttpStatus.unauthorized) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw UnauthenticatedException(errorMessage, details: response.body);
+      }
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NetworkException(
+          errorMessage,
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+
+      return response.body;
+    } catch (e) {
+      if (e is UnauthenticatedException || e is NetworkException) rethrow;
+      throw NetworkException(
+        'Network error during profile update',
+        details: e.toString(),
+      );
+    }
+  }
 }

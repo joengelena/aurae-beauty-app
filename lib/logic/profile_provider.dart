@@ -11,6 +11,9 @@ class ProfileProvider extends ChangeNotifier {
   User? currentUser;
   String errorMessage = '';
   bool _isSignedIn = false;
+  String updateMessage = '';
+  String updateErrorMessage = '';
+  bool updateSuccess = false;
 
   void updateAuthStatus(bool isSignedIn) {
     if (isSignedIn && !_isSignedIn) {
@@ -53,5 +56,49 @@ class ProfileProvider extends ChangeNotifier {
     errorMessage = '';
     isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> updateUserProfile(
+    String firstName,
+    String lastName,
+    String phoneNumber,
+  ) async {
+    isLoading = true;
+    updateErrorMessage = '';
+    updateMessage = '';
+    updateSuccess = false;
+    notifyListeners();
+
+    try {
+      await _userServices.updateUser(firstName, lastName, phoneNumber);
+
+      if (currentUser != null) {
+        currentUser = User(
+          firstName: firstName,
+          lastName: lastName,
+          email: currentUser!.email,
+          phoneNumber: phoneNumber,
+        );
+      }
+
+      updateSuccess = true;
+      updateMessage = 'Profile updated successfully!';
+    } catch (e) {
+      if (e is AppException) {
+        updateErrorMessage = e.message;
+      } else {
+        updateErrorMessage = 'Failed to update profile';
+        debugPrint('Profile update error: $e');
+      }
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void clearUpdateState() {
+    updateMessage = '';
+    updateSuccess = false;
+    updateErrorMessage = '';
   }
 }

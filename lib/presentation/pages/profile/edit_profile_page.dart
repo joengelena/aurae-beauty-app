@@ -1,0 +1,234 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:motorix_app/logic/profile_provider.dart';
+import 'package:provider/provider.dart';
+
+class EditProfilePage extends StatefulWidget {
+  const EditProfilePage({super.key});
+
+  @override
+  State<EditProfilePage> createState() => _EditProfilePageState();
+}
+
+class _EditProfilePageState extends State<EditProfilePage> {
+  final _formKey = GlobalKey<FormState>();
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final phoneNumberController = TextEditingController();
+  bool isFormValid = false;
+  bool hasChanges = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize controllers with current user data
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final profileProvider = context.read<ProfileProvider>();
+      final user = profileProvider.currentUser;
+
+      if (user != null) {
+        firstNameController.text = user.firstName;
+        lastNameController.text = user.lastName;
+        phoneNumberController.text = user.phoneNumber;
+
+        // Add listeners after initializing values
+        firstNameController.addListener(_validateForm);
+        lastNameController.addListener(_validateForm);
+        phoneNumberController.addListener(_validateForm);
+      }
+
+      // Clear any previous update state
+      profileProvider.clearUpdateState();
+    });
+  }
+
+  @override
+  void dispose() {
+    firstNameController.dispose();
+    lastNameController.dispose();
+    phoneNumberController.dispose();
+    super.dispose();
+  }
+
+  void _validateForm() {
+    final profileProvider = context.read<ProfileProvider>();
+    final user = profileProvider.currentUser;
+
+    if (user == null) return;
+
+    final valid =
+        firstNameController.text.isNotEmpty &&
+        lastNameController.text.isNotEmpty &&
+        phoneNumberController.text.isNotEmpty;
+
+    // Check if any values changed
+    final changed =
+        firstNameController.text != user.firstName ||
+        lastNameController.text != user.lastName ||
+        phoneNumberController.text != user.phoneNumber;
+
+    if (valid != isFormValid || changed != hasChanges) {
+      setState(() {
+        isFormValid = valid;
+        hasChanges = changed;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final profileProvider = context.watch<ProfileProvider>();
+    final user = profileProvider.currentUser;
+
+    if (user == null) {
+      return Center(child: Text('Unable to load profile data'));
+    }
+
+    // Show success message and navigate back
+    if (profileProvider.updateSuccess &&
+        profileProvider.updateMessage.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(profileProvider.updateMessage),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
+              width: 300,
+            ),
+          );
+          profileProvider.clearUpdateState();
+          context.go('/profile');
+        }
+      });
+    }
+
+    return Center(
+      child: SingleChildScrollView(
+        child: Center(
+          child: SizedBox(
+            width: 300,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 24,
+                children: [
+                  Center(
+                    child: Text(
+                      'Edit Profile',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
+
+                  if (profileProvider.updateErrorMessage.isNotEmpty &&
+                      !profileProvider.isLoading)
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8.0),
+                      child: Text(
+                        profileProvider.updateErrorMessage,
+                        style: TextStyle(color: Colors.red, fontSize: 14),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+
+                  TextFormField(
+                    controller: firstNameController,
+                    validator: (val) {
+                      if (val == null || val.isEmpty) return 'Required';
+                      return null;
+                    },
+                    decoration: InputDecoration(labelText: 'First Name'),
+                  ),
+
+                  TextFormField(
+                    controller: lastNameController,
+                    validator: (val) {
+                      if (val == null || val.isEmpty) return 'Required';
+                      return null;
+                    },
+                    decoration: InputDecoration(labelText: 'Last Name'),
+                  ),
+
+                  TextFormField(
+                    controller: phoneNumberController,
+                    validator: (val) {
+                      if (val == null || val.isEmpty) return 'Required';
+                      return null;
+                    },
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(labelText: 'Phone Number'),
+                  ),
+
+                  SizedBox(height: 16),
+
+                  FilledButton(
+                    onPressed:
+                        profileProvider.isLoading || !isFormValid || !hasChanges
+                            ? null
+                            : () {
+                              if (_formKey.currentState!.validate()) {
+                                profileProvider.updateUserProfile(
+                                  firstNameController.text.trim(),
+                                  lastNameController.text.trim(),
+                                  phoneNumberController.text.trim(),
+                                );
+                              }
+                            },
+                    style: FilledButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 14,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      backgroundColor:
+                          (isFormValid && hasChanges)
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.grey,
+                    ),
+                    child:
+                        profileProvider.isLoading
+                            ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                            : Text('Save Changes'),
+                  ),
+
+                  OutlinedButton(
+                    onPressed:
+                        profileProvider.isLoading
+                            ? null
+                            : () {
+                              context.go('/profile');
+                            },
+                    style: OutlinedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 14,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: Text('Cancel'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
