@@ -1,136 +1,165 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/data/models/listing.dart';
+import 'package:intl/intl.dart';
 
 class ListingTile extends StatelessWidget {
-  final Widget topRightButtom;
+  static const double _imageSize = 105.0;
+  static const double _borderRadius = 12.0;
 
-  const ListingTile({super.key, required this.topRightButtom});
+  final Listing listing;
+  final Widget? topRightButton;
+
+  const ListingTile({super.key, required this.listing, this.topRightButton});
+
+  String _formatEndDate(DateTime endDate) {
+    return 'Ends ${DateFormat('d MMMM').format(endDate)}';
+  }
+
+  String _formatKilometers(int km) {
+    final formatter = NumberFormat('#,###');
+    return '${formatter.format(km)} km';
+  }
+
+  String _formatPrice(int price) {
+    final formatter = NumberFormat('#,###');
+    return '\$${formatter.format(price)}';
+  }
 
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 600),
+      constraints: const BoxConstraints(maxWidth: 600),
       child: GestureDetector(
         onTap: () {
-          context.go('/listings/1');
+          context.go('/listings/${listing.id}');
         },
         child: Card(
-          margin: EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
           elevation: 2,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(_borderRadius),
           ),
           child: Stack(
             children: [
-              Positioned(top: 3, right: 3, child: topRightButtom),
+              if (topRightButton != null)
+                Positioned(top: 3, right: 3, child: topRightButton!),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Image
                   ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      bottomLeft: Radius.circular(12),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(_borderRadius),
+                      bottomLeft: Radius.circular(_borderRadius),
                     ),
-                    child: SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: Image.network(
-                        'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                        fit: BoxFit.cover,
-                      ),
+                    child: Image.network(
+                      listing.previewImgUrl,
+                      width: _imageSize,
+                      height: _imageSize,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: _imageSize,
+                          height: _imageSize,
+                          color: Colors.grey[300],
+                          child: const Icon(Icons.broken_image, color: Colors.grey),
+                        );
+                      },
                     ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
 
                   // Right side content
                   Expanded(
-                    child: Column(
-                      spacing: 2,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Christchurch',
-                          style: TextStyle(fontSize: 12, color: Colors.black54),
-                        ),
-                        Text(
-                          '2016 Toyota Voxy',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Column(
+                        spacing: 2,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            listing.location,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.black54,
+                            ),
                           ),
-                        ),
-                        Row(
-                          children: [
-                            Icon(Icons.speed, size: 16, color: Colors.black45),
-                            SizedBox(width: 4),
-                            Text(
-                              '107,859 km',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
+                          Text(
+                            '${listing.year} ${listing.make} ${listing.model}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
                             ),
-                            SizedBox(width: 12),
-                            Icon(
-                              Icons.local_gas_station,
-                              size: 16,
-                              color: Colors.black45,
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              'Hybrid',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          'Ends 20 June',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  '\$22,990',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.speed,
+                                size: 16,
+                                color: Colors.black45,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                _formatKilometers(listing.kilometers),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                                SizedBox(width: 10),
-                                Text(
-                                  '\$25,990',
-                                  style: TextStyle(
+                              ),
+                              const SizedBox(width: 12),
+                              const Icon(
+                                Icons.local_gas_station,
+                                size: 16,
+                                color: Colors.black45,
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  listing.fuelType,
+                                  style: const TextStyle(
                                     fontSize: 12,
-                                    decoration: TextDecoration.lineThrough,
-                                    color: Colors.red,
+                                    fontWeight: FontWeight.w500,
                                   ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ],
+                              ),
+                            ],
+                          ),
+                          Text(
+                            _formatEndDate(listing.endDate),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
                             ),
-                            Row(
-                              spacing: 8,
-                              children: [
-                                Icon(Icons.remove_red_eye_outlined),
-                                Text(
-                                  '123',
-                                  style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _formatPrice(listing.price),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
                                 ),
-                                SizedBox(width: 12),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
+                              ),
+                              Row(
+                                spacing: 4,
+                                children: [
+                                  const Icon(Icons.remove_red_eye_outlined, size: 16),
+                                  Text(
+                                    listing.viewCount.toString(),
+                                    style: Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                  const SizedBox(width: 12),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

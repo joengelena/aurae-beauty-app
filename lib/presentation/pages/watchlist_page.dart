@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/presentation/widgets/sign_in_to_access.dart';
 import 'package:go_router/go_router.dart';
@@ -19,36 +18,26 @@ class WatchlistPage extends StatelessWidget {
     return Center(
       child: Container(
         constraints: BoxConstraints(maxWidth: 600),
-        child: ListView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 12),
-            ListingTile(
-              topRightButtom: IconButton(
-                onPressed: () {
-                  // handle delete action
-                },
-                icon: const Icon(Icons.delete_outline),
-                color: Colors.red,
-              ),
+            Icon(Icons.bookmark_outline, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text(
+              'Watchlist Coming Soon',
+              style: Theme.of(context).textTheme.titleLarge,
             ),
-            ListingTile(
-              topRightButtom: IconButton(
-                onPressed: () {
-                  // handle delete action
-                },
-                icon: const Icon(Icons.delete_outline),
-                color: Colors.red,
-              ),
+            SizedBox(height: 8),
+            Text(
+              'Your saved listings will appear here',
+              style: TextStyle(color: Colors.grey[600]),
             ),
             SizedBox(height: 24),
-            Align(
-              alignment: Alignment.center,
-              child: FilledButton(
-                onPressed: () {
-                  context.go('/listings');
-                },
-                child: Text('Explore more'),
-              ),
+            FilledButton(
+              onPressed: () {
+                context.go('/listings');
+              },
+              child: Text('Explore listings'),
             ),
           ],
         ),

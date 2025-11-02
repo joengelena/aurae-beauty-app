@@ -7,6 +7,7 @@ import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/logic/profile_provider.dart';
+import 'package:motorix_app/logic/user_listings_provider.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +22,9 @@ void main() {
             profileProvider!.updateAuthStatus(authProvider.isSignedIn);
             return profileProvider;
           },
+        ),
+        ChangeNotifierProvider<UserListingsProvider>(
+          create: (_) => UserListingsProvider(),
         ),
         ChangeNotifierProvider<ListingAttributesProvider>(
           create: (_) => ListingAttributesProvider(),
