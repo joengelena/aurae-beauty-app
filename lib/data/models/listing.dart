@@ -30,6 +30,7 @@ class Listing {
   final int? cylinders;
   final DateTime? regoExpiryDate;
   final DateTime? wofExpiryDate;
+  final bool? isInWatchlist;
 
   Listing({
     required this.id,
@@ -61,6 +62,7 @@ class Listing {
     this.cylinders,
     this.regoExpiryDate,
     this.wofExpiryDate,
+    this.isInWatchlist,
   });
 
   factory Listing.fromJson(json) {
@@ -94,6 +96,9 @@ class Listing {
       cylinders: json['cylinders'] as int?,
       regoExpiryDate: json['regoExpiryDate'] as DateTime?,
       wofExpiryDate: json['wofExpiryDate'] as DateTime?,
+      isInWatchlist: json['isInWatchlist'] != null
+          ? (json['isInWatchlist'] == 1 || json['isInWatchlist'] == true)
+          : null,
     );
   }
 

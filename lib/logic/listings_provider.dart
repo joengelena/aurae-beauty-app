@@ -108,6 +108,45 @@ class ListingsProvider extends ChangeNotifier {
     getNewListings();
   }
 
+  void toggleWatchlistStatus(int listingId, bool newStatus) {
+    final index = listings.indexWhere((listing) => listing.id == listingId);
+    if (index != -1) {
+      listings[index] = Listing(
+        id: listings[index].id,
+        userIdFk: listings[index].userIdFk,
+        viewCount: listings[index].viewCount,
+        previewImgUrl: listings[index].previewImgUrl,
+        imageUrls: listings[index].imageUrls,
+        location: listings[index].location,
+        vehicleCondition: listings[index].vehicleCondition,
+        price: listings[index].price,
+        uploadDate: listings[index].uploadDate,
+        description: listings[index].description,
+        endDate: listings[index].endDate,
+        make: listings[index].make,
+        model: listings[index].model,
+        year: listings[index].year,
+        kilometers: listings[index].kilometers,
+        fuelType: listings[index].fuelType,
+        bodyType: listings[index].bodyType,
+        driveType: listings[index].driveType,
+        orcIncluded: listings[index].orcIncluded,
+        numberPlate: listings[index].numberPlate,
+        seats: listings[index].seats,
+        doors: listings[index].doors,
+        previousOwners: listings[index].previousOwners,
+        color: listings[index].color,
+        engineSize: listings[index].engineSize,
+        transmission: listings[index].transmission,
+        cylinders: listings[index].cylinders,
+        regoExpiryDate: listings[index].regoExpiryDate,
+        wofExpiryDate: listings[index].wofExpiryDate,
+        isInWatchlist: newStatus,
+      );
+      notifyListeners();
+    }
+  }
+
   @override
   void dispose() {
     searchController.dispose();

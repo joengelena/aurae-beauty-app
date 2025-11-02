@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/models/listing.dart';
+import 'package:motorix_app/logic/watchlist_provider.dart';
+import 'package:motorix_app/logic/listings_provider.dart';
+import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class ListingPreview extends StatelessWidget {
   final double width;
@@ -19,13 +23,84 @@ class ListingPreview extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: SizedBox(
-                width: width,
-                height: width,
-                child: Image.network(listing.previewImgUrl, fit: BoxFit.cover),
-              ),
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    width: width,
+                    height: width,
+                    child: Image.network(listing.previewImgUrl, fit: BoxFit.cover),
+                  ),
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: GestureDetector(
+                    onTap: () async {
+                      final authProvider = context.read<AuthProvider>();
+
+                      // Check if user is signed in
+                      if (!authProvider.isSignedIn) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Please sign in or sign up to add listings to your watchlist'),
+                              action: SnackBarAction(
+                                label: 'Sign In',
+                                onPressed: () {
+                                  context.go('/profile/signin');
+                                },
+                              ),
+                            ),
+                          );
+                        }
+                        return;
+                      }
+
+                      final watchlistProvider = context.read<WatchlistProvider>();
+                      final listingsProvider = context.read<ListingsProvider>();
+                      final isInWatchlist = listing.isInWatchlist == true;
+
+                      // Optimistically update UI
+                      listingsProvider.toggleWatchlistStatus(listing.id, !isInWatchlist);
+
+                      try {
+                        if (isInWatchlist) {
+                          await watchlistProvider.removeFromWatchlist(listing.id);
+                        } else {
+                          await watchlistProvider.addToWatchlist(listing.id);
+                        }
+                      } catch (e) {
+                        // Revert on error
+                        listingsProvider.toggleWatchlistStatus(listing.id, isInWatchlist);
+
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to update watchlist'),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        listing.isInWatchlist == true
+                            ? Icons.bookmark
+                            : Icons.bookmark_border,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 6),
             Text(

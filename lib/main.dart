@@ -8,6 +8,7 @@ import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/logic/profile_provider.dart';
 import 'package:motorix_app/logic/user_listings_provider.dart';
+import 'package:motorix_app/logic/watchlist_provider.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -37,6 +38,9 @@ void main() {
         ),
         ChangeNotifierProvider<ListingDetailProvider>(
           create: (_) => ListingDetailProvider(),
+        ),
+        ChangeNotifierProvider<WatchlistProvider>(
+          create: (_) => WatchlistProvider(),
         ),
       ],
       child: MyApp(),
