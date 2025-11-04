@@ -14,6 +14,15 @@ class PostListingProvider extends ChangeNotifier
     _loadAttributes();
   }
 
+  static const supportedImageExtensions = [
+    'jpg',
+    'jpeg',
+    'png',
+    'webp',
+    'heic',
+    'heif',
+  ];
+
   int? newListingId;
   bool isLoading = false;
   bool successfulPost = false;
@@ -43,17 +52,29 @@ class PostListingProvider extends ChangeNotifier
     }
   }
 
-  Future<void> pickImage() async {
+  Future<String?> pickImage() async {
     final XFile? pickedImage = await picker.pickImage(
       source: ImageSource.gallery,
     );
 
-    if (pickedImage != null) {
-      final bytes = await pickedImage.readAsBytes();
-      imageBytesList.add(bytes);
-      imageNames.add(pickedImage.name);
+    if (pickedImage == null) {
+      return null;
     }
+
+    // Validate file extensions
+    final extension = pickedImage.name.split('.').last.toLowerCase();
+    if (!supportedImageExtensions.contains(extension)) {
+      return 'Unsupported file type ".$extension"\n\n'
+          'Please select an image with one of these formats:\n'
+          '${supportedImageExtensions.map((e) => '.$e').join(', ')}';
+    }
+
+    final bytes = await pickedImage.readAsBytes();
+    imageBytesList.add(bytes);
+    imageNames.add(pickedImage.name);
     notifyListeners();
+
+    return null;
   }
 
   MediaType _getMediaType(String filename) {
