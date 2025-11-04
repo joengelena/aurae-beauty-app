@@ -171,4 +171,51 @@ class ListingsServices {
       );
     }
   }
+
+  Future<void> patchListing(
+    int listingId,
+    Map<String, Object> listingFields,
+  ) async {
+    try {
+      final Map<String, dynamic> payload = Map.fromEntries(
+        listingFields.entries.map((e) {
+          return MapEntry(e.key, e.value);
+        }),
+      );
+
+      http.Response response = await apiClient.patch(
+        '/listings/$listingId',
+        payload,
+      );
+
+      if (response.statusCode == HttpStatus.notFound) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NotFoundException(errorMessage);
+      }
+
+      if (response.statusCode == HttpStatus.forbidden) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw ForbiddenException(errorMessage);
+      }
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NetworkException(
+          errorMessage,
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+    } catch (e) {
+      if (e is NotFoundException ||
+          e is ForbiddenException ||
+          e is NetworkException) {
+        rethrow;
+      }
+      throw NetworkException(
+        'Network error updating listing',
+        details: e.toString(),
+      );
+    }
+  }
 }

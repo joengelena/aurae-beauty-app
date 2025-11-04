@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/user_listings_provider.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
 import 'package:motorix_app/presentation/widgets/profile/user_profile.dart';
@@ -80,8 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Navigate to edit listing page
-                  debugPrint('Edit listing $listingId');
+                  context.go('/listings/$listingId/edit');
                 },
               ),
               ListTile(

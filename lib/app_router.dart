@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
+import 'package:motorix_app/presentation/pages/edit_listing_page.dart';
 import 'package:motorix_app/presentation/pages/post_listing_page.dart';
 import 'package:motorix_app/presentation/pages/profile/change_password_page.dart';
 import 'package:motorix_app/presentation/pages/profile/edit_profile_page.dart';
@@ -72,6 +73,22 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                     child: ListingDetailPage(listingId: listingId),
                   );
                 },
+                routes: [
+                  GoRoute(
+                    path: 'edit',
+                    parentNavigatorKey: _shellNavigatorKey,
+                    pageBuilder: (context, state) {
+                      final listingId = state.pathParameters['listingId'];
+                      if (listingId == null) {
+                        return NoTransitionPage(child: Text('Not Found'));
+                      }
+
+                      return NoTransitionPage(
+                        child: EditListingPage(listingId: listingId),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
