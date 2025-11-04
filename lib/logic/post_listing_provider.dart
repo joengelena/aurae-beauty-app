@@ -6,8 +6,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
+import 'package:motorix_app/presentation/widgets/listing_form/listing_form_data_provider.dart';
 
-class PostListingProvider extends ChangeNotifier {
+class PostListingProvider extends ChangeNotifier
+    implements ListingFormDataProvider {
   PostListingProvider() {
     _loadAttributes();
   }
@@ -16,12 +18,16 @@ class PostListingProvider extends ChangeNotifier {
   bool isLoading = false;
   bool successfulPost = false;
   String errorMessage = '';
+  @override
   List<ListingAttribute> listingAttributeOptions = [];
   final List<Uint8List> imageBytesList = [];
   final List<String> imageNames = [];
   final Map<String, Object> postListingData = {};
   final picker = ImagePicker();
   bool canPickImage() => imageBytesList.length < 10;
+
+  @override
+  Map<String, Object> get formData => postListingData;
 
   Future<void> _loadAttributes() async {
     try {
