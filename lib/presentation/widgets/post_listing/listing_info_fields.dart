@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/date_form_field.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/dropdown_form_field.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/number_form_field.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/string_form_field.dart';
+import 'package:motorix_app/presentation/widgets/listing_form/date_form_field.dart';
+import 'package:motorix_app/presentation/widgets/listing_form/dropdown_form_field.dart';
+import 'package:motorix_app/presentation/widgets/listing_form/number_form_field.dart';
+import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
 
 class ListingInfoFields extends StatelessWidget {
   const ListingInfoFields({super.key});
@@ -44,6 +44,8 @@ class ListingInfoFields extends StatelessWidget {
           labelText: 'Description',
           fieldName: 'description',
           isRequired: true,
+          maxLines: 5,
+          alignLabelWithHint: true,
         ),
       ],
     );

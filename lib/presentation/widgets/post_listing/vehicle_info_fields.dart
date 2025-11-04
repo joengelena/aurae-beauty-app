@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/dropdown_form_field.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/number_form_field.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/string_form_field.dart';
+import 'package:motorix_app/presentation/widgets/listing_form/dropdown_form_field.dart';
+import 'package:motorix_app/presentation/widgets/listing_form/number_form_field.dart';
+import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
 
 class VehicleInfoFields extends StatelessWidget {
   const VehicleInfoFields({super.key});

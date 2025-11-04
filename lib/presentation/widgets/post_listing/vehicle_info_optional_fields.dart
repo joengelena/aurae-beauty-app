@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/date_form_field.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/dropdown_form_field.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/number_form_field.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/string_form_field.dart';
+import 'package:motorix_app/presentation/widgets/listing_form/date_form_field.dart';
+import 'package:motorix_app/presentation/widgets/listing_form/dropdown_form_field.dart';
+import 'package:motorix_app/presentation/widgets/listing_form/number_form_field.dart';
+import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
 import 'package:provider/provider.dart';
 
-class VehicleInfoOptionalFields extends StatelessWidget {
+class VehicleInfoOptionalFields extends StatefulWidget {
   const VehicleInfoOptionalFields({super.key});
 
   @override
+  State<VehicleInfoOptionalFields> createState() =>
+      _VehicleInfoOptionalFieldsState();
+}
+
+class _VehicleInfoOptionalFieldsState extends State<VehicleInfoOptionalFields> {
+  @override
   Widget build(BuildContext context) {
     final provider = context.watch<PostListingProvider>();
+    final orcIncluded = provider.postListingData['orcIncluded'];
+    final isOrcChecked = orcIncluded == 1 || orcIncluded == true;
 
     return ExpansionTile(
       tilePadding: EdgeInsets.zero,
@@ -19,17 +27,19 @@ class VehicleInfoOptionalFields extends StatelessWidget {
         'Specifications & Features',
         style: Theme.of(context).textTheme.headlineSmall,
       ),
-      childrenPadding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      childrenPadding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
       children: [
         Column(
           spacing: 12,
           children: [
             CheckboxListTile(
-              value: false,
-              onChanged:
-                  (value) =>
-                      provider.postListingData['orcIncluded'] = value ?? false,
-              title: Text('ORC Included'),
+              value: isOrcChecked,
+              onChanged: (value) {
+                setState(() {
+                  provider.postListingData['orcIncluded'] = value == true ? 1 : 0;
+                });
+              },
+              title: const Text('ORC Included'),
             ),
 
             DateFormField(
@@ -56,7 +66,7 @@ class VehicleInfoOptionalFields extends StatelessWidget {
               min: 1,
               max: 20,
             ),
-            StringFormField(labelText: 'Color', fieldName: 'color'),
+            const StringFormField(labelText: 'Color', fieldName: 'color'),
             NumberFormField(
               labelText: 'Engine Size (cc)',
               fieldName: 'engineSize',
