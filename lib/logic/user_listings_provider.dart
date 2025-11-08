@@ -71,7 +71,7 @@ class UserListingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> markAsSold(int listingId) async {
+  Future<void> _updateListingStatus(int listingId, String status) async {
     try {
       final userId = await SecureStorage.read('userId');
       if (userId == null) {
@@ -82,22 +82,30 @@ class UserListingsProvider extends ChangeNotifier {
         listingId,
         {
           'currentUserId': userId,
-          'status': 'sold',
+          'status': status,
         },
       );
 
       // Update the local listing status
       final index = userListings.indexWhere((listing) => listing.id == listingId);
       if (index != -1) {
-        userListings[index] = userListings[index].copyWith(status: 'sold');
+        userListings[index] = userListings[index].copyWith(status: status);
         notifyListeners();
       }
     } catch (e) {
       if (e is AppException) {
         rethrow;
       }
-      throw AppException('Failed to mark listing as sold: ${e.toString()}');
+      throw AppException('Failed to update listing status: ${e.toString()}');
     }
+  }
+
+  Future<void> markAsSold(int listingId) async {
+    await _updateListingStatus(listingId, 'sold');
+  }
+
+  Future<void> markAsActive(int listingId) async {
+    await _updateListingStatus(listingId, 'active');
   }
 
   void clearListings() {

@@ -61,6 +61,48 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Widget _buildStatusChangeMenuItem({
+    required BuildContext context,
+    required int listingId,
+    required IconData icon,
+    required String title,
+    required Future<void> Function(int) onStatusChange,
+    required String successMessage,
+    required String errorMessage,
+  }) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(
+        title,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      onTap: () async {
+        Navigator.pop(context);
+        final userListingsProvider = context.read<UserListingsProvider>();
+        try {
+          await onStatusChange(listingId);
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(successMessage),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(errorMessage),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      },
+    );
+  }
+
   void showlistingBottomSheet(BuildContext context, Listing listing) {
     showModalBottomSheet(
       context: context,
@@ -86,37 +128,24 @@ class _ProfilePageState extends State<ProfilePage> {
                 },
               ),
               if (listing.status == 'active')
-                ListTile(
-                  leading: Icon(Icons.check_circle),
-                  title: Text(
-                    'Mark as Sold',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  onTap: () async {
-                    Navigator.pop(context);
-                    final userListingsProvider =
-                        context.read<UserListingsProvider>();
-                    try {
-                      await userListingsProvider.markAsSold(listing.id);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Listing marked as sold'),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Failed to mark listing as sold'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    }
-                  },
+                _buildStatusChangeMenuItem(
+                  context: context,
+                  listingId: listing.id,
+                  icon: Icons.check_circle,
+                  title: 'Mark as Sold',
+                  onStatusChange: context.read<UserListingsProvider>().markAsSold,
+                  successMessage: 'Listing marked as sold',
+                  errorMessage: 'Failed to mark listing as sold',
+                ),
+              if (listing.status == 'sold')
+                _buildStatusChangeMenuItem(
+                  context: context,
+                  listingId: listing.id,
+                  icon: Icons.autorenew,
+                  title: 'Mark as Active',
+                  onStatusChange: context.read<UserListingsProvider>().markAsActive,
+                  successMessage: 'Listing marked as active',
+                  errorMessage: 'Failed to mark listing as active',
                 ),
               ListTile(
                 leading: Icon(Icons.delete),
