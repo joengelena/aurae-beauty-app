@@ -3,6 +3,7 @@ import 'dart:convert';
 class Listing {
   final int id;
   final String userIdFk;
+  final String status;
   final int viewCount;
   final String previewImgUrl;
   final List<dynamic> imageUrls;
@@ -34,6 +35,7 @@ class Listing {
   Listing({
     required this.id,
     required this.userIdFk,
+    required this.status,
     required this.viewCount,
     required this.previewImgUrl,
     required this.imageUrls,
@@ -67,6 +69,7 @@ class Listing {
     return Listing(
       id: json['id'] as int,
       userIdFk: json['userIdFk'] as String,
+      status: json['status'] as String,
       viewCount: json['viewCount'] as int,
       previewImgUrl: json['previewImgUrl'] as String,
       imageUrls: json['imageUrls'] as List<dynamic>,
@@ -99,6 +102,72 @@ class Listing {
 
   factory Listing.fromJsonString(String jsonString) =>
       Listing.fromJson(json.decode(jsonString));
+
+  Listing copyWith({
+    int? id,
+    String? userIdFk,
+    String? status,
+    int? viewCount,
+    String? previewImgUrl,
+    List<dynamic>? imageUrls,
+    String? location,
+    String? vehicleCondition,
+    int? price,
+    DateTime? uploadDate,
+    String? description,
+    DateTime? endDate,
+    String? make,
+    String? model,
+    int? year,
+    int? kilometers,
+    String? fuelType,
+    String? bodyType,
+    String? driveType,
+    int? orcIncluded,
+    String? numberPlate,
+    int? seats,
+    int? doors,
+    int? previousOwners,
+    String? color,
+    int? engineSize,
+    String? transmission,
+    int? cylinders,
+    DateTime? regoExpiryDate,
+    DateTime? wofExpiryDate,
+  }) {
+    return Listing(
+      id: id ?? this.id,
+      userIdFk: userIdFk ?? this.userIdFk,
+      status: status ?? this.status,
+      viewCount: viewCount ?? this.viewCount,
+      previewImgUrl: previewImgUrl ?? this.previewImgUrl,
+      imageUrls: imageUrls ?? this.imageUrls,
+      location: location ?? this.location,
+      vehicleCondition: vehicleCondition ?? this.vehicleCondition,
+      price: price ?? this.price,
+      uploadDate: uploadDate ?? this.uploadDate,
+      description: description ?? this.description,
+      endDate: endDate ?? this.endDate,
+      make: make ?? this.make,
+      model: model ?? this.model,
+      year: year ?? this.year,
+      kilometers: kilometers ?? this.kilometers,
+      fuelType: fuelType ?? this.fuelType,
+      bodyType: bodyType ?? this.bodyType,
+      driveType: driveType ?? this.driveType,
+      orcIncluded: orcIncluded ?? this.orcIncluded,
+      numberPlate: numberPlate ?? this.numberPlate,
+      seats: seats ?? this.seats,
+      doors: doors ?? this.doors,
+      previousOwners: previousOwners ?? this.previousOwners,
+      color: color ?? this.color,
+      engineSize: engineSize ?? this.engineSize,
+      transmission: transmission ?? this.transmission,
+      cylinders: cylinders ?? this.cylinders,
+      regoExpiryDate: regoExpiryDate ?? this.regoExpiryDate,
+      wofExpiryDate: wofExpiryDate ?? this.wofExpiryDate,
+    );
+  }
 
   @override
   String toString() {

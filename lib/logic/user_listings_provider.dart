@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
+import 'package:motorix_app/utils/secure_storage.dart';
 
 class UserListingsProvider extends ChangeNotifier {
   UserListingsProvider();
@@ -68,6 +69,35 @@ class UserListingsProvider extends ChangeNotifier {
     userListings.removeWhere((listing) => listing.id == listingId);
     totalListings = totalListings - 1;
     notifyListeners();
+  }
+
+  Future<void> markAsSold(int listingId) async {
+    try {
+      final userId = await SecureStorage.read('userId');
+      if (userId == null) {
+        throw AppException('User not authenticated');
+      }
+
+      await ListingsServices().patchListing(
+        listingId,
+        {
+          'currentUserId': userId,
+          'status': 'sold',
+        },
+      );
+
+      // Update the local listing status
+      final index = userListings.indexWhere((listing) => listing.id == listingId);
+      if (index != -1) {
+        userListings[index] = userListings[index].copyWith(status: 'sold');
+        notifyListeners();
+      }
+    } catch (e) {
+      if (e is AppException) {
+        rethrow;
+      }
+      throw AppException('Failed to mark listing as sold: ${e.toString()}');
+    }
   }
 
   void clearListings() {

@@ -42,8 +42,6 @@ class ListingTile extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              if (topRightButton != null)
-                Positioned(top: 3, right: 3, child: topRightButton!),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -164,6 +162,28 @@ class ListingTile extends StatelessWidget {
                   ),
                 ],
               ),
+              if (listing.status == 'sold')
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Text(
+                      'SOLD',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              if (topRightButton != null)
+                Positioned(top: 3, right: 3, child: topRightButton!),
             ],
           ),
         ),

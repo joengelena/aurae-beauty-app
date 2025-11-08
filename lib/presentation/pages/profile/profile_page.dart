@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/logic/user_listings_provider.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
 import 'package:motorix_app/presentation/widgets/profile/user_profile.dart';
@@ -60,7 +61,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void showlistingBottomSheet(BuildContext context, int listingId) {
+  void showlistingBottomSheet(BuildContext context, Listing listing) {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -81,9 +82,42 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  context.go('/listings/$listingId/edit');
+                  context.go('/listings/${listing.id}/edit');
                 },
               ),
+              if (listing.status == 'active')
+                ListTile(
+                  leading: Icon(Icons.check_circle),
+                  title: Text(
+                    'Mark as Sold',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    final userListingsProvider =
+                        context.read<UserListingsProvider>();
+                    try {
+                      await userListingsProvider.markAsSold(listing.id);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Listing marked as sold'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Failed to mark listing as sold'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                ),
               ListTile(
                 leading: Icon(Icons.delete),
                 title: Text(
@@ -93,7 +127,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 onTap: () {
                   Navigator.pop(context);
                   // TODO: Implement delete functionality
-                  debugPrint('Delete listing $listingId');
+                  debugPrint('Delete listing ${listing.id}');
                 },
               ),
             ],
@@ -192,7 +226,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       listing: listing,
                       topRightButton: IconButton(
                         onPressed: () {
-                          showlistingBottomSheet(context, listing.id);
+                          showlistingBottomSheet(context, listing);
                         },
                         icon: const Icon(Icons.more_vert),
                       ),
