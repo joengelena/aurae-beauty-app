@@ -116,8 +116,8 @@ class _WatchlistPageState extends State<WatchlistPage> {
                 }
               }
             },
-            icon: const Icon(Icons.delete_outline),
-            color: Colors.red,
+            icon: const Icon(Icons.bookmark),
+            color: Theme.of(context).colorScheme.primary,
           ),
         );
       },

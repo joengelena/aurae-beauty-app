@@ -53,7 +53,7 @@ class WatchlistServices {
 
       http.Response response = await apiClient.post(
         '/user/watchlist-add/$listingId',
-        {'currentUserId': userId},
+        {},
       );
 
       if (response.statusCode != HttpStatus.ok) {
@@ -81,15 +81,9 @@ class WatchlistServices {
         throw UnauthenticatedException('User not signed in');
       }
 
-      final uri = Uri.parse('http://localhost:4941/api/v1/user/watchlist-remove/$listingId');
-      final headers = <String, String>{
-        'content-type': 'application/json',
-      };
-
-      final response = await http.delete(
-        uri,
-        headers: headers,
-        body: jsonEncode({'currentUserId': userId}),
+      http.Response response = await apiClient.delete(
+        '/user/watchlist-remove/$listingId',
+        {},
       );
 
       if (response.statusCode != HttpStatus.ok) {

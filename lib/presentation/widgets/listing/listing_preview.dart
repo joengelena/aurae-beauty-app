@@ -14,6 +14,8 @@ class ListingPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isInWatchlist = listing.isInWatchlist ?? false;
+
     return GestureDetector(
       onTap: () {
         context.go('/listings/${listing.id}');
@@ -60,7 +62,6 @@ class ListingPreview extends StatelessWidget {
 
                       final watchlistProvider = context.read<WatchlistProvider>();
                       final listingsProvider = context.read<ListingsProvider>();
-                      final isInWatchlist = listing.isInWatchlist == true;
 
                       // Optimistically update UI
                       listingsProvider.toggleWatchlistStatus(listing.id, !isInWatchlist);
@@ -68,8 +69,18 @@ class ListingPreview extends StatelessWidget {
                       try {
                         if (isInWatchlist) {
                           await watchlistProvider.removeFromWatchlist(listing.id);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Removed from watchlist')),
+                            );
+                          }
                         } else {
                           await watchlistProvider.addToWatchlist(listing.id);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Added to watchlist')),
+                            );
+                          }
                         }
                       } catch (e) {
                         // Revert on error
@@ -91,7 +102,7 @@ class ListingPreview extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        listing.isInWatchlist == true
+                        isInWatchlist
                             ? Icons.bookmark
                             : Icons.bookmark_border,
                         color: Theme.of(context).colorScheme.primary,

@@ -93,6 +93,32 @@ class ApiClient {
     return response;
   }
 
+  Future<http.Response> delete(
+    String path,
+    Map<String, dynamic> data,
+  ) async {
+    final headers = <String, String>{
+      'content-type': 'application/json',
+      'x-client-type': kIsWeb ? 'web' : 'flutter',
+    };
+
+    // Add authorization header for mobile (web uses cookies)
+    if (!kIsWeb) {
+      final String? accessToken = await SecureStorage.read('accessToken');
+      if (accessToken != null && accessToken.isNotEmpty) {
+        headers['authorization'] = 'Bearer $accessToken';
+      }
+    }
+
+    final response = await _client.delete(
+      Uri.parse('$_baseUrl$path'),
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    return response;
+  }
+
   Future<http.Response> postMultipart(
     String path,
     Map<String, String> fields,
