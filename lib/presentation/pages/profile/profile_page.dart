@@ -53,13 +53,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(
-        title,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
+      title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
       onTap: () async {
         Navigator.pop(context);
-        final userListingsProvider = context.read<UserListingsProvider>();
         try {
           await onStatusChange(listingId);
           if (context.mounted) {
@@ -114,7 +110,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   listingId: listing.id,
                   icon: Icons.check_circle,
                   title: 'Mark as Sold',
-                  onStatusChange: context.read<UserListingsProvider>().markAsSold,
+                  onStatusChange:
+                      context.read<UserListingsProvider>().markAsSold,
                   successMessage: 'Listing marked as sold',
                   errorMessage: 'Failed to mark listing as sold',
                 ),
@@ -124,7 +121,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   listingId: listing.id,
                   icon: Icons.autorenew,
                   title: 'Mark as Active',
-                  onStatusChange: context.read<UserListingsProvider>().markAsActive,
+                  onStatusChange:
+                      context.read<UserListingsProvider>().markAsActive,
                   successMessage: 'Listing marked as active',
                   errorMessage: 'Failed to mark listing as active',
                 ),
@@ -196,8 +194,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       padding: EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          Icon(Icons.error_outline,
-                              size: 48, color: Colors.red),
+                          Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.red,
+                          ),
                           SizedBox(height: 16),
                           Text(
                             userListingsProvider.errorMessage,
@@ -215,8 +216,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       padding: EdgeInsets.all(32.0),
                       child: Column(
                         children: [
-                          Icon(Icons.inventory_2_outlined,
-                              size: 64, color: Colors.grey),
+                          Icon(
+                            Icons.inventory_2_outlined,
+                            size: 64,
+                            color: Colors.grey,
+                          ),
                           SizedBox(height: 16),
                           Text(
                             'No listings yet',
