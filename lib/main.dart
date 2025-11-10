@@ -26,8 +26,12 @@ void main() {
             return profileProvider;
           },
         ),
-        ChangeNotifierProvider<UserListingsProvider>(
+        ChangeNotifierProxyProvider<AuthProvider, UserListingsProvider>(
           create: (_) => UserListingsProvider(),
+          update: (context, authProvider, userListingsProvider) {
+            userListingsProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return userListingsProvider;
+          },
         ),
         ChangeNotifierProvider<ListingAttributesProvider>(
           create: (_) => ListingAttributesProvider(),

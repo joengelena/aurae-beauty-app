@@ -16,14 +16,10 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final ScrollController _scrollController = ScrollController();
-  bool _hasInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeUserListings();
-    });
     _scrollController.addListener(_onScroll);
   }
 
@@ -43,21 +39,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (isNearBottom && provider.canLoadMore && !provider.isLoading) {
       provider.loadMoreListings();
-    }
-  }
-
-  Future<void> _initializeUserListings() async {
-    if (_hasInitialized || !mounted) return;
-    _hasInitialized = true;
-
-    try {
-      final userId = await SecureStorage.read('userId');
-      if (userId != null && userId.isNotEmpty && mounted) {
-        final provider = context.read<UserListingsProvider>();
-        await provider.fetchUserListings(userId);
-      }
-    } catch (e) {
-      debugPrint('Error initializing user listings: $e');
     }
   }
 

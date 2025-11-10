@@ -15,10 +15,29 @@ class UserListingsProvider extends ChangeNotifier {
   bool isLoading = false;
   String errorMessage = '';
   String? _currentUserId;
+  bool _isSignedIn = false;
 
   bool get onLastPage => currentPage >= totalPages;
   bool get canLoadMore => !onLastPage && !isLoading;
   bool get hasListings => userListings.isNotEmpty;
+
+  void updateAuthStatus(bool isSignedIn) async {
+    if (isSignedIn && !_isSignedIn) {
+      // User just signed in, fetch their listings
+      await _fetchCurrentUserListings();
+    } else if (!isSignedIn && _isSignedIn) {
+      // User signed out, clear listings
+      clearListings();
+    }
+    _isSignedIn = isSignedIn;
+  }
+
+  Future<void> _fetchCurrentUserListings() async {
+    final userId = await SecureStorage.read('userId');
+    if (userId != null && userId.isNotEmpty) {
+      await fetchUserListings(userId);
+    }
+  }
 
   Future<void> fetchUserListings(String userId) async {
     _currentUserId = userId;
