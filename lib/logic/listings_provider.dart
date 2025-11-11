@@ -82,6 +82,7 @@ class ListingsProvider extends ChangeNotifier {
         return Listing(
           id: listing.id,
           userIdFk: listing.userIdFk,
+          status: listing.status,
           viewCount: listing.viewCount,
           previewImgUrl: listing.previewImgUrl,
           imageUrls: listing.imageUrls,
@@ -159,6 +160,7 @@ class ListingsProvider extends ChangeNotifier {
       listings[index] = Listing(
         id: listings[index].id,
         userIdFk: listings[index].userIdFk,
+        status: listings[index].status,
         viewCount: listings[index].viewCount,
         previewImgUrl: listings[index].previewImgUrl,
         imageUrls: listings[index].imageUrls,
