@@ -1,12 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:motorix_app/presentation/widgets/listing_form/listing_form_data_provider.dart';
 import 'package:provider/provider.dart';
 
+/// A reusable date picker form field for listing forms.
+///
+/// Displays a calendar picker and formats dates as yyyy-MM-dd.
+/// Automatically removes optional fields from formData when empty.
 class DateFormField extends StatefulWidget {
+  /// The label text displayed in the field
   final String labelText;
+
+  /// The key used to store this field's value in formData
   final String fieldName;
+
+  /// Whether this field is required for form validation
   final bool isRequired;
+
+  /// The earliest date selectable in the picker. Defaults to today.
   final DateTime? firstDate;
 
   const DateFormField({
@@ -18,7 +29,7 @@ class DateFormField extends StatefulWidget {
   });
 
   @override
-  _DateFormFieldState createState() => _DateFormFieldState();
+  State<DateFormField> createState() => _DateFormFieldState();
 }
 
 class _DateFormFieldState extends State<DateFormField> {
@@ -28,7 +39,7 @@ class _DateFormFieldState extends State<DateFormField> {
   void initState() {
     super.initState();
     final saved =
-        context.read<PostListingProvider>().postListingData[widget.fieldName];
+        context.read<ListingFormDataProvider>().formData[widget.fieldName];
     _controller = TextEditingController(text: saved as String? ?? '');
   }
 
@@ -40,7 +51,7 @@ class _DateFormFieldState extends State<DateFormField> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<PostListingProvider>();
+    final provider = context.read<ListingFormDataProvider>();
     final firstDate = widget.firstDate ?? DateTime.now();
 
     return TextFormField(
@@ -49,19 +60,19 @@ class _DateFormFieldState extends State<DateFormField> {
       decoration: InputDecoration(
         labelText: widget.labelText,
         suffixIcon: const Icon(Icons.calendar_today),
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
       validator:
           widget.isRequired
               ? (val) {
                 if (val == null || val.isEmpty) {
-                  return '${widget.labelText} is required';
+                  return 'Required';
                 }
                 return null;
               }
               : null,
       onTap: () async {
-        // Remove focus so the keyboard doesn’t flicker in
+        // Remove focus so the keyboard doesn't flicker in
         FocusScope.of(context).unfocus();
 
         final picked = await showDatePicker(
@@ -74,7 +85,7 @@ class _DateFormFieldState extends State<DateFormField> {
         if (picked != null) {
           final formatted = DateFormat('yyyy-MM-dd').format(picked);
           _controller.text = formatted;
-          provider.postListingData[widget.fieldName] = formatted;
+          provider.formData[widget.fieldName] = formatted;
         }
       },
     );

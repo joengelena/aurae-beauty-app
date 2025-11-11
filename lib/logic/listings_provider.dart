@@ -67,6 +67,7 @@ class ListingsProvider extends ChangeNotifier {
           'pageNumber': currentPage + 1,
           'searchString': searchController.text,
           'sortBy': sortBy,
+          'status': 'active',
           ...getEqualFilters(),
         },
       );

@@ -4,8 +4,8 @@ import 'package:motorix_app/presentation/widgets/listing_form/dropdown_form_fiel
 import 'package:motorix_app/presentation/widgets/listing_form/number_form_field.dart';
 import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
 
-class ListingInfoFields extends StatelessWidget {
-  const ListingInfoFields({super.key});
+class EditListingInfoFields extends StatelessWidget {
+  const EditListingInfoFields({super.key});
 
   @override
   Widget build(BuildContext context) {

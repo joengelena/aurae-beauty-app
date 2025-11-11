@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:motorix_app/logic/edit_listing_provider.dart';
 import 'package:motorix_app/presentation/widgets/listing_form/date_form_field.dart';
 import 'package:motorix_app/presentation/widgets/listing_form/dropdown_form_field.dart';
 import 'package:motorix_app/presentation/widgets/listing_form/number_form_field.dart';
 import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
 import 'package:provider/provider.dart';
 
-class VehicleInfoOptionalFields extends StatefulWidget {
-  const VehicleInfoOptionalFields({super.key});
+class EditVehicleInfoOptionalFields extends StatefulWidget {
+  const EditVehicleInfoOptionalFields({super.key});
 
   @override
-  State<VehicleInfoOptionalFields> createState() =>
-      _VehicleInfoOptionalFieldsState();
+  State<EditVehicleInfoOptionalFields> createState() =>
+      _EditVehicleInfoOptionalFieldsState();
 }
 
-class _VehicleInfoOptionalFieldsState extends State<VehicleInfoOptionalFields> {
+class _EditVehicleInfoOptionalFieldsState
+    extends State<EditVehicleInfoOptionalFields> {
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<PostListingProvider>();
-    final orcIncluded = provider.postListingData['orcIncluded'];
+    final provider = context.watch<EditListingProvider>();
+    final orcIncluded = provider.editListingData['orcIncluded'];
     final isOrcChecked = orcIncluded == 1 || orcIncluded == true;
 
     return ExpansionTile(
@@ -36,12 +37,11 @@ class _VehicleInfoOptionalFieldsState extends State<VehicleInfoOptionalFields> {
               value: isOrcChecked,
               onChanged: (value) {
                 setState(() {
-                  provider.postListingData['orcIncluded'] = value == true ? 1 : 0;
+                  provider.editListingData['orcIncluded'] = value == true ? 1 : 0;
                 });
               },
               title: const Text('ORC Included'),
             ),
-
             DateFormField(
               labelText: 'Rego Expiry Date',
               fieldName: 'regoExpiryDate',
@@ -65,6 +65,12 @@ class _VehicleInfoOptionalFieldsState extends State<VehicleInfoOptionalFields> {
               fieldName: 'doors',
               min: 1,
               max: 20,
+            ),
+            NumberFormField(
+              labelText: 'Previous Owners',
+              fieldName: 'previousOwners',
+              min: 0,
+              max: 50,
             ),
             const StringFormField(labelText: 'Color', fieldName: 'color'),
             NumberFormField(

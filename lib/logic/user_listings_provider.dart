@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
+import 'package:motorix_app/utils/secure_storage.dart';
 
 class UserListingsProvider extends ChangeNotifier {
   UserListingsProvider();
@@ -14,10 +15,29 @@ class UserListingsProvider extends ChangeNotifier {
   bool isLoading = false;
   String errorMessage = '';
   String? _currentUserId;
+  bool _isSignedIn = false;
 
   bool get onLastPage => currentPage >= totalPages;
   bool get canLoadMore => !onLastPage && !isLoading;
   bool get hasListings => userListings.isNotEmpty;
+
+  void updateAuthStatus(bool isSignedIn) async {
+    if (isSignedIn && !_isSignedIn) {
+      // User just signed in, fetch their listings
+      await _fetchCurrentUserListings();
+    } else if (!isSignedIn && _isSignedIn) {
+      // User signed out, clear listings
+      clearListings();
+    }
+    _isSignedIn = isSignedIn;
+  }
+
+  Future<void> _fetchCurrentUserListings() async {
+    final userId = await SecureStorage.read('userId');
+    if (userId != null && userId.isNotEmpty) {
+      await fetchUserListings(userId);
+    }
+  }
 
   Future<void> fetchUserListings(String userId) async {
     _currentUserId = userId;
@@ -68,6 +88,43 @@ class UserListingsProvider extends ChangeNotifier {
     userListings.removeWhere((listing) => listing.id == listingId);
     totalListings = totalListings - 1;
     notifyListeners();
+  }
+
+  Future<void> _updateListingStatus(int listingId, String status) async {
+    try {
+      final userId = await SecureStorage.read('userId');
+      if (userId == null) {
+        throw AppException('User not authenticated');
+      }
+
+      await ListingsServices().patchListing(
+        listingId,
+        {
+          'currentUserId': userId,
+          'status': status,
+        },
+      );
+
+      // Update the local listing status
+      final index = userListings.indexWhere((listing) => listing.id == listingId);
+      if (index != -1) {
+        userListings[index] = userListings[index].copyWith(status: status);
+        notifyListeners();
+      }
+    } catch (e) {
+      if (e is AppException) {
+        rethrow;
+      }
+      throw AppException('Failed to update listing status: ${e.toString()}');
+    }
+  }
+
+  Future<void> markAsSold(int listingId) async {
+    await _updateListingStatus(listingId, 'sold');
+  }
+
+  Future<void> markAsActive(int listingId) async {
+    await _updateListingStatus(listingId, 'active');
   }
 
   void clearListings() {

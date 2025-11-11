@@ -10,6 +10,25 @@ class SelectMultipleImages extends StatefulWidget {
 }
 
 class _SelectMultipleImagesState extends State<SelectMultipleImages> {
+  Future<void> _handlePickImage(PostListingProvider provider) async {
+    // Capture context values before async operation
+    final messenger = ScaffoldMessenger.of(context);
+    final errorColor = Theme.of(context).colorScheme.error;
+
+    final error = await provider.pickImage();
+
+    if (error != null && mounted) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: errorColor,
+          duration: Duration(seconds: 5),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<PostListingProvider>();
@@ -17,10 +36,7 @@ class _SelectMultipleImagesState extends State<SelectMultipleImages> {
     return Column(
       spacing: 12,
       children: [
-        Text(
-          'Add Photos',
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
+        Text('Add Photos', style: Theme.of(context).textTheme.headlineSmall),
         provider.imageBytesList.isNotEmpty
             ? Wrap(
               spacing: 8,
@@ -70,7 +86,8 @@ class _SelectMultipleImagesState extends State<SelectMultipleImages> {
           style: Theme.of(context).textTheme.labelMedium,
         ),
         OutlinedButton.icon(
-          onPressed: provider.canPickImage() ? provider.pickImage : null,
+          onPressed:
+              provider.canPickImage() ? () => _handlePickImage(provider) : null,
           icon: Icon(Icons.add_photo_alternate),
           label: Text('Pick Image'),
         ),

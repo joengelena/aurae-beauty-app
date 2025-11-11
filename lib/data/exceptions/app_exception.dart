@@ -58,3 +58,8 @@ class UnauthenticatedException extends AppException {
     super.stackTrace,
   });
 }
+
+/// Exception thrown when user is not authorized to perform an action
+class ForbiddenException extends AppException {
+  ForbiddenException(super.message, {super.details, super.stackTrace});
+}

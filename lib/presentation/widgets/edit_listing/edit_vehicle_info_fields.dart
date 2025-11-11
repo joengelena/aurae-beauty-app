@@ -3,8 +3,8 @@ import 'package:motorix_app/presentation/widgets/listing_form/dropdown_form_fiel
 import 'package:motorix_app/presentation/widgets/listing_form/number_form_field.dart';
 import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
 
-class VehicleInfoFields extends StatelessWidget {
-  const VehicleInfoFields({super.key});
+class EditVehicleInfoFields extends StatelessWidget {
+  const EditVehicleInfoFields({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class VehicleInfoFields extends StatelessWidget {
       spacing: 12,
       children: [
         Text(
-          'Vehicle Details',
+          'Vehicle Information',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         DropdownFormField(
@@ -30,14 +30,14 @@ class VehicleInfoFields extends StatelessWidget {
           labelText: 'Year',
           fieldName: 'year',
           min: 1900,
-          max: DateTime.now().year + 1,
+          max: 3000,
           isRequired: true,
         ),
         NumberFormField(
           labelText: 'Kilometers',
           fieldName: 'kilometers',
           min: 0,
-          max: 1000000,
+          max: 9999999,
           isRequired: true,
         ),
         DropdownFormField(

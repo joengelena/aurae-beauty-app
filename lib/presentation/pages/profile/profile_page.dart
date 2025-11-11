@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/logic/user_listings_provider.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
 import 'package:motorix_app/presentation/widgets/profile/user_profile.dart';
@@ -14,14 +16,10 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final ScrollController _scrollController = ScrollController();
-  bool _hasInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeUserListings();
-    });
     _scrollController.addListener(_onScroll);
   }
 
@@ -44,22 +42,45 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<void> _initializeUserListings() async {
-    if (_hasInitialized || !mounted) return;
-    _hasInitialized = true;
-
-    try {
-      final userId = await SecureStorage.read('userId');
-      if (userId != null && userId.isNotEmpty && mounted) {
-        final provider = context.read<UserListingsProvider>();
-        await provider.fetchUserListings(userId);
-      }
-    } catch (e) {
-      debugPrint('Error initializing user listings: $e');
-    }
+  Widget _buildStatusChangeMenuItem({
+    required BuildContext context,
+    required int listingId,
+    required IconData icon,
+    required String title,
+    required Future<void> Function(int) onStatusChange,
+    required String successMessage,
+    required String errorMessage,
+  }) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
+      onTap: () async {
+        Navigator.pop(context);
+        try {
+          await onStatusChange(listingId);
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(successMessage),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(errorMessage),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      },
+    );
   }
 
-  void showlistingBottomSheet(BuildContext context, int listingId) {
+  void showlistingBottomSheet(BuildContext context, Listing listing) {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -80,10 +101,31 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Navigate to edit listing page
-                  debugPrint('Edit listing $listingId');
+                  context.go('/listings/${listing.id}/edit');
                 },
               ),
+              if (listing.status == 'active')
+                _buildStatusChangeMenuItem(
+                  context: context,
+                  listingId: listing.id,
+                  icon: Icons.check_circle,
+                  title: 'Mark as Sold',
+                  onStatusChange:
+                      context.read<UserListingsProvider>().markAsSold,
+                  successMessage: 'Listing marked as sold',
+                  errorMessage: 'Failed to mark listing as sold',
+                ),
+              if (listing.status == 'sold')
+                _buildStatusChangeMenuItem(
+                  context: context,
+                  listingId: listing.id,
+                  icon: Icons.autorenew,
+                  title: 'Mark as Active',
+                  onStatusChange:
+                      context.read<UserListingsProvider>().markAsActive,
+                  successMessage: 'Listing marked as active',
+                  errorMessage: 'Failed to mark listing as active',
+                ),
               ListTile(
                 leading: Icon(Icons.delete),
                 title: Text(
@@ -93,7 +135,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 onTap: () {
                   Navigator.pop(context);
                   // TODO: Implement delete functionality
-                  debugPrint('Delete listing $listingId');
+                  debugPrint('Delete listing ${listing.id}');
                 },
               ),
             ],
@@ -152,8 +194,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       padding: EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          Icon(Icons.error_outline,
-                              size: 48, color: Colors.red),
+                          Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.red,
+                          ),
                           SizedBox(height: 16),
                           Text(
                             userListingsProvider.errorMessage,
@@ -171,8 +216,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       padding: EdgeInsets.all(32.0),
                       child: Column(
                         children: [
-                          Icon(Icons.inventory_2_outlined,
-                              size: 64, color: Colors.grey),
+                          Icon(
+                            Icons.inventory_2_outlined,
+                            size: 64,
+                            color: Colors.grey,
+                          ),
                           SizedBox(height: 16),
                           Text(
                             'No listings yet',
@@ -192,7 +240,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       listing: listing,
                       topRightButton: IconButton(
                         onPressed: () {
-                          showlistingBottomSheet(context, listing.id);
+                          showlistingBottomSheet(context, listing);
                         },
                         icon: const Icon(Icons.more_vert),
                       ),

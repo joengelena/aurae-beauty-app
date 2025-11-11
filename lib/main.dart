@@ -8,11 +8,14 @@ import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/logic/profile_provider.dart';
 import 'package:motorix_app/logic/user_listings_provider.dart';
+import 'package:motorix_app/presentation/widgets/listing_form/listing_form_data_provider.dart';
 import 'package:motorix_app/logic/watchlist_provider.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  // Disable Provider type checking for interface types that are only accessed via context.read<>
+  Provider.debugCheckInvalidValueType = null;
   runApp(
     MultiProvider(
       providers: [
@@ -24,8 +27,12 @@ void main() {
             return profileProvider;
           },
         ),
-        ChangeNotifierProvider<UserListingsProvider>(
+        ChangeNotifierProxyProvider<AuthProvider, UserListingsProvider>(
           create: (_) => UserListingsProvider(),
+          update: (context, authProvider, userListingsProvider) {
+            userListingsProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return userListingsProvider;
+          },
         ),
         ChangeNotifierProvider<ListingAttributesProvider>(
           create: (_) => ListingAttributesProvider(),
@@ -43,6 +50,9 @@ void main() {
         ),
         ChangeNotifierProvider<PostListingProvider>(
           create: (_) => PostListingProvider(),
+        ),
+        Provider<ListingFormDataProvider>(
+          create: (context) => context.read<PostListingProvider>(),
         ),
         ChangeNotifierProvider<ListingDetailProvider>(
           create: (_) => ListingDetailProvider(),
