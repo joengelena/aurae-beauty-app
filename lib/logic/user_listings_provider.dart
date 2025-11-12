@@ -86,7 +86,9 @@ class UserListingsProvider extends ChangeNotifier {
 
   void removeListing(int listingId) {
     userListings.removeWhere((listing) => listing.id == listingId);
-    totalListings = totalListings - 1;
+    if (totalListings > 0) {
+      totalListings = totalListings - 1;
+    }
     notifyListeners();
   }
 
@@ -125,6 +127,31 @@ class UserListingsProvider extends ChangeNotifier {
 
   Future<void> markAsActive(int listingId) async {
     await _updateListingStatus(listingId, 'active');
+  }
+
+  Future<void> deleteListing(int listingId) async {
+    try {
+      final userId = await SecureStorage.read('userId');
+
+      if (userId == null) {
+        throw AppException('User not authenticated');
+      }
+
+      await ListingsServices().deleteListing(
+        listingId,
+        {
+          'currentUserId': userId,
+        },
+      );
+
+      // Remove the listing from the local list
+      removeListing(listingId);
+    } catch (e) {
+      if (e is AppException) {
+        rethrow;
+      }
+      throw AppException('Failed to delete listing');
+    }
   }
 
   void clearListings() {

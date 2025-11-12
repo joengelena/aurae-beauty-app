@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/logic/user_listings_provider.dart';
+import 'package:motorix_app/presentation/widgets/common/app_dialog.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
 import 'package:motorix_app/presentation/widgets/profile/user_profile.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
@@ -80,6 +82,67 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  Future<void> _deleteListing(int listingId) async {
+    final userListingsProvider = context.read<UserListingsProvider>();
+
+    try {
+      await userListingsProvider.deleteListing(listingId);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [Expanded(child: Text('Listing deleted successfully'))],
+            ),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        final errorMessage =
+            e is AppException
+                ? e.message
+                : 'Failed to delete listing. Please try again.';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(children: [Expanded(child: Text(errorMessage))]),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
+    }
+  }
+
+  void _showDeleteConfirmationDialog(
+    BuildContext context,
+    int listingId,
+  ) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AppDialog(
+          title: 'Delete Listing',
+          message:
+              'Are you sure you want to delete this listing? This action cannot be undone.',
+          type: AppDialogType.warning,
+          primaryButtonText: 'Delete',
+          onPrimaryButtonPressed: () {
+            Navigator.pop(dialogContext);
+            _deleteListing(listingId);
+          },
+          secondaryButtonText: 'Cancel',
+          onSecondaryButtonPressed: () => Navigator.pop(dialogContext),
+          barrierDismissible: false,
+        );
+      },
+    );
+  }
+
   void showlistingBottomSheet(BuildContext context, Listing listing) {
     showModalBottomSheet(
       context: context,
@@ -127,15 +190,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   errorMessage: 'Failed to mark listing as active',
                 ),
               ListTile(
-                leading: Icon(Icons.delete),
+                leading: Icon(Icons.delete, color: Colors.red),
                 title: Text(
                   'Delete',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.red),
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Implement delete functionality
-                  debugPrint('Delete listing ${listing.id}');
+                  _showDeleteConfirmationDialog(context, listing.id);
                 },
               ),
             ],
