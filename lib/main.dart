@@ -9,6 +9,7 @@ import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/logic/profile_provider.dart';
 import 'package:motorix_app/logic/user_listings_provider.dart';
 import 'package:motorix_app/presentation/widgets/listing_form/listing_form_data_provider.dart';
+import 'package:motorix_app/logic/watchlist_provider.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -36,8 +37,16 @@ void main() {
         ChangeNotifierProvider<ListingAttributesProvider>(
           create: (_) => ListingAttributesProvider(),
         ),
-        ChangeNotifierProvider<ListingsProvider>(
-          create: (_) => ListingsProvider(),
+        ChangeNotifierProvider<WatchlistProvider>(
+          create: (_) => WatchlistProvider(),
+        ),
+        ChangeNotifierProxyProvider<WatchlistProvider, ListingsProvider>(
+          create: (context) => ListingsProvider(
+            watchlistProvider: context.read<WatchlistProvider>(),
+          ),
+          update: (context, watchlistProvider, listingsProvider) {
+            return listingsProvider!;
+          },
         ),
         ChangeNotifierProvider<PostListingProvider>(
           create: (_) => PostListingProvider(),
@@ -72,8 +81,13 @@ class _MyAppState extends State<MyApp> {
 
     // Check if user is already authenticated (e.g., from previous session)
     // This must happen after the first frame to avoid calling notifyListeners during build
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      auth.checkAuthStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await auth.checkAuthStatus();
+
+      // Fetch watchlist if user is signed in
+      if (auth.isSignedIn && mounted) {
+        context.read<WatchlistProvider>().fetchWatchlist();
+      }
     });
   }
 
