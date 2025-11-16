@@ -37,7 +37,7 @@ class _SelectMultipleImagesState extends State<SelectMultipleImages> {
     return Column(
       spacing: 12,
       children: [
-        Text('Add Photos', style: Theme.of(context).textTheme.headlineSmall),
+        Text('Add Photos *', style: Theme.of(context).textTheme.headlineSmall),
         provider.imageBytesList.isNotEmpty
             ? Wrap(
               spacing: 8,

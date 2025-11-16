@@ -40,7 +40,7 @@ class StringFormField extends StatelessWidget {
       initialValue: initialValue,
       maxLines: maxLines,
       decoration: InputDecoration(
-        labelText: labelText,
+        labelText: isRequired ? '$labelText *' : labelText,
         border: const OutlineInputBorder(),
         alignLabelWithHint: alignLabelWithHint,
       ),

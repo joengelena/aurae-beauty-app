@@ -61,7 +61,7 @@ class DropdownFormField extends StatelessWidget {
     return DropdownButtonFormField<String>(
       value: validatedValue,
       decoration: InputDecoration(
-        labelText: labelText,
+        labelText: isRequired ? '$labelText *' : labelText,
         border: const OutlineInputBorder(),
       ),
       items:

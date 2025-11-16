@@ -58,7 +58,7 @@ class _DateFormFieldState extends State<DateFormField> {
       controller: _controller,
       readOnly: true,
       decoration: InputDecoration(
-        labelText: widget.labelText,
+        labelText: widget.isRequired ? '${widget.labelText} *' : widget.labelText,
         suffixIcon: const Icon(Icons.calendar_today),
         border: const OutlineInputBorder(),
       ),

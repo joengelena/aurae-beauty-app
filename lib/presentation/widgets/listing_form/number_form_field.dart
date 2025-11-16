@@ -60,7 +60,7 @@ class NumberFormField extends StatelessWidget {
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
-        labelText: labelText,
+        labelText: isRequired ? '$labelText *' : labelText,
         border: const OutlineInputBorder(),
       ),
       validator: _validator,
