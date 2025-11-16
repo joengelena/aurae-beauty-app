@@ -4,6 +4,7 @@ import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/logic/watchlist_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 class ListingPreview extends StatelessWidget {
@@ -31,8 +32,10 @@ class ListingPreview extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   child: SizedBox(
                     width: width,
-                    height: width,
-                    child: Image.network(listing.previewImgUrl, fit: BoxFit.cover),
+                    child: AspectRatio(
+                      aspectRatio: AppConstants.listingImageAspectRatio,
+                      child: Image.network(listing.previewImgUrl, fit: BoxFit.cover),
+                    ),
                   ),
                 ),
                 Positioned(

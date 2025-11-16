@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 class SelectMultipleImages extends StatefulWidget {
@@ -48,13 +49,17 @@ class _SelectMultipleImagesState extends State<SelectMultipleImages> {
                       .map(
                         (entry) => Stack(
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.memory(
-                                entry.value,
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
+                            SizedBox(
+                              width: 150,
+                              child: AspectRatio(
+                                aspectRatio: AppConstants.listingImageAspectRatio,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.memory(
+                                    entry.value,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
                               ),
                             ),
                             Positioned(

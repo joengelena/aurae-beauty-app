@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class ImageCarousel extends StatefulWidget {
@@ -41,8 +42,8 @@ class _ImageCarousel extends State<ImageCarousel> {
         children: [
           Stack(
             children: [
-              SizedBox(
-                height: 300,
+              AspectRatio(
+                aspectRatio: AppConstants.listingImageAspectRatio,
                 child: PageView.builder(
                   controller: _controller,
                   itemCount: widget.imageUrls.length,
