@@ -16,6 +16,7 @@ import 'package:motorix_app/presentation/pages/profile/sign_in_page.dart';
 import 'package:motorix_app/presentation/pages/profile/sign_up_page.dart';
 import 'package:motorix_app/presentation/pages/watchlist_page.dart';
 import 'package:motorix_app/presentation/pages/garage_page.dart';
+import 'package:motorix_app/presentation/pages/add_vehicle_page.dart';
 import 'package:motorix_app/presentation/widgets/scaffold/app_scaffold.dart';
 import 'package:provider/provider.dart';
 
@@ -110,6 +111,15 @@ GoRouter getAppRouter(AuthProvider authProvider) {
             parentNavigatorKey: _shellNavigatorKey,
             pageBuilder:
                 (context, state) => NoTransitionPage(child: GaragePage()),
+            routes: [
+              GoRoute(
+                path: 'add',
+                parentNavigatorKey: _shellNavigatorKey,
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: AddVehiclePage());
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: '/profile',

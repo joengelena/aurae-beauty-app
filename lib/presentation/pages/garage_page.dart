@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/presentation/widgets/sign_in_to_access.dart';
 import 'package:provider/provider.dart';
@@ -51,7 +52,7 @@ class GaragePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Navigate to add vehicle page
+          context.go('/garage/add');
         },
         child: const Icon(Icons.add),
       ),
