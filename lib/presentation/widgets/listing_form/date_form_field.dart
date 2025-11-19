@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 ///
 /// Displays a calendar picker and formats dates as yyyy-MM-dd.
 /// Automatically removes optional fields from formData when empty.
-class DateFormField extends StatefulWidget {
+class DateFormField<T extends ListingFormDataProvider> extends StatefulWidget {
   /// The label text displayed in the field
   final String labelText;
 
@@ -29,17 +29,17 @@ class DateFormField extends StatefulWidget {
   });
 
   @override
-  State<DateFormField> createState() => _DateFormFieldState();
+  State<DateFormField<T>> createState() => _DateFormFieldState<T>();
 }
 
-class _DateFormFieldState extends State<DateFormField> {
+class _DateFormFieldState<T extends ListingFormDataProvider> extends State<DateFormField<T>> {
   late final TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
     final saved =
-        context.read<ListingFormDataProvider>().formData[widget.fieldName];
+        context.read<T>().formData[widget.fieldName];
     _controller = TextEditingController(text: saved as String? ?? '');
   }
 
@@ -51,7 +51,7 @@ class _DateFormFieldState extends State<DateFormField> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<ListingFormDataProvider>();
+    final provider = context.read<T>();
     final firstDate = widget.firstDate ?? DateTime.now();
 
     return TextFormField(

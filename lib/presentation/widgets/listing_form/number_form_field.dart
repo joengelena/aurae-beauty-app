@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 ///
 /// Only accepts integer input and validates against min/max constraints.
 /// Automatically removes optional fields from formData when empty.
-class NumberFormField extends StatelessWidget {
+class NumberFormField<T extends ListingFormDataProvider> extends StatelessWidget {
   /// The label text displayed in the field
   final String labelText;
 
@@ -52,7 +52,7 @@ class NumberFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<ListingFormDataProvider>();
+    final provider = context.read<T>();
     final initialValue = provider.formData[fieldName]?.toString() ?? '';
 
     return TextFormField(

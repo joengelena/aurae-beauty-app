@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 ///
 /// Supports both single-line and multi-line text input.
 /// Automatically removes optional fields from formData when empty.
-class StringFormField extends StatelessWidget {
+class StringFormField<T extends ListingFormDataProvider> extends StatelessWidget {
   /// The label text displayed in the field
   final String labelText;
 
@@ -33,7 +33,7 @@ class StringFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<ListingFormDataProvider>();
+    final provider = context.read<T>();
     final initialValue = provider.formData[fieldName]?.toString() ?? '';
 
     return TextFormField(
