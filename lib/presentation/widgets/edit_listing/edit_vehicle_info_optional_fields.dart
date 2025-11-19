@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/edit_listing_provider.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/date_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/dropdown_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/number_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/date_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
 import 'package:provider/provider.dart';
 
 class EditVehicleInfoOptionalFields extends StatefulWidget {
@@ -37,7 +37,8 @@ class _EditVehicleInfoOptionalFieldsState
               value: isOrcChecked,
               onChanged: (value) {
                 setState(() {
-                  provider.editListingData['orcIncluded'] = value == true ? 1 : 0;
+                  provider.editListingData['orcIncluded'] =
+                      value == true ? 1 : 0;
                 });
               },
               title: const Text('ORC Included'),

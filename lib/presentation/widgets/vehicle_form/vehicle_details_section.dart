@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/add_vehicle_provider.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/number_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
 import 'package:motorix_app/presentation/widgets/vehicle_form/vehicle_dropdown_field.dart';
 
 class VehicleDetailsSection extends StatelessWidget {
@@ -14,9 +14,9 @@ class VehicleDetailsSection extends StatelessWidget {
       children: [
         Text(
           'Vehicle Details',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const StringFormField<AddVehicleProvider>(
           labelText: 'Color',
@@ -38,12 +38,7 @@ class VehicleDetailsSection extends StatelessWidget {
         const VehicleDropdownField(
           labelText: 'Transmission',
           fieldName: 'transmission',
-          options: [
-            'Automatic',
-            'Manual',
-            'CVT',
-            'Semi-Automatic',
-          ],
+          options: ['Automatic', 'Manual', 'CVT', 'Semi-Automatic'],
         ),
         const NumberFormField<AddVehicleProvider>(
           labelText: 'Odometer Reading',

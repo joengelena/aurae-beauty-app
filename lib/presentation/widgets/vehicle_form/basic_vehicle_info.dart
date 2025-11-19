@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/add_vehicle_provider.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/number_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
 
 class BasicVehicleInfo extends StatelessWidget {
   const BasicVehicleInfo({super.key});
@@ -13,9 +13,9 @@ class BasicVehicleInfo extends StatelessWidget {
       children: [
         Text(
           'Basic Information',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const StringFormField<AddVehicleProvider>(
           labelText: 'Make',

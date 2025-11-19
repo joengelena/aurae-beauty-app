@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/add_vehicle_provider.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
 import 'package:provider/provider.dart';
 
 class AdditionalInfoSection extends StatelessWidget {
@@ -15,9 +15,9 @@ class AdditionalInfoSection extends StatelessWidget {
       children: [
         Text(
           'Additional Information',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const StringFormField<AddVehicleProvider>(
           labelText: 'VIN (17 characters)',
