@@ -39,7 +39,6 @@ class AdditionalInfoSection extends StatelessWidget {
           value: provider.formData['isPrimary'] == 1,
           onChanged: (value) {
             provider.formData['isPrimary'] = value == true ? 1 : 0;
-            provider.notifyListeners();
           },
           contentPadding: EdgeInsets.zero,
           controlAffinity: ListTileControlAffinity.leading,
