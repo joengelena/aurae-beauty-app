@@ -15,6 +15,7 @@ import 'package:motorix_app/presentation/pages/profile/reset_password_page.dart'
 import 'package:motorix_app/presentation/pages/profile/sign_in_page.dart';
 import 'package:motorix_app/presentation/pages/profile/sign_up_page.dart';
 import 'package:motorix_app/presentation/pages/watchlist_page.dart';
+import 'package:motorix_app/presentation/pages/garage_page.dart';
 import 'package:motorix_app/presentation/widgets/scaffold/app_scaffold.dart';
 import 'package:provider/provider.dart';
 
@@ -103,6 +104,12 @@ GoRouter getAppRouter(AuthProvider authProvider) {
             parentNavigatorKey: _shellNavigatorKey,
             pageBuilder:
                 (context, state) => NoTransitionPage(child: PostListingPage()),
+          ),
+          GoRoute(
+            path: '/garage',
+            parentNavigatorKey: _shellNavigatorKey,
+            pageBuilder:
+                (context, state) => NoTransitionPage(child: GaragePage()),
           ),
           GoRoute(
             path: '/profile',
