@@ -44,6 +44,12 @@ class GaragePage extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // TODO: Navigate to add vehicle page
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
