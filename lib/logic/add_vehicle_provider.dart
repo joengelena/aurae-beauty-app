@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/services/vehicle_services.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/listing_form_data_provider.dart';
+import 'package:motorix_app/logic/listing_form_data_provider.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 
 class AddVehicleProvider extends ChangeNotifier

@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/listing_form_data_provider.dart';
+import 'package:motorix_app/logic/listing_form_data_provider.dart';
 
 class PostListingProvider extends ChangeNotifier
     implements ListingFormDataProvider {

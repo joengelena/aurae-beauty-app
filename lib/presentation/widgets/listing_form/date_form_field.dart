@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/listing_form_data_provider.dart';
+import 'package:motorix_app/logic/listing_form_data_provider.dart';
 import 'package:provider/provider.dart';
 
 /// A reusable date picker form field for listing forms.
@@ -32,14 +32,14 @@ class DateFormField<T extends ListingFormDataProvider> extends StatefulWidget {
   State<DateFormField<T>> createState() => _DateFormFieldState<T>();
 }
 
-class _DateFormFieldState<T extends ListingFormDataProvider> extends State<DateFormField<T>> {
+class _DateFormFieldState<T extends ListingFormDataProvider>
+    extends State<DateFormField<T>> {
   late final TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
-    final saved =
-        context.read<T>().formData[widget.fieldName];
+    final saved = context.read<T>().formData[widget.fieldName];
     _controller = TextEditingController(text: saved as String? ?? '');
   }
 
@@ -58,7 +58,8 @@ class _DateFormFieldState<T extends ListingFormDataProvider> extends State<DateF
       controller: _controller,
       readOnly: true,
       decoration: InputDecoration(
-        labelText: widget.isRequired ? '${widget.labelText} *' : widget.labelText,
+        labelText:
+            widget.isRequired ? '${widget.labelText} *' : widget.labelText,
         suffixIcon: const Icon(Icons.calendar_today),
         border: const OutlineInputBorder(),
       ),

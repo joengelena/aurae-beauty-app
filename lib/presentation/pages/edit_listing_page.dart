@@ -4,7 +4,7 @@ import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/edit_listing_provider.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/presentation/widgets/edit_listing/edit_listing_form.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/listing_form_data_provider.dart';
+import 'package:motorix_app/logic/listing_form_data_provider.dart';
 import 'package:motorix_app/presentation/widgets/sign_in_to_access.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 import 'package:provider/provider.dart';
