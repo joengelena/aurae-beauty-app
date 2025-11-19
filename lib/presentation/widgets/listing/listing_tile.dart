@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/models/listing.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:intl/intl.dart';
 
 class ListingTile extends StatelessWidget {
-  static const double _imageSize = 105.0;
+  static const double _imageWidth = 140.0;
   static const double _borderRadius = 12.0;
 
   final Listing listing;
@@ -51,19 +52,21 @@ class ListingTile extends StatelessWidget {
                       topLeft: Radius.circular(_borderRadius),
                       bottomLeft: Radius.circular(_borderRadius),
                     ),
-                    child: Image.network(
-                      listing.previewImgUrl,
-                      width: _imageSize,
-                      height: _imageSize,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: _imageSize,
-                          height: _imageSize,
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.broken_image, color: Colors.grey),
-                        );
-                      },
+                    child: SizedBox(
+                      width: _imageWidth,
+                      child: AspectRatio(
+                        aspectRatio: AppConstants.listingImageAspectRatio,
+                        child: Image.network(
+                          listing.previewImgUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Colors.grey[300],
+                              child: const Icon(Icons.broken_image, color: Colors.grey),
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
