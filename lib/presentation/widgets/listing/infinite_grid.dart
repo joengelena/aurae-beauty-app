@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
-import 'package:motorix_app/logic/listing_attributes_provider.dart';
+import 'package:motorix_app/logic/filtering_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/watchlist_provider.dart';
 import 'package:provider/provider.dart';
@@ -60,12 +60,12 @@ class _InfiniteGridState extends State<InfiniteGrid> {
     _hasInitialized = true;
 
     try {
-      final attributesProvider = context.read<ListingAttributesProvider>();
+      final filteringProvider = context.read<FilteringProvider>();
       final listingsProvider = context.read<ListingsProvider>();
       final authProvider = context.read<AuthProvider>();
       final watchlistProvider = context.read<WatchlistProvider>();
 
-      await _waitForAttributes(attributesProvider).timeout(
+      await _waitForAttributes(filteringProvider).timeout(
         _initTimeout,
         onTimeout: () {
           debugPrint('Timeout waiting for listing attributes');
@@ -81,7 +81,7 @@ class _InfiniteGridState extends State<InfiniteGrid> {
 
       // Set initial filters
       listingsProvider.equalFilters = Map.from(
-        attributesProvider.selectedEqualFilters,
+        filteringProvider.selectedEqualFilters,
       );
 
       // Fetch listings
@@ -94,7 +94,7 @@ class _InfiniteGridState extends State<InfiniteGrid> {
     }
   }
 
-  Future<void> _waitForAttributes(ListingAttributesProvider provider) async {
+  Future<void> _waitForAttributes(FilteringProvider provider) async {
     while (provider.listingAttributeOptions.isEmpty) {
       await Future.delayed(const Duration(milliseconds: 50));
     }

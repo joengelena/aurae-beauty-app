@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/app_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
-import 'package:motorix_app/logic/listing_attributes_provider.dart';
+import 'package:motorix_app/logic/filtering_provider.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
@@ -34,8 +34,8 @@ void main() {
             return userListingsProvider;
           },
         ),
-        ChangeNotifierProvider<ListingAttributesProvider>(
-          create: (_) => ListingAttributesProvider(),
+        ChangeNotifierProvider<FilteringProvider>(
+          create: (_) => FilteringProvider(),
         ),
         ChangeNotifierProvider<WatchlistProvider>(
           create: (_) => WatchlistProvider(),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/listing_attributes_provider.dart';
+import 'package:motorix_app/logic/filtering_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -22,15 +22,15 @@ class FilterBar extends StatelessWidget {
     String filterKey,
     String filterValue,
   ) {
-    final attributesProvider = context.read<ListingAttributesProvider>();
+    final filteringProvider = context.read<FilteringProvider>();
     final listingsProvider = context.read<ListingsProvider>();
 
     return FilledButton(
       onPressed: () {
         // Update pending filter to 'None'
-        attributesProvider.updateEqualFilter(filterKey, 'None');
+        filteringProvider.updateEqualFilter(filterKey, 'None');
         // Immediately apply the change (removing a filter should be instant)
-        listingsProvider.applyFilters(attributesProvider.selectedEqualFilters);
+        listingsProvider.applyFilters(filteringProvider.selectedEqualFilters);
       },
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.all(
@@ -53,17 +53,17 @@ class FilterBar extends StatelessWidget {
 
   void showFiltersBottomSheet(BuildContext context) {
     // Sync pending filters with applied filters when opening the sheet
-    final attributesProvider = context.read<ListingAttributesProvider>();
+    final filteringProvider = context.read<FilteringProvider>();
     final listingsProvider = context.read<ListingsProvider>();
 
     // Copy applied filters to pending filters
-    for (var key in attributesProvider.selectedEqualFilters.keys) {
+    for (var key in filteringProvider.selectedEqualFilters.keys) {
       if (listingsProvider.equalFilters.containsKey(key)) {
-        attributesProvider.selectedEqualFilters[key] =
+        filteringProvider.selectedEqualFilters[key] =
             listingsProvider.equalFilters[key]!;
       } else {
         // If filter not in applied filters, reset to 'None'
-        attributesProvider.selectedEqualFilters[key] = 'None';
+        filteringProvider.selectedEqualFilters[key] = 'None';
       }
     }
 
@@ -73,10 +73,10 @@ class FilterBar extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext modalContext) {
-        final attributesProvider = modalContext.watch<ListingAttributesProvider>();
+        final filteringProvider = modalContext.watch<FilteringProvider>();
         final listingsProvider = modalContext.read<ListingsProvider>();
-        final listingAttributeOptions = attributesProvider.listingAttributeOptions;
-        final selectedEqualFilters = attributesProvider.selectedEqualFilters;
+        final listingAttributeOptions = filteringProvider.listingAttributeOptions;
+        final selectedEqualFilters = filteringProvider.selectedEqualFilters;
 
         return Padding(
           padding: EdgeInsets.all(16),
@@ -133,7 +133,7 @@ class FilterBar extends StatelessWidget {
                                               }).toList(),
                                           onChanged: (newVal) {
                                             if (newVal != null) {
-                                              attributesProvider.updateEqualFilter(
+                                              filteringProvider.updateEqualFilter(
                                                 attributeOption.name,
                                                 newVal,
                                               );
@@ -168,7 +168,7 @@ class FilterBar extends StatelessWidget {
                     child: FilledButton(
                       onPressed: () {
                         listingsProvider.applyFilters(
-                          attributesProvider.selectedEqualFilters,
+                          filteringProvider.selectedEqualFilters,
                         );
                         Navigator.pop(modalContext);
                       },

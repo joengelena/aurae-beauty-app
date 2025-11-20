@@ -3,8 +3,8 @@ import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 
-class ListingAttributesProvider extends ChangeNotifier {
-  ListingAttributesProvider() {
+class FilteringProvider extends ChangeNotifier {
+  FilteringProvider() {
     _loadAttributes();
   }
 
@@ -16,11 +16,13 @@ class ListingAttributesProvider extends ChangeNotifier {
       final listingAttributeOptionsWithoutNone =
           await ListingsServices().getListingAttributes();
 
+      // Add 'None' option to each attribute for clearing filters
       for (var attributeWithoutNone in listingAttributeOptionsWithoutNone) {
         attributeWithoutNone.attributeValues.insert(0, 'None');
       }
       listingAttributeOptions = listingAttributeOptionsWithoutNone;
 
+      // Initialize all filters to 'None' (no filter applied)
       selectedEqualFilters = {
         for (var attribute in listingAttributeOptions)
           attribute.name: attribute.attributeValues.first,
