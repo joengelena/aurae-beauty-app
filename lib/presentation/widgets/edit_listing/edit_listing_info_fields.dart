@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/logic/edit_listing_provider.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/date_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
+import 'package:provider/provider.dart';
 
 class EditListingInfoFields extends StatelessWidget {
   const EditListingInfoFields({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<EditListingProvider>();
+
     return Column(
       spacing: 12,
       children: [
@@ -26,13 +30,13 @@ class EditListingInfoFields extends StatelessWidget {
         DropdownFormField(
           labelText: 'Vehicle Condition',
           fieldName: 'vehicleCondition',
-          attributeName: 'vehicle_condition',
+          options: provider.getAttributeValues('vehicle_condition'),
           isRequired: true,
         ),
         DropdownFormField(
           labelText: 'Location',
           fieldName: 'location',
-          attributeName: 'location',
+          options: provider.getAttributeValues('location'),
           isRequired: true,
         ),
         DateFormField(

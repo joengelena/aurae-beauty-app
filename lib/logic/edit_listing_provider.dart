@@ -40,6 +40,16 @@ class EditListingProvider extends ChangeNotifier
     }
   }
 
+  List<String> getAttributeValues(String attributeName) {
+    try {
+      return listingAttributeOptions
+          .firstWhere((attr) => attr.name == attributeName)
+          .attributeValues;
+    } catch (e) {
+      return [];
+    }
+  }
+
   void _initializeData() {
     // Initialize with existing listing data
     editListingData['location'] = listing.location;

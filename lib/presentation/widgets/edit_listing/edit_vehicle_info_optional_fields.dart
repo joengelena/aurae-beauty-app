@@ -83,12 +83,12 @@ class _EditVehicleInfoOptionalFieldsState
             DropdownFormField(
               labelText: 'Transmission',
               fieldName: 'transmission',
-              attributeName: 'transmission',
+              options: provider.getAttributeValues('transmission'),
             ),
             DropdownFormField(
               labelText: 'Cylinders',
               fieldName: 'cylinders',
-              attributeName: 'cylinders',
+              options: provider.getAttributeValues('cylinders'),
             ),
           ],
         ),

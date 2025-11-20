@@ -52,6 +52,16 @@ class PostListingProvider extends ChangeNotifier
     }
   }
 
+  List<String> getAttributeValues(String attributeName) {
+    try {
+      return listingAttributeOptions
+          .firstWhere((attr) => attr.name == attributeName)
+          .attributeValues;
+    } catch (e) {
+      return [];
+    }
+  }
+
   Future<String?> pickImage() async {
     final XFile? pickedImage = await picker.pickImage(
       source: ImageSource.gallery,
