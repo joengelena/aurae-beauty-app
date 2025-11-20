@@ -43,43 +43,43 @@ class _VehicleInfoOptionalFieldsState extends State<VehicleInfoOptionalFields> {
               title: const Text('ORC Included'),
             ),
 
-            DateFormField(
+            DateFormField<PostListingProvider>(
               labelText: 'Rego Expiry Date',
               fieldName: 'regoExpiryDate',
             ),
-            DateFormField(
+            DateFormField<PostListingProvider>(
               labelText: 'WOF Expiry Date',
               fieldName: 'wofExpiryDate',
             ),
-            StringFormField(
+            StringFormField<PostListingProvider>(
               labelText: 'Number Plate',
               fieldName: 'numberPlate',
             ),
-            NumberFormField(
+            NumberFormField<PostListingProvider>(
               labelText: 'Seats',
               fieldName: 'seats',
               min: 1,
               max: 100,
             ),
-            NumberFormField(
+            NumberFormField<PostListingProvider>(
               labelText: 'Doors',
               fieldName: 'doors',
               min: 1,
               max: 20,
             ),
-            const StringFormField(labelText: 'Color', fieldName: 'color'),
-            NumberFormField(
+            const StringFormField<PostListingProvider>(labelText: 'Color', fieldName: 'color'),
+            NumberFormField<PostListingProvider>(
               labelText: 'Engine Size (cc)',
               fieldName: 'engineSize',
               min: 0,
               max: 20000,
             ),
-            DropdownFormField(
+            DropdownFormField<PostListingProvider>(
               labelText: 'Transmission',
               fieldName: 'transmission',
               options: provider.getAttributeValues('transmission'),
             ),
-            DropdownFormField(
+            DropdownFormField<PostListingProvider>(
               labelText: 'Cylinders',
               fieldName: 'cylinders',
               options: provider.getAttributeValues('cylinders'),
