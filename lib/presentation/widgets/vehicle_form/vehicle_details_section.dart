@@ -3,12 +3,15 @@ import 'package:motorix_app/logic/add_vehicle_provider.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
+import 'package:provider/provider.dart';
 
 class VehicleDetailsSection extends StatelessWidget {
   const VehicleDetailsSection({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<AddVehicleProvider>();
+
     return Column(
       spacing: 12,
       children: [
@@ -22,23 +25,15 @@ class VehicleDetailsSection extends StatelessWidget {
           labelText: 'Color',
           fieldName: 'color',
         ),
-        const DropdownFormField<AddVehicleProvider>(
+        DropdownFormField<AddVehicleProvider>(
           labelText: 'Fuel Type',
           fieldName: 'fuelType',
-          options: [
-            'Petrol',
-            'Diesel',
-            'Electric',
-            'Hybrid',
-            'Plug-in Hybrid',
-            'LPG',
-            'CNG',
-          ],
+          options: provider.getAttributeValues('fuel_type'),
         ),
-        const DropdownFormField<AddVehicleProvider>(
+        DropdownFormField<AddVehicleProvider>(
           labelText: 'Transmission',
           fieldName: 'transmission',
-          options: ['Automatic', 'Manual', 'CVT', 'Semi-Automatic'],
+          options: provider.getAttributeValues('transmission'),
         ),
         const NumberFormField<AddVehicleProvider>(
           labelText: 'Odometer Reading',

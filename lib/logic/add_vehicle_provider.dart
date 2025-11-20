@@ -1,22 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
+import 'package:motorix_app/data/services/listings_services.dart';
 import 'package:motorix_app/data/services/vehicle_services.dart';
 import 'package:motorix_app/logic/listing_form_data_provider.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 
 class AddVehicleProvider extends ChangeNotifier
     implements ListingFormDataProvider {
+  AddVehicleProvider() {
+    _loadAttributes();
+  }
+
   final Map<String, Object> _formData = {};
   bool isLoading = false;
   bool successfulPost = false;
   String errorMessage = '';
+  @override
+  List<ListingAttribute> listingAttributeOptions = [];
 
   @override
   Map<String, Object> get formData => _formData;
 
-  @override
-  List<ListingAttribute> get listingAttributeOptions => [];
+  Future<void> _loadAttributes() async {
+    try {
+      listingAttributeOptions = await ListingsServices().getListingAttributes();
+    } catch (e) {
+      if (e is AppException) {
+        debugPrint('Error loading filters: ${e.message}');
+      } else {
+        debugPrint('Error loading filters: $e');
+      }
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  List<String> getAttributeValues(String attributeName) {
+    try {
+      return listingAttributeOptions
+          .firstWhere((attr) => attr.name == attributeName)
+          .attributeValues;
+    } catch (e) {
+      return [];
+    }
+  }
 
   Future<void> addVehicle() async {
     isLoading = true;
