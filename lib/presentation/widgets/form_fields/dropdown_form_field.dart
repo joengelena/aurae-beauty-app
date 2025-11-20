@@ -5,9 +5,11 @@ import 'package:provider/provider.dart';
 
 /// A reusable dropdown form field for listing forms.
 ///
-/// Displays options from listing attributes and validates selection.
-/// Automatically removes optional fields from formData when empty.
-class DropdownFormField extends StatelessWidget {
+/// Supports two modes:
+/// 1. Attribute mode: Displays options from listing attributes (requires attributeName)
+/// 2. Direct mode: Uses explicitly provided options (requires options parameter)
+class DropdownFormField<T extends ListingFormDataProvider>
+    extends StatelessWidget {
   /// The label text displayed in the field
   final String labelText;
 
@@ -17,19 +19,27 @@ class DropdownFormField extends StatelessWidget {
   /// The key used to store this field's value in formData
   final String fieldName;
 
-  /// The attribute name to lookup in listingAttributeOptions
-  final String attributeName;
+  /// The attribute name to lookup in listingAttributeOptions (for attribute mode)
+  final String? attributeName;
+
+  /// Explicit list of options (for direct mode)
+  final List<String>? options;
 
   const DropdownFormField({
     super.key,
     required this.labelText,
     required this.fieldName,
-    required this.attributeName,
+    this.attributeName,
+    this.options,
     this.isRequired = false,
-  });
+  }) : assert(
+          attributeName != null || options != null,
+          'Either attributeName or options must be provided',
+        );
 
   /// Retrieves attribute values for the given attribute name
   List<String> _getAttributeValues(List<ListingAttribute> attributes) {
+    if (attributeName == null) return [];
     try {
       return attributes
           .firstWhere((attr) => attr.name == attributeName)
@@ -43,45 +53,36 @@ class DropdownFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<ListingFormDataProvider>();
-    final listingAttributeOptions = provider.listingAttributeOptions;
+    final provider = context.read<T>();
     final rawValue = provider.formData[fieldName];
 
-    final items = _getAttributeValues(listingAttributeOptions);
+    // Get items from either explicit options or listing attributes
+    final items = options ?? _getAttributeValues(provider.listingAttributeOptions);
 
-    // Convert the initial value to string and validate it exists in items
-    String? validatedValue;
-    if (rawValue != null) {
-      final stringValue = rawValue.toString();
-      if (items.contains(stringValue)) {
-        validatedValue = stringValue;
-      }
-    }
+    final currentValue = rawValue as String?;
 
     return DropdownButtonFormField<String>(
-      value: validatedValue,
+      value: currentValue,
       decoration: InputDecoration(
         labelText: isRequired ? '$labelText *' : labelText,
         border: const OutlineInputBorder(),
       ),
-      items:
-          items.map((val) {
-            return DropdownMenuItem(value: val, child: Text(val));
-          }).toList(),
-      onChanged: (val) {
-        if (val != null) {
-          provider.formData[fieldName] = val;
+      items: items.map((item) {
+        return DropdownMenuItem(value: item, child: Text(item));
+      }).toList(),
+      onChanged: (value) {
+        if (value != null) {
+          provider.formData[fieldName] = value;
         }
       },
-      validator:
-          isRequired
-              ? (val) {
-                if (val == null || val.isEmpty || val == 'None') {
-                  return 'Required';
-                }
-                return null;
+      validator: isRequired
+          ? (value) {
+              if (value == null || value.isEmpty || value == 'None') {
+                return 'Required';
               }
-              : null,
+              return null;
+            }
+          : null,
     );
   }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/add_vehicle_provider.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
-import 'package:motorix_app/presentation/widgets/vehicle_form/vehicle_dropdown_field.dart';
 
 class VehicleDetailsSection extends StatelessWidget {
   const VehicleDetailsSection({super.key});
@@ -22,7 +22,7 @@ class VehicleDetailsSection extends StatelessWidget {
           labelText: 'Color',
           fieldName: 'color',
         ),
-        const VehicleDropdownField(
+        const DropdownFormField<AddVehicleProvider>(
           labelText: 'Fuel Type',
           fieldName: 'fuelType',
           options: [
@@ -35,7 +35,7 @@ class VehicleDetailsSection extends StatelessWidget {
             'CNG',
           ],
         ),
-        const VehicleDropdownField(
+        const DropdownFormField<AddVehicleProvider>(
           labelText: 'Transmission',
           fieldName: 'transmission',
           options: ['Automatic', 'Manual', 'CVT', 'Semi-Automatic'],
@@ -46,7 +46,7 @@ class VehicleDetailsSection extends StatelessWidget {
           min: 0,
           max: 9999999,
         ),
-        const VehicleDropdownField(
+        const DropdownFormField<AddVehicleProvider>(
           labelText: 'Odometer Unit',
           fieldName: 'odometerUnit',
           options: ['km', 'mi'],
