@@ -20,10 +20,6 @@ class AdditionalInfoSection extends StatelessWidget {
           ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const StringFormField<AddVehicleProvider>(
-          labelText: 'VIN (17 characters)',
-          fieldName: 'vin',
-        ),
-        const StringFormField<AddVehicleProvider>(
           labelText: 'Vehicle Photo URL',
           fieldName: 'vehiclePhotoUrl',
         ),
