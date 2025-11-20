@@ -20,31 +20,31 @@ class EditListingInfoFields extends StatelessWidget {
           'Listing Details',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
-        NumberFormField(
+        NumberFormField<EditListingProvider>(
           labelText: 'Price',
           fieldName: 'price',
           min: 0,
           max: 100000000,
           isRequired: true,
         ),
-        DropdownFormField(
+        DropdownFormField<EditListingProvider>(
           labelText: 'Vehicle Condition',
           fieldName: 'vehicleCondition',
           options: provider.getAttributeValues('vehicle_condition'),
           isRequired: true,
         ),
-        DropdownFormField(
+        DropdownFormField<EditListingProvider>(
           labelText: 'Location',
           fieldName: 'location',
           options: provider.getAttributeValues('location'),
           isRequired: true,
         ),
-        DateFormField(
+        DateFormField<EditListingProvider>(
           labelText: 'Listing End Date',
           fieldName: 'endDate',
           isRequired: true,
         ),
-        StringFormField(
+        StringFormField<EditListingProvider>(
           labelText: 'Description',
           fieldName: 'description',
           isRequired: true,

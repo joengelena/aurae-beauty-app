@@ -19,44 +19,44 @@ class EditVehicleInfoFields extends StatelessWidget {
           'Vehicle Information',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
-        DropdownFormField(
+        DropdownFormField<EditListingProvider>(
           labelText: 'Make',
           fieldName: 'make',
           options: provider.getAttributeValues('make'),
           isRequired: true,
         ),
-        StringFormField(
+        StringFormField<EditListingProvider>(
           labelText: 'Model',
           fieldName: 'model',
           isRequired: true,
         ),
-        NumberFormField(
+        NumberFormField<EditListingProvider>(
           labelText: 'Year',
           fieldName: 'year',
           min: 1900,
           max: 3000,
           isRequired: true,
         ),
-        NumberFormField(
+        NumberFormField<EditListingProvider>(
           labelText: 'Kilometers',
           fieldName: 'kilometers',
           min: 0,
           max: 9999999,
           isRequired: true,
         ),
-        DropdownFormField(
+        DropdownFormField<EditListingProvider>(
           labelText: 'Fuel Type',
           fieldName: 'fuelType',
           options: provider.getAttributeValues('fuel_type'),
           isRequired: true,
         ),
-        DropdownFormField(
+        DropdownFormField<EditListingProvider>(
           labelText: 'Body Type',
           fieldName: 'bodyType',
           options: provider.getAttributeValues('body_type'),
           isRequired: true,
         ),
-        DropdownFormField(
+        DropdownFormField<EditListingProvider>(
           labelText: 'Drive Type',
           fieldName: 'driveType',
           options: provider.getAttributeValues('drive_type'),

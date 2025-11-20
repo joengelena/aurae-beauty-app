@@ -43,49 +43,49 @@ class _EditVehicleInfoOptionalFieldsState
               },
               title: const Text('ORC Included'),
             ),
-            DateFormField(
+            DateFormField<EditListingProvider>(
               labelText: 'Rego Expiry Date',
               fieldName: 'regoExpiryDate',
             ),
-            DateFormField(
+            DateFormField<EditListingProvider>(
               labelText: 'WOF Expiry Date',
               fieldName: 'wofExpiryDate',
             ),
-            StringFormField(
+            StringFormField<EditListingProvider>(
               labelText: 'Number Plate',
               fieldName: 'numberPlate',
             ),
-            NumberFormField(
+            NumberFormField<EditListingProvider>(
               labelText: 'Seats',
               fieldName: 'seats',
               min: 1,
               max: 100,
             ),
-            NumberFormField(
+            NumberFormField<EditListingProvider>(
               labelText: 'Doors',
               fieldName: 'doors',
               min: 1,
               max: 20,
             ),
-            NumberFormField(
+            NumberFormField<EditListingProvider>(
               labelText: 'Previous Owners',
               fieldName: 'previousOwners',
               min: 0,
               max: 50,
             ),
-            const StringFormField(labelText: 'Color', fieldName: 'color'),
-            NumberFormField(
+            const StringFormField<EditListingProvider>(labelText: 'Color', fieldName: 'color'),
+            NumberFormField<EditListingProvider>(
               labelText: 'Engine Size (cc)',
               fieldName: 'engineSize',
               min: 0,
               max: 20000,
             ),
-            DropdownFormField(
+            DropdownFormField<EditListingProvider>(
               labelText: 'Transmission',
               fieldName: 'transmission',
               options: provider.getAttributeValues('transmission'),
             ),
-            DropdownFormField(
+            DropdownFormField<EditListingProvider>(
               labelText: 'Cylinders',
               fieldName: 'cylinders',
               options: provider.getAttributeValues('cylinders'),
