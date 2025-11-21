@@ -13,14 +13,6 @@ class GarageProvider extends ChangeNotifier {
   String get errorMessage => _errorMessage;
   bool get hasError => _errorMessage.isNotEmpty;
 
-  UserVehicle? get primaryVehicle {
-    try {
-      return _vehicles.firstWhere((vehicle) => vehicle.isPrimary == 1);
-    } catch (e) {
-      return null;
-    }
-  }
-
   Future<void> fetchVehicles() async {
     _isLoading = true;
     _errorMessage = '';
