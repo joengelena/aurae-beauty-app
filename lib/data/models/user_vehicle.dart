@@ -10,8 +10,8 @@ class UserVehicle {
   final String? transmission;
   final int? odometerReading;
   final String odometerUnit;
-  final String? regoExpiryDate;
-  final String? wofExpiryDate;
+  final String regoExpiryDate;
+  final String wofExpiryDate;
   final String? vehiclePhotoUrl;
   final String? notes;
   final DateTime createdAt;
@@ -29,8 +29,8 @@ class UserVehicle {
     this.transmission,
     this.odometerReading,
     required this.odometerUnit,
-    this.regoExpiryDate,
-    this.wofExpiryDate,
+    required this.regoExpiryDate,
+    required this.wofExpiryDate,
     this.vehiclePhotoUrl,
     this.notes,
     required this.createdAt,
@@ -50,8 +50,8 @@ class UserVehicle {
       transmission: json['transmission'] as String?,
       odometerReading: json['odometerReading'] as int?,
       odometerUnit: json['odometerUnit'] as String? ?? 'km',
-      regoExpiryDate: json['regoExpiryDate'] as String?,
-      wofExpiryDate: json['wofExpiryDate'] as String?,
+      regoExpiryDate: json['regoExpiryDate'] as String,
+      wofExpiryDate: json['wofExpiryDate'] as String,
       vehiclePhotoUrl: json['vehiclePhotoUrl'] as String?,
       notes: json['notes'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),

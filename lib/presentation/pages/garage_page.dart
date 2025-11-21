@@ -177,9 +177,7 @@ class _GaragePageState extends State<GaragePage> {
                         child: _buildInfoItem(
                           context,
                           'Registration',
-                          vehicle.regoExpiryDate != null
-                              ? _formatDate(vehicle.regoExpiryDate!)
-                              : 'Not set',
+                          _formatDate(vehicle.regoExpiryDate),
                           _isExpiringSoon(vehicle.regoExpiryDate),
                         ),
                       ),
@@ -187,9 +185,7 @@ class _GaragePageState extends State<GaragePage> {
                         child: _buildInfoItem(
                           context,
                           'WOF',
-                          vehicle.wofExpiryDate != null
-                              ? _formatDate(vehicle.wofExpiryDate!)
-                              : 'Not set',
+                          _formatDate(vehicle.wofExpiryDate),
                           _isExpiringSoon(vehicle.wofExpiryDate),
                         ),
                       ),
@@ -244,8 +240,7 @@ class _GaragePageState extends State<GaragePage> {
     }
   }
 
-  bool _isExpiringSoon(String? dateString) {
-    if (dateString == null) return false;
+  bool _isExpiringSoon(String dateString) {
     try {
       final date = DateTime.parse(dateString);
       final now = DateTime.now();

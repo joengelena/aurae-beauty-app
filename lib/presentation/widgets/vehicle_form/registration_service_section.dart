@@ -27,11 +27,13 @@ class RegistrationServiceSection extends StatelessWidget {
           labelText: 'Registration Expiry',
           fieldName: 'regoExpiryDate',
           firstDate: oneYearAgo,
+          isRequired: true,
         ),
         DateFormField<AddVehicleProvider>(
           labelText: 'WOF Expiry',
           fieldName: 'wofExpiryDate',
           firstDate: oneYearAgo,
+          isRequired: true,
         ),
       ],
     );
