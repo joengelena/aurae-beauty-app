@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:motorix_app/app_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/filtering_provider.dart';
+import 'package:motorix_app/logic/garage_provider.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
@@ -39,6 +40,9 @@ void main() {
         ),
         ChangeNotifierProvider<WatchlistProvider>(
           create: (_) => WatchlistProvider(),
+        ),
+        ChangeNotifierProvider<GarageProvider>(
+          create: (_) => GarageProvider(),
         ),
         ChangeNotifierProxyProvider<WatchlistProvider, ListingsProvider>(
           create:

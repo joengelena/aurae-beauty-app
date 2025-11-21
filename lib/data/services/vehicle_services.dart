@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:motorix_app/data/api_client.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
+import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/utils/utils.dart';
 
 class VehicleServices {
@@ -40,7 +41,7 @@ class VehicleServices {
     }
   }
 
-  Future<List<dynamic>> getAllVehicles() async {
+  Future<List<UserVehicle>> getAllVehicles() async {
     try {
       http.Response response = await apiClient.get('/user/vehicles');
 
@@ -50,8 +51,10 @@ class VehicleServices {
       }
 
       try {
-        final data = json.decode(response.body) as Map<String, dynamic>;
-        return data['vehicles'] as List<dynamic>;
+        final data = json.decode(response.body) as List<dynamic>;
+        return data
+            .map((vehicle) => UserVehicle.fromJson(vehicle as Map<String, dynamic>))
+            .toList();
       } catch (e) {
         throw DataParseException(
           'Invalid response format',
