@@ -4,7 +4,6 @@ import 'package:motorix_app/logic/add_vehicle_provider.dart';
 import 'package:motorix_app/presentation/widgets/vehicle_form/additional_info_section.dart';
 import 'package:motorix_app/presentation/widgets/vehicle_form/basic_vehicle_info.dart';
 import 'package:motorix_app/presentation/widgets/vehicle_form/registration_service_section.dart';
-import 'package:motorix_app/presentation/widgets/vehicle_form/vehicle_details_section.dart';
 import 'package:provider/provider.dart';
 
 class AddVehicleForm extends StatefulWidget {
@@ -64,7 +63,6 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                       ),
                 ),
                 const BasicVehicleInfo(),
-                const VehicleDetailsSection(),
                 const RegistrationServiceSection(),
                 const AdditionalInfoSection(),
                 const SizedBox(height: 20),
