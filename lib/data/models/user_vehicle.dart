@@ -13,7 +13,6 @@ class UserVehicle {
   final String? regoExpiryDate;
   final String? wofExpiryDate;
   final String? vehiclePhotoUrl;
-  final String? purchaseDate;
   final String? notes;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -33,7 +32,6 @@ class UserVehicle {
     this.regoExpiryDate,
     this.wofExpiryDate,
     this.vehiclePhotoUrl,
-    this.purchaseDate,
     this.notes,
     required this.createdAt,
     required this.updatedAt,
@@ -55,7 +53,6 @@ class UserVehicle {
       regoExpiryDate: json['regoExpiryDate'] as String?,
       wofExpiryDate: json['wofExpiryDate'] as String?,
       vehiclePhotoUrl: json['vehiclePhotoUrl'] as String?,
-      purchaseDate: json['purchaseDate'] as String?,
       notes: json['notes'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
@@ -78,7 +75,6 @@ class UserVehicle {
       'regoExpiryDate': regoExpiryDate,
       'wofExpiryDate': wofExpiryDate,
       'vehiclePhotoUrl': vehiclePhotoUrl,
-      'purchaseDate': purchaseDate,
       'notes': notes,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),

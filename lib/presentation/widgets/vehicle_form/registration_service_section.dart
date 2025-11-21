@@ -9,9 +9,6 @@ class RegistrationServiceSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final oneYearAgo = DateTime.now().subtract(const Duration(days: 365));
-    final twentyYearsAgo = DateTime.now().subtract(
-      const Duration(days: 365 * 20),
-    );
 
     return Column(
       spacing: 12,
@@ -35,11 +32,6 @@ class RegistrationServiceSection extends StatelessWidget {
           labelText: 'WOF Expiry',
           fieldName: 'wofExpiryDate',
           firstDate: oneYearAgo,
-        ),
-        DateFormField<AddVehicleProvider>(
-          labelText: 'Purchase Date',
-          fieldName: 'purchaseDate',
-          firstDate: twentyYearsAgo,
         ),
       ],
     );
