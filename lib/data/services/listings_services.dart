@@ -265,4 +265,18 @@ class ListingsServices {
       );
     }
   }
+
+  Future<void> incrementViewCount(int listingId) async {
+    try {
+      http.Response response = await apiClient.post('/listings/$listingId/view', {});
+
+      if (response.statusCode != HttpStatus.ok) {
+        // Silently fail - view count is not critical
+        return;
+      }
+    } catch (e) {
+      // Silently fail - view count is not critical
+      return;
+    }
+  }
 }
