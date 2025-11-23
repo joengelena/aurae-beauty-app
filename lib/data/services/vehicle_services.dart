@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:motorix_app/data/api_client.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
@@ -10,13 +12,49 @@ class VehicleServices {
   static final ApiClient apiClient = ApiClient();
 
   Future<Map<String, dynamic>> addVehicle(
-    Map<String, dynamic> vehicleData,
-  ) async {
+    Map<String, dynamic> vehicleData, {
+    Uint8List? imageBytes,
+    String? imageMimeType,
+  }) async {
     try {
-      http.Response response = await apiClient.post(
-        '/user/vehicles',
-        vehicleData,
-      );
+      http.Response response;
+
+      // If image is provided, use multipart/form-data
+      if (imageBytes != null) {
+        // Convert all fields to String for multipart request
+        final fields = <String, String>{};
+        vehicleData.forEach((key, value) {
+          fields[key] = value.toString();
+        });
+
+        // Parse MIME type (e.g., "image/jpeg" -> type: "image", subtype: "jpeg")
+        final mimeType = imageMimeType ?? 'image/jpeg';
+        final mimeTypeParts = mimeType.split('/');
+        final contentType = MediaType(
+          mimeTypeParts[0],
+          mimeTypeParts.length > 1 ? mimeTypeParts[1] : 'jpeg',
+        );
+
+        // Create multipart file from image bytes with proper content type
+        final multipartFile = http.MultipartFile.fromBytes(
+          'image', // Field name expected by backend
+          imageBytes,
+          filename: 'vehicle_image.jpg',
+          contentType: contentType,
+        );
+
+        response = await apiClient.postMultipart(
+          '/user/vehicles',
+          fields,
+          [multipartFile],
+        );
+      } else {
+        // If no image, send as JSON (backend allows optional image)
+        response = await apiClient.post(
+          '/user/vehicles',
+          vehicleData,
+        );
+      }
 
       if (response.statusCode != HttpStatus.created) {
         final errorMessage = extractErrorMessage(response.body);

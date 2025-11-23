@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/add_vehicle_provider.dart';
+import 'package:motorix_app/presentation/widgets/common/select_single_image.dart';
 import 'package:motorix_app/presentation/widgets/vehicle_form/additional_info_section.dart';
 import 'package:motorix_app/presentation/widgets/vehicle_form/basic_vehicle_info.dart';
 import 'package:motorix_app/presentation/widgets/vehicle_form/registration_service_section.dart';
@@ -59,26 +60,30 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                 Text(
                   'Add Vehicle',
                   style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SelectSingleImage(
+                  imageBytes: provider.vehicleImageBytes,
+                  onImageSelected: provider.setVehicleImage,
+                  onImageDeleted: provider.removeVehicleImage,
+                  aspectRatio: 4 / 3,
                 ),
                 const BasicVehicleInfo(),
                 const RegistrationServiceSection(),
                 const AdditionalInfoSection(),
                 const SizedBox(height: 20),
                 FilledButton(
-                  onPressed: provider.isLoading
-                      ? null
-                      : () => _handleSubmit(context),
-                  child: provider.isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Text('Add Vehicle'),
+                  onPressed:
+                      provider.isLoading ? null : () => _handleSubmit(context),
+                  child:
+                      provider.isLoading
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Text('Add Vehicle'),
                 ),
               ],
             ),

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
@@ -18,6 +20,10 @@ class AddVehicleProvider extends ChangeNotifier
   String errorMessage = '';
   @override
   List<ListingAttribute> listingAttributeOptions = [];
+
+  // Vehicle image data
+  Uint8List? vehicleImageBytes;
+  String? vehicleImageMimeType;
 
   @override
   Map<String, Object> get formData => _formData;
@@ -46,6 +52,18 @@ class AddVehicleProvider extends ChangeNotifier
     }
   }
 
+  void setVehicleImage(Uint8List imageBytes, String mimeType) {
+    vehicleImageBytes = imageBytes;
+    vehicleImageMimeType = mimeType;
+    notifyListeners();
+  }
+
+  void removeVehicleImage() {
+    vehicleImageBytes = null;
+    vehicleImageMimeType = null;
+    notifyListeners();
+  }
+
   Future<void> addVehicle() async {
     isLoading = true;
     errorMessage = '';
@@ -62,8 +80,12 @@ class AddVehicleProvider extends ChangeNotifier
       final vehicleData = Map<String, dynamic>.from(_formData);
       vehicleData['currentUserId'] = userId;
 
-      // Call the API
-      await VehicleServices().addVehicle(vehicleData);
+      // Call the API with optional image
+      await VehicleServices().addVehicle(
+        vehicleData,
+        imageBytes: vehicleImageBytes,
+        imageMimeType: vehicleImageMimeType,
+      );
 
       successfulPost = true;
     } on AppException catch (e) {
@@ -81,6 +103,8 @@ class AddVehicleProvider extends ChangeNotifier
 
   void resetProvider() {
     _formData.clear();
+    vehicleImageBytes = null;
+    vehicleImageMimeType = null;
     isLoading = false;
     successfulPost = false;
     errorMessage = '';
