@@ -24,17 +24,20 @@ class _GaragePageState extends State<GaragePage> {
 
     final garageProvider = context.watch<GarageProvider>();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Garage'),
-      ),
-      body: _buildBody(garageProvider),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.go('/garage/add');
-        },
-        child: const Icon(Icons.add),
-      ),
+    return Stack(
+      children: [
+        _buildBody(garageProvider),
+        Positioned(
+          right: 16,
+          bottom: 16,
+          child: FloatingActionButton(
+            onPressed: () {
+              context.go('/garage/add');
+            },
+            child: const Icon(Icons.add),
+          ),
+        ),
+      ],
     );
   }
 
