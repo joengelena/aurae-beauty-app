@@ -7,11 +7,23 @@ class GarageProvider extends ChangeNotifier {
   List<UserVehicle> _vehicles = [];
   bool _isLoading = false;
   String _errorMessage = '';
+  bool _isSignedIn = false;
 
   List<UserVehicle> get vehicles => _vehicles;
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
   bool get hasError => _errorMessage.isNotEmpty;
+
+  void updateAuthStatus(bool isSignedIn) async {
+    if (isSignedIn && !_isSignedIn) {
+      // User just signed in, fetch their vehicles
+      await fetchVehicles();
+    } else if (!isSignedIn && _isSignedIn) {
+      // User signed out, clear vehicles
+      reset();
+    }
+    _isSignedIn = isSignedIn;
+  }
 
   Future<void> fetchVehicles() async {
     _isLoading = true;

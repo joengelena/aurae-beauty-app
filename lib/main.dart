@@ -41,8 +41,12 @@ void main() {
         ChangeNotifierProvider<WatchlistProvider>(
           create: (_) => WatchlistProvider(),
         ),
-        ChangeNotifierProvider<GarageProvider>(
+        ChangeNotifierProxyProvider<AuthProvider, GarageProvider>(
           create: (_) => GarageProvider(),
+          update: (context, authProvider, garageProvider) {
+            garageProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return garageProvider;
+          },
         ),
         ChangeNotifierProxyProvider<WatchlistProvider, ListingsProvider>(
           create:

@@ -15,17 +15,6 @@ class GaragePage extends StatefulWidget {
 
 class _GaragePageState extends State<GaragePage> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final authProvider = context.read<AuthProvider>();
-      if (authProvider.isSignedIn) {
-        context.read<GarageProvider>().fetchVehicles();
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
 
