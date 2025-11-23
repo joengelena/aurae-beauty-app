@@ -18,6 +18,29 @@ class VehicleCard extends StatelessWidget {
           children: [
             Row(
               children: [
+                if (vehicle.vehiclePhotoUrl != null) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      vehicle.vehiclePhotoUrl!,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 80,
+                          height: 80,
+                          color: Colors.grey.shade200,
+                          child: Icon(
+                            Icons.directions_car,
+                            color: Colors.grey.shade400,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                ],
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,27 +63,6 @@ class VehicleCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (vehicle.vehiclePhotoUrl != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      vehicle.vehiclePhotoUrl!,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: 80,
-                          height: 80,
-                          color: Colors.grey.shade200,
-                          child: Icon(
-                            Icons.directions_car,
-                            color: Colors.grey.shade400,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
               ],
             ),
             const Divider(height: 24),
