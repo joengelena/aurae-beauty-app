@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 

@@ -6,7 +6,7 @@ import 'package:motorix_app/presentation/widgets/common/app_dialog.dart';
 import 'package:motorix_app/presentation/widgets/common/password_field.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 // Conditional import for web-only JavaScript interop
 import 'dart:js_interop' if (dart.library.js_interop) 'dart:js_interop';
@@ -73,7 +73,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               userId = _extractUserIdFromJWT(accessToken);
             }
           }
-        } catch (e, stackTrace) {
+        } catch (e) {
           // Silently handle URL extraction errors
         }
       }
@@ -101,7 +101,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           _showInvalidLinkDialog();
         }
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Silently handle access token extraction errors
 
       if (mounted) {
@@ -141,21 +141,13 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     }
   }
 
-  // Helper methods for JavaScript interop (web only)
+  // Helper method for JavaScript interop (web only)
   String _getLocationHash() {
     if (!kIsWeb) return '';
     final window = globalContext;
     final location = window['location'] as JSObject;
     final hash = location['hash'];
     return (hash as JSString?)?.toDart ?? '';
-  }
-
-  String _getLocationHref() {
-    if (!kIsWeb) return '';
-    final window = globalContext;
-    final location = window['location'] as JSObject;
-    final href = location['href'];
-    return (href as JSString?)?.toDart ?? '';
   }
 
   void _showInvalidLinkDialog() {
