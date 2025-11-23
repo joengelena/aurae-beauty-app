@@ -29,11 +29,7 @@ class EditListingProvider extends ChangeNotifier
       listingAttributeOptions = await ListingsServices().getListingAttributes();
       attributesLoaded = true;
     } catch (e) {
-      if (e is AppException) {
-        debugPrint('Error loading filters: ${e.message}');
-      } else {
-        debugPrint('Error loading filters: $e');
-      }
+      // Silently handle attribute loading errors
       attributesLoaded = true; // Set to true even on error to show the form
     } finally {
       notifyListeners();
@@ -128,7 +124,6 @@ class EditListingProvider extends ChangeNotifier
         errorMessage = e.message;
       } else {
         errorMessage = 'Failed to update listing';
-        debugPrint('Update listing error: $e');
       }
     } finally {
       isLoading = false;

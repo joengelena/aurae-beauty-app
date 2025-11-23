@@ -68,7 +68,7 @@ class _InfiniteGridState extends State<InfiniteGrid> {
       await _waitForAttributes(filteringProvider).timeout(
         _initTimeout,
         onTimeout: () {
-          debugPrint('Timeout waiting for listing attributes');
+          // Timeout waiting for listing attributes
         },
       );
 
@@ -88,7 +88,6 @@ class _InfiniteGridState extends State<InfiniteGrid> {
       await listingsProvider.getNewListings();
     } catch (e) {
       if (mounted) {
-        debugPrint('Error initializing listings: $e');
         // TODO: Show error state to user
       }
     }

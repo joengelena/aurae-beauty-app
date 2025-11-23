@@ -72,13 +72,9 @@ class ListingsProvider extends ChangeNotifier {
         },
       );
 
-      // Debug: Check watchlist state
-      debugPrint('🔍 Watchlist has ${watchlistProvider?.watchlist.length ?? 0} items');
-
       // Set isInWatchlist flag based on watchlistProvider
       final fetchedListings = resp.data.map((listing) {
         final isInWatchlist = watchlistProvider?.isInWatchlist(listing.id) ?? false;
-        debugPrint('📋 Listing ${listing.id}: isInWatchlist = $isInWatchlist');
         return Listing(
           id: listing.id,
           userIdFk: listing.userIdFk,
@@ -119,11 +115,7 @@ class ListingsProvider extends ChangeNotifier {
       currentPage = resp.pageNumber;
       totalListings = resp.totalRows;
     } catch (e) {
-      if (e is AppException) {
-        debugPrint('Error loading listings: ${e.message}');
-      } else {
-        debugPrint('Error loading listings: $e');
-      }
+      // Silently handle listing loading errors
     } finally {
       isLoading = false;
       notifyListeners();

@@ -49,7 +49,6 @@ class _EditListingPageState extends State<EditListingPage> {
           _isLoadingUserId = false;
         });
       }
-      debugPrint('Error loading user ID: $e');
     }
   }
 

@@ -42,11 +42,7 @@ class PostListingProvider extends ChangeNotifier
     try {
       listingAttributeOptions = await ListingsServices().getListingAttributes();
     } catch (e) {
-      if (e is AppException) {
-        debugPrint('Error loading filters: ${e.message}');
-      } else {
-        debugPrint('Error loading filters: $e');
-      }
+      // Silently handle attribute loading errors
     } finally {
       notifyListeners();
     }
@@ -164,7 +160,6 @@ class PostListingProvider extends ChangeNotifier
         errorMessage = e.message;
       } else {
         errorMessage = 'Failed to post listing';
-        debugPrint('Post listing error: $e');
       }
     } finally {
       isLoading = false;

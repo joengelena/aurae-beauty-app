@@ -24,20 +24,10 @@ class ListingDetailProvider extends ChangeNotifier {
         try {
           listingOwner = await UserServices().getUserWithId(listing!.userIdFk);
         } catch (e) {
-          if (e is AppException) {
-            debugPrint('Error loading listing owner: ${e.message}');
-          } else {
-            debugPrint('Error loading listing owner: $e');
-          }
           listingOwner = null;
         }
       }
     } catch (e) {
-      if (e is AppException) {
-        debugPrint('Error loading listing: ${e.message}');
-      } else {
-        debugPrint('Error loading listing: $e');
-      }
       listing = null;
       listingOwner = null;
     } finally {

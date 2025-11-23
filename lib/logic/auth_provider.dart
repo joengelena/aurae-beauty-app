@@ -27,7 +27,6 @@ class AuthProvider extends ChangeNotifier {
     try {
       isSignedIn = await _userServices.checkAuthenticationStatus();
     } catch (e) {
-      debugPrint('Error checking auth status: $e');
       isSignedIn = false;
     } finally {
       isLoading = false;
@@ -66,7 +65,6 @@ class AuthProvider extends ChangeNotifier {
         signUpErrorMessage = e.message;
       } else {
         signUpErrorMessage = 'Unexpected error occurred';
-        debugPrint('Sign up error: $e');
       }
     } finally {
       isLoading = false;
@@ -88,7 +86,6 @@ class AuthProvider extends ChangeNotifier {
         signInErrorMessage = e.message;
       } else {
         signInErrorMessage = 'Unexpected error occurred';
-        debugPrint('Sign in error: $e');
       }
     } finally {
       isLoading = false;
@@ -104,8 +101,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       await _userServices.signOut();
     } catch (e) {
-      // Log errors but always sign out locally even if API call fails
-      debugPrint('Error during sign out: $e');
+      // Silently handle sign out errors - always sign out locally even if API call fails
     } finally {
       isSignedIn = false;
       isLoading = false;
@@ -130,7 +126,6 @@ class AuthProvider extends ChangeNotifier {
         forgotPasswordMessage = e.message;
       } else {
         forgotPasswordMessage = 'Unexpected error occurred';
-        debugPrint('Forgot password error: $e');
       }
     } finally {
       isLoading = false;
@@ -154,7 +149,6 @@ class AuthProvider extends ChangeNotifier {
         resetPasswordMessage = e.message;
       } else {
         resetPasswordMessage = 'Unexpected error occurred';
-        debugPrint('Reset password error: $e');
       }
     } finally {
       isLoading = false;
@@ -178,7 +172,6 @@ class AuthProvider extends ChangeNotifier {
         changePasswordMessage = e.message;
       } else {
         changePasswordMessage = 'Unexpected error occurred';
-        debugPrint('Change password error: $e');
       }
     } finally {
       isLoading = false;

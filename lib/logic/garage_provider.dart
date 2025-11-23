@@ -22,10 +22,8 @@ class GarageProvider extends ChangeNotifier {
       _vehicles = await VehicleServices().getAllVehicles();
     } on AppException catch (e) {
       _errorMessage = e.message;
-      debugPrint('Error fetching vehicles: ${e.message}');
     } catch (e) {
       _errorMessage = 'An unexpected error occurred while loading your vehicles.';
-      debugPrint('Unexpected error fetching vehicles: $e');
     } finally {
       _isLoading = false;
       notifyListeners();

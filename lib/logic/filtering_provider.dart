@@ -28,11 +28,7 @@ class FilteringProvider extends ChangeNotifier {
           attribute.name: attribute.attributeValues.first,
       };
     } catch (e) {
-      if (e is AppException) {
-        debugPrint('Error loading filters: ${e.message}');
-      } else {
-        debugPrint('Error loading filters: $e');
-      }
+      // Silently handle filter loading errors
     } finally {
       notifyListeners();
     }

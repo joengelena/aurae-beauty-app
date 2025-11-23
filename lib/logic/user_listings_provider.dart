@@ -73,10 +73,8 @@ class UserListingsProvider extends ChangeNotifier {
     } catch (e) {
       if (e is AppException) {
         errorMessage = e.message;
-        debugPrint('Error loading user listings: ${e.message}');
       } else {
         errorMessage = 'Failed to load listings';
-        debugPrint('Error loading user listings: $e');
       }
     } finally {
       isLoading = false;

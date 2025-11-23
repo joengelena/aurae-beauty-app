@@ -54,13 +54,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           // Get the hash directly from JavaScript window.location
           final hash = _getLocationHash();
 
-          if (kDebugMode) {
-            final fullUrl = _getLocationHref();
-            debugPrint('=== Password Reset Debug ===');
-            debugPrint('Full URL: $fullUrl');
-            debugPrint('Hash: $hash');
-          }
-
           // Remove the first # character
           final cleanHash = hash.startsWith('#') ? hash.substring(1) : hash;
 
@@ -73,29 +66,15 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             // Extract the token parameters (everything after the second #)
             final tokenParams = cleanHash.substring(secondHashIndex + 1);
 
-            if (kDebugMode) {
-              debugPrint('Token params: $tokenParams');
-            }
-
             final params = Uri.splitQueryString(tokenParams);
             accessToken = params['access_token'];
 
-            if (kDebugMode) {
-              debugPrint('Access token found: ${accessToken != null}');
-            }
-
             if (accessToken != null) {
               userId = _extractUserIdFromJWT(accessToken);
-              if (kDebugMode) {
-                debugPrint('User ID extracted: ${userId != null}');
-              }
             }
           }
         } catch (e, stackTrace) {
-          debugPrint('Error extracting from URL: $e');
-          if (kDebugMode) {
-            debugPrint('Stack trace: $stackTrace');
-          }
+          // Silently handle URL extraction errors
         }
       }
 
@@ -121,16 +100,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           });
           _showInvalidLinkDialog();
         }
-
-        if (kDebugMode) {
-          debugPrint('No access token found');
-        }
       }
     } catch (e, stackTrace) {
-      debugPrint('Error extracting access token: $e');
-      if (kDebugMode) {
-        debugPrint('Stack trace: $stackTrace');
-      }
+      // Silently handle access token extraction errors
 
       if (mounted) {
         setState(() {
@@ -165,7 +137,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       final Map<String, dynamic> payloadMap = json.decode(decoded);
       return payloadMap['sub'] as String?;
     } catch (e) {
-      debugPrint('Error parsing JWT: $e');
       return null;
     }
   }
@@ -248,7 +219,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       await SecureStorage.delete('accessToken');
       await SecureStorage.delete('userId');
     } catch (e) {
-      debugPrint('Error clearing temporary auth data: $e');
+      // Silently handle errors clearing temporary auth data
     }
   }
 

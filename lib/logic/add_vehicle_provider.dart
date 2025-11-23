@@ -32,11 +32,7 @@ class AddVehicleProvider extends ChangeNotifier
     try {
       listingAttributeOptions = await ListingsServices().getListingAttributes();
     } catch (e) {
-      if (e is AppException) {
-        debugPrint('Error loading filters: ${e.message}');
-      } else {
-        debugPrint('Error loading filters: $e');
-      }
+      // Silently handle attribute loading errors
     } finally {
       notifyListeners();
     }
@@ -94,7 +90,6 @@ class AddVehicleProvider extends ChangeNotifier
     } catch (e) {
       errorMessage = 'An unexpected error occurred. Please try again.';
       successfulPost = false;
-      debugPrint('Error adding vehicle: $e');
     } finally {
       isLoading = false;
       notifyListeners();
