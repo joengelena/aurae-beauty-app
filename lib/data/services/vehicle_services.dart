@@ -43,17 +43,12 @@ class VehicleServices {
           contentType: contentType,
         );
 
-        response = await apiClient.postMultipart(
-          '/user/vehicles',
-          fields,
-          [multipartFile],
-        );
+        response = await apiClient.postMultipart('/user/vehicles', fields, [
+          multipartFile,
+        ]);
       } else {
         // If no image, send as JSON (backend allows optional image)
-        response = await apiClient.post(
-          '/user/vehicles',
-          vehicleData,
-        );
+        response = await apiClient.post('/user/vehicles', vehicleData);
       }
 
       if (response.statusCode != HttpStatus.created) {
@@ -91,7 +86,10 @@ class VehicleServices {
       try {
         final data = json.decode(response.body) as List<dynamic>;
         return data
-            .map((vehicle) => UserVehicle.fromJson(vehicle as Map<String, dynamic>))
+            .map(
+              (vehicle) =>
+                  UserVehicle.fromJson(vehicle as Map<String, dynamic>),
+            )
             .toList();
       } catch (e) {
         throw DataParseException(
@@ -130,6 +128,100 @@ class VehicleServices {
       if (e is AppException || e is DataParseException) rethrow;
       throw NetworkException(
         'Network error while fetching vehicle',
+        details: e.toString(),
+      );
+    }
+  }
+
+  Future<void> updateVehicle(
+    int vehicleId,
+    Map<String, Object> vehicleFields,
+  ) async {
+    try {
+      final Map<String, dynamic> payload = Map.fromEntries(
+        vehicleFields.entries.map((e) {
+          return MapEntry(e.key, e.value);
+        }),
+      );
+
+      http.Response response = await apiClient.patch(
+        '/user/vehicles/$vehicleId',
+        payload,
+      );
+
+      if (response.statusCode == HttpStatus.notFound) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NotFoundException(errorMessage);
+      }
+
+      if (response.statusCode == HttpStatus.forbidden) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw ForbiddenException(errorMessage);
+      }
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NetworkException(
+          errorMessage,
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+    } catch (e) {
+      if (e is NotFoundException ||
+          e is ForbiddenException ||
+          e is NetworkException) {
+        rethrow;
+      }
+      throw NetworkException(
+        'Network error updating vehicle',
+        details: e.toString(),
+      );
+    }
+  }
+
+  Future<void> deleteVehicle(
+    int vehicleId,
+    Map<String, Object> vehicleFields,
+  ) async {
+    try {
+      final Map<String, dynamic> payload = Map.fromEntries(
+        vehicleFields.entries.map((e) {
+          return MapEntry(e.key, e.value);
+        }),
+      );
+
+      http.Response response = await apiClient.delete(
+        '/user/vehicles/$vehicleId',
+        payload,
+      );
+
+      if (response.statusCode == HttpStatus.notFound) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NotFoundException(errorMessage);
+      }
+
+      if (response.statusCode == HttpStatus.forbidden) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw ForbiddenException(errorMessage);
+      }
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NetworkException(
+          errorMessage,
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+    } catch (e) {
+      if (e is NotFoundException ||
+          e is ForbiddenException ||
+          e is NetworkException) {
+        rethrow;
+      }
+      throw NetworkException(
+        'Network error deleting vehicle',
         details: e.toString(),
       );
     }
