@@ -35,10 +35,25 @@ class GarageProvider extends ChangeNotifier {
     } on AppException catch (e) {
       _errorMessage = e.message;
     } catch (e) {
-      _errorMessage = 'An unexpected error occurred while loading your vehicles.';
+      _errorMessage =
+          'An unexpected error occurred while loading your vehicles.';
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> deleteVehicle(int vehicleId) async {
+    try {
+      await VehicleServices().deleteVehicle(vehicleId, {});
+
+      // Remove the vehicle from the local list
+      _vehicles.removeWhere((vehicle) => vehicle.id == vehicleId);
+      notifyListeners();
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw AppException('Failed to delete vehicle: ${e.toString()}');
     }
   }
 

@@ -4,18 +4,25 @@ import 'package:motorix_app/data/models/user_vehicle.dart';
 
 class VehicleCard extends StatelessWidget {
   final UserVehicle vehicle;
+  final Widget? topRightButton;
 
-  const VehicleCard({super.key, required this.vehicle});
+  const VehicleCard({
+    super.key,
+    required this.vehicle,
+    this.topRightButton,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
             Row(
               children: [
                 if (vehicle.vehiclePhotoUrl != null) ...[
@@ -95,8 +102,16 @@ class VehicleCard extends StatelessWidget {
                 false,
               ),
             ],
-          ],
-        ),
+              ],
+            ),
+          ),
+          if (topRightButton != null)
+            Positioned(
+              top: 4,
+              right: 4,
+              child: topRightButton!,
+            ),
+        ],
       ),
     );
   }
