@@ -48,9 +48,15 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
     final showMenu = currentRoute == '/profile';
 
     void onBack() {
-      final currentRouteInSections = currentRoute!.split('/');
-      currentRouteInSections.removeLast();
-      context.go(currentRouteInSections.join('/'));
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        // Fallback if there's no navigation history
+        final currentRouteInSections = currentRoute!.split('/');
+        currentRouteInSections.removeLast();
+        final targetRoute = currentRouteInSections.join('/');
+        context.go(targetRoute);
+      }
     }
 
     return AppBar(
