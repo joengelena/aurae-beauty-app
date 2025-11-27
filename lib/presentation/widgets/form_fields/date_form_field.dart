@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:motorix_app/logic/listing_form_data_provider.dart';
+import 'package:motorix_app/logic/form_data_provider.dart';
 import 'package:provider/provider.dart';
 
-/// A reusable date picker form field for listing forms.
+/// A reusable date picker form field for forms.
 ///
 /// Displays a calendar picker and formats dates as yyyy-MM-dd.
 /// Automatically removes optional fields from formData when empty.
-class DateFormField<T extends ListingFormDataProvider> extends StatefulWidget {
+class DateFormField<T extends FormDataProvider> extends StatefulWidget {
   /// The label text displayed in the field
   final String labelText;
 
@@ -32,7 +32,7 @@ class DateFormField<T extends ListingFormDataProvider> extends StatefulWidget {
   State<DateFormField<T>> createState() => _DateFormFieldState<T>();
 }
 
-class _DateFormFieldState<T extends ListingFormDataProvider>
+class _DateFormFieldState<T extends FormDataProvider>
     extends State<DateFormField<T>> {
   late final TextEditingController _controller;
 

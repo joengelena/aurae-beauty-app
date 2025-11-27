@@ -117,7 +117,7 @@ class VehicleServices {
 
       try {
         final data = json.decode(response.body) as Map<String, dynamic>;
-        return data['vehicle'] as Map<String, dynamic>;
+        return data;
       } catch (e) {
         throw DataParseException(
           'Invalid response format',

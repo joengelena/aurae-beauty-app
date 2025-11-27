@@ -1,4 +1,5 @@
 import 'package:motorix_app/data/models/listing_attribute.dart';
+import 'package:motorix_app/logic/form_data_provider.dart';
 
 /// Interface for providers that manage listing form data.
 ///
@@ -8,13 +9,7 @@ import 'package:motorix_app/data/models/listing_attribute.dart';
 /// Implementations:
 /// - [PostListingProvider] - For creating new listings
 /// - [EditListingProvider] - For updating existing listings
-abstract class ListingFormDataProvider {
-  /// The map containing all form field values.
-  ///
-  /// Keys are field names, values are the user's input.
-  /// Types can be String, int, or other primitives depending on the field.
-  Map<String, Object> get formData;
-
+abstract class ListingFormDataProvider implements FormDataProvider {
   /// Available listing attributes for dropdown fields.
   ///
   /// Contains options like vehicle makes, body types, fuel types, etc.

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/add_vehicle_provider.dart';
+import 'package:motorix_app/logic/vehicle_form_provider.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/date_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
 
@@ -19,17 +19,17 @@ class RegistrationServiceSection extends StatelessWidget {
             context,
           ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
-        const StringFormField<AddVehicleProvider>(
+        const StringFormField<VehicleFormProvider>(
           labelText: 'License Plate',
           fieldName: 'licensePlate',
         ),
-        DateFormField<AddVehicleProvider>(
+        DateFormField<VehicleFormProvider>(
           labelText: 'Registration Expiry',
           fieldName: 'regoExpiryDate',
           firstDate: oneYearAgo,
           isRequired: true,
         ),
-        DateFormField<AddVehicleProvider>(
+        DateFormField<VehicleFormProvider>(
           labelText: 'WOF Expiry',
           fieldName: 'wofExpiryDate',
           firstDate: oneYearAgo,

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/listing_form_data_provider.dart';
+import 'package:motorix_app/logic/form_data_provider.dart';
 import 'package:provider/provider.dart';
 
-/// A reusable text form field for listing forms.
+/// A reusable text form field for forms.
 ///
 /// Supports both single-line and multi-line text input.
 /// Automatically removes optional fields from formData when empty.
-class StringFormField<T extends ListingFormDataProvider>
+class StringFormField<T extends FormDataProvider>
     extends StatelessWidget {
   /// The label text displayed in the field
   final String labelText;

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/logic/edit_vehicle_provider.dart';
+import 'package:motorix_app/logic/vehicle_form_provider.dart';
+import 'package:motorix_app/presentation/widgets/vehicle_form/vehicle_form.dart';
+import 'package:provider/provider.dart';
 
 class EditVehiclePage extends StatelessWidget {
   final String vehicleId;
@@ -7,10 +11,10 @@ class EditVehiclePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Edit Vehicle Page - ID: $vehicleId',
-        style: Theme.of(context).textTheme.headlineMedium,
+    return ChangeNotifierProvider<VehicleFormProvider>(
+      create: (_) => EditVehicleProvider(int.parse(vehicleId)),
+      child: const Scaffold(
+        body: VehicleForm(mode: VehicleFormMode.edit),
       ),
     );
   }

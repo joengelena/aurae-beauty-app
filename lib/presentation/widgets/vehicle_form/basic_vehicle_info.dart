@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/add_vehicle_provider.dart';
+import 'package:motorix_app/logic/vehicle_form_provider.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
@@ -10,7 +10,7 @@ class BasicVehicleInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<AddVehicleProvider>();
+    final provider = context.watch<VehicleFormProvider>();
 
     return Column(
       spacing: 12,
@@ -21,18 +21,18 @@ class BasicVehicleInfo extends StatelessWidget {
             context,
           ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
-        DropdownFormField<AddVehicleProvider>(
+        DropdownFormField<VehicleFormProvider>(
           labelText: 'Make',
           fieldName: 'make',
           options: provider.getAttributeValues('make'),
           isRequired: true,
         ),
-        const StringFormField<AddVehicleProvider>(
+        const StringFormField<VehicleFormProvider>(
           labelText: 'Model',
           fieldName: 'model',
           isRequired: true,
         ),
-        NumberFormField<AddVehicleProvider>(
+        NumberFormField<VehicleFormProvider>(
           labelText: 'Year',
           fieldName: 'year',
           isRequired: true,

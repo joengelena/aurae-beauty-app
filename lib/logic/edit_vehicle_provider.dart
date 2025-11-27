@@ -3,15 +3,19 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
+import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 import 'package:motorix_app/data/services/vehicle_services.dart';
 import 'package:motorix_app/logic/vehicle_form_provider.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 
-class AddVehicleProvider extends ChangeNotifier
+class EditVehicleProvider extends ChangeNotifier
     implements VehicleFormProvider {
-  AddVehicleProvider() {
+  final int vehicleId;
+
+  EditVehicleProvider(this.vehicleId) {
     _loadAttributes();
+    _loadVehicle();
   }
 
   final Map<String, Object> _formData = {};
@@ -30,6 +34,9 @@ class AddVehicleProvider extends ChangeNotifier
   @override
   String? vehicleImageMimeType;
 
+  // Original vehicle data for reference
+  UserVehicle? originalVehicle;
+
   @override
   Map<String, Object> get formData => _formData;
 
@@ -41,6 +48,48 @@ class AddVehicleProvider extends ChangeNotifier
     } finally {
       notifyListeners();
     }
+  }
+
+  Future<void> _loadVehicle() async {
+    isLoading = true;
+    errorMessage = '';
+    notifyListeners();
+
+    try {
+      final vehicleData = await VehicleServices().getVehicleById(vehicleId);
+      originalVehicle = UserVehicle.fromJson(vehicleData);
+      _populateFormData(originalVehicle!);
+    } on AppException catch (e) {
+      errorMessage = e.message;
+    } catch (e) {
+      errorMessage = 'Failed to load vehicle data. Please try again.';
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void _populateFormData(UserVehicle vehicle) {
+    _formData['make'] = vehicle.make;
+    _formData['model'] = vehicle.model;
+    _formData['year'] = vehicle.year;
+    _formData['odometerUnit'] = vehicle.odometerUnit;
+    _formData['regoExpiryDate'] = vehicle.regoExpiryDate;
+    _formData['wofExpiryDate'] = vehicle.wofExpiryDate;
+
+    // Optional fields - only add if not null
+    if (vehicle.licensePlate != null) {
+      _formData['licensePlate'] = vehicle.licensePlate!;
+    }
+    if (vehicle.color != null) _formData['color'] = vehicle.color!;
+    if (vehicle.fuelType != null) _formData['fuelType'] = vehicle.fuelType!;
+    if (vehicle.transmission != null) {
+      _formData['transmission'] = vehicle.transmission!;
+    }
+    if (vehicle.odometerReading != null) {
+      _formData['odometerReading'] = vehicle.odometerReading!;
+    }
+    if (vehicle.notes != null) _formData['notes'] = vehicle.notes!;
   }
 
   @override
@@ -83,15 +132,13 @@ class AddVehicleProvider extends ChangeNotifier
       }
 
       // Prepare the data for the API
-      final vehicleData = Map<String, dynamic>.from(_formData);
+      final vehicleData = Map<String, Object>.from(_formData);
       vehicleData['currentUserId'] = userId;
 
-      // Call the API with optional image
-      await VehicleServices().addVehicle(
-        vehicleData,
-        imageBytes: vehicleImageBytes,
-        imageMimeType: vehicleImageMimeType,
-      );
+      // Call the API to update vehicle
+      // Note: Current API doesn't support image updates in PATCH
+      // Image updates would require additional API endpoint or multipart support
+      await VehicleServices().updateVehicle(vehicleId, vehicleData);
 
       isSuccess = true;
     } on AppException catch (e) {
@@ -106,9 +153,6 @@ class AddVehicleProvider extends ChangeNotifier
     }
   }
 
-  // Keep for backward compatibility
-  Future<void> addVehicle() => submitForm();
-
   void resetProvider() {
     _formData.clear();
     vehicleImageBytes = null;
@@ -116,6 +160,7 @@ class AddVehicleProvider extends ChangeNotifier
     isLoading = false;
     isSuccess = false;
     errorMessage = '';
+    originalVehicle = null;
     notifyListeners();
   }
 }
