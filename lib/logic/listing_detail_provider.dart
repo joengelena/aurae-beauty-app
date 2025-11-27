@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/data/api_client.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/models/user.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
@@ -25,12 +26,35 @@ class ListingDetailProvider extends ChangeNotifier {
           listingOwner = null;
         }
       }
+
+      // Increment view count only if viewer is not the owner
+      _incrementViewCountIfNotOwner(listingId);
     } catch (e) {
       listing = null;
       listingOwner = null;
     } finally {
       isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> _incrementViewCountIfNotOwner(int listingId) async {
+    try {
+      final currentUserId = await ApiClient().getUserId();
+
+      // Only increment if user is not the owner (or if not logged in)
+      if (listing != null && currentUserId != listing!.userIdFk) {
+        debugPrint(
+          'Incrementing view count for listing $listingId (viewer: ${currentUserId ?? "anonymous"}, owner: ${listing!.userIdFk})',
+        );
+        await ListingsServices().incrementViewCount(listingId);
+      } else {
+        debugPrint(
+          'Skipping view count increment - user is the owner of listing $listingId',
+        );
+      }
+    } catch (e) {
+      debugPrint('Failed to increment view count: $e');
     }
   }
 }
