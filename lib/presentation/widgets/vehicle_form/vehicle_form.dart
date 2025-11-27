@@ -63,6 +63,43 @@ class _VehicleFormState extends State<VehicleForm> {
   Widget build(BuildContext context) {
     final provider = context.watch<VehicleFormProvider>();
 
+    // Show loading indicator while data is being loaded (edit mode only)
+    if (widget.mode == VehicleFormMode.edit && provider.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    // Show error message if loading failed
+    if (widget.mode == VehicleFormMode.edit &&
+        !provider.isLoading &&
+        provider.errorMessage.isNotEmpty &&
+        provider.formData.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              provider.errorMessage,
+              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: () => context.go('/garage'),
+              child: const Text('Back to Garage'),
+            ),
+          ],
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Center(
