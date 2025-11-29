@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
@@ -59,6 +60,12 @@ class EditVehicleProvider extends ChangeNotifier
       final vehicleData = await VehicleServices().getVehicleById(vehicleId);
       originalVehicle = UserVehicle.fromJson(vehicleData);
       _populateFormData(originalVehicle!);
+
+      // Load existing vehicle image if available
+      if (originalVehicle!.vehiclePhotoUrl != null &&
+          originalVehicle!.vehiclePhotoUrl!.isNotEmpty) {
+        await _loadVehicleImage(originalVehicle!.vehiclePhotoUrl!);
+      }
     } on AppException catch (e) {
       errorMessage = e.message;
     } catch (e) {
@@ -90,6 +97,23 @@ class EditVehicleProvider extends ChangeNotifier
       _formData['odometerReading'] = vehicle.odometerReading!;
     }
     if (vehicle.notes != null) _formData['notes'] = vehicle.notes!;
+  }
+
+  /// Fetches the vehicle image from the URL and converts it to bytes for preview.
+  Future<void> _loadVehicleImage(String imageUrl) async {
+    try {
+      final response = await http.get(Uri.parse(imageUrl));
+
+      if (response.statusCode == 200) {
+        vehicleImageBytes = response.bodyBytes;
+        String? contentType = response.headers['content-type'];
+        vehicleImageMimeType = contentType;
+        notifyListeners();
+      }
+    } catch (e) {
+      // Silently fail - image preview is not critical for editing other fields
+      // User can still update vehicle data even if image fails to load
+    }
   }
 
   @override
