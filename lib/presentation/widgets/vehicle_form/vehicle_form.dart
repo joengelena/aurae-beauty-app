@@ -48,7 +48,7 @@ class _VehicleFormState extends State<VehicleForm> {
           backgroundColor: Colors.green,
         ),
       );
-      context.go('/garage');
+      context.pop(true);
     } else if (provider.errorMessage.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -92,7 +92,7 @@ class _VehicleFormState extends State<VehicleForm> {
             ),
             const SizedBox(height: 16),
             FilledButton(
-              onPressed: () => context.go('/garage'),
+              onPressed: () => context.pop(),
               child: const Text('Back to Garage'),
             ),
           ],
@@ -134,7 +134,7 @@ class _VehicleFormState extends State<VehicleForm> {
                     children: [
                       Expanded(
                         child: OutlinedButton(
-                          onPressed: () => context.go('/garage'),
+                          onPressed: () => context.pop(),
                           child: const Text('Cancel'),
                         ),
                       ),

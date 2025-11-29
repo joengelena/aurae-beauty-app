@@ -36,7 +36,7 @@ class _GaragePageState extends State<GaragePage> {
           right: 16,
           bottom: 16,
           child: FloatingActionButton(
-            onPressed: () => context.go('/garage/add'),
+            onPressed: _handleAddVehicle,
             child: const Icon(Icons.add),
           ),
         ),
@@ -68,8 +68,20 @@ class _GaragePageState extends State<GaragePage> {
     );
   }
 
-  void _handleEditVehicle(UserVehicle vehicle) {
-    context.go('/garage/${vehicle.id}/edit');
+  Future<void> _handleAddVehicle() async {
+    final wasAdded = await context.push<bool>('/garage/add');
+
+    if (wasAdded == true && mounted) {
+      context.read<GarageProvider>().fetchVehicles();
+    }
+  }
+
+  Future<void> _handleEditVehicle(UserVehicle vehicle) async {
+    final wasUpdated = await context.push<bool>('/garage/${vehicle.id}/edit');
+
+    if (wasUpdated == true && mounted) {
+      context.read<GarageProvider>().fetchVehicles();
+    }
   }
 
   Future<void> _handleDeleteVehicle(UserVehicle vehicle) async {
