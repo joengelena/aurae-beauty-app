@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
+import 'package:motorix_app/utils/constants.dart';
 
 class VehicleCard extends StatelessWidget {
   final UserVehicle vehicle;
   final Widget? topRightButton;
 
-  const VehicleCard({
-    super.key,
-    required this.vehicle,
-    this.topRightButton,
-  });
+  const VehicleCard({super.key, required this.vehicle, this.topRightButton});
 
   @override
   Widget build(BuildContext context) {
@@ -23,108 +20,109 @@ class VehicleCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-            Row(
-              children: [
-                if (vehicle.vehiclePhotoUrl != null) ...[
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      vehicle.vehiclePhotoUrl!,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: 80,
-                          height: 80,
-                          color: Colors.grey.shade200,
-                          child: Icon(
-                            Icons.directions_car,
-                            color: Colors.grey.shade400,
+                Row(
+                  children: [
+                    if (vehicle.vehiclePhotoUrl != null) ...[
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: SizedBox(
+                          width: 140,
+                          child: AspectRatio(
+                            aspectRatio: AppConstants.listingImageAspectRatio,
+                            child: Image.network(
+                              vehicle.vehiclePhotoUrl!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Colors.grey[300],
+                                  child: const Icon(
+                                    Icons.broken_image,
+                                    color: Colors.grey,
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                ],
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${vehicle.year} ${vehicle.make} ${vehicle.model}',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      if (vehicle.licensePlate != null) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          vehicle.licensePlate!,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
+                      const SizedBox(width: 16),
                     ],
-                  ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${vehicle.year} ${vehicle.make} ${vehicle.model}',
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          if (vehicle.licensePlate != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              vehicle.licensePlate!,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: Colors.grey.shade600),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            const Divider(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildInfoItem(
+                const Divider(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildInfoItem(
+                        context,
+                        'Registration',
+                        _formatDate(vehicle.regoExpiryDate),
+                        _isExpiringSoon(vehicle.regoExpiryDate),
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildInfoItem(
+                        context,
+                        'WOF',
+                        _formatDate(vehicle.wofExpiryDate),
+                        _isExpiringSoon(vehicle.wofExpiryDate),
+                      ),
+                    ),
+                  ],
+                ),
+                if (vehicle.odometerReading != null) ...[
+                  const SizedBox(height: 12),
+                  _buildInfoItem(
                     context,
-                    'Registration',
-                    _formatDate(vehicle.regoExpiryDate),
-                    _isExpiringSoon(vehicle.regoExpiryDate),
+                    'Odometer',
+                    '${vehicle.odometerReading} ${vehicle.odometerUnit}',
+                    false,
                   ),
-                ),
-                Expanded(
-                  child: _buildInfoItem(
-                    context,
-                    'WOF',
-                    _formatDate(vehicle.wofExpiryDate),
-                    _isExpiringSoon(vehicle.wofExpiryDate),
-                  ),
-                ),
-              ],
-            ),
-            if (vehicle.odometerReading != null) ...[
-              const SizedBox(height: 12),
-              _buildInfoItem(
-                context,
-                'Odometer',
-                '${vehicle.odometerReading} ${vehicle.odometerUnit}',
-                false,
-              ),
-            ],
+                ],
               ],
             ),
           ),
           if (topRightButton != null)
-            Positioned(
-              top: 4,
-              right: 4,
-              child: topRightButton!,
-            ),
+            Positioned(top: 4, right: 4, child: topRightButton!),
         ],
       ),
     );
   }
 
-  Widget _buildInfoItem(BuildContext context, String label, String value, bool isWarning) {
+  Widget _buildInfoItem(
+    BuildContext context,
+    String label,
+    String value,
+    bool isWarning,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: Colors.grey.shade600,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.labelSmall?.copyWith(color: Colors.grey.shade600),
         ),
         const SizedBox(height: 4),
         Text(
