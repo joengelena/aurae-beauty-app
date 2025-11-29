@@ -106,7 +106,7 @@ class VehicleServices {
     }
   }
 
-  Future<Map<String, dynamic>> getVehicleById(int id) async {
+  Future<UserVehicle> getVehicleById(int id) async {
     try {
       http.Response response = await apiClient.get('/user/vehicles/$id');
 
@@ -117,7 +117,7 @@ class VehicleServices {
 
       try {
         final data = json.decode(response.body) as Map<String, dynamic>;
-        return data;
+        return UserVehicle.fromJson(data);
       } catch (e) {
         throw DataParseException(
           'Invalid response format',

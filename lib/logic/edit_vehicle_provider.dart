@@ -57,8 +57,7 @@ class EditVehicleProvider extends ChangeNotifier
     notifyListeners();
 
     try {
-      final vehicleData = await VehicleServices().getVehicleById(vehicleId);
-      originalVehicle = UserVehicle.fromJson(vehicleData);
+      originalVehicle = await VehicleServices().getVehicleById(vehicleId);
       _populateFormData(originalVehicle!);
 
       // Load existing vehicle image if available
