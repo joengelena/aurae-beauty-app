@@ -61,15 +61,20 @@ class _PostListingFormState extends State<PostListingForm> {
 
   Future<void> _scrollToField(RenderBox fieldRenderBox) async {
     try {
-      final scrollableRenderBox = _scrollController
-          .position.context.notificationContext?.findRenderObject() as RenderBox?;
+      final scrollableRenderBox =
+          _scrollController.position.context.notificationContext
+                  ?.findRenderObject()
+              as RenderBox?;
 
       if (scrollableRenderBox == null) return;
 
       // Calculate field position relative to scrollable viewport
       final fieldGlobalPosition = fieldRenderBox.localToGlobal(Offset.zero);
-      final scrollableGlobalPosition = scrollableRenderBox.localToGlobal(Offset.zero);
-      final relativePosition = fieldGlobalPosition.dy - scrollableGlobalPosition.dy;
+      final scrollableGlobalPosition = scrollableRenderBox.localToGlobal(
+        Offset.zero,
+      );
+      final relativePosition =
+          fieldGlobalPosition.dy - scrollableGlobalPosition.dy;
 
       // Calculate target scroll with padding from top
       const topPadding = 150.0;
@@ -117,18 +122,20 @@ class _PostListingFormState extends State<PostListingForm> {
                       provider.isLoading
                           ? null // disables the button when loading
                           : () {
-                            // Check if at least one image is added
-                            if (provider.imageBytesList.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Please add at least one photo'),
-                                  backgroundColor: Theme.of(context).colorScheme.error,
-                                ),
-                              );
-                              return;
-                            }
-
                             if (_formKey.currentState!.validate()) {
+                              if (provider.imageBytesList.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Please add at least one photo',
+                                    ),
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.error,
+                                  ),
+                                );
+                                return;
+                              }
+
                               provider.postListing();
                             } else {
                               // Validation failed, scroll to first error

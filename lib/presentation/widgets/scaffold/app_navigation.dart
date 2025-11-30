@@ -11,7 +11,8 @@ class AppNavigation extends StatelessWidget {
   int _calculateIndex(String uri) {
     if (uri.startsWith('/watchlist')) return 1;
     if (uri.startsWith('/post')) return 2;
-    if (uri.startsWith('/profile')) return 3;
+    if (uri.startsWith('/garage')) return 3;
+    if (uri.startsWith('/profile')) return 4;
     return 0;
   }
 
@@ -39,6 +40,9 @@ class AppNavigation extends StatelessWidget {
                     context.go('/post-listing');
                     break;
                   case 3:
+                    context.go('/garage');
+                    break;
+                  case 4:
                     context.go('/profile');
                     break;
                 }
@@ -59,6 +63,10 @@ class AppNavigation extends StatelessWidget {
                 NavigationDestination(
                   icon: Icon(Icons.control_point_sharp),
                   label: 'Post',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: 'My Garage',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.person),

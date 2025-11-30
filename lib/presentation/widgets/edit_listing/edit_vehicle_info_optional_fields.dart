@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/edit_listing_provider.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/date_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/dropdown_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/number_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/date_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
 import 'package:provider/provider.dart';
 
 class EditVehicleInfoOptionalFields extends StatefulWidget {
@@ -37,57 +37,58 @@ class _EditVehicleInfoOptionalFieldsState
               value: isOrcChecked,
               onChanged: (value) {
                 setState(() {
-                  provider.editListingData['orcIncluded'] = value == true ? 1 : 0;
+                  provider.editListingData['orcIncluded'] =
+                      value == true ? 1 : 0;
                 });
               },
               title: const Text('ORC Included'),
             ),
-            DateFormField(
+            DateFormField<EditListingProvider>(
               labelText: 'Rego Expiry Date',
               fieldName: 'regoExpiryDate',
             ),
-            DateFormField(
+            DateFormField<EditListingProvider>(
               labelText: 'WOF Expiry Date',
               fieldName: 'wofExpiryDate',
             ),
-            StringFormField(
+            StringFormField<EditListingProvider>(
               labelText: 'Number Plate',
               fieldName: 'numberPlate',
             ),
-            NumberFormField(
+            NumberFormField<EditListingProvider>(
               labelText: 'Seats',
               fieldName: 'seats',
               min: 1,
               max: 100,
             ),
-            NumberFormField(
+            NumberFormField<EditListingProvider>(
               labelText: 'Doors',
               fieldName: 'doors',
               min: 1,
               max: 20,
             ),
-            NumberFormField(
+            NumberFormField<EditListingProvider>(
               labelText: 'Previous Owners',
               fieldName: 'previousOwners',
               min: 0,
               max: 50,
             ),
-            const StringFormField(labelText: 'Color', fieldName: 'color'),
-            NumberFormField(
+            const StringFormField<EditListingProvider>(labelText: 'Color', fieldName: 'color'),
+            NumberFormField<EditListingProvider>(
               labelText: 'Engine Size (cc)',
               fieldName: 'engineSize',
               min: 0,
               max: 20000,
             ),
-            DropdownFormField(
+            DropdownFormField<EditListingProvider>(
               labelText: 'Transmission',
               fieldName: 'transmission',
-              attributeName: 'transmission',
+              options: provider.getAttributeValues('transmission'),
             ),
-            DropdownFormField(
+            DropdownFormField<EditListingProvider>(
               labelText: 'Cylinders',
               fieldName: 'cylinders',
-              attributeName: 'cylinders',
+              options: provider.getAttributeValues('cylinders'),
             ),
           ],
         ),

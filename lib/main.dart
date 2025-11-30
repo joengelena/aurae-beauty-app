@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/app_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
-import 'package:motorix_app/logic/listing_attributes_provider.dart';
+import 'package:motorix_app/logic/filtering_provider.dart';
+import 'package:motorix_app/logic/garage_provider.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/logic/profile_provider.dart';
 import 'package:motorix_app/logic/user_listings_provider.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/listing_form_data_provider.dart';
+import 'package:motorix_app/logic/listing_form_data_provider.dart';
 import 'package:motorix_app/logic/watchlist_provider.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -34,16 +35,24 @@ void main() {
             return userListingsProvider;
           },
         ),
-        ChangeNotifierProvider<ListingAttributesProvider>(
-          create: (_) => ListingAttributesProvider(),
+        ChangeNotifierProvider<FilteringProvider>(
+          create: (_) => FilteringProvider(),
         ),
         ChangeNotifierProvider<WatchlistProvider>(
           create: (_) => WatchlistProvider(),
         ),
+        ChangeNotifierProxyProvider<AuthProvider, GarageProvider>(
+          create: (_) => GarageProvider(),
+          update: (context, authProvider, garageProvider) {
+            garageProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return garageProvider;
+          },
+        ),
         ChangeNotifierProxyProvider<WatchlistProvider, ListingsProvider>(
-          create: (context) => ListingsProvider(
-            watchlistProvider: context.read<WatchlistProvider>(),
-          ),
+          create:
+              (context) => ListingsProvider(
+                watchlistProvider: context.read<WatchlistProvider>(),
+              ),
           update: (context, watchlistProvider, listingsProvider) {
             return listingsProvider!;
           },

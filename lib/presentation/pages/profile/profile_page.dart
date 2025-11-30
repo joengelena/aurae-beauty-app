@@ -3,10 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/logic/user_listings_provider.dart';
-import 'package:motorix_app/presentation/widgets/common/app_dialog.dart';
+import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
 import 'package:motorix_app/presentation/widgets/profile/user_profile.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -44,169 +45,101 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Widget _buildStatusChangeMenuItem({
-    required BuildContext context,
+  Future<void> _handleStatusChange({
     required int listingId,
-    required IconData icon,
-    required String title,
     required Future<void> Function(int) onStatusChange,
     required String successMessage,
     required String errorMessage,
-  }) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
-      onTap: () async {
-        Navigator.pop(context);
-        try {
-          await onStatusChange(listingId);
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(successMessage),
-                backgroundColor: Colors.green,
-              ),
-            );
-          }
-        } catch (e) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(errorMessage),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        }
-      },
-    );
+  }) async {
+    try {
+      await onStatusChange(listingId);
+      if (mounted) {
+        FeedbackHelpers.showSuccessSnackBar(context, successMessage);
+      }
+    } catch (e) {
+      if (mounted) {
+        FeedbackHelpers.showErrorSnackBar(context, errorMessage);
+      }
+    }
   }
 
-  Future<void> _deleteListing(int listingId) async {
+  Future<void> _handleDeleteListing(int listingId) async {
+    final confirmed = await FeedbackHelpers.showDeleteConfirmation(
+      context,
+      title: 'Delete Listing',
+      message:
+          'Are you sure you want to delete this listing? This action cannot be undone.',
+    );
+
+    if (!confirmed || !mounted) return;
+
     final userListingsProvider = context.read<UserListingsProvider>();
 
     try {
       await userListingsProvider.deleteListing(listingId);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [Expanded(child: Text('Listing deleted successfully'))],
-            ),
-            backgroundColor: Colors.green,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        FeedbackHelpers.showSuccessSnackBar(context, 'Listing deleted successfully');
       }
     } catch (e) {
       if (mounted) {
-        final errorMessage =
-            e is AppException
-                ? e.message
-                : 'Failed to delete listing. Please try again.';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(children: [Expanded(child: Text(errorMessage))]),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-            duration: Duration(seconds: 4),
-          ),
-        );
+        final errorMessage = e is AppException
+            ? e.message
+            : 'Failed to delete listing. Please try again.';
+        FeedbackHelpers.showErrorSnackBar(context, errorMessage);
       }
     }
   }
 
-  void _showDeleteConfirmationDialog(
-    BuildContext context,
-    int listingId,
-  ) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return AppDialog(
-          title: 'Delete Listing',
-          message:
-              'Are you sure you want to delete this listing? This action cannot be undone.',
-          type: AppDialogType.warning,
-          primaryButtonText: 'Delete',
-          onPrimaryButtonPressed: () {
-            Navigator.pop(dialogContext);
-            _deleteListing(listingId);
-          },
-          secondaryButtonText: 'Cancel',
-          onSecondaryButtonPressed: () => Navigator.pop(dialogContext),
-          barrierDismissible: false,
-        );
-      },
-    );
-  }
-
-  void showlistingBottomSheet(BuildContext context, Listing listing) {
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+  List<MenuOption> _buildMenuOptions(Listing listing) {
+    final userListingsProvider = context.read<UserListingsProvider>();
+    final options = <MenuOption>[
+      MenuOption(
+        icon: Icons.edit,
+        title: 'Edit',
+        onTap: () => context.go('/listings/${listing.id}/edit'),
       ),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Options', style: Theme.of(context).textTheme.titleLarge),
-              ListTile(
-                leading: Icon(Icons.edit),
-                title: Text(
-                  'Edit',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  context.go('/listings/${listing.id}/edit');
-                },
-              ),
-              if (listing.status == 'active')
-                _buildStatusChangeMenuItem(
-                  context: context,
-                  listingId: listing.id,
-                  icon: Icons.check_circle,
-                  title: 'Mark as Sold',
-                  onStatusChange:
-                      context.read<UserListingsProvider>().markAsSold,
-                  successMessage: 'Listing marked as sold',
-                  errorMessage: 'Failed to mark listing as sold',
-                ),
-              if (listing.status == 'sold')
-                _buildStatusChangeMenuItem(
-                  context: context,
-                  listingId: listing.id,
-                  icon: Icons.autorenew,
-                  title: 'Mark as Active',
-                  onStatusChange:
-                      context.read<UserListingsProvider>().markAsActive,
-                  successMessage: 'Listing marked as active',
-                  errorMessage: 'Failed to mark listing as active',
-                ),
-              ListTile(
-                leading: Icon(Icons.delete, color: Colors.red),
-                title: Text(
-                  'Delete',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(color: Colors.red),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _showDeleteConfirmationDialog(context, listing.id);
-                },
-              ),
-            ],
+    ];
+
+    if (listing.status == 'active') {
+      options.add(
+        MenuOption(
+          icon: Icons.check_circle,
+          title: 'Mark as Sold',
+          onTap: () => _handleStatusChange(
+            listingId: listing.id,
+            onStatusChange: userListingsProvider.markAsSold,
+            successMessage: 'Listing marked as sold',
+            errorMessage: 'Failed to mark listing as sold',
           ),
-        );
-      },
+        ),
+      );
+    } else if (listing.status == 'sold') {
+      options.add(
+        MenuOption(
+          icon: Icons.autorenew,
+          title: 'Mark as Active',
+          onTap: () => _handleStatusChange(
+            listingId: listing.id,
+            onStatusChange: userListingsProvider.markAsActive,
+            successMessage: 'Listing marked as active',
+            errorMessage: 'Failed to mark listing as active',
+          ),
+        ),
+      );
+    }
+
+    options.add(
+      MenuOption(
+        icon: Icons.delete,
+        title: 'Delete',
+        iconColor: Colors.red,
+        titleColor: Colors.red,
+        onTap: () => _handleDeleteListing(listing.id),
+      ),
     );
+
+    return options;
   }
 
   @override
@@ -302,11 +235,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   ...userListingsProvider.userListings.map((listing) {
                     return ListingTile(
                       listing: listing,
-                      topRightButton: IconButton(
-                        onPressed: () {
-                          showlistingBottomSheet(context, listing);
-                        },
-                        icon: const Icon(Icons.more_vert),
+                      topRightButton: ActionMenuButton(
+                        options: _buildMenuOptions(listing),
                       ),
                     );
                   }),

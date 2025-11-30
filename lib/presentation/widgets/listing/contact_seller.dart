@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 class ContactSeller extends StatelessWidget {
@@ -15,7 +16,7 @@ class ContactSeller extends StatelessWidget {
 
     return Card(
       color: Colors.grey.shade50,
-      elevation: 3,
+      elevation: AppConstants.cardShadowElevation,
       margin: EdgeInsets.all(16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(

@@ -43,7 +43,6 @@ class ProfileProvider extends ChangeNotifier {
         errorMessage = e.message;
       } else {
         errorMessage = 'Failed to load profile';
-        debugPrint('Profile fetch error: $e');
       }
     } finally {
       isLoading = false;
@@ -88,7 +87,6 @@ class ProfileProvider extends ChangeNotifier {
         updateErrorMessage = e.message;
       } else {
         updateErrorMessage = 'Failed to update profile';
-        debugPrint('Profile update error: $e');
       }
     } finally {
       isLoading = false;

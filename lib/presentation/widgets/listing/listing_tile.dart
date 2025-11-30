@@ -37,7 +37,7 @@ class ListingTile extends StatelessWidget {
         },
         child: Card(
           margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
-          elevation: 2,
+          elevation: AppConstants.cardShadowElevation,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(_borderRadius),
           ),
@@ -62,7 +62,10 @@ class ListingTile extends StatelessWidget {
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
                               color: Colors.grey[300],
-                              child: const Icon(Icons.broken_image, color: Colors.grey),
+                              child: const Icon(
+                                Icons.broken_image,
+                                color: Colors.grey,
+                              ),
                             );
                           },
                         ),
@@ -149,10 +152,14 @@ class ListingTile extends StatelessWidget {
                               Row(
                                 spacing: 4,
                                 children: [
-                                  const Icon(Icons.remove_red_eye_outlined, size: 16),
+                                  const Icon(
+                                    Icons.remove_red_eye_outlined,
+                                    size: 16,
+                                  ),
                                   Text(
                                     listing.viewCount.toString(),
-                                    style: Theme.of(context).textTheme.bodySmall,
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
                                   ),
                                   const SizedBox(width: 12),
                                 ],
@@ -170,7 +177,10 @@ class ListingTile extends StatelessWidget {
                   top: 8,
                   left: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(6),

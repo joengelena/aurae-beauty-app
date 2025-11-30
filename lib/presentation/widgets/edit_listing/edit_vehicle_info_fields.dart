@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/dropdown_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/number_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
+import 'package:motorix_app/logic/edit_listing_provider.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
+import 'package:provider/provider.dart';
 
 class EditVehicleInfoFields extends StatelessWidget {
   const EditVehicleInfoFields({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<EditListingProvider>();
+
     return Column(
       spacing: 12,
       children: [
@@ -15,47 +19,47 @@ class EditVehicleInfoFields extends StatelessWidget {
           'Vehicle Information',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
-        DropdownFormField(
+        DropdownFormField<EditListingProvider>(
           labelText: 'Make',
           fieldName: 'make',
-          attributeName: 'make',
+          options: provider.getAttributeValues('make'),
           isRequired: true,
         ),
-        StringFormField(
+        StringFormField<EditListingProvider>(
           labelText: 'Model',
           fieldName: 'model',
           isRequired: true,
         ),
-        NumberFormField(
+        NumberFormField<EditListingProvider>(
           labelText: 'Year',
           fieldName: 'year',
           min: 1900,
           max: 3000,
           isRequired: true,
         ),
-        NumberFormField(
+        NumberFormField<EditListingProvider>(
           labelText: 'Kilometers',
           fieldName: 'kilometers',
           min: 0,
           max: 9999999,
           isRequired: true,
         ),
-        DropdownFormField(
+        DropdownFormField<EditListingProvider>(
           labelText: 'Fuel Type',
           fieldName: 'fuelType',
-          attributeName: 'fuel_type',
+          options: provider.getAttributeValues('fuel_type'),
           isRequired: true,
         ),
-        DropdownFormField(
+        DropdownFormField<EditListingProvider>(
           labelText: 'Body Type',
           fieldName: 'bodyType',
-          attributeName: 'body_type',
+          options: provider.getAttributeValues('body_type'),
           isRequired: true,
         ),
-        DropdownFormField(
+        DropdownFormField<EditListingProvider>(
           labelText: 'Drive Type',
           fieldName: 'driveType',
-          attributeName: 'drive_type',
+          options: provider.getAttributeValues('drive_type'),
           isRequired: true,
         ),
       ],

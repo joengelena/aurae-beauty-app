@@ -3,7 +3,7 @@ import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/listing_form_data_provider.dart';
+import 'package:motorix_app/logic/listing_form_data_provider.dart';
 
 class EditListingProvider extends ChangeNotifier
     implements ListingFormDataProvider {
@@ -29,14 +29,20 @@ class EditListingProvider extends ChangeNotifier
       listingAttributeOptions = await ListingsServices().getListingAttributes();
       attributesLoaded = true;
     } catch (e) {
-      if (e is AppException) {
-        debugPrint('Error loading filters: ${e.message}');
-      } else {
-        debugPrint('Error loading filters: $e');
-      }
+      // Silently handle attribute loading errors
       attributesLoaded = true; // Set to true even on error to show the form
     } finally {
       notifyListeners();
+    }
+  }
+
+  List<String> getAttributeValues(String attributeName) {
+    try {
+      return listingAttributeOptions
+          .firstWhere((attr) => attr.name == attributeName)
+          .attributeValues;
+    } catch (e) {
+      return [];
     }
   }
 
@@ -46,7 +52,8 @@ class EditListingProvider extends ChangeNotifier
     editListingData['vehicleCondition'] = listing.vehicleCondition;
     editListingData['price'] = listing.price;
     editListingData['description'] = listing.description;
-    editListingData['endDate'] = listing.endDate.toIso8601String().split('T')[0];
+    editListingData['endDate'] =
+        listing.endDate.toIso8601String().split('T')[0];
     editListingData['make'] = listing.make;
     editListingData['model'] = listing.model;
     editListingData['year'] = listing.year;
@@ -109,10 +116,7 @@ class EditListingProvider extends ChangeNotifier
     try {
       editListingData['currentUserId'] = userId;
 
-      await ListingsServices().patchListing(
-        listing.id,
-        editListingData,
-      );
+      await ListingsServices().patchListing(listing.id, editListingData);
 
       successfulUpdate = true;
     } catch (e) {
@@ -120,7 +124,6 @@ class EditListingProvider extends ChangeNotifier
         errorMessage = e.message;
       } else {
         errorMessage = 'Failed to update listing';
-        debugPrint('Update listing error: $e');
       }
     } finally {
       isLoading = false;

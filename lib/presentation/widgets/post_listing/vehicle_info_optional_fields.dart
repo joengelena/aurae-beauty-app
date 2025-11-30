@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/date_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/dropdown_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/number_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/date_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
 import 'package:provider/provider.dart';
 
 class VehicleInfoOptionalFields extends StatefulWidget {
@@ -36,52 +36,53 @@ class _VehicleInfoOptionalFieldsState extends State<VehicleInfoOptionalFields> {
               value: isOrcChecked,
               onChanged: (value) {
                 setState(() {
-                  provider.postListingData['orcIncluded'] = value == true ? 1 : 0;
+                  provider.postListingData['orcIncluded'] =
+                      value == true ? 1 : 0;
                 });
               },
               title: const Text('ORC Included'),
             ),
 
-            DateFormField(
+            DateFormField<PostListingProvider>(
               labelText: 'Rego Expiry Date',
               fieldName: 'regoExpiryDate',
             ),
-            DateFormField(
+            DateFormField<PostListingProvider>(
               labelText: 'WOF Expiry Date',
               fieldName: 'wofExpiryDate',
             ),
-            StringFormField(
+            StringFormField<PostListingProvider>(
               labelText: 'Number Plate',
               fieldName: 'numberPlate',
             ),
-            NumberFormField(
+            NumberFormField<PostListingProvider>(
               labelText: 'Seats',
               fieldName: 'seats',
               min: 1,
               max: 100,
             ),
-            NumberFormField(
+            NumberFormField<PostListingProvider>(
               labelText: 'Doors',
               fieldName: 'doors',
               min: 1,
               max: 20,
             ),
-            const StringFormField(labelText: 'Color', fieldName: 'color'),
-            NumberFormField(
+            const StringFormField<PostListingProvider>(labelText: 'Color', fieldName: 'color'),
+            NumberFormField<PostListingProvider>(
               labelText: 'Engine Size (cc)',
               fieldName: 'engineSize',
               min: 0,
               max: 20000,
             ),
-            DropdownFormField(
+            DropdownFormField<PostListingProvider>(
               labelText: 'Transmission',
               fieldName: 'transmission',
-              attributeName: 'transmission',
+              options: provider.getAttributeValues('transmission'),
             ),
-            DropdownFormField(
+            DropdownFormField<PostListingProvider>(
               labelText: 'Cylinders',
               fieldName: 'cylinders',
-              attributeName: 'cylinders',
+              options: provider.getAttributeValues('cylinders'),
             ),
           ],
         ),

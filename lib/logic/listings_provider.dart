@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 import 'package:motorix_app/logic/watchlist_provider.dart';
@@ -31,12 +30,6 @@ class ListingsProvider extends ChangeNotifier {
   String sortBy = 'uploadDateDesc';
 
   Map<String, String> equalFilters = {};
-
-  Map<String, dynamic> get searchParams => {
-    'searchString': searchController.text,
-    'sortBy': sortBy,
-    ...getEqualFilters(),
-  };
 
   bool get onLastPage => currentPage >= totalPages;
   bool get canLoadMore => !onLastPage && !isLoading;
@@ -72,58 +65,52 @@ class ListingsProvider extends ChangeNotifier {
         },
       );
 
-      // Debug: Check watchlist state
-      debugPrint('🔍 Watchlist has ${watchlistProvider?.watchlist.length ?? 0} items');
-
       // Set isInWatchlist flag based on watchlistProvider
-      final fetchedListings = resp.data.map((listing) {
-        final isInWatchlist = watchlistProvider?.isInWatchlist(listing.id) ?? false;
-        debugPrint('📋 Listing ${listing.id}: isInWatchlist = $isInWatchlist');
-        return Listing(
-          id: listing.id,
-          userIdFk: listing.userIdFk,
-          status: listing.status,
-          viewCount: listing.viewCount,
-          previewImgUrl: listing.previewImgUrl,
-          imageUrls: listing.imageUrls,
-          location: listing.location,
-          vehicleCondition: listing.vehicleCondition,
-          price: listing.price,
-          uploadDate: listing.uploadDate,
-          description: listing.description,
-          endDate: listing.endDate,
-          make: listing.make,
-          model: listing.model,
-          year: listing.year,
-          kilometers: listing.kilometers,
-          fuelType: listing.fuelType,
-          bodyType: listing.bodyType,
-          driveType: listing.driveType,
-          orcIncluded: listing.orcIncluded,
-          numberPlate: listing.numberPlate,
-          seats: listing.seats,
-          doors: listing.doors,
-          previousOwners: listing.previousOwners,
-          color: listing.color,
-          engineSize: listing.engineSize,
-          transmission: listing.transmission,
-          cylinders: listing.cylinders,
-          regoExpiryDate: listing.regoExpiryDate,
-          wofExpiryDate: listing.wofExpiryDate,
-          isInWatchlist: isInWatchlist,
-        );
-      }).toList();
+      final fetchedListings =
+          resp.data.map((listing) {
+            final isInWatchlist =
+                watchlistProvider?.isInWatchlist(listing.id) ?? false;
+            return Listing(
+              id: listing.id,
+              userIdFk: listing.userIdFk,
+              status: listing.status,
+              viewCount: listing.viewCount,
+              previewImgUrl: listing.previewImgUrl,
+              imageUrls: listing.imageUrls,
+              location: listing.location,
+              vehicleCondition: listing.vehicleCondition,
+              price: listing.price,
+              uploadDate: listing.uploadDate,
+              description: listing.description,
+              endDate: listing.endDate,
+              make: listing.make,
+              model: listing.model,
+              year: listing.year,
+              kilometers: listing.kilometers,
+              fuelType: listing.fuelType,
+              bodyType: listing.bodyType,
+              driveType: listing.driveType,
+              orcIncluded: listing.orcIncluded,
+              numberPlate: listing.numberPlate,
+              seats: listing.seats,
+              doors: listing.doors,
+              previousOwners: listing.previousOwners,
+              color: listing.color,
+              engineSize: listing.engineSize,
+              transmission: listing.transmission,
+              cylinders: listing.cylinders,
+              regoExpiryDate: listing.regoExpiryDate,
+              wofExpiryDate: listing.wofExpiryDate,
+              isInWatchlist: isInWatchlist,
+            );
+          }).toList();
 
       listings.addAll(fetchedListings);
       totalPages = resp.totalPages;
       currentPage = resp.pageNumber;
       totalListings = resp.totalRows;
     } catch (e) {
-      if (e is AppException) {
-        debugPrint('Error loading listings: ${e.message}');
-      } else {
-        debugPrint('Error loading listings: $e');
-      }
+      // Silently handle listing loading errors
     } finally {
       isLoading = false;
       notifyListeners();

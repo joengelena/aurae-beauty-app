@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/listing_form_data_provider.dart';
+import 'package:motorix_app/logic/form_data_provider.dart';
 import 'package:provider/provider.dart';
 
-/// A reusable numeric form field for listing forms.
+/// A reusable numeric form field for forms.
 ///
 /// Only accepts integer input and validates against min/max constraints.
 /// Automatically removes optional fields from formData when empty.
-class NumberFormField extends StatelessWidget {
+class NumberFormField<T extends FormDataProvider>
+    extends StatelessWidget {
   /// The label text displayed in the field
   final String labelText;
 
@@ -52,7 +53,7 @@ class NumberFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<ListingFormDataProvider>();
+    final provider = context.read<T>();
     final initialValue = provider.formData[fieldName]?.toString() ?? '';
 
     return TextFormField(

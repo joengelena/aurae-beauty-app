@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/dropdown_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/number_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
+import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
+import 'package:provider/provider.dart';
 
 class VehicleInfoFields extends StatelessWidget {
   const VehicleInfoFields({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<PostListingProvider>();
+
     return Column(
       spacing: 12,
       children: [
@@ -15,47 +19,47 @@ class VehicleInfoFields extends StatelessWidget {
           'Vehicle Details',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
-        DropdownFormField(
+        DropdownFormField<PostListingProvider>(
           labelText: 'Make',
           fieldName: 'make',
-          attributeName: 'make',
+          options: provider.getAttributeValues('make'),
           isRequired: true,
         ),
-        StringFormField(
+        StringFormField<PostListingProvider>(
           labelText: 'Model',
           fieldName: 'model',
           isRequired: true,
         ),
-        NumberFormField(
+        NumberFormField<PostListingProvider>(
           labelText: 'Year',
           fieldName: 'year',
           min: 1900,
           max: DateTime.now().year + 1,
           isRequired: true,
         ),
-        NumberFormField(
+        NumberFormField<PostListingProvider>(
           labelText: 'Kilometers',
           fieldName: 'kilometers',
           min: 0,
           max: 1000000,
           isRequired: true,
         ),
-        DropdownFormField(
+        DropdownFormField<PostListingProvider>(
           labelText: 'Fuel Type',
           fieldName: 'fuelType',
-          attributeName: 'fuel_type',
+          options: provider.getAttributeValues('fuel_type'),
           isRequired: true,
         ),
-        DropdownFormField(
+        DropdownFormField<PostListingProvider>(
           labelText: 'Body Type',
           fieldName: 'bodyType',
-          attributeName: 'body_type',
+          options: provider.getAttributeValues('body_type'),
           isRequired: true,
         ),
-        DropdownFormField(
+        DropdownFormField<PostListingProvider>(
           labelText: 'Drive Type',
           fieldName: 'driveType',
-          attributeName: 'drive_type',
+          options: provider.getAttributeValues('drive_type'),
           isRequired: true,
         ),
       ],

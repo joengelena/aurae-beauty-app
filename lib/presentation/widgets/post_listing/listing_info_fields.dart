@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/date_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/dropdown_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/number_form_field.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/string_form_field.dart';
+import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/date_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
+import 'package:provider/provider.dart';
 
 class ListingInfoFields extends StatelessWidget {
   const ListingInfoFields({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<PostListingProvider>();
+
     return Column(
       spacing: 12,
       children: [
@@ -16,31 +20,31 @@ class ListingInfoFields extends StatelessWidget {
           'Listing Details',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
-        NumberFormField(
+        NumberFormField<PostListingProvider>(
           labelText: 'Price',
           fieldName: 'price',
           min: 0,
           max: 100000000,
           isRequired: true,
         ),
-        DropdownFormField(
+        DropdownFormField<PostListingProvider>(
           labelText: 'Vehicle Condition',
           fieldName: 'vehicleCondition',
-          attributeName: 'vehicle_condition',
+          options: provider.getAttributeValues('vehicle_condition'),
           isRequired: true,
         ),
-        DropdownFormField(
+        DropdownFormField<PostListingProvider>(
           labelText: 'Location',
           fieldName: 'location',
-          attributeName: 'location',
+          options: provider.getAttributeValues('location'),
           isRequired: true,
         ),
-        DateFormField(
+        DateFormField<PostListingProvider>(
           labelText: 'Listing End Date',
           fieldName: 'endDate',
           isRequired: true,
         ),
-        StringFormField(
+        StringFormField<PostListingProvider>(
           labelText: 'Description',
           fieldName: 'description',
           isRequired: true,

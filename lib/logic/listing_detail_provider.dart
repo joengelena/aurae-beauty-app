@@ -1,7 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:motorix_app/data/api_client.dart';
-import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/models/user.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
@@ -25,11 +23,6 @@ class ListingDetailProvider extends ChangeNotifier {
         try {
           listingOwner = await UserServices().getUserWithId(listing!.userIdFk);
         } catch (e) {
-          if (e is AppException) {
-            debugPrint('Error loading listing owner: ${e.message}');
-          } else {
-            debugPrint('Error loading listing owner: $e');
-          }
           listingOwner = null;
         }
       }
@@ -37,11 +30,6 @@ class ListingDetailProvider extends ChangeNotifier {
       // Increment view count only if viewer is not the owner
       _incrementViewCountIfNotOwner(listingId);
     } catch (e) {
-      if (e is AppException) {
-        debugPrint('Error loading listing: ${e.message}');
-      } else {
-        debugPrint('Error loading listing: $e');
-      }
       listing = null;
       listingOwner = null;
     } finally {
@@ -56,10 +44,14 @@ class ListingDetailProvider extends ChangeNotifier {
 
       // Only increment if user is not the owner (or if not logged in)
       if (listing != null && currentUserId != listing!.userIdFk) {
-        debugPrint('Incrementing view count for listing $listingId (viewer: ${currentUserId ?? "anonymous"}, owner: ${listing!.userIdFk})');
+        debugPrint(
+          'Incrementing view count for listing $listingId (viewer: ${currentUserId ?? "anonymous"}, owner: ${listing!.userIdFk})',
+        );
         await ListingsServices().incrementViewCount(listingId);
       } else {
-        debugPrint('Skipping view count increment - user is the owner of listing $listingId');
+        debugPrint(
+          'Skipping view count increment - user is the owner of listing $listingId',
+        );
       }
     } catch (e) {
       debugPrint('Failed to increment view count: $e');

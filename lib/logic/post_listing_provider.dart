@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
-import 'package:motorix_app/presentation/widgets/listing_form/listing_form_data_provider.dart';
+import 'package:motorix_app/logic/listing_form_data_provider.dart';
 
 class PostListingProvider extends ChangeNotifier
     implements ListingFormDataProvider {
@@ -42,13 +42,19 @@ class PostListingProvider extends ChangeNotifier
     try {
       listingAttributeOptions = await ListingsServices().getListingAttributes();
     } catch (e) {
-      if (e is AppException) {
-        debugPrint('Error loading filters: ${e.message}');
-      } else {
-        debugPrint('Error loading filters: $e');
-      }
+      // Silently handle attribute loading errors
     } finally {
       notifyListeners();
+    }
+  }
+
+  List<String> getAttributeValues(String attributeName) {
+    try {
+      return listingAttributeOptions
+          .firstWhere((attr) => attr.name == attributeName)
+          .attributeValues;
+    } catch (e) {
+      return [];
     }
   }
 
@@ -154,7 +160,6 @@ class PostListingProvider extends ChangeNotifier
         errorMessage = e.message;
       } else {
         errorMessage = 'Failed to post listing';
-        debugPrint('Post listing error: $e');
       }
     } finally {
       isLoading = false;
