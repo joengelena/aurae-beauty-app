@@ -92,6 +92,19 @@ class VehicleCard extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        // TODO: Implement add service functionality
+                      },
+                      child: const Text('Add Service'),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
