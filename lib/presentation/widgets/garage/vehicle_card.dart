@@ -13,20 +13,43 @@ class VehicleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16.0),
+      elevation: AppConstants.cardShadowElevation,
       child: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${vehicle.year} ${vehicle.make} ${vehicle.model}',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (vehicle.licensePlate != null) ...[
+                        const SizedBox(width: 8),
+                        Text(
+                          vehicle.licensePlate!,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: Colors.grey.shade600),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
                 Row(
                   children: [
                     if (vehicle.vehiclePhotoUrl != null) ...[
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: SizedBox(
-                          width: 140,
+                          width: 200,
                           child: AspectRatio(
                             aspectRatio: AppConstants.listingImageAspectRatio,
                             child: Image.network(
@@ -51,54 +74,24 @@ class VehicleCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '${vehicle.year} ${vehicle.make} ${vehicle.model}',
-                            style: Theme.of(context).textTheme.titleLarge
-                                ?.copyWith(fontWeight: FontWeight.bold),
+                          _buildInfoItem(
+                            context,
+                            'Registration Ends',
+                            _formatDate(vehicle.regoExpiryDate),
+                            _isExpiringSoon(vehicle.regoExpiryDate),
                           ),
-                          if (vehicle.licensePlate != null) ...[
-                            const SizedBox(height: 4),
-                            Text(
-                              vehicle.licensePlate!,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: Colors.grey.shade600),
-                            ),
-                          ],
+                          const SizedBox(height: 12),
+                          _buildInfoItem(
+                            context,
+                            'WOF Ends',
+                            _formatDate(vehicle.wofExpiryDate),
+                            _isExpiringSoon(vehicle.wofExpiryDate),
+                          ),
                         ],
                       ),
                     ),
                   ],
                 ),
-                const Divider(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildInfoItem(
-                        context,
-                        'Registration',
-                        _formatDate(vehicle.regoExpiryDate),
-                        _isExpiringSoon(vehicle.regoExpiryDate),
-                      ),
-                    ),
-                    Expanded(
-                      child: _buildInfoItem(
-                        context,
-                        'WOF',
-                        _formatDate(vehicle.wofExpiryDate),
-                        _isExpiringSoon(vehicle.wofExpiryDate),
-                      ),
-                    ),
-                  ],
-                ),
-                if (vehicle.odometerReading != null) ...[
-                  const SizedBox(height: 12),
-                  _buildInfoItem(
-                    context,
-                    'Odometer',
-                    '${vehicle.odometerReading} ${vehicle.odometerUnit}',
-                    false,
-                  ),
-                ],
               ],
             ),
           ),
