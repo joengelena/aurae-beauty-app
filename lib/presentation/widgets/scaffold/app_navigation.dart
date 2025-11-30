@@ -12,7 +12,6 @@ class AppNavigation extends StatelessWidget {
     if (uri.startsWith('/watchlist')) return 1;
     if (uri.startsWith('/post')) return 2;
     if (uri.startsWith('/garage')) return 3;
-    if (uri.startsWith('/profile')) return 4;
     return 0;
   }
 
@@ -42,9 +41,6 @@ class AppNavigation extends StatelessWidget {
                   case 3:
                     context.go('/garage');
                     break;
-                  case 4:
-                    context.go('/profile');
-                    break;
                 }
               },
               selectedIndex: _calculateIndex(state.uri.toString()),
@@ -67,10 +63,6 @@ class AppNavigation extends StatelessWidget {
                 NavigationDestination(
                   icon: Icon(Icons.home),
                   label: 'My Garage',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.person),
-                  label: 'Profile',
                 ),
               ],
             ),
