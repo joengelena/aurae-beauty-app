@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 String formatDate(DateTime date) {
   final day = date.day.toString().padLeft(2, '0');
@@ -6,6 +7,16 @@ String formatDate(DateTime date) {
   final year = date.year.toString();
 
   return '$day-$month-$year';
+}
+
+String formatKilometers(int km) {
+  final formatter = NumberFormat('#,###');
+  return '${formatter.format(km)} km';
+}
+
+String formatPrice(int price) {
+  final formatter = NumberFormat('#,###');
+  return '\$${formatter.format(price)}';
 }
 
 /// Extracts error message from API response body

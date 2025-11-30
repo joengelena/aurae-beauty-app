@@ -24,6 +24,9 @@ class NumberFormField<T extends FormDataProvider>
   /// Whether this field is required for form validation
   final bool isRequired;
 
+  /// Whether this field is read-only
+  final bool isReadOnly;
+
   const NumberFormField({
     super.key,
     required this.labelText,
@@ -31,6 +34,7 @@ class NumberFormField<T extends FormDataProvider>
     required this.min,
     required this.max,
     this.isRequired = false,
+    this.isReadOnly = false,
   });
 
   String? _validator(String? value) {
@@ -58,6 +62,8 @@ class NumberFormField<T extends FormDataProvider>
 
     return TextFormField(
       initialValue: initialValue,
+      readOnly: isReadOnly,
+      enabled: !isReadOnly,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       keyboardType: TextInputType.number,
       decoration: InputDecoration(

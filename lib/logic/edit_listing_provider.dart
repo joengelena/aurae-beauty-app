@@ -50,7 +50,10 @@ class EditListingProvider extends ChangeNotifier
     // Initialize with existing listing data
     editListingData['location'] = listing.location;
     editListingData['vehicleCondition'] = listing.vehicleCondition;
-    editListingData['price'] = listing.price;
+    editListingData['originalPrice'] = listing.originalPrice;
+    if (listing.discountedPrice != null) {
+      editListingData['discountedPrice'] = listing.discountedPrice!;
+    }
     editListingData['description'] = listing.description;
     editListingData['endDate'] =
         listing.endDate.toIso8601String().split('T')[0];

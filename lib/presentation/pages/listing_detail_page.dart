@@ -106,22 +106,33 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                       'Asking price',
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    Row(
-                      spacing: 10,
-                      children: [
-                        Text(
-                          '\$${listing.price}',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        Text(
-                          '\$39,990',
-                          style: TextStyle(
-                            decoration: TextDecoration.lineThrough,
-                            color: Colors.red,
+                    if (listing.discountedPrice != null)
+                      Row(
+                        spacing: 10,
+                        children: [
+                          Text(
+                            formatPrice(listing.discountedPrice!),
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                          Text(
+                            formatPrice(listing.originalPrice),
+                            style: TextStyle(
+                              decoration: TextDecoration.lineThrough,
+                              color: Colors.black,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      )
+                    else
+                      Text(
+                        formatPrice(listing.originalPrice),
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
                   ],
                 ),
               ),

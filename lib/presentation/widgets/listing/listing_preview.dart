@@ -5,6 +5,7 @@ import 'package:motorix_app/logic/watchlist_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/utils/constants.dart';
+import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class ListingPreview extends StatelessWidget {
@@ -153,11 +154,29 @@ class ListingPreview extends StatelessWidget {
             ),
             Row(
               children: [
-                Icon(Icons.attach_money, size: 16),
-                Text(
-                  listing.price.toString(),
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
+                if (listing.discountedPrice != null) ...[
+                  Text(
+                    formatPrice(listing.discountedPrice!),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.red,
+                    ),
+                  ),
+                  SizedBox(width: 6),
+                  Text(
+                    formatPrice(listing.originalPrice),
+                    style: TextStyle(
+                      decoration: TextDecoration.lineThrough,
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
+                  ),
+                ] else
+                  Text(
+                    formatPrice(listing.originalPrice),
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
               ],
             ),
           ],

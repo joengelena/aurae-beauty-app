@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/utils/constants.dart';
+import 'package:motorix_app/utils/utils.dart';
 import 'package:intl/intl.dart';
 
 class ListingTile extends StatelessWidget {
@@ -15,16 +16,6 @@ class ListingTile extends StatelessWidget {
 
   String _formatEndDate(DateTime endDate) {
     return 'Ends ${DateFormat('d MMMM').format(endDate)}';
-  }
-
-  String _formatKilometers(int km) {
-    final formatter = NumberFormat('#,###');
-    return '${formatter.format(km)} km';
-  }
-
-  String _formatPrice(int price) {
-    final formatter = NumberFormat('#,###');
-    return '\$${formatter.format(price)}';
   }
 
   @override
@@ -107,7 +98,7 @@ class ListingTile extends StatelessWidget {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                _formatKilometers(listing.kilometers),
+                                formatKilometers(listing.kilometers),
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
@@ -142,13 +133,36 @@ class ListingTile extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                _formatPrice(listing.price),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                              if (listing.discountedPrice != null) ...[
+                                Row(
+                                  children: [
+                                    Text(
+                                      formatPrice(listing.discountedPrice!),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      formatPrice(listing.originalPrice),
+                                      style: const TextStyle(
+                                        decoration: TextDecoration.lineThrough,
+                                        color: Colors.black,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
+                              ] else
+                                Text(
+                                  formatPrice(listing.originalPrice),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
                               Row(
                                 spacing: 4,
                                 children: [

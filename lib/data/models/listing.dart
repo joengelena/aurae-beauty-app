@@ -9,7 +9,8 @@ class Listing {
   final List<dynamic> imageUrls;
   final String location;
   final String vehicleCondition;
-  final int price;
+  final int originalPrice;
+  final int? discountedPrice;
   final DateTime uploadDate;
   final String description;
   final DateTime endDate;
@@ -42,7 +43,8 @@ class Listing {
     required this.imageUrls,
     required this.location,
     required this.vehicleCondition,
-    required this.price,
+    required this.originalPrice,
+    this.discountedPrice,
     required this.uploadDate,
     required this.description,
     required this.endDate,
@@ -77,7 +79,8 @@ class Listing {
       imageUrls: json['imageUrls'] as List<dynamic>,
       location: json['location'] as String,
       vehicleCondition: json['vehicleCondition'] as String,
-      price: json['price'] as int,
+      originalPrice: json['originalPrice'] as int,
+      discountedPrice: json['discountedPrice'] as int?,
       uploadDate: DateTime.parse(json['uploadDate'] as String),
       description: json['description'] as String,
       endDate: DateTime.parse(json['endDate'] as String),
@@ -117,7 +120,8 @@ class Listing {
     List<dynamic>? imageUrls,
     String? location,
     String? vehicleCondition,
-    int? price,
+    int? originalPrice,
+    int? discountedPrice,
     DateTime? uploadDate,
     String? description,
     DateTime? endDate,
@@ -149,7 +153,8 @@ class Listing {
       imageUrls: imageUrls ?? this.imageUrls,
       location: location ?? this.location,
       vehicleCondition: vehicleCondition ?? this.vehicleCondition,
-      price: price ?? this.price,
+      originalPrice: originalPrice ?? this.originalPrice,
+      discountedPrice: discountedPrice ?? this.discountedPrice,
       uploadDate: uploadDate ?? this.uploadDate,
       description: description ?? this.description,
       endDate: endDate ?? this.endDate,
@@ -176,6 +181,6 @@ class Listing {
 
   @override
   String toString() {
-    return 'Listing(id: $id, ownerUserId: $userIdFk, make: $make, model: $model, year: $year, price: $price)';
+    return 'Listing(id: $id, ownerUserId: $userIdFk, make: $make, model: $model, year: $year, originalPrice: $originalPrice, discountedPrice: $discountedPrice)';
   }
 }

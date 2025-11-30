@@ -22,7 +22,7 @@ class ListingInfoFields extends StatelessWidget {
         ),
         NumberFormField<PostListingProvider>(
           labelText: 'Price',
-          fieldName: 'price',
+          fieldName: 'originalPrice',
           min: 0,
           max: 100000000,
           isRequired: true,
