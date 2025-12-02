@@ -93,6 +93,30 @@ class VehicleCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: OutlinedButton(
+                        onPressed: () {
+                          // TODO: Implement add service functionality
+                        },
+                        child: const Text('Update REGO'),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: OutlinedButton(
+                        onPressed: () {
+                          // TODO: Implement add service functionality
+                        },
+                        child: const Text('Update WOF'),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: SizedBox(
