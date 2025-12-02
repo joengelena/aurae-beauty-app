@@ -75,32 +75,36 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
                 _showSignOutDialog(context, authProvider);
               }
             },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'Sign out',
-                enabled: !authProvider.isLoading,
-                child: Row(
-                  children: [
-                    const Icon(Icons.logout, size: 20),
-                    const SizedBox(width: 12),
-                    const Text('Sign out'),
-                    if (authProvider.isLoading) ...[
-                      const SizedBox(width: 8),
-                      const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(
+                    value: 'Sign out',
+                    enabled: !authProvider.isLoading,
+                    child: Row(
+                      children: [
+                        const Icon(Icons.logout, size: 20),
+                        const SizedBox(width: 12),
+                        const Text('Sign out'),
+                        if (authProvider.isLoading) ...[
+                          const SizedBox(width: 8),
+                          const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
           )
         else
-          IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () => context.push('/profile'),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () => context.go('/profile'),
+            ),
           ),
       ],
     );
