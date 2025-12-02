@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/edit_listing_provider.dart';
 import 'package:flutter/services.dart';
-import 'package:motorix_app/logic/edit_listing_provider.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/date_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
-import 'package:provider/provider.dart';
 import 'package:provider/provider.dart';
 
 class EditListingInfoFields extends StatelessWidget {
@@ -16,7 +14,8 @@ class EditListingInfoFields extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<EditListingProvider>();
     final originalPrice = provider.formData['originalPrice'] as int;
-    final initialDiscountedValue = provider.formData['discountedPrice']?.toString() ?? '';
+    final initialDiscountedValue =
+        provider.formData['discountedPrice']?.toString() ?? '';
 
     return Column(
       spacing: 12,
@@ -33,7 +32,7 @@ class EditListingInfoFields extends StatelessWidget {
           isRequired: true,
           isReadOnly: true,
         ),
-                TextFormField(
+        TextFormField(
           initialValue: initialDiscountedValue,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           keyboardType: TextInputType.number,
