@@ -43,6 +43,22 @@ class GarageProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateVehicle(
+    int vehicleId,
+    Map<String, Object> updates,
+  ) async {
+    try {
+      await VehicleServices().updateVehicle(vehicleId, updates);
+
+      // Refresh the vehicle list to get updated data
+      await fetchVehicles();
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw AppException('Failed to update vehicle: ${e.toString()}');
+    }
+  }
+
   Future<void> deleteVehicle(int vehicleId) async {
     try {
       await VehicleServices().deleteVehicle(vehicleId, {});

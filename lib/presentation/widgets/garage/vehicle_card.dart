@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
+import 'package:motorix_app/presentation/widgets/garage/update_expiry_date_dialog.dart';
 import 'package:motorix_app/utils/constants.dart';
 
 class VehicleCard extends StatelessWidget {
@@ -99,18 +100,26 @@ class VehicleCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: OutlinedButton(
-                        onPressed: () {
-                          // TODO: Implement add service functionality
-                        },
+                        onPressed: () => _showUpdateExpiryDialog(
+                          context,
+                          title: 'Update Registration',
+                          currentDate: vehicle.regoExpiryDate,
+                          fieldName: 'regoExpiryDate',
+                          successMessage: 'Registration expiry updated successfully',
+                        ),
                         child: const Text('Update REGO'),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: OutlinedButton(
-                        onPressed: () {
-                          // TODO: Implement add service functionality
-                        },
+                        onPressed: () => _showUpdateExpiryDialog(
+                          context,
+                          title: 'Update WOF',
+                          currentDate: vehicle.wofExpiryDate,
+                          fieldName: 'wofExpiryDate',
+                          successMessage: 'WOF expiry updated successfully',
+                        ),
                         child: const Text('Update WOF'),
                       ),
                     ),
@@ -184,5 +193,24 @@ class VehicleCard extends StatelessWidget {
     } catch (e) {
       return false;
     }
+  }
+
+  void _showUpdateExpiryDialog(
+    BuildContext context, {
+    required String title,
+    required String currentDate,
+    required String fieldName,
+    required String successMessage,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) => UpdateExpiryDateDialog(
+        title: title,
+        currentDate: currentDate,
+        fieldName: fieldName,
+        vehicleId: vehicle.id,
+        successMessage: successMessage,
+      ),
+    );
   }
 }
