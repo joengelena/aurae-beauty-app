@@ -94,36 +94,37 @@ class VehicleCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: OutlinedButton(
-                        onPressed: () => _showUpdateExpiryDialog(
-                          context,
-                          title: 'Update Registration',
-                          currentDate: vehicle.regoExpiryDate,
-                          fieldName: 'regoExpiryDate',
-                          successMessage: 'Registration expiry updated successfully',
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => _showUpdateExpiryDialog(
+                            context,
+                            title: 'Update Registration',
+                            currentDate: vehicle.regoExpiryDate,
+                            fieldName: 'regoExpiryDate',
+                            successMessage: 'Registration expiry updated successfully',
+                          ),
+                          child: const Text('Update REGO'),
                         ),
-                        child: const Text('Update REGO'),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: OutlinedButton(
-                        onPressed: () => _showUpdateExpiryDialog(
-                          context,
-                          title: 'Update WOF',
-                          currentDate: vehicle.wofExpiryDate,
-                          fieldName: 'wofExpiryDate',
-                          successMessage: 'WOF expiry updated successfully',
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => _showUpdateExpiryDialog(
+                            context,
+                            title: 'Update WOF',
+                            currentDate: vehicle.wofExpiryDate,
+                            fieldName: 'wofExpiryDate',
+                            successMessage: 'WOF expiry updated successfully',
+                          ),
+                          child: const Text('Update WOF'),
                         ),
-                        child: const Text('Update WOF'),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Padding(
