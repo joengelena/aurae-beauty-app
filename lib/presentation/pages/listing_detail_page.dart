@@ -18,12 +18,25 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
   @override
   void initState() {
     super.initState();
-    // Schedule after first frame so we’re not in the middle of a build.
+    // Schedule after first frame so we're not in the middle of a build.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ListingDetailProvider>().getListing(
         int.parse(widget.listingId),
       );
     });
+  }
+
+  String _formatListingAge(DateTime uploadDate) {
+    final now = DateTime.now();
+    final difference = now.difference(uploadDate);
+
+    if (difference.inDays == 0) {
+      return 'Listed Today';
+    } else if (difference.inDays == 1) {
+      return 'Listed Yesterday';
+    } else {
+      return 'Listed ${difference.inDays} days ago';
+    }
   }
 
   @override
@@ -87,12 +100,47 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                 isSaved: false,
               ),
 
+              // Listing age and location
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    children: [
+                      Text(
+                        '${_formatListingAge(listing.uploadDate)} | ',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      Icon(
+                        Icons.location_on,
+                        size: 16,
+                        color: Colors.black54,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        listing.location,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
               // Title
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  '${listing.year} ${listing.make} ${listing.model}',
-                  style: Theme.of(context).textTheme.headlineSmall,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '${listing.year} ${listing.make} ${listing.model}',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
                 ),
               ),
 
