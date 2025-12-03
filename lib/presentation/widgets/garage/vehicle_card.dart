@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/presentation/widgets/garage/update_expiry_date_dialog.dart';
@@ -132,9 +133,7 @@ class VehicleCard extends StatelessWidget {
                   child: SizedBox(
                     width: double.infinity,
                     child: OutlinedButton(
-                      onPressed: () {
-                        // TODO: Implement add service functionality
-                      },
+                      onPressed: () => _handleAddService(context),
                       child: const Text('Add Service'),
                     ),
                   ),
@@ -213,5 +212,9 @@ class VehicleCard extends StatelessWidget {
         successMessage: successMessage,
       ),
     );
+  }
+
+  void _handleAddService(BuildContext context) {
+    context.push('/garage/${vehicle.id}/add-service');
   }
 }

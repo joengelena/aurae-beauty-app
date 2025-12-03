@@ -11,12 +11,16 @@ class DateFormField<T extends FormDataProvider> extends StatefulWidget {
   /// The earliest date selectable in the picker. Defaults to today.
   final DateTime? firstDate;
 
+  /// The latest date selectable in the picker. Defaults to year 2035.
+  final DateTime? lastDate;
+
   const DateFormField({
     super.key,
     required this.labelText,
     required this.fieldName,
     this.isRequired = false,
     this.firstDate,
+    this.lastDate,
   });
 
   @override
@@ -63,6 +67,7 @@ class _DateFormFieldState<T extends FormDataProvider>
   Widget build(BuildContext context) {
     final provider = context.read<T>();
     final firstDate = widget.firstDate ?? DateTime.now();
+    final lastDate = widget.lastDate ?? DateTime(2035);
 
     return TextFormField(
       controller: _controller,
@@ -89,7 +94,7 @@ class _DateFormFieldState<T extends FormDataProvider>
           context: context,
           initialDate: _getInitialDateForPicker(firstDate),
           firstDate: firstDate,
-          lastDate: DateTime(2035),
+          lastDate: lastDate,
         );
 
         if (picked != null) {

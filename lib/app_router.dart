@@ -18,6 +18,7 @@ import 'package:motorix_app/presentation/pages/watchlist_page.dart';
 import 'package:motorix_app/presentation/pages/garage_page.dart';
 import 'package:motorix_app/presentation/pages/add_vehicle_page.dart';
 import 'package:motorix_app/presentation/pages/edit_vehicle_page.dart';
+import 'package:motorix_app/presentation/pages/add_service_page.dart';
 import 'package:motorix_app/presentation/widgets/scaffold/app_scaffold.dart';
 import 'package:provider/provider.dart';
 
@@ -127,6 +128,16 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                   final vehicleId = state.pathParameters['vehicleId']!;
                   return NoTransitionPage(
                     child: EditVehiclePage(vehicleId: vehicleId),
+                  );
+                },
+              ),
+              GoRoute(
+                path: ':vehicleId/add-service',
+                parentNavigatorKey: _shellNavigatorKey,
+                pageBuilder: (context, state) {
+                  final vehicleId = int.parse(state.pathParameters['vehicleId']!);
+                  return NoTransitionPage(
+                    child: AddServicePage(vehicleId: vehicleId),
                   );
                 },
               ),
