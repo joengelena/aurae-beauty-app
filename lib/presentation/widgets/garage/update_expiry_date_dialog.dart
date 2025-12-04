@@ -96,7 +96,7 @@ class _UpdateExpiryDateDialogState extends State<UpdateExpiryDateDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.title),
+      title: Center(child: Text(widget.title)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -105,6 +105,7 @@ class _UpdateExpiryDateDialogState extends State<UpdateExpiryDateDialog> {
           Text(
             'Current expiry: ${_formatDate(widget.currentDate)}',
             style: Theme.of(context).textTheme.bodyMedium,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           OutlinedButton.icon(
@@ -118,6 +119,7 @@ class _UpdateExpiryDateDialogState extends State<UpdateExpiryDateDialog> {
           ),
         ],
       ),
+      actionsAlignment: MainAxisAlignment.center,
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
