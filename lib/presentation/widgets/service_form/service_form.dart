@@ -108,45 +108,22 @@ class _ServiceFormState extends State<ServiceForm> {
             child: Column(
               spacing: 24,
               children: [
-                Text(
-                  _title,
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-
-                // Vehicle Info Card
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Vehicle',
-                          style:
-                              Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    color: Colors.grey.shade600,
-                                  ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${provider.vehicle.year} ${provider.vehicle.make} ${provider.vehicle.model}',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                        if (provider.vehicle.licensePlate != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            'License Plate: ${provider.vehicle.licensePlate}',
-                            style: Theme.of(context).textTheme.bodyMedium,
+                Column(
+                  children: [
+                    Text(
+                      _title,
+                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ],
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${provider.vehicle.year} ${provider.vehicle.make} ${provider.vehicle.model}',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Colors.grey.shade700,
+                          ),
+                    ),
+                  ],
                 ),
 
                 // Service Type Dropdown
