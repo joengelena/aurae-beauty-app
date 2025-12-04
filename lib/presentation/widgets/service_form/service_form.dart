@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/service_form_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/loading_button.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/autocomplete_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/date_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/decimal_form_field.dart';
-import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
 import 'package:provider/provider.dart';
 
 enum ServiceFormMode { add, edit }
@@ -34,20 +34,20 @@ class _ServiceFormState extends State<ServiceForm> {
     'Spark Plug Replacement',
     'Wheel Alignment',
     'General Maintenance',
-    'Other',
   ];
 
-  String get _title => widget.mode == ServiceFormMode.add
-      ? 'Add Service'
-      : 'Edit Service';
+  String get _title =>
+      widget.mode == ServiceFormMode.add ? 'Add Service' : 'Edit Service';
 
-  String get _submitButtonText => widget.mode == ServiceFormMode.add
-      ? 'Add Service Record'
-      : 'Update Service Record';
+  String get _submitButtonText =>
+      widget.mode == ServiceFormMode.add
+          ? 'Add Service Record'
+          : 'Update Service Record';
 
-  String get _successMessage => widget.mode == ServiceFormMode.add
-      ? 'Service record added successfully!'
-      : 'Service record updated successfully!';
+  String get _successMessage =>
+      widget.mode == ServiceFormMode.add
+          ? 'Service record added successfully!'
+          : 'Service record updated successfully!';
 
   @override
   void dispose() {
@@ -78,10 +78,7 @@ class _ServiceFormState extends State<ServiceForm> {
 
     if (provider.isSuccess) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(_successMessage),
-          backgroundColor: Colors.green,
-        ),
+        SnackBar(content: Text(_successMessage), backgroundColor: Colors.green),
       );
       context.pop(true);
     } else if (provider.errorMessage.isNotEmpty) {
@@ -112,26 +109,28 @@ class _ServiceFormState extends State<ServiceForm> {
                   children: [
                     Text(
                       _title,
-                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: Theme.of(context).textTheme.headlineLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       '${provider.vehicle.year} ${provider.vehicle.make} ${provider.vehicle.model}',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Colors.grey.shade700,
-                          ),
+                        color: Colors.grey.shade700,
+                      ),
                     ),
                   ],
                 ),
 
-                // Service Type Dropdown
-                DropdownFormField<ServiceFormProvider>(
+                // Service Type
+                AutocompleteFormField<ServiceFormProvider>(
                   labelText: 'Service Type',
                   fieldName: 'typeOfService',
                   options: _serviceTypes,
                   isRequired: true,
+                  prefixIcon: Icons.build,
+                  hintText: 'Type or select a service type',
+                  textCapitalization: TextCapitalization.words,
                 ),
 
                 // Service Date
