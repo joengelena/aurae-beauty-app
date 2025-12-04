@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/logic/form_data_provider.dart';
 
@@ -9,7 +10,8 @@ import 'package:motorix_app/logic/form_data_provider.dart';
 /// Implementations:
 /// - [PostListingProvider] - For creating new listings
 /// - [EditListingProvider] - For updating existing listings
-abstract class ListingFormDataProvider implements FormDataProvider {
+abstract class ListingFormDataProvider extends ChangeNotifier
+    implements FormDataProvider {
   /// Available listing attributes for dropdown fields.
   ///
   /// Contains options like vehicle makes, body types, fuel types, etc.

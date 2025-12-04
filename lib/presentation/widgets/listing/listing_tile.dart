@@ -24,7 +24,7 @@ class ListingTile extends StatelessWidget {
       constraints: const BoxConstraints(maxWidth: 600),
       child: GestureDetector(
         onTap: () {
-          context.push('/listings/${listing.id}');
+          context.go('/listings/${listing.id}');
         },
         child: Card(
           margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),

@@ -18,6 +18,7 @@ import 'package:motorix_app/presentation/pages/watchlist_page.dart';
 import 'package:motorix_app/presentation/pages/garage_page.dart';
 import 'package:motorix_app/presentation/pages/add_vehicle_page.dart';
 import 'package:motorix_app/presentation/pages/edit_vehicle_page.dart';
+import 'package:motorix_app/presentation/pages/add_service_page.dart';
 import 'package:motorix_app/presentation/widgets/scaffold/app_scaffold.dart';
 import 'package:provider/provider.dart';
 
@@ -60,7 +61,6 @@ GoRouter getAppRouter(AuthProvider authProvider) {
             routes: [
               GoRoute(
                 path: ':listingId',
-                parentNavigatorKey: _shellNavigatorKey,
                 pageBuilder: (context, state) {
                   final listingId = state.pathParameters['listingId'];
                   if (listingId == null) {
@@ -79,7 +79,6 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                 routes: [
                   GoRoute(
                     path: 'edit',
-                    parentNavigatorKey: _shellNavigatorKey,
                     pageBuilder: (context, state) {
                       final listingId = state.pathParameters['listingId'];
                       if (listingId == null) {
@@ -115,18 +114,25 @@ GoRouter getAppRouter(AuthProvider authProvider) {
             routes: [
               GoRoute(
                 path: 'add',
-                parentNavigatorKey: _shellNavigatorKey,
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: AddVehiclePage());
                 },
               ),
               GoRoute(
                 path: ':vehicleId/edit',
-                parentNavigatorKey: _shellNavigatorKey,
                 pageBuilder: (context, state) {
                   final vehicleId = state.pathParameters['vehicleId']!;
                   return NoTransitionPage(
                     child: EditVehiclePage(vehicleId: vehicleId),
+                  );
+                },
+              ),
+              GoRoute(
+                path: ':vehicleId/add-service',
+                pageBuilder: (context, state) {
+                  final vehicleId = int.parse(state.pathParameters['vehicleId']!);
+                  return NoTransitionPage(
+                    child: AddServicePage(vehicleId: vehicleId),
                   );
                 },
               ),
@@ -140,49 +146,42 @@ GoRouter getAppRouter(AuthProvider authProvider) {
             routes: [
               GoRoute(
                 path: 'signup',
-                parentNavigatorKey: _shellNavigatorKey,
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: SignUpPage());
                 },
               ),
               GoRoute(
                 path: 'signin',
-                parentNavigatorKey: _shellNavigatorKey,
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: SignInPage());
                 },
               ),
               GoRoute(
                 path: 'forgot-password',
-                parentNavigatorKey: _shellNavigatorKey,
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: ForgotPasswordPage());
                 },
               ),
               GoRoute(
                 path: 'reset-password',
-                parentNavigatorKey: _shellNavigatorKey,
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: ResetPasswordPage());
                 },
               ),
               GoRoute(
                 path: 'email-verified',
-                parentNavigatorKey: _shellNavigatorKey,
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: EmailVerifiedPage());
                 },
               ),
               GoRoute(
                 path: 'change-password',
-                parentNavigatorKey: _shellNavigatorKey,
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: ChangePasswordPage());
                 },
               ),
               GoRoute(
                 path: 'edit',
-                parentNavigatorKey: _shellNavigatorKey,
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: EditProfilePage());
                 },

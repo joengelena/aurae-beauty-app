@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/logic/garage_provider.dart';
 import 'package:motorix_app/logic/vehicle_form_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/select_single_image.dart';
 import 'package:motorix_app/presentation/widgets/vehicle_form/additional_info_section.dart';
@@ -42,13 +43,18 @@ class _VehicleFormState extends State<VehicleForm> {
     if (!context.mounted) return;
 
     if (provider.isSuccess) {
+      // Refresh garage vehicles list
+      await context.read<GarageProvider>().fetchVehicles();
+
+      if (!context.mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(_successMessage),
           backgroundColor: Colors.green,
         ),
       );
-      context.pop(true);
+      context.go('/garage');
     } else if (provider.errorMessage.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
