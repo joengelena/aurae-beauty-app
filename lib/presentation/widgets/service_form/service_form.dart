@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/service_form_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/loading_button.dart';
+import 'package:motorix_app/presentation/widgets/form_fields/autocomplete_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/date_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/decimal_form_field.dart';
-import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
 import 'package:provider/provider.dart';
 
 enum ServiceFormMode { add, edit }
@@ -34,20 +34,20 @@ class _ServiceFormState extends State<ServiceForm> {
     'Spark Plug Replacement',
     'Wheel Alignment',
     'General Maintenance',
-    'Other',
   ];
 
-  String get _title => widget.mode == ServiceFormMode.add
-      ? 'Add Service'
-      : 'Edit Service';
+  String get _title =>
+      widget.mode == ServiceFormMode.add ? 'Add Service' : 'Edit Service';
 
-  String get _submitButtonText => widget.mode == ServiceFormMode.add
-      ? 'Add Service Record'
-      : 'Update Service Record';
+  String get _submitButtonText =>
+      widget.mode == ServiceFormMode.add
+          ? 'Add Service Record'
+          : 'Update Service Record';
 
-  String get _successMessage => widget.mode == ServiceFormMode.add
-      ? 'Service record added successfully!'
-      : 'Service record updated successfully!';
+  String get _successMessage =>
+      widget.mode == ServiceFormMode.add
+          ? 'Service record added successfully!'
+          : 'Service record updated successfully!';
 
   @override
   void dispose() {
@@ -78,10 +78,7 @@ class _ServiceFormState extends State<ServiceForm> {
 
     if (provider.isSuccess) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(_successMessage),
-          backgroundColor: Colors.green,
-        ),
+        SnackBar(content: Text(_successMessage), backgroundColor: Colors.green),
       );
       context.pop(true);
     } else if (provider.errorMessage.isNotEmpty) {
@@ -112,26 +109,28 @@ class _ServiceFormState extends State<ServiceForm> {
                   children: [
                     Text(
                       _title,
-                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: Theme.of(context).textTheme.headlineLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       '${provider.vehicle.year} ${provider.vehicle.make} ${provider.vehicle.model}',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Colors.grey.shade700,
-                          ),
+                        color: Colors.grey.shade700,
+                      ),
                     ),
                   ],
                 ),
 
-                // Service Type Dropdown
-                DropdownFormField<ServiceFormProvider>(
+                // Service Type
+                AutocompleteFormField<ServiceFormProvider>(
                   labelText: 'Service Type',
                   fieldName: 'typeOfService',
                   options: _serviceTypes,
                   isRequired: true,
+                  prefixIcon: Icons.build,
+                  hintText: 'Type or select a service type',
+                  textCapitalization: TextCapitalization.words,
                 ),
 
                 // Service Date
@@ -147,7 +146,7 @@ class _ServiceFormState extends State<ServiceForm> {
                 TextFormField(
                   controller: _serviceProviderController,
                   decoration: const InputDecoration(
-                    labelText: 'Service Provider (Optional)',
+                    labelText: 'Service Provider',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.business),
                     hintText: 'e.g., AutoPro, Bob\'s Garage',
@@ -158,7 +157,7 @@ class _ServiceFormState extends State<ServiceForm> {
 
                 // Cost
                 DecimalFormField<ServiceFormProvider>(
-                  labelText: 'Cost (Optional)',
+                  labelText: 'Cost',
                   fieldName: 'cost',
                   prefixText: '\$',
                   prefixIcon: Icons.attach_money,
@@ -170,16 +169,14 @@ class _ServiceFormState extends State<ServiceForm> {
                 TextFormField(
                   controller: _notesController,
                   decoration: const InputDecoration(
-                    labelText: 'Notes (Optional)',
+                    labelText: 'Notes',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.notes),
                     alignLabelWithHint: true,
                   ),
-                  maxLines: 4,
+                  maxLines: 5,
                   maxLength: 500,
                 ),
-
-                const SizedBox(height: 20),
 
                 // Show cancel button for edit mode
                 if (widget.mode == ServiceFormMode.edit)
@@ -203,9 +200,7 @@ class _ServiceFormState extends State<ServiceForm> {
                     ],
                   )
                 else
-                  // Just submit button for add mode
                   SizedBox(
-                    width: double.infinity,
                     child: LoadingButton(
                       onPressed: () => _handleSubmit(context),
                       label: _submitButtonText,
