@@ -215,6 +215,6 @@ class VehicleCard extends StatelessWidget {
   }
 
   void _handleAddService(BuildContext context) {
-    context.push('/garage/${vehicle.id}/add-service');
+    context.go('/garage/${vehicle.id}/add-service');
   }
 }

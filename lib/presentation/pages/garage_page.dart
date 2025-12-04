@@ -68,20 +68,12 @@ class _GaragePageState extends State<GaragePage> {
     );
   }
 
-  Future<void> _handleAddVehicle() async {
-    final wasAdded = await context.push<bool>('/garage/add');
-
-    if (wasAdded == true && mounted) {
-      context.read<GarageProvider>().fetchVehicles();
-    }
+  void _handleAddVehicle() {
+    context.go('/garage/add');
   }
 
-  Future<void> _handleEditVehicle(UserVehicle vehicle) async {
-    final wasUpdated = await context.push<bool>('/garage/${vehicle.id}/edit');
-
-    if (wasUpdated == true && mounted) {
-      context.read<GarageProvider>().fetchVehicles();
-    }
+  void _handleEditVehicle(UserVehicle vehicle) {
+    context.go('/garage/${vehicle.id}/edit');
   }
 
   Future<void> _handleDeleteVehicle(UserVehicle vehicle) async {
