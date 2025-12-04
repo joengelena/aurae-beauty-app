@@ -146,7 +146,7 @@ class _ServiceFormState extends State<ServiceForm> {
                 TextFormField(
                   controller: _serviceProviderController,
                   decoration: const InputDecoration(
-                    labelText: 'Service Provider (Optional)',
+                    labelText: 'Service Provider',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.business),
                     hintText: 'e.g., AutoPro, Bob\'s Garage',
@@ -157,7 +157,7 @@ class _ServiceFormState extends State<ServiceForm> {
 
                 // Cost
                 DecimalFormField<ServiceFormProvider>(
-                  labelText: 'Cost (Optional)',
+                  labelText: 'Cost',
                   fieldName: 'cost',
                   prefixText: '\$',
                   prefixIcon: Icons.attach_money,
@@ -169,16 +169,14 @@ class _ServiceFormState extends State<ServiceForm> {
                 TextFormField(
                   controller: _notesController,
                   decoration: const InputDecoration(
-                    labelText: 'Notes (Optional)',
+                    labelText: 'Notes',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.notes),
                     alignLabelWithHint: true,
                   ),
-                  maxLines: 4,
+                  maxLines: 5,
                   maxLength: 500,
                 ),
-
-                const SizedBox(height: 20),
 
                 // Show cancel button for edit mode
                 if (widget.mode == ServiceFormMode.edit)
@@ -202,9 +200,7 @@ class _ServiceFormState extends State<ServiceForm> {
                     ],
                   )
                 else
-                  // Just submit button for add mode
                   SizedBox(
-                    width: double.infinity,
                     child: LoadingButton(
                       onPressed: () => _handleSubmit(context),
                       label: _submitButtonText,
