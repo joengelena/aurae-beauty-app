@@ -145,6 +145,12 @@ class PostListingProvider extends ChangeNotifier
     imageNames.clear();
   }
 
+  Map<String, Object> _filterNoneValues() {
+    return Map.fromEntries(
+      postListingData.entries.where((entry) => entry.value != 'None'),
+    );
+  }
+
   Future<void> postListing() async {
     isLoading = true;
     errorMessage = '';
@@ -153,12 +159,10 @@ class PostListingProvider extends ChangeNotifier
 
     try {
       final images = await buildFiles(imageBytesList);
-      postListingData['currentUserId'] = 'edd5a17b-aa0f-4317-9226-b6bd80acbd84';
 
-      final result = await ListingsServices().postListing(
-        postListingData,
-        images,
-      );
+      final filteredData = _filterNoneValues();
+
+      final result = await ListingsServices().postListing(filteredData, images);
 
       newListingId = result['listingId'] as int?;
       successfulPost = true;
