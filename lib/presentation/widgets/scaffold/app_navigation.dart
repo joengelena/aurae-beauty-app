@@ -15,9 +15,15 @@ class AppNavigation extends StatelessWidget {
     return 0;
   }
 
+  bool _isProfilePage(String uri) {
+    return uri.startsWith('/profile');
+  }
+
   @override
   Widget build(BuildContext context) {
     final postListingProvider = context.watch<PostListingProvider>();
+    final uri = state.uri.toString();
+    final isProfilePage = _isProfilePage(uri);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -25,46 +31,69 @@ class AppNavigation extends StatelessWidget {
         Center(
           child: SizedBox(
             width: 400,
-            child: NavigationBar(
-              onDestinationSelected: (index) {
-                switch (index) {
-                  case 0:
-                    context.go('/listings');
-                    break;
-                  case 1:
-                    context.go('/watchlist');
-                    break;
-                  case 2:
-                    postListingProvider.resetProvider();
-                    context.go('/post-listing');
-                    break;
-                  case 3:
-                    context.go('/garage');
-                    break;
-                }
-              },
-              selectedIndex: _calculateIndex(state.uri.toString()),
-              indicatorColor: Colors.grey.shade400,
-              backgroundColor: Colors.white,
-              height: 70,
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.search),
-                  label: 'Explore',
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                navigationBarTheme: NavigationBarThemeData(
+                  indicatorColor: isProfilePage ? Colors.transparent : Colors.grey.shade400,
+                  iconTheme: WidgetStateProperty.resolveWith((states) {
+                    final isSelected = states.contains(WidgetState.selected);
+                    return IconThemeData(
+                      color: isSelected && !isProfilePage
+                          ? Theme.of(context).colorScheme.onSecondaryContainer
+                          : Colors.black,
+                    );
+                  }),
+                  labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                    final isSelected = states.contains(WidgetState.selected);
+                    return TextStyle(
+                      fontSize: 12,
+                      color: isSelected && !isProfilePage
+                          ? Theme.of(context).colorScheme.onSurface
+                          : Colors.black,
+                    );
+                  }),
                 ),
-                NavigationDestination(
-                  icon: Icon(Icons.bookmark),
-                  label: 'Watchlist',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.control_point_sharp),
-                  label: 'Post',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.home),
-                  label: 'My Garage',
-                ),
-              ],
+              ),
+              child: NavigationBar(
+                onDestinationSelected: (index) {
+                  switch (index) {
+                    case 0:
+                      context.go('/listings');
+                      break;
+                    case 1:
+                      context.go('/watchlist');
+                      break;
+                    case 2:
+                      postListingProvider.resetProvider();
+                      context.go('/post-listing');
+                      break;
+                    case 3:
+                      context.go('/garage');
+                      break;
+                  }
+                },
+                selectedIndex: _calculateIndex(uri),
+                backgroundColor: Colors.white,
+                height: 70,
+                destinations: const [
+                  NavigationDestination(
+                    icon: Icon(Icons.search),
+                    label: 'Explore',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.bookmark),
+                    label: 'Watchlist',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.control_point_sharp),
+                    label: 'Post',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.home),
+                    label: 'My Garage',
+                  ),
+                ],
+              ),
             ),
           ),
         ),
