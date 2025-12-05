@@ -29,6 +29,7 @@ class PostListingProvider extends ChangeNotifier
   String errorMessage = '';
   @override
   List<ListingAttribute> listingAttributeOptions = [];
+  final optionalDropdownFields = ['transmission', 'cylinders'];
   final List<Uint8List> imageBytesList = [];
   final List<String> imageNames = [];
   final Map<String, Object> postListingData = {};
@@ -41,6 +42,12 @@ class PostListingProvider extends ChangeNotifier
   Future<void> _loadAttributes() async {
     try {
       listingAttributeOptions = await ListingsServices().getListingAttributes();
+      // Add 'None' option to optional dropdown fields
+      for (var attributeWithoutNone in listingAttributeOptions) {
+        if (optionalDropdownFields.contains(attributeWithoutNone.name)) {
+          attributeWithoutNone.attributeValues.insert(0, 'None');
+        }
+      }
     } catch (e) {
       // Silently handle attribute loading errors
     } finally {
