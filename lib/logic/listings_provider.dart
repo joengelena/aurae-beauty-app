@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
-import 'package:motorix_app/logic/watchlist_provider.dart';
 
 class ListingsProvider extends ChangeNotifier {
-  final WatchlistProvider? watchlistProvider;
-
-  ListingsProvider({this.watchlistProvider});
-
   final Map<String, String> sortByOptions = {
     'Highest price': 'priceDesc',
     'Lowest price': 'priceAsc',
@@ -54,7 +49,7 @@ class ListingsProvider extends ChangeNotifier {
 
   Future<void> fetchListings() async {
     try {
-      final resp = await ListingsServices().getAllListings(
+      final res = await ListingsServices().getAllListings(
         allQueries: {
           'limit': limit,
           'pageNumber': currentPage + 1,
@@ -65,11 +60,8 @@ class ListingsProvider extends ChangeNotifier {
         },
       );
 
-      // Set isInWatchlist flag based on watchlistProvider
       final fetchedListings =
-          resp.data.map((listing) {
-            final isInWatchlist =
-                watchlistProvider?.isInWatchlist(listing.id) ?? false;
+          res.data.map((listing) {
             return Listing(
               id: listing.id,
               userIdFk: listing.userIdFk,
@@ -102,14 +94,14 @@ class ListingsProvider extends ChangeNotifier {
               cylinders: listing.cylinders,
               regoExpiryDate: listing.regoExpiryDate,
               wofExpiryDate: listing.wofExpiryDate,
-              isInWatchlist: isInWatchlist,
+              isInWatchlist: listing.isInWatchlist,
             );
           }).toList();
 
       listings.addAll(fetchedListings);
-      totalPages = resp.totalPages;
-      currentPage = resp.pageNumber;
-      totalListings = resp.totalRows;
+      totalPages = res.totalPages;
+      currentPage = res.pageNumber;
+      totalListings = res.totalRows;
     } catch (e) {
       // Silently handle listing loading errors
     } finally {

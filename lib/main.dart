@@ -49,10 +49,7 @@ void main() {
           },
         ),
         ChangeNotifierProxyProvider<WatchlistProvider, ListingsProvider>(
-          create:
-              (context) => ListingsProvider(
-                watchlistProvider: context.read<WatchlistProvider>(),
-              ),
+          create: (context) => ListingsProvider(),
           update: (context, watchlistProvider, listingsProvider) {
             return listingsProvider!;
           },
