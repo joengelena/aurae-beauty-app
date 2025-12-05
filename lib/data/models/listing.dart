@@ -100,8 +100,12 @@ class Listing {
       engineSize: json['engineSize'] as int?,
       transmission: json['transmission'] as String?,
       cylinders: json['cylinders'] as int?,
-      regoExpiryDate: json['regoExpiryDate'] as DateTime?,
-      wofExpiryDate: json['wofExpiryDate'] as DateTime?,
+      regoExpiryDate: json['regoExpiryDate'] != null
+          ? DateTime.parse(json['regoExpiryDate'] as String)
+          : null,
+      wofExpiryDate: json['wofExpiryDate'] != null
+          ? DateTime.parse(json['wofExpiryDate'] as String)
+          : null,
       isInWatchlist: json['isInWatchlist'] != null
           ? (json['isInWatchlist'] == 1 || json['isInWatchlist'] == true)
           : null,

@@ -52,35 +52,33 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
       return Center(child: Text('Not Found'));
     }
 
-    final listingDetails = {
-      'Make': listing.make,
-      'Model': listing.model,
-      'Year': listing.year,
-      'Kilometers': listing.kilometers,
-      'Fuel Type': listing.fuelType,
-      'Body Type': listing.bodyType,
+    // Key specs for grid display
+    final keySpecs = [
+      {'icon': Icons.speed, 'label': 'Kilometers', 'value': formatKilometers(listing.kilometers)},
+      {'icon': Icons.local_gas_station, 'label': 'Fuel Type', 'value': listing.fuelType},
+      {'icon': Icons.directions_car, 'label': 'Body Type', 'value': listing.bodyType},
+      {'icon': Icons.settings, 'label': 'Drive Type', 'value': listing.driveType},
+    ];
+
+    // Vehicle details
+    final vehicleDetails = {
       'Drive Type': listing.driveType,
-      'ORC Included': listing.orcIncluded,
-      'Number Plate': listing.numberPlate,
-      'Seats': listing.seats,
       'Doors': listing.doors,
-      'Previous Owners': listing.previousOwners,
+      'Seats': listing.seats,
       'Color': listing.color,
-      'Engine Size': listing.engineSize,
-      'Transmission': listing.transmission,
+      'Engine Size': listing.engineSize != null ? '${listing.engineSize} cc' : null,
       'Cylinders': listing.cylinders,
-      'Rego Expiry Date':
-          listing.regoExpiryDate != null
-              ? formatDate(listing.regoExpiryDate!)
-              : null,
-      'WOF Expiry Date':
-          listing.wofExpiryDate != null
-              ? formatDate(listing.wofExpiryDate!)
-              : null,
-      'Location': listing.location,
+      'Previous Owners': listing.previousOwners,
       'Vehicle Condition': listing.vehicleCondition,
-      'Upload Date': formatDate(listing.uploadDate),
-      'End Date': formatDate(listing.endDate),
+      'Number Plate': listing.numberPlate,
+    };
+
+    // Documentation
+    final documentation = {
+      'Rego Expiry': listing.regoExpiryDate != null ? formatDate(listing.regoExpiryDate!) : null,
+      'WOF Expiry': listing.wofExpiryDate != null ? formatDate(listing.wofExpiryDate!) : null,
+      'ORC Included': listing.orcIncluded == 1 ? 'Yes' : (listing.orcIncluded == 0 ? 'No' : null),
+      'Listing Ends': formatDate(listing.endDate),
     };
 
     return SingleChildScrollView(
@@ -185,41 +183,162 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                 ),
               ),
 
-              // Details
+              // Key Specs Grid
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: GridView.count(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 2.5,
+                  children: keySpecs.map((spec) {
+                    return Container(
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            spec['icon'] as IconData,
+                            size: 20,
+                            color: Colors.black54,
+                          ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  spec['label'] as String,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                Text(
+                                  spec['value'] as String,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+
+              // Vehicle Details Section
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Details',
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    'Vehicle Details',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
 
-              for (var entry in listingDetails.entries)
-                if (entry.value != null)
-                  Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          entry.key,
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        SizedBox(
-                          width: 8.0,
-                        ), // Adds a small space between label and value
-                        Expanded(
-                          child: Text(
-                            '${entry.value}',
-                            style: Theme.of(context).textTheme.bodyMedium,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    spacing: 8,
+                    children: [
+                      for (var entry in vehicleDetails.entries)
+                        if (entry.value != null)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                entry.key,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                              Text(
+                                '${entry.value}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                    ],
+                  ),
+                ),
+              ),
+
+              // Documentation Section
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Documentation',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
+                ),
+              ),
+
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    spacing: 8,
+                    children: [
+                      for (var entry in documentation.entries)
+                        if (entry.value != null)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                entry.key,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                              Text(
+                                '${entry.value}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                    ],
+                  ),
+                ),
+              ),
 
               // Description
               Padding(

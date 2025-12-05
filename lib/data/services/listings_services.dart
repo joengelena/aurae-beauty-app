@@ -133,7 +133,9 @@ class ListingsServices {
   ) async {
     try {
       final Map<String, String> payload = Map.fromEntries(
-        listingFields.entries.map((e) {
+        listingFields.entries
+            .where((e) => e.value.toString().isNotEmpty)
+            .map((e) {
           return MapEntry(e.key, e.value.toString());
         }),
       );
