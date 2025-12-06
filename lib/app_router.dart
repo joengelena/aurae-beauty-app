@@ -60,6 +60,11 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                 (context, state) => NoTransitionPage(child: ListingsPage()),
             routes: [
               GoRoute(
+                path: 'post',
+                pageBuilder:
+                    (context, state) => NoTransitionPage(child: PostListingPage()),
+              ),
+              GoRoute(
                 path: ':listingId',
                 pageBuilder: (context, state) {
                   final listingId = state.pathParameters['listingId'];
@@ -99,12 +104,6 @@ GoRouter getAppRouter(AuthProvider authProvider) {
             parentNavigatorKey: _shellNavigatorKey,
             pageBuilder:
                 (context, state) => NoTransitionPage(child: WatchlistPage()),
-          ),
-          GoRoute(
-            path: '/post-listing',
-            parentNavigatorKey: _shellNavigatorKey,
-            pageBuilder:
-                (context, state) => NoTransitionPage(child: PostListingPage()),
           ),
           GoRoute(
             path: '/garage',
