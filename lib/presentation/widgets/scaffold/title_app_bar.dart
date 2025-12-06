@@ -42,7 +42,6 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
           '/watchlist',
           '/garage',
           '/profile',
-          '/post-listing',
           '/profile/signup',
           '/profile/signin',
         ].contains(currentRoute);

@@ -130,7 +130,9 @@ GoRouter getAppRouter(AuthProvider authProvider) {
               GoRoute(
                 path: ':vehicleId/add-service',
                 pageBuilder: (context, state) {
-                  final vehicleId = int.parse(state.pathParameters['vehicleId']!);
+                  final vehicleId = int.parse(
+                    state.pathParameters['vehicleId']!,
+                  );
                   return NoTransitionPage(
                     child: AddServicePage(vehicleId: vehicleId),
                   );

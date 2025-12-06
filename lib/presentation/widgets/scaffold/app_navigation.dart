@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/logic/post_listing_provider.dart';
-import 'package:provider/provider.dart';
 
 class AppNavigation extends StatelessWidget {
   final GoRouterState state;
@@ -10,8 +8,7 @@ class AppNavigation extends StatelessWidget {
 
   int _calculateIndex(String uri) {
     if (uri.startsWith('/watchlist')) return 1;
-    if (uri.startsWith('/post')) return 2;
-    if (uri.startsWith('/garage')) return 3;
+    if (uri.startsWith('/garage')) return 2;
     return 0;
   }
 
@@ -21,7 +18,6 @@ class AppNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final postListingProvider = context.watch<PostListingProvider>();
     final uri = state.uri.toString();
     final isProfilePage = _isProfilePage(uri);
 
@@ -34,22 +30,27 @@ class AppNavigation extends StatelessWidget {
             child: Theme(
               data: Theme.of(context).copyWith(
                 navigationBarTheme: NavigationBarThemeData(
-                  indicatorColor: isProfilePage ? Colors.transparent : Colors.grey.shade400,
+                  indicatorColor:
+                      isProfilePage ? Colors.transparent : Colors.grey.shade400,
                   iconTheme: WidgetStateProperty.resolveWith((states) {
                     final isSelected = states.contains(WidgetState.selected);
                     return IconThemeData(
-                      color: isSelected && !isProfilePage
-                          ? Theme.of(context).colorScheme.onSecondaryContainer
-                          : Colors.black,
+                      color:
+                          isSelected && !isProfilePage
+                              ? Theme.of(
+                                context,
+                              ).colorScheme.onSecondaryContainer
+                              : Colors.black,
                     );
                   }),
                   labelTextStyle: WidgetStateProperty.resolveWith((states) {
                     final isSelected = states.contains(WidgetState.selected);
                     return TextStyle(
                       fontSize: 12,
-                      color: isSelected && !isProfilePage
-                          ? Theme.of(context).colorScheme.onSurface
-                          : Colors.black,
+                      color:
+                          isSelected && !isProfilePage
+                              ? Theme.of(context).colorScheme.onSurface
+                              : Colors.black,
                     );
                   }),
                 ),
@@ -64,10 +65,6 @@ class AppNavigation extends StatelessWidget {
                       context.go('/watchlist');
                       break;
                     case 2:
-                      postListingProvider.resetProvider();
-                      context.go('/post-listing');
-                      break;
-                    case 3:
                       context.go('/garage');
                       break;
                   }
@@ -83,10 +80,6 @@ class AppNavigation extends StatelessWidget {
                   NavigationDestination(
                     icon: Icon(Icons.bookmark),
                     label: 'Watchlist',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.control_point_sharp),
-                    label: 'Post',
                   ),
                   NavigationDestination(
                     icon: Icon(Icons.home),
