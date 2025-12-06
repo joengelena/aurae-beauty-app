@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:motorix_app/logic/garage_provider.dart';
+import 'package:motorix_app/logic/vehicle_detail_provider.dart';
 import 'package:provider/provider.dart';
 
 class UpdateExpiryDateDialog extends StatefulWidget {
@@ -64,6 +65,7 @@ class _UpdateExpiryDateDialogState extends State<UpdateExpiryDateDialog> {
     if (selectedDate == null) return;
 
     final garageProvider = context.read<GarageProvider>();
+    final vehicleDetailProvider = context.read<VehicleDetailProvider>();
     final formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate!);
 
     Navigator.of(context).pop();
@@ -72,6 +74,9 @@ class _UpdateExpiryDateDialogState extends State<UpdateExpiryDateDialog> {
       await garageProvider.updateVehicle(widget.vehicleId, {
         widget.fieldName: formattedDate,
       });
+
+      // Refresh the vehicle detail page with updated data
+      await vehicleDetailProvider.getVehicle(widget.vehicleId);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
