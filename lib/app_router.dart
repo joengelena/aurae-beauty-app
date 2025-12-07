@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
-import 'package:motorix_app/logic/vehicle_detail_provider.dart';
 import 'package:motorix_app/presentation/pages/edit_listing_page.dart';
 import 'package:motorix_app/presentation/pages/post_listing_page.dart';
 import 'package:motorix_app/presentation/pages/profile/change_password_page.dart';
@@ -64,7 +63,8 @@ GoRouter getAppRouter(AuthProvider authProvider) {
               GoRoute(
                 path: 'post',
                 pageBuilder:
-                    (context, state) => NoTransitionPage(child: PostListingPage()),
+                    (context, state) =>
+                        NoTransitionPage(child: PostListingPage()),
               ),
               GoRoute(
                 path: ':listingId',
@@ -127,11 +127,6 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                     return NoTransitionPage(child: Text('Not Found'));
                   }
 
-                  final vehicleDetailProvider =
-                      context.read<VehicleDetailProvider>();
-
-                  vehicleDetailProvider.clearVehicle();
-
                   return NoTransitionPage(
                     child: VehicleDetailPage(vehicleId: vehicleId),
                   );
@@ -149,10 +144,9 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                   GoRoute(
                     path: 'add-service',
                     pageBuilder: (context, state) {
-                      final vehicleId =
-                          int.parse(
-                    state.pathParameters['vehicleId']!,
-                  );
+                      final vehicleId = int.parse(
+                        state.pathParameters['vehicleId']!,
+                      );
                       return NoTransitionPage(
                         child: AddServicePage(vehicleId: vehicleId),
                       );

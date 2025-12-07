@@ -37,6 +37,7 @@ class _GaragePageState extends State<GaragePage> {
           bottom: 16,
           child: FloatingActionButton(
             onPressed: _handleAddVehicle,
+            backgroundColor: Theme.of(context).colorScheme.secondary,
             child: const Icon(Icons.add),
           ),
         ),
