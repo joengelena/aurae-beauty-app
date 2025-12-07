@@ -35,6 +35,9 @@ class EditVehicleProvider extends ChangeNotifier
   @override
   String? vehicleImageMimeType;
 
+  // Track if user has selected a new image
+  bool _isImageChanged = false;
+
   // Original vehicle data for reference
   UserVehicle? originalVehicle;
 
@@ -107,6 +110,7 @@ class EditVehicleProvider extends ChangeNotifier
         vehicleImageBytes = response.bodyBytes;
         String? contentType = response.headers['content-type'];
         vehicleImageMimeType = contentType;
+        _isImageChanged = false; // Loaded from server, not changed by user
         notifyListeners();
       }
     } catch (e) {
@@ -130,6 +134,7 @@ class EditVehicleProvider extends ChangeNotifier
   void setVehicleImage(Uint8List imageBytes, String mimeType) {
     vehicleImageBytes = imageBytes;
     vehicleImageMimeType = mimeType;
+    _isImageChanged = true; // User selected a new image
     notifyListeners();
   }
 
@@ -137,7 +142,11 @@ class EditVehicleProvider extends ChangeNotifier
   void removeVehicleImage() {
     vehicleImageBytes = null;
     vehicleImageMimeType = null;
+    _isImageChanged = false; // Not sending a new image
     notifyListeners();
+    // Note: This clears the image preview in the UI, but doesn't delete the
+    // image from the server. The API currently doesn't support image deletion.
+    // The existing server image will remain unchanged when the form is submitted.
   }
 
   @override
@@ -159,9 +168,14 @@ class EditVehicleProvider extends ChangeNotifier
       vehicleData['currentUserId'] = userId;
 
       // Call the API to update vehicle
-      // Note: Current API doesn't support image updates in PATCH
-      // Image updates would require additional API endpoint or multipart support
-      await VehicleServices().updateVehicle(vehicleId, vehicleData);
+      // Only send image if user explicitly selected a new one (_isImageChanged)
+      // If no new image, sends JSON only and existing server image remains unchanged
+      await VehicleServices().updateVehicle(
+        vehicleId,
+        vehicleData,
+        imageBytes: _isImageChanged ? vehicleImageBytes : null,
+        imageMimeType: _isImageChanged ? vehicleImageMimeType : null,
+      );
 
       isSuccess = true;
     } on AppException catch (e) {
@@ -180,6 +194,7 @@ class EditVehicleProvider extends ChangeNotifier
     _formData.clear();
     vehicleImageBytes = null;
     vehicleImageMimeType = null;
+    _isImageChanged = false;
     isLoading = false;
     isSuccess = false;
     errorMessage = '';

@@ -153,6 +153,31 @@ class ApiClient {
     return response;
   }
 
+  Future<http.Response> patchMultipart(
+    String path,
+    Map<String, String> fields,
+    List<http.MultipartFile> files,
+  ) async {
+    final uri = Uri.parse('$_baseUrl$path');
+    final request = http.MultipartRequest('PATCH', uri);
+
+    // Only add authorization header for mobile (web uses cookies via FetchClient)
+    if (!kIsWeb) {
+      final String? accessToken = await SecureStorage.read('accessToken');
+      if (accessToken != null && accessToken.isNotEmpty) {
+        request.headers['authorization'] = 'Bearer $accessToken';
+      }
+    }
+
+    request.fields.addAll(fields);
+    request.files.addAll(files);
+
+    final streamed = await _client.send(request);
+    final response = await http.Response.fromStream(streamed);
+
+    return response;
+  }
+
   // Get stored user ID
   Future<String?> getUserId() async {
     return await SecureStorage.read('userId');

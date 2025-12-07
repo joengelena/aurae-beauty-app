@@ -11,6 +11,42 @@ import 'package:motorix_app/utils/utils.dart';
 class VehicleServices {
   static final ApiClient apiClient = ApiClient();
 
+  /// Creates a multipart file from image bytes with proper content type and filename.
+  ///
+  /// Generates appropriate filename based on MIME type:
+  /// - 'image/jpeg' or 'image/jpg' -> 'vehicle_image.jpg'
+  /// - 'image/png' -> 'vehicle_image.png'
+  /// - 'image/webp' -> 'vehicle_image.webp'
+  /// - null or invalid -> defaults to 'vehicle_image.jpg'
+  static http.MultipartFile _createImageMultipartFile(
+    Uint8List imageBytes,
+    String? mimeType,
+  ) {
+    // Default to JPEG if no MIME type provided
+    final resolvedMimeType = mimeType ?? 'image/jpeg';
+    final mimeTypeParts = resolvedMimeType.split('/');
+
+    // Extract file extension from MIME type (e.g., "image/jpeg" -> "jpg")
+    String extension = 'jpg';
+    if (mimeTypeParts.length > 1) {
+      extension = mimeTypeParts[1].toLowerCase();
+      // Handle special cases
+      if (extension == 'jpeg') extension = 'jpg';
+    }
+
+    final contentType = MediaType(
+      mimeTypeParts[0],
+      mimeTypeParts.length > 1 ? mimeTypeParts[1] : 'jpeg',
+    );
+
+    return http.MultipartFile.fromBytes(
+      'image', // Field name expected by backend
+      imageBytes,
+      filename: 'vehicle_image.$extension',
+      contentType: contentType,
+    );
+  }
+
   Future<Map<String, dynamic>> addVehicle(
     Map<String, dynamic> vehicleData, {
     Uint8List? imageBytes,
@@ -27,21 +63,8 @@ class VehicleServices {
           fields[key] = value.toString();
         });
 
-        // Parse MIME type (e.g., "image/jpeg" -> type: "image", subtype: "jpeg")
-        final mimeType = imageMimeType ?? 'image/jpeg';
-        final mimeTypeParts = mimeType.split('/');
-        final contentType = MediaType(
-          mimeTypeParts[0],
-          mimeTypeParts.length > 1 ? mimeTypeParts[1] : 'jpeg',
-        );
-
-        // Create multipart file from image bytes with proper content type
-        final multipartFile = http.MultipartFile.fromBytes(
-          'image', // Field name expected by backend
-          imageBytes,
-          filename: 'vehicle_image.jpg',
-          contentType: contentType,
-        );
+        // Create multipart file from image bytes
+        final multipartFile = _createImageMultipartFile(imageBytes, imageMimeType);
 
         response = await apiClient.postMultipart('/user/vehicles', fields, [
           multipartFile,
@@ -135,19 +158,42 @@ class VehicleServices {
 
   Future<void> updateVehicle(
     int vehicleId,
-    Map<String, Object> vehicleFields,
-  ) async {
+    Map<String, Object> vehicleFields, {
+    Uint8List? imageBytes,
+    String? imageMimeType,
+  }) async {
     try {
-      final Map<String, dynamic> payload = Map.fromEntries(
-        vehicleFields.entries.map((e) {
-          return MapEntry(e.key, e.value);
-        }),
-      );
+      http.Response response;
 
-      http.Response response = await apiClient.patch(
-        '/user/vehicles/$vehicleId',
-        payload,
-      );
+      // If image is provided, use multipart/form-data
+      if (imageBytes != null) {
+        // Convert all fields to String for multipart request
+        final fields = <String, String>{};
+        vehicleFields.forEach((key, value) {
+          fields[key] = value.toString();
+        });
+
+        // Create multipart file from image bytes
+        final multipartFile = _createImageMultipartFile(imageBytes, imageMimeType);
+
+        response = await apiClient.patchMultipart(
+          '/user/vehicles/$vehicleId',
+          fields,
+          [multipartFile],
+        );
+      } else {
+        // If no image, send as JSON (same as before)
+        final Map<String, dynamic> payload = Map.fromEntries(
+          vehicleFields.entries.map((e) {
+            return MapEntry(e.key, e.value);
+          }),
+        );
+
+        response = await apiClient.patch(
+          '/user/vehicles/$vehicleId',
+          payload,
+        );
+      }
 
       if (response.statusCode == HttpStatus.notFound) {
         final errorMessage = extractErrorMessage(response.body);
