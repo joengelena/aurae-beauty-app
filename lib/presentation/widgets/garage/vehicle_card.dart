@@ -13,29 +13,33 @@ class VehicleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16.0),
-      elevation: AppConstants.cardShadowElevation,
-      child: Stack(
-        children: [
+    return GestureDetector(
+      onTap: () => context.go('/garage/${vehicle.id}'),
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 16.0),
+        elevation: AppConstants.cardShadowElevation,
+        child: Stack(
+          children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  padding: const EdgeInsets.fromLTRB(8.0, 8.0, 48.0, 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         '${vehicle.year} ${vehicle.make} ${vehicle.model}',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       if (vehicle.licensePlate != null) ...[
-                        const SizedBox(width: 8),
+                        const SizedBox(height: 4),
                         Text(
                           vehicle.licensePlate!,
                           style: Theme.of(context).textTheme.bodyMedium
@@ -144,6 +148,7 @@ class VehicleCard extends StatelessWidget {
           if (topRightButton != null)
             Positioned(top: 4, right: 4, child: topRightButton!),
         ],
+        ),
       ),
     );
   }

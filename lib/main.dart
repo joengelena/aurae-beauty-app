@@ -10,6 +10,7 @@ import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/logic/profile_provider.dart';
 import 'package:motorix_app/logic/user_listings_provider.dart';
 import 'package:motorix_app/logic/listing_form_data_provider.dart';
+import 'package:motorix_app/logic/vehicle_detail_provider.dart';
 import 'package:motorix_app/logic/watchlist_provider.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -62,6 +63,9 @@ void main() {
         ),
         ChangeNotifierProvider<ListingDetailProvider>(
           create: (_) => ListingDetailProvider(),
+        ),
+        ChangeNotifierProvider<VehicleDetailProvider>(
+          create: (_) => VehicleDetailProvider(),
         ),
       ],
       child: MyApp(),

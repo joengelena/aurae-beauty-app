@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
+import 'package:motorix_app/logic/vehicle_detail_provider.dart';
 import 'package:motorix_app/presentation/pages/edit_listing_page.dart';
 import 'package:motorix_app/presentation/pages/post_listing_page.dart';
 import 'package:motorix_app/presentation/pages/profile/change_password_page.dart';
@@ -19,6 +20,7 @@ import 'package:motorix_app/presentation/pages/garage_page.dart';
 import 'package:motorix_app/presentation/pages/add_vehicle_page.dart';
 import 'package:motorix_app/presentation/pages/edit_vehicle_page.dart';
 import 'package:motorix_app/presentation/pages/add_service_page.dart';
+import 'package:motorix_app/presentation/pages/vehicle_detail_page.dart';
 import 'package:motorix_app/presentation/widgets/scaffold/app_scaffold.dart';
 import 'package:provider/provider.dart';
 
@@ -118,24 +120,45 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                 },
               ),
               GoRoute(
-                path: ':vehicleId/edit',
+                path: ':vehicleId',
                 pageBuilder: (context, state) {
-                  final vehicleId = state.pathParameters['vehicleId']!;
+                  final vehicleId = state.pathParameters['vehicleId'];
+                  if (vehicleId == null) {
+                    return NoTransitionPage(child: Text('Not Found'));
+                  }
+
+                  final vehicleDetailProvider =
+                      context.read<VehicleDetailProvider>();
+
+                  vehicleDetailProvider.clearVehicle();
+
                   return NoTransitionPage(
-                    child: EditVehiclePage(vehicleId: vehicleId),
+                    child: VehicleDetailPage(vehicleId: vehicleId),
                   );
                 },
-              ),
-              GoRoute(
-                path: ':vehicleId/add-service',
-                pageBuilder: (context, state) {
-                  final vehicleId = int.parse(
+                routes: [
+                  GoRoute(
+                    path: 'edit',
+                    pageBuilder: (context, state) {
+                      final vehicleId = state.pathParameters['vehicleId']!;
+                      return NoTransitionPage(
+                        child: EditVehiclePage(vehicleId: vehicleId),
+                      );
+                    },
+                  ),
+                  GoRoute(
+                    path: 'add-service',
+                    pageBuilder: (context, state) {
+                      final vehicleId =
+                          int.parse(
                     state.pathParameters['vehicleId']!,
                   );
-                  return NoTransitionPage(
-                    child: AddServicePage(vehicleId: vehicleId),
-                  );
-                },
+                      return NoTransitionPage(
+                        child: AddServicePage(vehicleId: vehicleId),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
