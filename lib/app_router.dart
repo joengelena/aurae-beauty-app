@@ -64,7 +64,8 @@ GoRouter getAppRouter(AuthProvider authProvider) {
               GoRoute(
                 path: 'post',
                 pageBuilder:
-                    (context, state) => NoTransitionPage(child: PostListingPage()),
+                    (context, state) =>
+                        NoTransitionPage(child: PostListingPage()),
               ),
               GoRoute(
                 path: ':listingId',
@@ -127,11 +128,6 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                     return NoTransitionPage(child: Text('Not Found'));
                   }
 
-                  final vehicleDetailProvider =
-                      context.read<VehicleDetailProvider>();
-
-                  vehicleDetailProvider.clearVehicle();
-
                   return NoTransitionPage(
                     child: VehicleDetailPage(vehicleId: vehicleId),
                   );
@@ -149,10 +145,9 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                   GoRoute(
                     path: 'add-service',
                     pageBuilder: (context, state) {
-                      final vehicleId =
-                          int.parse(
-                    state.pathParameters['vehicleId']!,
-                  );
+                      final vehicleId = int.parse(
+                        state.pathParameters['vehicleId']!,
+                      );
                       return NoTransitionPage(
                         child: AddServicePage(vehicleId: vehicleId),
                       );

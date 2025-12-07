@@ -21,9 +21,10 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<VehicleDetailProvider>().getVehicle(
-            int.parse(widget.vehicleId),
-          );
+      final provider = context.read<VehicleDetailProvider>();
+      // Clear any previous vehicle data before loading new one
+      provider.clearVehicle();
+      provider.getVehicle(int.parse(widget.vehicleId));
     });
   }
 
