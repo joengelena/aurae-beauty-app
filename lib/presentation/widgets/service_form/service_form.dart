@@ -159,7 +159,6 @@ class _ServiceFormState extends State<ServiceForm> {
                 DecimalFormField<ServiceFormProvider>(
                   labelText: 'Cost',
                   fieldName: 'cost',
-                  prefixText: '\$',
                   prefixIcon: Icons.attach_money,
                   hintText: '0.00',
                   min: 0,
