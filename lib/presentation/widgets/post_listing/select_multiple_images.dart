@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:motorix_app/logic/listing_form_data_provider.dart';
 import 'package:motorix_app/utils/constants.dart';
 import 'package:provider/provider.dart';
 
@@ -11,7 +11,7 @@ class SelectMultipleImages extends StatefulWidget {
 }
 
 class _SelectMultipleImagesState extends State<SelectMultipleImages> {
-  Future<void> _handlePickImage(PostListingProvider provider) async {
+  Future<void> _handlePickImage(ListingFormDataProvider provider) async {
     // Capture context values before async operation
     final messenger = ScaffoldMessenger.of(context);
     final errorColor = Theme.of(context).colorScheme.error;
@@ -32,7 +32,7 @@ class _SelectMultipleImagesState extends State<SelectMultipleImages> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<PostListingProvider>();
+    final provider = context.watch<ListingFormDataProvider>();
 
     return Column(
       spacing: 12,

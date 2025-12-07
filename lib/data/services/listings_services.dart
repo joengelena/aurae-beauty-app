@@ -176,19 +176,40 @@ class ListingsServices {
 
   Future<void> patchListing(
     int listingId,
-    Map<String, Object> listingFields,
-  ) async {
+    Map<String, Object> listingFields, {
+    List<http.MultipartFile>? images,
+  }) async {
     try {
-      final Map<String, dynamic> payload = Map.fromEntries(
-        listingFields.entries.map((e) {
-          return MapEntry(e.key, e.value);
-        }),
-      );
+      http.Response response;
 
-      http.Response response = await apiClient.patch(
-        '/listings/$listingId',
-        payload,
-      );
+      // If images are provided, use multipart/form-data
+      if (images != null && images.isNotEmpty) {
+        final Map<String, String> payload = Map.fromEntries(
+          listingFields.entries
+              .where((e) => e.value.toString().isNotEmpty)
+              .map((e) {
+            return MapEntry(e.key, e.value.toString());
+          }),
+        );
+
+        response = await apiClient.patchMultipart(
+          '/listings/$listingId',
+          payload,
+          images,
+        );
+      } else {
+        // If no images, send as JSON (same as before)
+        final Map<String, dynamic> payload = Map.fromEntries(
+          listingFields.entries.map((e) {
+            return MapEntry(e.key, e.value);
+          }),
+        );
+
+        response = await apiClient.patch(
+          '/listings/$listingId',
+          payload,
+        );
+      }
 
       if (response.statusCode == HttpStatus.notFound) {
         final errorMessage = extractErrorMessage(response.body);

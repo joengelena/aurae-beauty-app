@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 import 'package:motorix_app/logic/listing_form_data_provider.dart';
+import 'package:motorix_app/logic/listing_image_picker_mixin.dart';
 
 class EditListingProvider extends ChangeNotifier
+    with ListingImagePickerMixin
     implements ListingFormDataProvider {
   EditListingProvider(this.listing) {
     _loadAttributes();
     _initializeData();
+    _loadExistingImages();
   }
 
   final Listing listing;
@@ -20,6 +24,9 @@ class EditListingProvider extends ChangeNotifier
   @override
   List<ListingAttribute> listingAttributeOptions = [];
   final Map<String, Object> editListingData = {};
+
+  // Track if user has changed images
+  bool _imagesChanged = false;
 
   @override
   Map<String, Object> get formData => editListingData;
@@ -103,10 +110,35 @@ class EditListingProvider extends ChangeNotifier
     }
   }
 
+  /// Loads existing listing images from URLs for preview
+  Future<void> _loadExistingImages() async {
+    final imageUrls = listing.imageUrls.cast<String>();
+    await loadImagesFromUrls(imageUrls);
+    _imagesChanged = false; // Images loaded from server, not changed by user
+    notifyListeners();
+  }
+
+  @override
+  Future<String?> pickImage() async {
+    final error = await super.pickImage();
+    _imagesChanged = true; // User is adding images
+    notifyListeners();
+    return error;
+  }
+
+  @override
+  void removeImage(int index) {
+    super.removeImage(index);
+    _imagesChanged = true; // User is modifying images
+    notifyListeners();
+  }
+
   void resetProvider() {
     isLoading = false;
     successfulUpdate = false;
     errorMessage = '';
+    clearImages();
+    _imagesChanged = false;
     _initializeData(); // Reset to original listing data
   }
 
@@ -119,7 +151,18 @@ class EditListingProvider extends ChangeNotifier
     try {
       editListingData['currentUserId'] = userId;
 
-      await ListingsServices().patchListing(listing.id, editListingData);
+      // Build image files if images were changed
+      List<http.MultipartFile>? images;
+      if (_imagesChanged && imageBytesList.isNotEmpty) {
+        images = await buildMultipartFiles();
+      }
+
+      // Call API with optional images
+      await ListingsServices().patchListing(
+        listing.id,
+        editListingData,
+        images: images,
+      );
 
       successfulUpdate = true;
     } catch (e) {
