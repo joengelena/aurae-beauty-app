@@ -18,6 +18,7 @@ class ListingsPage extends StatelessWidget {
           bottom: 16,
           child: FloatingActionButton(
             onPressed: () => context.go('/listings/post'),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
             child: Icon(Icons.add),
           ),
         ),
