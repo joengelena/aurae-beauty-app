@@ -15,17 +15,6 @@ class WatchlistPage extends StatefulWidget {
 
 class _WatchlistPageState extends State<WatchlistPage> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final authProvider = context.read<AuthProvider>();
-      if (authProvider.isSignedIn) {
-        context.read<WatchlistProvider>().fetchWatchlist();
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
 
@@ -114,7 +103,9 @@ class _WatchlistPageState extends State<WatchlistPage> {
                   } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Failed to remove from watchlist')),
+                        SnackBar(
+                          content: Text('Failed to remove from watchlist'),
+                        ),
                       );
                     }
                   }
