@@ -80,41 +80,44 @@ class _WatchlistPageState extends State<WatchlistPage> {
     return Center(
       child: Container(
         constraints: BoxConstraints(maxWidth: 600),
-        child: ListView.builder(
-          itemCount: watchlistProvider.watchlist.length + 1,
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return SizedBox(height: 12);
-            }
+        child: RefreshIndicator(
+          onRefresh: () => watchlistProvider.fetchWatchlist(),
+          child: ListView.builder(
+            itemCount: watchlistProvider.watchlist.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return SizedBox(height: 12);
+              }
 
-            final listing = watchlistProvider.watchlist[index - 1];
+              final listing = watchlistProvider.watchlist[index - 1];
 
-            return ListingTile(
-              listing: listing,
-              topRightButton: IconButton(
-                onPressed: () async {
-                  try {
-                    await watchlistProvider.removeFromWatchlist(listing.id);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Removed from watchlist')),
-                      );
+              return ListingTile(
+                listing: listing,
+                topRightButton: IconButton(
+                  onPressed: () async {
+                    try {
+                      await watchlistProvider.removeFromWatchlist(listing.id);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Removed from watchlist')),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Failed to remove from watchlist'),
+                          ),
+                        );
+                      }
                     }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Failed to remove from watchlist'),
-                        ),
-                      );
-                    }
-                  }
-                },
-                icon: const Icon(Icons.bookmark),
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            );
-          },
+                  },
+                  icon: const Icon(Icons.bookmark),
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
