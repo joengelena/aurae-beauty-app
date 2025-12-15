@@ -54,10 +54,26 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
 
     // Key specs for grid display
     final keySpecs = [
-      {'icon': Icons.speed, 'label': 'Kilometers', 'value': formatKilometers(listing.kilometers)},
-      {'icon': Icons.local_gas_station, 'label': 'Fuel Type', 'value': listing.fuelType},
-      {'icon': Icons.directions_car, 'label': 'Body Type', 'value': listing.bodyType},
-      {'icon': Icons.settings, 'label': 'Drive Type', 'value': listing.driveType},
+      {
+        'icon': Icons.speed,
+        'label': 'Kilometers',
+        'value': formatKilometers(listing.kilometers),
+      },
+      {
+        'icon': Icons.local_gas_station,
+        'label': 'Fuel Type',
+        'value': listing.fuelType,
+      },
+      {
+        'icon': Icons.directions_car,
+        'label': 'Body Type',
+        'value': listing.bodyType,
+      },
+      {
+        'icon': Icons.settings,
+        'label': 'Drive Type',
+        'value': listing.driveType,
+      },
     ];
 
     // Vehicle details
@@ -66,7 +82,8 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
       'Doors': listing.doors,
       'Seats': listing.seats,
       'Color': listing.color,
-      'Engine Size': listing.engineSize != null ? '${listing.engineSize} cc' : null,
+      'Engine Size':
+          listing.engineSize != null ? '${listing.engineSize} cc' : null,
       'Cylinders': listing.cylinders,
       'Previous Owners': listing.previousOwners,
       'Vehicle Condition': listing.vehicleCondition,
@@ -75,9 +92,18 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
 
     // Documentation
     final documentation = {
-      'Rego Expiry': listing.regoExpiryDate != null ? formatDate(listing.regoExpiryDate!) : null,
-      'WOF Expiry': listing.wofExpiryDate != null ? formatDate(listing.wofExpiryDate!) : null,
-      'ORC Included': listing.orcIncluded == 1 ? 'Yes' : (listing.orcIncluded == 0 ? 'No' : null),
+      'Rego Expiry':
+          listing.regoExpiryDate != null
+              ? formatDate(listing.regoExpiryDate!)
+              : null,
+      'WOF Expiry':
+          listing.wofExpiryDate != null
+              ? formatDate(listing.wofExpiryDate!)
+              : null,
+      'ORC Included':
+          listing.orcIncluded == 1
+              ? 'Yes'
+              : (listing.orcIncluded == 0 ? 'No' : null),
       'Listing Ends': formatDate(listing.endDate),
     };
 
@@ -107,23 +133,13 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                     children: [
                       Text(
                         '${_formatListingAge(listing.uploadDate)} | ',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.black54),
                       ),
-                      Icon(
-                        Icons.location_on,
-                        size: 16,
-                        color: Colors.black54,
-                      ),
+                      Icon(Icons.location_on, size: 16, color: Colors.black54),
                       SizedBox(width: 4),
                       Text(
                         listing.location,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.black54),
                       ),
                     ],
                   ),
@@ -186,14 +202,18 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
               // Key Specs Grid
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
-                child: GridView.count(
+                child: GridView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 2.5,
-                  children: keySpecs.map((spec) {
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    mainAxisExtent: 60,
+                  ),
+                  itemCount: keySpecs.length,
+                  itemBuilder: (context, index) {
+                    final spec = keySpecs[index];
                     return Container(
                       padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -234,7 +254,7 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                         ],
                       ),
                     );
-                  }).toList(),
+                  },
                 ),
               ),
 
