@@ -1,20 +1,26 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/app_dialog.dart';
 import 'package:motorix_app/presentation/widgets/common/password_field.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
+import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   final String? accessToken;
   final String? resetType;
+  final String? error;
+  final String? errorCode;
+  final String? errorDescription;
 
   const ResetPasswordPage({
     super.key,
     this.accessToken,
     this.resetType,
+    this.error,
+    this.errorCode,
+    this.errorDescription,
   });
 
   @override
@@ -46,14 +52,27 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   Future<void> _processAccessToken() async {
     try {
+      // Check if Supabase returned an error
+      if (widget.error != null) {
+        if (mounted) {
+          setState(() {
+            hasValidToken = false;
+            isExtractingToken = false;
+          });
+          _showResetLinkErrorDialog(title: 'Reset Link Error');
+        }
+        return;
+      }
+
       final accessToken = widget.accessToken;
 
       if (accessToken != null && accessToken.isNotEmpty) {
-        // Extract user ID from JWT
-        final userId = _extractUserIdFromJWT(accessToken);
+        // Extract user ID from JWT using utility function
+        final userId = extractUserIdFromJWT(accessToken);
 
-        // Store temporarily for the password reset request
-        await SecureStorage.write('accessToken', 'Bearer $accessToken');
+        // Store temporarily for the password reset request (without 'Bearer ' prefix)
+        // ApiClient will add the 'Bearer ' prefix when making the request
+        await SecureStorage.write('accessToken', accessToken);
         if (userId != null) {
           await SecureStorage.write('userId', userId);
         }
@@ -71,7 +90,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             hasValidToken = false;
             isExtractingToken = false;
           });
-          _showInvalidLinkDialog();
+          _showResetLinkErrorDialog(
+            title: 'Invalid Link',
+            customMessage:
+                'This password reset link is invalid or has expired. '
+                'Please request a new one.',
+          );
         }
       }
     } catch (e) {
@@ -81,45 +105,36 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           hasValidToken = false;
           isExtractingToken = false;
         });
-        _showInvalidLinkDialog();
+        _showResetLinkErrorDialog(
+          title: 'Invalid Link',
+          customMessage:
+              'This password reset link is invalid or has expired. '
+              'Please request a new one.',
+        );
       }
     }
   }
 
-  String? _extractUserIdFromJWT(String token) {
-    try {
-      // JWT is formatted as: header.payload.signature
-      final parts = token.split('.');
-      if (parts.length != 3) return null;
+  void _showResetLinkErrorDialog({
+    required String title,
+    String? customMessage,
+  }) {
+    String errorMessage = customMessage ??
+        (widget.errorDescription?.replaceAll('+', ' ') ??
+        'The password reset link is invalid or has expired.');
 
-      // Decode the payload (second part)
-      String payload = parts[1];
-
-      // Normalize base64 padding
-      switch (payload.length % 4) {
-        case 2:
-          payload += '==';
-          break;
-        case 3:
-          payload += '=';
-          break;
-      }
-
-      final decoded = utf8.decode(base64.decode(payload));
-      final Map<String, dynamic> payloadMap = json.decode(decoded);
-      return payloadMap['sub'] as String?;
-    } catch (e) {
-      return null;
+    // Provide user-friendly messages for known error codes
+    if (widget.errorCode == 'otp_expired') {
+      errorMessage =
+          'This password reset link has expired. Password reset links are '
+          'valid for 1 hour. Please request a new one.';
     }
-  }
 
-  void _showInvalidLinkDialog() {
     AppDialog.showError(
       context: context,
-      title: 'Invalid Link',
-      message:
-          'This password reset link is invalid or has expired. Please request a new one.',
-      buttonText: 'OK',
+      title: title,
+      message: errorMessage,
+      buttonText: 'Request New Link',
       barrierDismissible: false,
       onButtonPressed: () {
         Navigator.of(context, rootNavigator: true).pop();

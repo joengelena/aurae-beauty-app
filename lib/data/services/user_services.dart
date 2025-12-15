@@ -196,7 +196,7 @@ class UserServices {
 
   Future<String> resetPassword(String newPassword) async {
     try {
-      http.Response response = await apiClient.post('/user/change-password', {
+      http.Response response = await apiClient.post('/user/reset-password', {
         'newPassword': newPassword,
       }, forceAuthHeader: true);
 

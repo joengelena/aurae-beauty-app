@@ -31,4 +31,33 @@ String extractErrorMessage(String responseBody) {
   }
 }
 
+/// Extracts user ID from a JWT token
+/// Returns the 'sub' claim from the token payload, or null if extraction fails
+String? extractUserIdFromJWT(String token) {
+  try {
+    // JWT is formatted as: header.payload.signature
+    final parts = token.split('.');
+    if (parts.length != 3) return null;
+
+    // Decode the payload (second part)
+    String payload = parts[1];
+
+    // Normalize base64 padding
+    switch (payload.length % 4) {
+      case 2:
+        payload += '==';
+        break;
+      case 3:
+        payload += '=';
+        break;
+    }
+
+    final decoded = utf8.decode(base64.decode(payload));
+    final Map<String, dynamic> payloadMap = json.decode(decoded);
+    return payloadMap['sub'] as String?;
+  } catch (e) {
+    return null;
+  }
+}
+
 final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');

@@ -183,15 +183,21 @@ GoRouter getAppRouter(AuthProvider authProvider) {
               GoRoute(
                 path: 'reset-password',
                 pageBuilder: (context, state) {
-                  // Extract token from Supabase redirect URL
-                  // Supabase sends: #access_token=...&type=recovery
-                  final accessToken = state.uri.queryParameters['access_token'];
-                  final type = state.uri.queryParameters['type'];
+                  // Extract parameters from Supabase redirect URL
+                  // Supabase sends: #access_token=...&expires_at=...&type=recovery
+                  // GoRouter parses the URL, so fragment contains the parameters
+                  final fragment = state.uri.fragment;
+                  final params = fragment.isNotEmpty
+                      ? Uri.splitQueryString(fragment)
+                      : <String, String>{};
 
                   return NoTransitionPage(
                     child: ResetPasswordPage(
-                      accessToken: accessToken,
-                      resetType: type,
+                      accessToken: params['access_token'],
+                      resetType: params['type'],
+                      error: params['error'],
+                      errorCode: params['error_code'],
+                      errorDescription: params['error_description'],
                     ),
                   );
                 },
