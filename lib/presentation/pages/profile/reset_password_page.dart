@@ -6,15 +6,16 @@ import 'package:motorix_app/presentation/widgets/common/app_dialog.dart';
 import 'package:motorix_app/presentation/widgets/common/password_field.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-
-// Conditional import for web-only JavaScript interop
-import 'dart:js_interop' if (dart.library.js_interop) 'dart:js_interop';
-import 'dart:js_interop_unsafe'
-    if (dart.library.js_interop_unsafe) 'dart:js_interop_unsafe';
 
 class ResetPasswordPage extends StatefulWidget {
-  const ResetPasswordPage({super.key});
+  final String? accessToken;
+  final String? resetType;
+
+  const ResetPasswordPage({
+    super.key,
+    this.accessToken,
+    this.resetType,
+  });
 
   @override
   State<ResetPasswordPage> createState() => _ResetPasswordPageState();
@@ -34,51 +35,23 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     passwordController.addListener(_validateForm);
     confirmPasswordController.addListener(_validateForm);
 
-    // Extract and store access token from URL
+    // Process the access token passed from router
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _extractAndStoreAccessToken();
+      _processAccessToken();
       if (mounted) {
         context.read<AuthProvider>().addListener(_onAuthStateChanged);
       }
     });
   }
 
-  Future<void> _extractAndStoreAccessToken() async {
+  Future<void> _processAccessToken() async {
     try {
-      String? accessToken;
-      String? userId;
+      final accessToken = widget.accessToken;
 
-      if (kIsWeb) {
-        // Extract from URL hash for web using JavaScript interop
-        try {
-          // Get the hash directly from JavaScript window.location
-          final hash = _getLocationHash();
+      if (accessToken != null && accessToken.isNotEmpty) {
+        // Extract user ID from JWT
+        final userId = _extractUserIdFromJWT(accessToken);
 
-          // Remove the first # character
-          final cleanHash = hash.startsWith('#') ? hash.substring(1) : hash;
-
-          // Flutter web uses hash routing, so the hash contains both:
-          // #/profile/reset-password#access_token=...
-          // We need to find the second # and extract everything after it
-          final secondHashIndex = cleanHash.indexOf('#');
-
-          if (secondHashIndex != -1) {
-            // Extract the token parameters (everything after the second #)
-            final tokenParams = cleanHash.substring(secondHashIndex + 1);
-
-            final params = Uri.splitQueryString(tokenParams);
-            accessToken = params['access_token'];
-
-            if (accessToken != null) {
-              userId = _extractUserIdFromJWT(accessToken);
-            }
-          }
-        } catch (e) {
-          // Silently handle URL extraction errors
-        }
-      }
-
-      if (accessToken != null) {
         // Store temporarily for the password reset request
         await SecureStorage.write('accessToken', 'Bearer $accessToken');
         if (userId != null) {
@@ -102,8 +75,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         }
       }
     } catch (e) {
-      // Silently handle access token extraction errors
-
+      // Handle token processing errors
       if (mounted) {
         setState(() {
           hasValidToken = false;
@@ -139,15 +111,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     } catch (e) {
       return null;
     }
-  }
-
-  // Helper method for JavaScript interop (web only)
-  String _getLocationHash() {
-    if (!kIsWeb) return '';
-    final window = globalContext;
-    final location = window['location'] as JSObject;
-    final hash = location['hash'];
-    return (hash as JSString?)?.toDart ?? '';
   }
 
   void _showInvalidLinkDialog() {
