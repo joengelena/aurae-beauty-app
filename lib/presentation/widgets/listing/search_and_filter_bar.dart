@@ -28,12 +28,14 @@ class _SearchAndFiltersBarState extends State<SearchAndFiltersBar> {
             onSubmitted: (value) {
               listingProvider.getNewListings();
             },
+            style: TextStyle(fontSize: 14),
             decoration: InputDecoration(
               hintText: "What's your next ride?",
-              prefixIcon: Icon(Icons.search),
+              prefixIcon: Icon(Icons.search, size: 20),
               filled: true,
               fillColor: Colors.grey.shade200,
-              contentPadding: EdgeInsets.symmetric(vertical: 12),
+              contentPadding: EdgeInsets.symmetric(vertical: 0),
+              isDense: true,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(30),
                 borderSide: BorderSide.none,
