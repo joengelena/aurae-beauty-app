@@ -75,7 +75,8 @@ class FilterBar extends StatelessWidget {
       builder: (BuildContext modalContext) {
         final filteringProvider = modalContext.watch<FilteringProvider>();
         final listingsProvider = modalContext.read<ListingsProvider>();
-        final listingAttributeOptions = filteringProvider.listingAttributeOptions;
+        final listingAttributeOptions =
+            filteringProvider.listingAttributeOptions;
         final selectedEqualFilters = filteringProvider.selectedEqualFilters;
 
         return Padding(
@@ -111,11 +112,15 @@ class FilterBar extends StatelessWidget {
                                   flex: 3,
                                   child: DecoratedBox(
                                     decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.grey.shade300),
+                                      border: Border.all(
+                                        color: Colors.grey.shade300,
+                                      ),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 12),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                      ),
                                       child: DropdownButtonHideUnderline(
                                         child: DropdownButton<String>(
                                           value:
@@ -123,20 +128,23 @@ class FilterBar extends StatelessWidget {
                                                   .name],
                                           isExpanded: true,
                                           items:
-                                              attributeOption.attributeValues.map((
-                                                val,
-                                              ) {
-                                                return DropdownMenuItem<String>(
-                                                  value: val,
-                                                  child: Text(val),
-                                                );
-                                              }).toList(),
+                                              attributeOption.attributeValues
+                                                  .map((val) {
+                                                    return DropdownMenuItem<
+                                                      String
+                                                    >(
+                                                      value: val,
+                                                      child: Text(val),
+                                                    );
+                                                  })
+                                                  .toList(),
                                           onChanged: (newVal) {
                                             if (newVal != null) {
-                                              filteringProvider.updateEqualFilter(
-                                                attributeOption.name,
-                                                newVal,
-                                              );
+                                              filteringProvider
+                                                  .updateEqualFilter(
+                                                    attributeOption.name,
+                                                    newVal,
+                                                  );
                                             }
                                           },
                                         ),
@@ -190,8 +198,7 @@ class FilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Show badges based on APPLIED filters, not pending selections
-    final appliedFilters =
-        context.watch<ListingsProvider>().equalFilters;
+    final appliedFilters = context.watch<ListingsProvider>().equalFilters;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,

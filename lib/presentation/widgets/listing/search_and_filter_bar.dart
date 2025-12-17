@@ -17,7 +17,7 @@ class _SearchAndFiltersBarState extends State<SearchAndFiltersBar> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 12,
+      spacing: 8,
       children: [
         // Search Bar
         Padding(
@@ -46,17 +46,19 @@ class _SearchAndFiltersBarState extends State<SearchAndFiltersBar> {
 
         // Listings Count & Sort Dropdown
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 "${listingProvider.totalListings} listings",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
               ),
               DropdownButton<String>(
                 value: listingProvider.sortBy.toString(),
                 underline: SizedBox(),
+                isDense: true,
+                style: TextStyle(fontSize: 12, color: Colors.black),
                 items:
                     listingProvider.sortByOptions.entries
                         .map<DropdownMenuItem<String>>((entry) {
