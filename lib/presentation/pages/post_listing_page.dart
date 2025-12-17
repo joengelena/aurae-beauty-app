@@ -11,13 +11,14 @@ class PostListingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<PostListingProvider>();
+    final postListingProvider = context.watch<PostListingProvider>();
     final authProvider = context.watch<AuthProvider>();
 
     if (!authProvider.isSignedIn) {
       return SignInToAccess(message: 'Ready to post your listing?');
     }
-    if (provider.successfulPost) {
+    if (postListingProvider.successfulPost) {
+      postListingProvider.resetProvider();
       return PostSuccess();
     }
 
