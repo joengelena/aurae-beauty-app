@@ -30,11 +30,13 @@ class AppNavigation extends StatelessWidget {
             child: Theme(
               data: Theme.of(context).copyWith(
                 navigationBarTheme: NavigationBarThemeData(
+                  height: 60,
                   indicatorColor:
                       isProfilePage ? Colors.transparent : Colors.grey.shade400,
                   iconTheme: WidgetStateProperty.resolveWith((states) {
                     final isSelected = states.contains(WidgetState.selected);
                     return IconThemeData(
+                      size: 24,
                       color:
                           isSelected && !isProfilePage
                               ? Theme.of(
@@ -71,7 +73,6 @@ class AppNavigation extends StatelessWidget {
                 },
                 selectedIndex: _calculateIndex(uri),
                 backgroundColor: Colors.white,
-                height: 70,
                 destinations: const [
                   NavigationDestination(
                     icon: Icon(Icons.search),
