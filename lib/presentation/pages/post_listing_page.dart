@@ -18,7 +18,6 @@ class PostListingPage extends StatelessWidget {
       return SignInToAccess(message: 'Ready to post your listing?');
     }
     if (postListingProvider.successfulPost) {
-      postListingProvider.resetProvider();
       return PostSuccess();
     }
 

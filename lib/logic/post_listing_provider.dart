@@ -72,7 +72,9 @@ class PostListingProvider extends ChangeNotifier
     isLoading = false;
     successfulPost = false;
     errorMessage = '';
+    postListingData.clear();
     clearImages();
+    notifyListeners();
   }
 
   Map<String, Object> _filterNoneValues() {
