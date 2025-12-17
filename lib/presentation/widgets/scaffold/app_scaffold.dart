@@ -11,10 +11,19 @@ class AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: TitleAppBar(currentRoute: state.uri.toString()),
-      body: child,
-      bottomNavigationBar: AppNavigation(state: state),
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside of text fields
+        final currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        appBar: TitleAppBar(currentRoute: state.uri.toString()),
+        body: child,
+        bottomNavigationBar: AppNavigation(state: state),
+      ),
     );
   }
 }
