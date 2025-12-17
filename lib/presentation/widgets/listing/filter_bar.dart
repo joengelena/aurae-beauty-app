@@ -4,7 +4,7 @@ import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:provider/provider.dart';
 
 class FilterBar extends StatelessWidget {
-  final Map<String, String> filterNames = {
+  static const _filterNames = {
     'make': 'Make',
     'location': 'Location',
     'vehicle_condition': 'Condition',
@@ -15,7 +15,7 @@ class FilterBar extends StatelessWidget {
     'cylinders': 'Cylinders',
   };
 
-  FilterBar({super.key});
+  const FilterBar({super.key});
 
   Widget selectedFilter(
     BuildContext context,
@@ -36,7 +36,7 @@ class FilterBar extends StatelessWidget {
         backgroundColor: WidgetStateProperty.all(
           Theme.of(context).colorScheme.secondary,
         ),
-        padding: WidgetStateProperty.all(
+        padding: const WidgetStatePropertyAll(
           EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         ),
       ),
@@ -44,8 +44,8 @@ class FilterBar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(filterValue),
-          SizedBox(width: 8),
-          Icon(Icons.close, size: 16),
+          const SizedBox(width: 8),
+          const Icon(Icons.close, size: 16),
         ],
       ),
     );
@@ -99,7 +99,7 @@ class FilterBar extends StatelessWidget {
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    filterNames[attributeOption.name] ??
+                                    _filterNames[attributeOption.name] ??
                                         attributeOption.name,
                                     style: TextStyle(
                                       fontSize: 16,
@@ -202,7 +202,7 @@ class FilterBar extends StatelessWidget {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         spacing: 8,
         children: [
@@ -222,10 +222,10 @@ class FilterBar extends StatelessWidget {
             ),
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: Theme.of(context).primaryColor),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8)),
               ),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             ),
           ),
           ...[

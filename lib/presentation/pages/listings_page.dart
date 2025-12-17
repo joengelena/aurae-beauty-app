@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/presentation/widgets/listing/infinite_grid.dart';
-import 'package:motorix_app/presentation/widgets/listing/search_and_filter_bar.dart';
+import 'package:motorix_app/presentation/widgets/listing/filters_and_sort_bar.dart';
 
 class ListingsPage extends StatelessWidget {
   const ListingsPage({super.key});
@@ -11,7 +11,10 @@ class ListingsPage extends StatelessWidget {
     return Stack(
       children: [
         Column(
-          children: [SearchAndFiltersBar(), Expanded(child: InfiniteGrid())],
+          children: [
+            const FiltersAndSortBar(),
+            const Expanded(child: InfiniteGrid()),
+          ],
         ),
         Positioned(
           right: 16,
@@ -19,7 +22,7 @@ class ListingsPage extends StatelessWidget {
           child: FloatingActionButton(
             onPressed: () => context.go('/listings/post'),
             backgroundColor: Theme.of(context).colorScheme.secondary,
-            child: Icon(Icons.add),
+            child: const Icon(Icons.add),
           ),
         ),
       ],

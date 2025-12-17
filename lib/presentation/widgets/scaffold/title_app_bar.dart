@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:motorix_app/logic/listings_provider.dart';
+import 'package:motorix_app/presentation/widgets/listing/listing_search_field.dart';
 import 'package:provider/provider.dart';
 
 class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? currentRoute;
+
+  static const _mainRoutes = [
+    '/listings',
+    '/watchlist',
+    '/garage',
+    '/profile',
+    '/profile/signup',
+    '/profile/signin',
+  ];
 
   const TitleAppBar({super.key, this.currentRoute});
 
@@ -35,17 +46,10 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider authProvider = context.watch<AuthProvider>();
-    final showBack =
-        ![
-          '/listings',
-          '/watchlist',
-          '/garage',
-          '/profile',
-          '/profile/signup',
-          '/profile/signin',
-        ].contains(currentRoute);
+    final authProvider = context.watch<AuthProvider>();
+    final showBack = !_mainRoutes.contains(currentRoute);
     final isProfilePage = currentRoute == '/profile';
+    final isListingsPage = currentRoute == '/listings';
 
     void onBack() {
       if (context.canPop()) {
@@ -61,47 +65,52 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       leading: showBack ? BackButton(onPressed: () => onBack()) : null,
-      title: Text('Motorix'),
-      centerTitle: true,
+      title: isListingsPage
+          ? Consumer<ListingsProvider>(
+              builder: (context, listingsProvider, child) {
+                return ListingSearchField(listingsProvider: listingsProvider);
+              },
+            )
+          : const Text('Motorix'),
+      centerTitle: !isListingsPage,
       scrolledUnderElevation: 0,
       actions: [
         if (isProfilePage)
           PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert),
+            icon: const Icon(Icons.more_vert),
             enabled: !authProvider.isLoading,
             onSelected: (value) {
               if (value == 'Sign out') {
                 _showSignOutDialog(context, authProvider);
               }
             },
-            itemBuilder:
-                (context) => [
-                  PopupMenuItem(
-                    value: 'Sign out',
-                    enabled: !authProvider.isLoading,
-                    child: Row(
-                      children: [
-                        const Icon(Icons.logout, size: 20),
-                        const SizedBox(width: 12),
-                        const Text('Sign out'),
-                        if (authProvider.isLoading) ...[
-                          const SizedBox(width: 8),
-                          const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'Sign out',
+                enabled: !authProvider.isLoading,
+                child: Row(
+                  children: [
+                    const Icon(Icons.logout, size: 20),
+                    const SizedBox(width: 12),
+                    const Text('Sign out'),
+                    if (authProvider.isLoading) ...[
+                      const SizedBox(width: 8),
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           )
         else
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: IconButton(
-              icon: Icon(Icons.person),
+              icon: const Icon(Icons.person),
               onPressed: () => context.go('/profile'),
             ),
           ),
