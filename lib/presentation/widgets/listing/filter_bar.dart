@@ -69,7 +69,8 @@ class FilterBar extends StatelessWidget {
 
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
+      useRootNavigator: true,
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext modalContext) {
