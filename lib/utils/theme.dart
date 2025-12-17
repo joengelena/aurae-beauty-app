@@ -14,27 +14,27 @@ final ThemeData appTheme = ThemeData(
   ),
   textTheme: const TextTheme(
     headlineLarge: TextStyle(
-      fontSize: 32,
-      fontWeight: FontWeight.bold,
-      color: Colors.black,
-    ),
-    headlineMedium: TextStyle(
       fontSize: 24,
       fontWeight: FontWeight.bold,
       color: Colors.black,
     ),
-    headlineSmall: TextStyle(
+    headlineMedium: TextStyle(
       fontSize: 20,
+      fontWeight: FontWeight.bold,
+      color: Colors.black,
+    ),
+    headlineSmall: TextStyle(
+      fontSize: 16,
       fontWeight: FontWeight.w600,
       color: Colors.black,
     ),
     bodyLarge: TextStyle(
-      fontSize: 18,
+      fontSize: 16,
       color: Colors.black87,
       fontWeight: FontWeight.w500,
     ),
-    bodyMedium: TextStyle(fontSize: 16, color: Colors.black87),
-    bodySmall: TextStyle(fontSize: 14, color: Colors.black87),
+    bodyMedium: TextStyle(fontSize: 14, color: Colors.black87),
+    bodySmall: TextStyle(fontSize: 12, color: Colors.black87),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(

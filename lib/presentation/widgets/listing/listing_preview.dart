@@ -35,7 +35,10 @@ class ListingPreview extends StatelessWidget {
                     width: width,
                     child: AspectRatio(
                       aspectRatio: AppConstants.listingImageAspectRatio,
-                      child: Image.network(listing.previewImgUrl, fit: BoxFit.cover),
+                      child: Image.network(
+                        listing.previewImgUrl,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
@@ -51,7 +54,9 @@ class ListingPreview extends StatelessWidget {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Please sign in or sign up to add listings to your watchlist'),
+                              content: Text(
+                                'Please sign in or sign up to add listings to your watchlist',
+                              ),
                               action: SnackBarAction(
                                 label: 'Sign In',
                                 onPressed: () {
@@ -64,15 +69,21 @@ class ListingPreview extends StatelessWidget {
                         return;
                       }
 
-                      final watchlistProvider = context.read<WatchlistProvider>();
+                      final watchlistProvider =
+                          context.read<WatchlistProvider>();
                       final listingsProvider = context.read<ListingsProvider>();
 
                       // Optimistically update UI
-                      listingsProvider.toggleWatchlistStatus(listing.id, !isInWatchlist);
+                      listingsProvider.toggleWatchlistStatus(
+                        listing.id,
+                        !isInWatchlist,
+                      );
 
                       try {
                         if (isInWatchlist) {
-                          await watchlistProvider.removeFromWatchlist(listing.id);
+                          await watchlistProvider.removeFromWatchlist(
+                            listing.id,
+                          );
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Removed from watchlist')),
@@ -88,7 +99,10 @@ class ListingPreview extends StatelessWidget {
                         }
                       } catch (e) {
                         // Revert on error
-                        listingsProvider.toggleWatchlistStatus(listing.id, isInWatchlist);
+                        listingsProvider.toggleWatchlistStatus(
+                          listing.id,
+                          isInWatchlist,
+                        );
 
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -102,13 +116,11 @@ class ListingPreview extends StatelessWidget {
                     child: Container(
                       padding: EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.7),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        isInWatchlist
-                            ? Icons.bookmark
-                            : Icons.bookmark_border,
+                        isInWatchlist ? Icons.bookmark : Icons.bookmark_border,
                         color: Theme.of(context).colorScheme.primary,
                         size: 24,
                       ),
