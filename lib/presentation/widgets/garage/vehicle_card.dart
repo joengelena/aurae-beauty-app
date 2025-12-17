@@ -20,134 +20,136 @@ class VehicleCard extends StatelessWidget {
         elevation: AppConstants.cardShadowElevation,
         child: Stack(
           children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 8.0, 48.0, 8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${vehicle.year} ${vehicle.make} ${vehicle.model}',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (vehicle.licensePlate != null) ...[
-                        const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          vehicle.licensePlate!,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: Colors.grey.shade600),
+                          '${vehicle.year} ${vehicle.make} ${vehicle.model}',
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                        if (vehicle.licensePlate != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            vehicle.licensePlate!,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.grey.shade600),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-                Row(
-                  children: [
-                    if (vehicle.vehiclePhotoUrl != null) ...[
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: SizedBox(
-                          width: 200,
-                          child: AspectRatio(
-                            aspectRatio: AppConstants.listingImageAspectRatio,
-                            child: Image.network(
-                              vehicle.vehiclePhotoUrl!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: Colors.grey[300],
-                                  child: const Icon(
-                                    Icons.broken_image,
-                                    color: Colors.grey,
-                                  ),
-                                );
-                              },
+                  Row(
+                    children: [
+                      if (vehicle.vehiclePhotoUrl != null) ...[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: SizedBox(
+                            width: 200,
+                            child: AspectRatio(
+                              aspectRatio: AppConstants.listingImageAspectRatio,
+                              child: Image.network(
+                                vehicle.vehiclePhotoUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.grey[300],
+                                    child: const Icon(
+                                      Icons.broken_image,
+                                      color: Colors.grey,
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                    ],
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildInfoItem(
-                            context,
-                            'Registration Ends',
-                            _formatDate(vehicle.regoExpiryDate),
-                            _isExpiringSoon(vehicle.regoExpiryDate),
-                          ),
-                          const SizedBox(height: 12),
-                          _buildInfoItem(
-                            context,
-                            'WOF Ends',
-                            _formatDate(vehicle.wofExpiryDate),
-                            _isExpiringSoon(vehicle.wofExpiryDate),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Row(
-                    children: [
+                        const SizedBox(width: 16),
+                      ],
                       Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => _showUpdateExpiryDialog(
-                            context,
-                            title: 'Update Registration',
-                            currentDate: vehicle.regoExpiryDate,
-                            fieldName: 'regoExpiryDate',
-                            successMessage: 'Registration expiry updated successfully',
-                          ),
-                          child: const Text('Update REGO'),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => _showUpdateExpiryDialog(
-                            context,
-                            title: 'Update WOF',
-                            currentDate: vehicle.wofExpiryDate,
-                            fieldName: 'wofExpiryDate',
-                            successMessage: 'WOF expiry updated successfully',
-                          ),
-                          child: const Text('Update WOF'),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildInfoItem(
+                              context,
+                              'Registration Ends',
+                              _formatDate(vehicle.regoExpiryDate),
+                              _isExpiringSoon(vehicle.regoExpiryDate),
+                            ),
+                            const SizedBox(height: 12),
+                            _buildInfoItem(
+                              context,
+                              'WOF Ends',
+                              _formatDate(vehicle.wofExpiryDate),
+                              _isExpiringSoon(vehicle.wofExpiryDate),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: () => _handleAddService(context),
-                      child: const Text('Add Service'),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed:
+                                () => _showUpdateExpiryDialog(
+                                  context,
+                                  title: 'Update Registration',
+                                  currentDate: vehicle.regoExpiryDate,
+                                  fieldName: 'regoExpiryDate',
+                                  successMessage:
+                                      'Registration expiry updated successfully',
+                                ),
+                            child: const Text('Update REGO'),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed:
+                                () => _showUpdateExpiryDialog(
+                                  context,
+                                  title: 'Update WOF',
+                                  currentDate: vehicle.wofExpiryDate,
+                                  fieldName: 'wofExpiryDate',
+                                  successMessage:
+                                      'WOF expiry updated successfully',
+                                ),
+                            child: const Text('Update WOF'),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: () => _handleAddService(context),
+                        child: const Text('Add Service'),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          if (topRightButton != null)
-            Positioned(top: 4, right: 4, child: topRightButton!),
-        ],
+            if (topRightButton != null)
+              Positioned(top: 4, right: 4, child: topRightButton!),
+          ],
         ),
       ),
     );
@@ -209,13 +211,14 @@ class VehicleCard extends StatelessWidget {
   }) {
     showDialog(
       context: context,
-      builder: (context) => UpdateExpiryDateDialog(
-        title: title,
-        currentDate: currentDate,
-        fieldName: fieldName,
-        vehicleId: vehicle.id,
-        successMessage: successMessage,
-      ),
+      builder:
+          (context) => UpdateExpiryDateDialog(
+            title: title,
+            currentDate: currentDate,
+            fieldName: fieldName,
+            vehicleId: vehicle.id,
+            successMessage: successMessage,
+          ),
     );
   }
 
