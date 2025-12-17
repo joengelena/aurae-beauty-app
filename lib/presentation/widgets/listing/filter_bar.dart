@@ -211,18 +211,21 @@ class FilterBar extends StatelessWidget {
             icon: Icon(
               Icons.tune,
               color: Theme.of(context).primaryColor,
-              size: 22,
+              size: 20,
             ),
             label: Text(
               'Filters',
-              style: TextStyle(color: Theme.of(context).primaryColor),
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 14,
+              ),
             ),
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: Theme.of(context).primaryColor),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             ),
           ),
           ...[
