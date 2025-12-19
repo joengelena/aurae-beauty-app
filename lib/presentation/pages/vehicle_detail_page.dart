@@ -67,24 +67,25 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
       {
         'icon': Icons.speed,
         'label': 'Odometer',
-        'value': vehicle.odometerReading != null
-            ? '${NumberFormat('#,###').format(vehicle.odometerReading!)} ${vehicle.odometerUnit}'
-            : 'Not recorded'
+        'value':
+            vehicle.odometerReading != null
+                ? '${NumberFormat('#,###').format(vehicle.odometerReading!)} ${vehicle.odometerUnit}'
+                : 'Not recorded',
       },
       {
         'icon': Icons.local_gas_station,
         'label': 'Fuel Type',
-        'value': vehicle.fuelType ?? 'Not specified'
+        'value': vehicle.fuelType ?? 'Not specified',
       },
       {
         'icon': Icons.settings,
         'label': 'Transmission',
-        'value': vehicle.transmission ?? 'Not specified'
+        'value': vehicle.transmission ?? 'Not specified',
       },
       {
         'icon': Icons.palette,
         'label': 'Color',
-        'value': vehicle.color ?? 'Not specified'
+        'value': vehicle.color ?? 'Not specified',
       },
     ];
 
@@ -94,9 +95,10 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
       'Color': vehicle.color,
       'Fuel Type': vehicle.fuelType,
       'Transmission': vehicle.transmission,
-      'Odometer': vehicle.odometerReading != null
-          ? '${NumberFormat('#,###').format(vehicle.odometerReading!)} ${vehicle.odometerUnit}'
-          : null,
+      'Odometer':
+          vehicle.odometerReading != null
+              ? '${NumberFormat('#,###').format(vehicle.odometerReading!)} ${vehicle.odometerUnit}'
+              : null,
       'Added': formatDate(vehicle.createdAt),
       'Last Updated': formatDate(vehicle.updatedAt),
     };
@@ -112,319 +114,318 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
           child: Column(
             spacing: 16,
             children: [
-                // Vehicle Image
-                if (vehicle.vehiclePhotoUrl != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: AspectRatio(
-                      aspectRatio: 16 / 9,
-                      child: Image.network(
-                        vehicle.vehiclePhotoUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[300],
-                            child: const Icon(
-                              Icons.directions_car,
-                              size: 80,
-                              color: Colors.grey,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  )
-                else
-                  Container(
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Center(
-                      child: Icon(
-                        Icons.directions_car,
-                        size: 80,
-                        color: Colors.grey[400],
-                      ),
+              // Vehicle Image
+              if (vehicle.vehiclePhotoUrl != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Image.network(
+                      vehicle.vehiclePhotoUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[300],
+                          child: const Icon(
+                            Icons.directions_car,
+                            size: 80,
+                            color: Colors.grey,
+                          ),
+                        );
+                      },
                     ),
                   ),
+                )
+              else
+                Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.directions_car,
+                      size: 80,
+                      color: Colors.grey[400],
+                    ),
+                  ),
+                ),
 
-                // Title and Edit Button
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+              // Title and Edit Button
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${vehicle.year} ${vehicle.make} ${vehicle.model}',
+                            style: Theme.of(context).textTheme.headlineMedium,
+                          ),
+                          if (vehicle.licensePlate != null) ...[
+                            SizedBox(height: 4),
                             Text(
-                              '${vehicle.year} ${vehicle.make} ${vehicle.model}',
-                              style: Theme.of(context).textTheme.headlineMedium,
+                              vehicle.licensePlate!,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                            if (vehicle.licensePlate != null) ...[
-                              SizedBox(height: 4),
-                              Text(
-                                vehicle.licensePlate!,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black54,
-                                  fontWeight: FontWeight.w500,
+                          ],
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () {
+                        context.go('/garage/${vehicle.id}/edit');
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              // Compliance Status Cards
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _buildComplianceCard(
+                        context,
+                        'REGO',
+                        _formatDateString(vehicle.regoExpiryDate),
+                        regoStatus,
+                        () => _showUpdateExpiryDialog(
+                          context,
+                          title: 'Update Registration',
+                          currentDate: vehicle.regoExpiryDate,
+                          fieldName: 'regoExpiryDate',
+                          successMessage:
+                              'Registration expiry updated successfully',
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: _buildComplianceCard(
+                        context,
+                        'WOF',
+                        _formatDateString(vehicle.wofExpiryDate),
+                        wofStatus,
+                        () => _showUpdateExpiryDialog(
+                          context,
+                          title: 'Update WOF',
+                          currentDate: vehicle.wofExpiryDate,
+                          fieldName: 'wofExpiryDate',
+                          successMessage: 'WOF expiry updated successfully',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Key Specs Grid
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: GridView.count(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 2.5,
+                  children:
+                      keySpecs.map((spec) {
+                        return Container(
+                          padding: EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                spec['icon'] as IconData,
+                                size: 20,
+                                color: Colors.black54,
+                              ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      spec['label'] as String,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                    Text(
+                                      spec['value'] as String,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () {
-                          context.go('/garage/${vehicle.id}/edit');
-                        },
-                      ),
-                    ],
+                          ),
+                        );
+                      }).toList(),
+                ),
+              ),
+
+              // Vehicle Details Section
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Vehicle Details',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
+              ),
 
-                // Compliance Status Cards
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    spacing: 8,
                     children: [
-                      Expanded(
-                        child: _buildComplianceCard(
-                          context,
-                          'REGO',
-                          _formatDateString(vehicle.regoExpiryDate),
-                          regoStatus,
-                          () => _showUpdateExpiryDialog(
-                            context,
-                            title: 'Update Registration',
-                            currentDate: vehicle.regoExpiryDate,
-                            fieldName: 'regoExpiryDate',
-                            successMessage:
-                                'Registration expiry updated successfully',
+                      for (var entry in vehicleDetails.entries)
+                        if (entry.value != null)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                entry.key,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                              Text(
+                                '${entry.value}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Notes Section (if exists)
+              if (vehicle.notes != null && vehicle.notes!.isNotEmpty) ...[
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Notes',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: _buildComplianceCard(
-                          context,
-                          'WOF',
-                          _formatDateString(vehicle.wofExpiryDate),
-                          wofStatus,
-                          () => _showUpdateExpiryDialog(
-                            context,
-                            title: 'Update WOF',
-                            currentDate: vehicle.wofExpiryDate,
-                            fieldName: 'wofExpiryDate',
-                            successMessage: 'WOF expiry updated successfully',
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      vehicle.notes!,
+                      style: TextStyle(fontSize: 14, color: Colors.black87),
+                    ),
+                  ),
+                ),
+              ],
+
+              // Maintenance Section
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Maintenance',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.build_circle_outlined,
+                        size: 48,
+                        color: Colors.grey[400],
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        'No service history yet',
+                        style: TextStyle(fontSize: 14, color: Colors.black54),
+                      ),
+                      SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: () {
+                            context.go('/garage/${vehicle.id}/add-service');
+                          },
+                          icon: const Icon(Icons.add),
+                          label: const Text('Add Service Record'),
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                              Theme.of(context).colorScheme.secondary,
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
+              ),
 
-                // Key Specs Grid
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: GridView.count(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: 2.5,
-                    children: keySpecs.map((spec) {
-                      return Container(
-                        padding: EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              spec['icon'] as IconData,
-                              size: 20,
-                              color: Colors.black54,
-                            ),
-                            SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    spec['label'] as String,
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.black54,
-                                    ),
-                                  ),
-                                  Text(
-                                    spec['value'] as String,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-
-                // Vehicle Details Section
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Vehicle Details',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ),
-                ),
-
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      spacing: 8,
-                      children: [
-                        for (var entry in vehicleDetails.entries)
-                          if (entry.value != null)
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  entry.key,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                                Text(
-                                  '${entry.value}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Notes Section (if exists)
-                if (vehicle.notes != null && vehicle.notes!.isNotEmpty) ...[
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Notes',
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        vehicle.notes!,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-
-                // Maintenance Section
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Maintenance',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ),
-                ),
-
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.build_circle_outlined,
-                          size: 48,
-                          color: Colors.grey[400],
-                        ),
-                        SizedBox(height: 12),
-                        Text(
-                          'No service history yet',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              context.go('/garage/${vehicle.id}/add-service');
-                            },
-                            icon: Icon(Icons.add),
-                            label: Text('Add Service Record'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 16),
+              SizedBox(height: 16),
             ],
           ),
         ),
@@ -504,10 +505,7 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                 side: BorderSide(color: textColor),
                 foregroundColor: textColor,
               ),
-              child: Text(
-                'Update',
-                style: TextStyle(fontSize: 12),
-              ),
+              child: Text('Update', style: TextStyle(fontSize: 12)),
             ),
           ),
         ],
@@ -551,19 +549,16 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
   }) {
     showDialog(
       context: context,
-      builder: (context) => UpdateExpiryDateDialog(
-        title: title,
-        currentDate: currentDate,
-        fieldName: fieldName,
-        vehicleId: int.parse(widget.vehicleId),
-        successMessage: successMessage,
-      ),
+      builder:
+          (context) => UpdateExpiryDateDialog(
+            title: title,
+            currentDate: currentDate,
+            fieldName: fieldName,
+            vehicleId: int.parse(widget.vehicleId),
+            successMessage: successMessage,
+          ),
     );
   }
 }
 
-enum ComplianceStatus {
-  valid,
-  expiringSoon,
-  expired,
-}
+enum ComplianceStatus { valid, expiringSoon, expired }
