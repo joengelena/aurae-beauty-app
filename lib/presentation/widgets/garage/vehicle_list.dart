@@ -32,7 +32,7 @@ class VehicleList extends StatelessWidget {
 
               return VehicleCard(
                 vehicle: vehicle,
-                topRightButton: ActionMenuButton(
+                actionButton: ActionMenuButton(
                   options: _buildMenuOptions(vehicle),
                 ),
               );

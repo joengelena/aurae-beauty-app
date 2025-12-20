@@ -6,9 +6,13 @@ import 'package:motorix_app/utils/constants.dart';
 
 class VehicleCard extends StatelessWidget {
   final UserVehicle vehicle;
-  final Widget? topRightButton;
+  final Widget actionButton;
 
-  const VehicleCard({super.key, required this.vehicle, this.topRightButton});
+  const VehicleCard({
+    super.key,
+    required this.vehicle,
+    required this.actionButton,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,81 +21,83 @@ class VehicleCard extends StatelessWidget {
       child: Card(
         margin: const EdgeInsets.only(bottom: 16.0),
         elevation: AppConstants.cardShadowElevation,
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (vehicle.vehiclePhotoUrl != null) ...[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: AspectRatio(
-                        aspectRatio: AppConstants.listingImageAspectRatio,
-                        child: Image.network(
-                          vehicle.vehiclePhotoUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Colors.grey[300],
-                              child: const Icon(
-                                Icons.broken_image,
-                                color: Colors.grey,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                  ],
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${vehicle.year} ${vehicle.make} ${vehicle.model}',
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (vehicle.licensePlate != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            vehicle.licensePlate!,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: Colors.grey.shade600),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (vehicle.vehiclePhotoUrl != null) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: AspectRatio(
+                    aspectRatio: AppConstants.listingImageAspectRatio,
+                    child: Image.network(
+                      vehicle.vehiclePhotoUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[300],
+                          child: const Icon(
+                            Icons.broken_image,
+                            color: Colors.grey,
                           ),
-                        ],
-                      ],
+                        );
+                      },
                     ),
                   ),
-                  Row(
-                    spacing: 12,
-                    children: [
-                      Expanded(
-                        child: ComplianceCard(
-                          title: 'REGO expires on',
-                          dateString: vehicle.regoExpiryDate,
+                ),
+              ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${vehicle.year} ${vehicle.make} ${vehicle.model}',
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: ComplianceCard(
-                          title: 'WOF expires on',
-                          dateString: vehicle.wofExpiryDate,
+                        actionButton,
+                      ],
+                    ),
+                    if (vehicle.licensePlate != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        vehicle.licensePlate!,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey.shade600,
                         ),
                       ),
                     ],
+                  ],
+                ),
+              ),
+              Row(
+                spacing: 12,
+                children: [
+                  Expanded(
+                    child: ComplianceCard(
+                      title: 'REGO expires on',
+                      dateString: vehicle.regoExpiryDate,
+                    ),
+                  ),
+                  Expanded(
+                    child: ComplianceCard(
+                      title: 'WOF expires on',
+                      dateString: vehicle.wofExpiryDate,
+                    ),
                   ),
                 ],
               ),
-            ),
-            if (topRightButton != null)
-              Positioned(top: 4, right: 4, child: topRightButton!),
-          ],
+            ],
+          ),
         ),
       ),
     );
