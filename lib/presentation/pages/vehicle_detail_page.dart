@@ -105,6 +105,9 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
 
     final regoStatus = _getComplianceStatus(vehicle.regoExpiryDate);
     final wofStatus = _getComplianceStatus(vehicle.wofExpiryDate);
+    final insuranceStatus = vehicle.insuranceExpiryDate != null
+        ? _getComplianceStatus(vehicle.insuranceExpiryDate!)
+        : ComplianceStatus.valid;
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -191,46 +194,73 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                 ),
               ),
 
-              // Compliance Status Cards
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _buildComplianceCard(
-                        context,
-                        'REGO',
-                        _formatDateString(vehicle.regoExpiryDate),
-                        regoStatus,
-                        () => _showUpdateExpiryDialog(
+                // Compliance Status Cards
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    spacing: 12,
+                    children: [
+                      Row(
+                    children: [
+                      Expanded(
+                        child: _buildComplianceCard(
                           context,
-                          title: 'Update Registration',
-                          currentDate: vehicle.regoExpiryDate,
-                          fieldName: 'regoExpiryDate',
-                          successMessage:
-                              'Registration expiry updated successfully',
+                          'REGO',
+                          _formatDateString(vehicle.regoExpiryDate),
+                          regoStatus,
+                          () => _showUpdateExpiryDialog(
+                            context,
+                            title: 'Update Registration',
+                            currentDate: vehicle.regoExpiryDate,
+                            fieldName: 'regoExpiryDate',
+                            successMessage:
+                                'Registration expiry updated successfully',
+                          ),
+                        ),
+                        ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildComplianceCard(
+                              context,
+                              'INSURANCE',
+                              vehicle.insuranceExpiryDate != null
+                                  ? _formatDateString(vehicle.insuranceExpiryDate!)
+                                  : 'Not set',
+                              insuranceStatus,
+                              () => _showUpdateExpiryDialog(
+                                context,
+                                title: 'Update Insurance',
+                                currentDate: vehicle.insuranceExpiryDate ?? '',
+                                fieldName: 'insuranceExpiryDate',
+                                successMessage:
+                                    'Insurance expiry updated successfully',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: _buildComplianceCard(
+                          context,
+                          'WOF',
+                          _formatDateString(vehicle.wofExpiryDate),
+                          wofStatus,
+                          () => _showUpdateExpiryDialog(
+                            context,
+                            title: 'Update WOF',
+                            currentDate: vehicle.wofExpiryDate,
+                            fieldName: 'wofExpiryDate',
+                            successMessage: 'WOF expiry updated successfully',
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: _buildComplianceCard(
-                        context,
-                        'WOF',
-                        _formatDateString(vehicle.wofExpiryDate),
-                        wofStatus,
-                        () => _showUpdateExpiryDialog(
-                          context,
-                          title: 'Update WOF',
-                          currentDate: vehicle.wofExpiryDate,
-                          fieldName: 'wofExpiryDate',
-                          successMessage: 'WOF expiry updated successfully',
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
 
               // Key Specs Grid
               Padding(
