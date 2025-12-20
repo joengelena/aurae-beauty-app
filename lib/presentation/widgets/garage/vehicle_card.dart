@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/presentation/widgets/garage/compliance_card.dart';
-import 'package:motorix_app/presentation/widgets/garage/update_expiry_date_dialog.dart';
 import 'package:motorix_app/utils/constants.dart';
 
 class VehicleCard extends StatelessWidget {
@@ -25,6 +24,28 @@ class VehicleCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (vehicle.vehiclePhotoUrl != null) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: AspectRatio(
+                        aspectRatio: AppConstants.listingImageAspectRatio,
+                        child: Image.network(
+                          vehicle.vehiclePhotoUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Colors.grey[300],
+                              child: const Icon(
+                                Icons.broken_image,
+                                color: Colors.grey,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -48,28 +69,6 @@ class VehicleCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (vehicle.vehiclePhotoUrl != null) ...[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: AspectRatio(
-                        aspectRatio: AppConstants.listingImageAspectRatio,
-                        child: Image.network(
-                          vehicle.vehiclePhotoUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Colors.grey[300],
-                              child: const Icon(
-                                Icons.broken_image,
-                                color: Colors.grey,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                  ],
                   Row(
                     spacing: 12,
                     children: [
@@ -87,56 +86,6 @@ class VehicleCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () => _showUpdateExpiryDialog(
-                              context,
-                              title: 'Update Registration',
-                              currentDate: vehicle.regoExpiryDate,
-                              fieldName: 'regoExpiryDate',
-                              successMessage:
-                                  'Registration expiry updated successfully',
-                            ),
-                            child: const Text('Update REGO'),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () => _showUpdateExpiryDialog(
-                              context,
-                              title: 'Update WOF',
-                              currentDate: vehicle.wofExpiryDate,
-                              fieldName: 'wofExpiryDate',
-                              successMessage: 'WOF expiry updated successfully',
-                            ),
-                            child: const Text('Update WOF'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: FilledButton.icon(
-                        onPressed: () => _handleAddService(context),
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add Service Record'),
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(
-                            Theme.of(context).colorScheme.secondary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -146,29 +95,5 @@ class VehicleCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _showUpdateExpiryDialog(
-    BuildContext context, {
-    required String title,
-    required String currentDate,
-    required String fieldName,
-    required String successMessage,
-  }) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => UpdateExpiryDateDialog(
-            title: title,
-            currentDate: currentDate,
-            fieldName: fieldName,
-            vehicleId: vehicle.id,
-            successMessage: successMessage,
-          ),
-    );
-  }
-
-  void _handleAddService(BuildContext context) {
-    context.go('/garage/${vehicle.id}/add-service');
   }
 }
