@@ -47,10 +47,6 @@ class AdditionalInfoSection extends StatelessWidget {
           options: ['km', 'mi'],
         ),
         const StringFormField<VehicleFormProvider>(
-          labelText: 'Vehicle Photo URL',
-          fieldName: 'vehiclePhotoUrl',
-        ),
-        const StringFormField<VehicleFormProvider>(
           labelText: 'Notes',
           fieldName: 'notes',
           maxLines: 4,

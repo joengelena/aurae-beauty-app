@@ -35,15 +35,16 @@ class RegistrationServiceSection extends StatelessWidget {
           firstDate: oneYearAgo,
           isRequired: true,
         ),
-        const StringFormField<VehicleFormProvider>(
-          labelText: 'Insurance Provider',
-          fieldName: 'insuranceProvider',
-        ),
         DateFormField<VehicleFormProvider>(
           labelText: 'Insurance Expiry',
           fieldName: 'insuranceExpiryDate',
           firstDate: oneYearAgo,
-          isRequired: false,
+          isRequired: true,
+        ),
+        StringFormField<VehicleFormProvider>(
+          labelText: 'Insurance Provider',
+          fieldName: 'insuranceProvider',
+          isRequired: true,
         ),
       ],
     );
