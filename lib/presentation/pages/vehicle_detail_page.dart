@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/logic/vehicle_detail_provider.dart';
+import 'package:motorix_app/presentation/widgets/garage/compliance_card.dart';
 import 'package:motorix_app/presentation/widgets/garage/update_expiry_date_dialog.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:go_router/go_router.dart';
@@ -103,10 +104,6 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
       'Last Updated': formatDate(vehicle.updatedAt),
     };
 
-    final regoStatus = _getComplianceStatus(vehicle.regoExpiryDate);
-    final wofStatus = _getComplianceStatus(vehicle.wofExpiryDate);
-    final insuranceStatus = _getComplianceStatus(vehicle.insuranceExpiryDate);
-
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Center(
@@ -202,12 +199,10 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                       spacing: 12,
                       children: [
                         Expanded(
-                          child: _buildComplianceCard(
-                            context,
-                            'REGO expires on',
-                            _formatDateString(vehicle.regoExpiryDate),
-                            regoStatus,
-                            () => _showUpdateExpiryDialog(
+                          child: ComplianceCard(
+                            title: 'REGO expires on',
+                            dateString: vehicle.regoExpiryDate,
+                            onUpdate: () => _showUpdateExpiryDialog(
                               context,
                               title: 'Update Registration',
                               currentDate: vehicle.regoExpiryDate,
@@ -218,12 +213,10 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                           ),
                         ),
                         Expanded(
-                          child: _buildComplianceCard(
-                            context,
-                            'WOF expires on',
-                            _formatDateString(vehicle.wofExpiryDate),
-                            wofStatus,
-                            () => _showUpdateExpiryDialog(
+                          child: ComplianceCard(
+                            title: 'WOF expires on',
+                            dateString: vehicle.wofExpiryDate,
+                            onUpdate: () => _showUpdateExpiryDialog(
                               context,
                               title: 'Update WOF',
                               currentDate: vehicle.wofExpiryDate,
@@ -237,12 +230,10 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: _buildComplianceCard(
-                            context,
-                            'INSURANCE provided by ${vehicle.insuranceProvider} expires on',
-                            _formatDateString(vehicle.insuranceExpiryDate),
-                            insuranceStatus,
-                            () => _showUpdateExpiryDialog(
+                          child: ComplianceCard(
+                            title: 'INSURANCE provided by ${vehicle.insuranceProvider} expires on',
+                            dateString: vehicle.insuranceExpiryDate,
+                            onUpdate: () => _showUpdateExpiryDialog(
                               context,
                               title: 'Update Insurance',
                               currentDate: vehicle.insuranceExpiryDate,
@@ -459,113 +450,6 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
     );
   }
 
-  Widget _buildComplianceCard(
-    BuildContext context,
-    String title,
-    String date,
-    ComplianceStatus status,
-    VoidCallback onUpdate,
-  ) {
-    Color cardColor;
-    Color textColor;
-    IconData icon;
-
-    switch (status) {
-      case ComplianceStatus.valid:
-        cardColor = Colors.green[50]!;
-        textColor = Colors.green[700]!;
-        icon = Icons.check_circle;
-        break;
-      case ComplianceStatus.expiringSoon:
-        cardColor = Colors.orange[50]!;
-        textColor = Colors.orange[700]!;
-        icon = Icons.warning;
-        break;
-      case ComplianceStatus.expired:
-        cardColor = Colors.red[50]!;
-        textColor = Colors.red[700]!;
-        icon = Icons.error;
-        break;
-    }
-
-    return Container(
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: textColor.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: 16, color: textColor),
-              SizedBox(width: 4),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 8),
-          Text(
-            date,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
-          ),
-          SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: onUpdate,
-              style: OutlinedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                side: BorderSide(color: textColor),
-                foregroundColor: textColor,
-              ),
-              child: Text('Update', style: TextStyle(fontSize: 12)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  ComplianceStatus _getComplianceStatus(String dateString) {
-    try {
-      final date = DateTime.parse(dateString);
-      final now = DateTime.now();
-      final difference = date.difference(now).inDays;
-
-      if (difference < 0) {
-        return ComplianceStatus.expired;
-      } else if (difference <= 30) {
-        return ComplianceStatus.expiringSoon;
-      } else {
-        return ComplianceStatus.valid;
-      }
-    } catch (e) {
-      return ComplianceStatus.valid;
-    }
-  }
-
-  String _formatDateString(String dateString) {
-    try {
-      final date = DateTime.parse(dateString);
-      return DateFormat('dd MMM yyyy').format(date);
-    } catch (e) {
-      return dateString;
-    }
-  }
-
   void _showUpdateExpiryDialog(
     BuildContext context, {
     required String title,
@@ -586,5 +470,3 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
     );
   }
 }
-
-enum ComplianceStatus { valid, expiringSoon, expired }
