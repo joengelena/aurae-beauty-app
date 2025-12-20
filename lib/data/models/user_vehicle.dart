@@ -12,8 +12,8 @@ class UserVehicle {
   final String odometerUnit;
   final String regoExpiryDate;
   final String wofExpiryDate;
-  final String? insuranceExpiryDate;
-  final String? insuranceProvider;
+  final String insuranceExpiryDate;
+  final String insuranceProvider;
   final String? vehiclePhotoUrl;
   final String? notes;
   final DateTime createdAt;
@@ -33,8 +33,8 @@ class UserVehicle {
     required this.odometerUnit,
     required this.regoExpiryDate,
     required this.wofExpiryDate,
-    this.insuranceExpiryDate,
-    this.insuranceProvider,
+    required this.insuranceExpiryDate,
+    required this.insuranceProvider,
     this.vehiclePhotoUrl,
     this.notes,
     required this.createdAt,
@@ -56,8 +56,8 @@ class UserVehicle {
       odometerUnit: json['odometerUnit'] as String? ?? 'km',
       regoExpiryDate: json['regoExpiryDate'] as String,
       wofExpiryDate: json['wofExpiryDate'] as String,
-      insuranceExpiryDate: json['insuranceExpiryDate'] as String?,
-      insuranceProvider: json['insuranceProvider'] as String?,
+      insuranceExpiryDate: json['insuranceExpiryDate'] as String,
+      insuranceProvider: json['insuranceProvider'] as String,
       vehiclePhotoUrl: json['vehiclePhotoUrl'] as String?,
       notes: json['notes'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
