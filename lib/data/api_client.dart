@@ -6,9 +6,9 @@ import 'package:motorix_app/utils/secure_storage.dart';
 import 'package:fetch_client/fetch_client.dart';
 
 class ApiClient {
-  // final String _baseUrl =
-  //     'https://motorix-api-production.up.railway.app/api/v1';
-  final String _baseUrl = 'http://localhost:4941/api/v1';
+  final String _baseUrl =
+      'https://motorix-api-production.up.railway.app/api/v1';
+  // final String _baseUrl = 'http://localhost:4941/api/v1';
 
   static final _client =
       kIsWeb
