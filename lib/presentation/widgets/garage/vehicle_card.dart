@@ -96,6 +96,12 @@ class VehicleCard extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 12),
+              ComplianceCard(
+                title:
+                    'INSURANCE provided by ${vehicle.insuranceProvider} expires on',
+                dateString: vehicle.insuranceExpiryDate,
+              ),
             ],
           ),
         ),
