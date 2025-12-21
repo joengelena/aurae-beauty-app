@@ -70,7 +70,8 @@ class ComplianceCard extends StatelessWidget {
     }
 
     return Container(
-      padding: EdgeInsets.all(12),
+      // padding: EdgeInsets.all(6),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(8),
