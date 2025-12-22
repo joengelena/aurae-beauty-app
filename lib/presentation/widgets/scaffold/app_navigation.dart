@@ -26,7 +26,7 @@ class AppNavigation extends StatelessWidget {
       children: [
         Center(
           child: SizedBox(
-            width: 400,
+            width: 600,
             child: Theme(
               data: Theme.of(context).copyWith(
                 navigationBarTheme: NavigationBarThemeData(
