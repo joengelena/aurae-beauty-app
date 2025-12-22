@@ -397,43 +397,7 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                 ),
               ),
 
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.build_circle_outlined,
-                      size: 48,
-                      color: Colors.grey[400],
-                    ),
-                    SizedBox(height: 12),
-                    Text(
-                      'No service history yet',
-                      style: TextStyle(fontSize: 14, color: Colors.black54),
-                    ),
-                    SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton.icon(
-                        onPressed: () {
-                          context.go('/garage/${vehicle.id}/add-service');
-                        },
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add Service Record'),
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(
-                            Theme.of(context).colorScheme.secondary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _buildServiceHistorySection(context, vehicle),
 
               SizedBox(height: 16),
             ],
@@ -461,6 +425,213 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
             successMessage: successMessage,
           ),
     );
+  }
+
+  Widget _buildServiceHistorySection(
+    BuildContext context,
+    UserVehicle vehicle,
+  ) {
+    final provider = context.watch<VehicleDetailProvider>();
+    final services = provider.services;
+
+    if (provider.isLoadingServices) {
+      return Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey[50],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (services.isEmpty) {
+      return Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey[50],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              Icons.build_circle_outlined,
+              size: 48,
+              color: Colors.grey[400],
+            ),
+            SizedBox(height: 12),
+            Text(
+              'No service history yet',
+              style: TextStyle(fontSize: 14, color: Colors.black54),
+            ),
+            SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: () => _handleAddService(vehicle.id),
+                icon: const Icon(Icons.add),
+                label: const Text('Service Record'),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(
+                    Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      spacing: 12,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            children: [
+              // Table Header
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8),
+                    topRight: Radius.circular(8),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        'Service',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        'Date',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        'Cost',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Table Rows
+              ...services.asMap().entries.map((entry) {
+                final index = entry.key;
+                final service = entry.value;
+                final isLast = index == services.length - 1;
+
+                return Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: isLast
+                          ? BorderSide.none
+                          : BorderSide(color: Colors.grey[300]!, width: 0.5),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              service.serviceProviderName != null
+                                  ? '${service.typeOfService} (${service.serviceProviderName})'
+                                  : service.typeOfService,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              DateFormat('dd/MM/yy').format(service.serviceDate),
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              service.cost != null
+                                  ? '\$${service.cost!.toStringAsFixed(2)}'
+                                  : '-',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (service.notes != null && service.notes!.isNotEmpty) ...[
+                        SizedBox(height: 6),
+                        Text(
+                          service.notes!,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.black54,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              }).toList(),
+            ],
+          ),
+        ),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton.icon(
+            onPressed: () => _handleAddService(vehicle.id),
+            icon: const Icon(Icons.add),
+            label: const Text('Service Record'),
+            style: ButtonStyle(
+              backgroundColor: WidgetStateProperty.all(
+                Theme.of(context).colorScheme.secondary,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _handleAddService(int vehicleId) async {
+    final result = await context.push('/garage/$vehicleId/add-service');
+
+    // If service was added successfully, reload services
+    if (result == true && mounted) {
+      final provider = context.read<VehicleDetailProvider>();
+      await provider.getServices(vehicleId);
+    }
   }
 
   Future<void> _handleDeleteVehicle(UserVehicle vehicle) async {

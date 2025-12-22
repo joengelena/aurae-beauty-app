@@ -41,7 +41,7 @@ class _ServiceFormState extends State<ServiceForm> {
 
   String get _submitButtonText =>
       widget.mode == ServiceFormMode.add
-          ? 'Add Service Record'
+          ? 'Submit'
           : 'Update Service Record';
 
   String get _successMessage =>
