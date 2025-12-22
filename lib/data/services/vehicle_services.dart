@@ -6,6 +6,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:motorix_app/data/api_client.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
+import 'package:motorix_app/data/models/vehicle_service.dart';
 import 'package:motorix_app/utils/utils.dart';
 
 class VehicleServices {
@@ -268,6 +269,72 @@ class VehicleServices {
       }
       throw NetworkException(
         'Network error deleting vehicle',
+        details: e.toString(),
+      );
+    }
+  }
+
+  Future<Map<String, dynamic>> addServiceRecord(
+    Map<String, dynamic> serviceData,
+  ) async {
+    try {
+      http.Response response = await apiClient.post(
+        '/user/vehicle-services',
+        serviceData,
+      );
+
+      if (response.statusCode != HttpStatus.created) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw AppException(errorMessage, details: response.body);
+      }
+
+      try {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        return data;
+      } catch (e) {
+        throw DataParseException(
+          'Invalid response format',
+          details: e.toString(),
+        );
+      }
+    } catch (e) {
+      if (e is AppException || e is DataParseException) rethrow;
+      throw NetworkException(
+        'Network error while adding service record',
+        details: e.toString(),
+      );
+    }
+  }
+
+  Future<List<VehicleService>> getServicesByVehicleId(int vehicleId) async {
+    try {
+      http.Response response = await apiClient.get(
+        '/user/vehicles/$vehicleId/services',
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw AppException(errorMessage, details: response.body);
+      }
+
+      try {
+        final data = json.decode(response.body) as List<dynamic>;
+        return data
+            .map(
+              (service) =>
+                  VehicleService.fromJson(service as Map<String, dynamic>),
+            )
+            .toList();
+      } catch (e) {
+        throw DataParseException(
+          'Invalid response format',
+          details: e.toString(),
+        );
+      }
+    } catch (e) {
+      if (e is AppException || e is DataParseException) rethrow;
+      throw NetworkException(
+        'Network error while fetching service records',
         details: e.toString(),
       );
     }

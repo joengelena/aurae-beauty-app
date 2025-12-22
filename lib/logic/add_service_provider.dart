@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
+import 'package:motorix_app/data/services/vehicle_services.dart';
 import 'package:motorix_app/logic/service_form_provider.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 
@@ -43,23 +44,11 @@ class AddServiceProvider extends ChangeNotifier implements ServiceFormProvider {
       // Prepare the data for the API (matching DB schema)
       final serviceData = Map<String, Object>.from(_formData);
       serviceData['currentUserId'] = userId;
-      serviceData['vehicleIdFk'] = _vehicle.id; // Match DB column name
+      serviceData['vehicleIdFk'] = _vehicle.id;
 
-      // TODO: Replace with actual service record API call when backend is ready
-      // Example: await VehicleServices().addServiceRecord(serviceData);
-      // Expected payload:
-      // {
-      //   "vehicleIdFk": int,
-      //   "typeOfService": string (required, max 150 chars),
-      //   "serviceDate": string (required, format: "YYYY-MM-DD"),
-      //   "serviceProviderName": string (optional, max 150 chars),
-      //   "cost": double (optional, >= 0),
-      //   "notes": string (optional, TEXT),
-      //   "currentUserId": string (for auth)
-      // }
-
-      // For now, simulate the API call
-      await Future.delayed(const Duration(seconds: 1));
+      await VehicleServices().addServiceRecord(
+        serviceData as Map<String, dynamic>,
+      );
 
       isSuccess = true;
     } on AppException catch (e) {
@@ -72,13 +61,5 @@ class AddServiceProvider extends ChangeNotifier implements ServiceFormProvider {
       isLoading = false;
       notifyListeners();
     }
-  }
-
-  void resetProvider() {
-    _formData.clear();
-    isLoading = false;
-    isSuccess = false;
-    errorMessage = '';
-    notifyListeners();
   }
 }
