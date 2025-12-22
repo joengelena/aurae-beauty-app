@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
-import 'package:motorix_app/presentation/widgets/listing/action_bar.dart';
 import 'package:motorix_app/presentation/widgets/listing/contact_seller.dart';
 import 'package:motorix_app/presentation/widgets/listing/image_carousel.dart';
 import 'package:motorix_app/utils/utils.dart';
@@ -116,13 +115,6 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
             spacing: 16,
             children: [
               ImageCarousel(imageUrls: listing.imageUrls),
-
-              ActionBar(
-                onCall: () {},
-                onEmail: () {},
-                onToggleWatchlist: () {},
-                isSaved: false,
-              ),
 
               // Listing age and location
               Align(
