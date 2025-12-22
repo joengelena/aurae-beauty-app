@@ -125,264 +125,247 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
               ),
 
               // Listing age and location
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    children: [
-                      Text(
-                        '${_formatListingAge(listing.uploadDate)} | ',
-                        style: TextStyle(fontSize: 14, color: Colors.black54),
-                      ),
-                      Icon(Icons.location_on, size: 16, color: Colors.black54),
-                      SizedBox(width: 4),
-                      Text(
-                        listing.location,
-                        style: TextStyle(fontSize: 14, color: Colors.black54),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Title
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '${listing.year} ${listing.make} ${listing.model}',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                ),
-              ),
-
-              // Asking price
-              Padding(
-                padding: EdgeInsets.only(left: 16, right: 16),
+              Align(
+                alignment: Alignment.centerLeft,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Asking price',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      '${_formatListingAge(listing.uploadDate)} | ',
+                      style: TextStyle(fontSize: 14, color: Colors.black54),
                     ),
-                    if (listing.discountedPrice != null)
-                      Row(
-                        spacing: 10,
-                        children: [
-                          Text(
-                            formatPrice(listing.discountedPrice!),
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                            ),
-                          ),
-                          Text(
-                            formatPrice(listing.originalPrice),
-                            style: TextStyle(
-                              decoration: TextDecoration.lineThrough,
-                              color: Colors.black,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      )
-                    else
-                      Text(
-                        formatPrice(listing.originalPrice),
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
+                    Icon(Icons.location_on, size: 16, color: Colors.black54),
+                    SizedBox(width: 4),
+                    Text(
+                      listing.location,
+                      style: TextStyle(fontSize: 14, color: Colors.black54),
+                    ),
                   ],
                 ),
               ),
 
-              // Key Specs Grid
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    mainAxisExtent: 60,
-                  ),
-                  itemCount: keySpecs.length,
-                  itemBuilder: (context, index) {
-                    final spec = keySpecs[index];
-                    return Container(
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            spec['icon'] as IconData,
-                            size: 20,
-                            color: Colors.black54,
-                          ),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  spec['label'] as String,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                                Text(
-                                  spec['value'] as String,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+              // Title
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '${listing.year} ${listing.make} ${listing.model}',
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
               ),
 
-              // Vehicle Details Section
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Vehicle Details',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+              // Asking price
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Asking price',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  if (listing.discountedPrice != null)
+                    Row(
+                      spacing: 10,
+                      children: [
+                        Text(
+                          formatPrice(listing.discountedPrice!),
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                        ),
+                        Text(
+                          formatPrice(listing.originalPrice),
+                          style: TextStyle(
+                            decoration: TextDecoration.lineThrough,
+                            color: Colors.black,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    Text(
+                      formatPrice(listing.originalPrice),
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                  ),
-                ),
+                ],
               ),
 
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    spacing: 8,
-                    children: [
-                      for (var entry in vehicleDetails.entries)
-                        if (entry.value != null)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // Key Specs Grid
+              GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  mainAxisExtent: 60,
+                ),
+                itemCount: keySpecs.length,
+                itemBuilder: (context, index) {
+                  final spec = keySpecs[index];
+                  return Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          spec['icon'] as IconData,
+                          size: 20,
+                          color: Colors.black54,
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                entry.key,
+                                spec['label'] as String,
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 11,
                                   color: Colors.black54,
                                 ),
                               ),
                               Text(
-                                '${entry.value}',
+                                spec['value'] as String,
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                 ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
-                    ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+
+              // Vehicle Details Section
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Vehicle Details',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
+                ),
+              ),
+
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  spacing: 8,
+                  children: [
+                    for (var entry in vehicleDetails.entries)
+                      if (entry.value != null)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              entry.key,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            Text(
+                              '${entry.value}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                  ],
                 ),
               ),
 
               // Documentation Section
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Documentation',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Documentation',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
 
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    spacing: 8,
-                    children: [
-                      for (var entry in documentation.entries)
-                        if (entry.value != null)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                entry.key,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black54,
-                                ),
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  spacing: 8,
+                  children: [
+                    for (var entry in documentation.entries)
+                      if (entry.value != null)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              entry.key,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black54,
                               ),
-                              Text(
-                                '${entry.value}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                            ),
+                            Text(
+                              '${entry.value}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
                               ),
-                            ],
-                          ),
-                    ],
-                  ),
+                            ),
+                          ],
+                        ),
+                  ],
                 ),
               ),
 
               // Description
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Descritpion',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Descritpion',
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ),
 
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    listing.description,
-                    style: Theme.of(context).textTheme.bodyMedium,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  listing.description,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+
+              // Documentation Section
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Seller Information',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
               ContactSeller(),
+
+              SizedBox(height: 20),
             ],
           ),
         ),

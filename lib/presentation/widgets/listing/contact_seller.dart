@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
-import 'package:motorix_app/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 class ContactSeller extends StatelessWidget {
@@ -14,57 +13,124 @@ class ContactSeller extends StatelessWidget {
       return Text('Loading');
     }
 
-    return Card(
-      color: Colors.grey.shade50,
-      elevation: AppConstants.cardShadowElevation,
-      margin: EdgeInsets.all(16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 24, horizontal: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Avatar
-            CircleAvatar(
-              radius: 48,
-              backgroundImage: AssetImage('assets/imgs/default_profile.jpg'),
-            ),
-            SizedBox(height: 16),
-
-            // Name
-            Text(
-              '${seller.firstName} ${seller.lastName}',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            SizedBox(height: 4),
-
-            // Contact Seller Title + Icons
-            Padding(
-              padding: EdgeInsets.only(top: 20),
-              child: Row(
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Profile and Contact Details
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Left side - Avatar and Name
+              Column(
                 children: [
-                  Text(
-                    'Contact Seller',
-                    style: Theme.of(context).textTheme.titleMedium,
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundImage: AssetImage(
+                      'assets/imgs/default_profile.jpg',
+                    ),
                   ),
-                  Spacer(),
-                  IconButton(
-                    icon: Icon(Icons.phone, size: 28, color: Colors.green),
-                    onPressed: () {
-                      // Add call logic
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.email, size: 28, color: Colors.blue),
-                    onPressed: () {
-                      // Add email logic
-                    },
+                  SizedBox(height: 12),
+                  SizedBox(
+                    width: 100,
+                    child: Text(
+                      '${seller.firstName} ${seller.lastName}',
+                      style: Theme.of(context).textTheme.titleMedium,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
+              SizedBox(width: 12),
+
+              // Right side - Contact Details
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Phone Number
+                    InkWell(
+                      onTap: () {
+                        // Add call logic
+                      },
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.phone, size: 20, color: Colors.green),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                seller.phoneNumber,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+
+                    // Email
+                    InkWell(
+                      onTap: () {
+                        // Add email logic
+                      },
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.email, size: 20, color: Colors.blue),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                seller.email,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
