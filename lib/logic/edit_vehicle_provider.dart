@@ -85,6 +85,8 @@ class EditVehicleProvider extends ChangeNotifier
     _formData['odometerUnit'] = vehicle.odometerUnit;
     _formData['regoExpiryDate'] = vehicle.regoExpiryDate;
     _formData['wofExpiryDate'] = vehicle.wofExpiryDate;
+    _formData['insuranceExpiryDate'] = vehicle.insuranceExpiryDate;
+    _formData['insuranceProvider'] = vehicle.insuranceProvider;
 
     // Optional fields - only add if not null
     if (vehicle.licensePlate != null) {
