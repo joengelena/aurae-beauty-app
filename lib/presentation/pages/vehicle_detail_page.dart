@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/logic/vehicle_detail_provider.dart';
+import 'package:motorix_app/logic/garage_provider.dart';
 import 'package:motorix_app/presentation/widgets/garage/compliance_card.dart';
 import 'package:motorix_app/presentation/widgets/garage/update_expiry_date_dialog.dart';
+import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
 import 'package:motorix_app/utils/utils.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -150,39 +153,51 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                   ),
                 ),
 
-              // Title and Edit Button
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // Title and Menu Button
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Text(
                           '${vehicle.year} ${vehicle.make} ${vehicle.model}',
                           style: Theme.of(context).textTheme.headlineMedium,
                         ),
-                        if (vehicle.licensePlate != null) ...[
-                          SizedBox(height: 4),
-                          Text(
-                            vehicle.licensePlate!,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black54,
-                              fontWeight: FontWeight.w500,
-                            ),
+                      ),
+                      ActionMenuButton(
+                        options: [
+                          MenuOption(
+                            icon: Icons.edit,
+                            title: 'Edit',
+                            onTap: () {
+                              context.go('/garage/${vehicle.id}/edit');
+                            },
+                          ),
+                          MenuOption(
+                            icon: Icons.delete,
+                            title: 'Delete',
+                            iconColor: Colors.red,
+                            titleColor: Colors.red,
+                            onTap: () => _handleDeleteVehicle(vehicle),
                           ),
                         ],
-                      ],
+                      ),
+                    ],
+                  ),
+                  if (vehicle.licensePlate != null) ...[
+                    SizedBox(height: 4),
+                    Text(
+                      vehicle.licensePlate!,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black54,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      context.go('/garage/${vehicle.id}/edit');
-                    },
-                  ),
+                  ],
                 ],
               ),
 
@@ -446,5 +461,38 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
             successMessage: successMessage,
           ),
     );
+  }
+
+  Future<void> _handleDeleteVehicle(UserVehicle vehicle) async {
+    final vehicleName = '${vehicle.year} ${vehicle.make} ${vehicle.model}';
+    final confirmed = await FeedbackHelpers.showDeleteConfirmation(
+      context,
+      title: 'Delete Vehicle',
+      message:
+          'Are you sure you want to delete $vehicleName? This action cannot be undone.',
+    );
+
+    if (!confirmed || !mounted) return;
+
+    final garageProvider = context.read<GarageProvider>();
+
+    try {
+      await garageProvider.deleteVehicle(vehicle.id);
+
+      if (mounted) {
+        FeedbackHelpers.showSuccessSnackBar(
+          context,
+          'Vehicle deleted successfully',
+        );
+        context.go('/garage');
+      }
+    } catch (e) {
+      if (mounted) {
+        FeedbackHelpers.showErrorSnackBar(
+          context,
+          'Failed to delete vehicle: ${e.toString()}',
+        );
+      }
+    }
   }
 }
