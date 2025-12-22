@@ -16,19 +16,24 @@ class _FiltersAndSortBarState extends State<FiltersAndSortBar> {
   Widget build(BuildContext context) {
     final listingsProvider = context.watch<ListingsProvider>();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 8,
-      children: [
-        FilterBar(),
-        ListingsCountAndSort(
-          listingsProvider: listingsProvider,
-          onSortChanged: () {
-            setState(() {});
-            listingsProvider.getNewListings();
-          },
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 600),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            FilterBar(),
+            ListingsCountAndSort(
+              listingsProvider: listingsProvider,
+              onSortChanged: () {
+                setState(() {});
+                listingsProvider.getNewListings();
+              },
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

@@ -15,7 +15,8 @@ class AppScaffold extends StatelessWidget {
       onTap: () {
         // Dismiss keyboard when tapping outside of text fields
         final currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+        if (!currentFocus.hasPrimaryFocus &&
+            currentFocus.focusedChild != null) {
           currentFocus.unfocus();
         }
       },
