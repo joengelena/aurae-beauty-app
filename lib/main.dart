@@ -12,10 +12,16 @@ import 'package:motorix_app/logic/user_listings_provider.dart';
 import 'package:motorix_app/logic/listing_form_data_provider.dart';
 import 'package:motorix_app/logic/vehicle_detail_provider.dart';
 import 'package:motorix_app/logic/watchlist_provider.dart';
+import 'package:motorix_app/data/services/vehicle_notification_service.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize notification service
+  await VehicleNotificationService().initialize();
+
   // Disable Provider type checking for interface types that are only accessed via context.read<>
   Provider.debugCheckInvalidValueType = null;
   runApp(
@@ -88,6 +94,11 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     final auth = context.read<AuthProvider>();
     _router = getAppRouter(auth);
+
+    // Set up notification tap handler
+    VehicleNotificationService.onNotificationTap = (vehicleId) {
+      _router.go('/garage/$vehicleId');
+    };
 
     // Check if user is already authenticated (e.g., from previous session)
     // This must happen after the first frame to avoid calling notifyListeners during build

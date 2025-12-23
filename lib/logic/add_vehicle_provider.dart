@@ -3,8 +3,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
+import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 import 'package:motorix_app/data/services/vehicle_services.dart';
+import 'package:motorix_app/data/services/vehicle_notification_service.dart';
 import 'package:motorix_app/logic/vehicle_form_provider.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 
@@ -87,17 +89,24 @@ class AddVehicleProvider extends ChangeNotifier
       vehicleData['currentUserId'] = userId;
 
       // Call the API with optional image
-      await VehicleServices().addVehicle(
+      final responseData = await VehicleServices().addVehicle(
         vehicleData,
         imageBytes: vehicleImageBytes,
         imageMimeType: vehicleImageMimeType,
       );
 
+      // Parse the created vehicle
+      final createdVehicle = UserVehicle.fromJson(responseData['vehicle']);
+
+      // Schedule notifications for the new vehicle
+      await VehicleNotificationService().scheduleVehicleNotifications(createdVehicle);
+
       isSuccess = true;
     } on AppException catch (e) {
       errorMessage = e.message;
       isSuccess = false;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('Error adding vehicle: $e\n$stackTrace');
       errorMessage = 'An unexpected error occurred. Please try again.';
       isSuccess = false;
     } finally {
