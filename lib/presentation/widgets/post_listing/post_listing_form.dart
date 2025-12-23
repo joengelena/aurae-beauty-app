@@ -4,6 +4,7 @@ import 'package:motorix_app/presentation/widgets/post_listing/listing_info_field
 import 'package:motorix_app/presentation/widgets/post_listing/select_multiple_images.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/vehicle_info_fields.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/vehicle_info_optional_fields.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:provider/provider.dart';
 
 class PostListingForm extends StatefulWidget {
@@ -124,14 +125,9 @@ class _PostListingFormState extends State<PostListingForm> {
                           : () {
                             if (_formKey.currentState!.validate()) {
                               if (provider.imageBytesList.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'Please add at least one photo',
-                                    ),
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.error,
-                                  ),
+                                FeedbackHelpers.showErrorSnackBar(
+                                  context,
+                                  'Please add at least one photo',
                                 );
                                 return;
                               }

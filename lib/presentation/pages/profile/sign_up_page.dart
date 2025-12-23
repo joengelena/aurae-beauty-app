@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/password_field.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -70,14 +71,9 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (authProvider.signUpSuccess && authProvider.signUpMessage.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Welcome to Motorix!'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 5),
-            behavior: SnackBarBehavior.floating,
-            width: 220,
-          ),
+        FeedbackHelpers.showSuccessSnackBar(
+          context,
+          'Welcome to Motorix!',
         );
       });
     }

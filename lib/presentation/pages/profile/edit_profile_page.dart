@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/profile_provider.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:provider/provider.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -90,14 +91,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         profileProvider.updateMessage.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(profileProvider.updateMessage),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
-              behavior: SnackBarBehavior.floating,
-              width: 300,
-            ),
+          FeedbackHelpers.showSuccessSnackBar(
+            context,
+            profileProvider.updateMessage,
           );
           profileProvider.clearUpdateState();
           context.go('/profile');

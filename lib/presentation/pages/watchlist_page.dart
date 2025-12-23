@@ -3,6 +3,7 @@ import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/watchlist_provider.dart';
 import 'package:motorix_app/presentation/widgets/sign_in_to_access.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -98,16 +99,16 @@ class _WatchlistPageState extends State<WatchlistPage> {
                     try {
                       await watchlistProvider.removeFromWatchlist(listing.id);
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Removed from watchlist')),
+                        FeedbackHelpers.showSuccessSnackBar(
+                          context,
+                          'Removed from watchlist',
                         );
                       }
                     } catch (e) {
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Failed to remove from watchlist'),
-                          ),
+                        FeedbackHelpers.showErrorSnackBar(
+                          context,
+                          'Failed to remove from watchlist',
                         );
                       }
                     }

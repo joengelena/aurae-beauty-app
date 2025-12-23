@@ -5,6 +5,7 @@ import 'package:motorix_app/presentation/widgets/common/loading_button.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/autocomplete_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/date_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/decimal_form_field.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:provider/provider.dart';
 
 enum ServiceFormMode { add, edit }
@@ -77,17 +78,10 @@ class _ServiceFormState extends State<ServiceForm> {
     if (!context.mounted) return;
 
     if (provider.isSuccess) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_successMessage), backgroundColor: Colors.green),
-      );
+      FeedbackHelpers.showSuccessSnackBar(context, _successMessage);
       context.pop(true);
     } else if (provider.errorMessage.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(provider.errorMessage),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+      FeedbackHelpers.showErrorSnackBar(context, provider.errorMessage);
     }
   }
 

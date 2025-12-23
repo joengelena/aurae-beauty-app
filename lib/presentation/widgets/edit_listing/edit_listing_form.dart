@@ -4,6 +4,7 @@ import 'package:motorix_app/presentation/widgets/edit_listing/edit_listing_info_
 import 'package:motorix_app/presentation/widgets/edit_listing/edit_vehicle_info_fields.dart';
 import 'package:motorix_app/presentation/widgets/edit_listing/edit_vehicle_info_optional_fields.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/select_multiple_images.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 import 'package:provider/provider.dart';
 
@@ -157,11 +158,9 @@ class _EditListingFormState extends State<EditListingForm> {
                               if (userId != null && userId.isNotEmpty) {
                                 provider.updateListing(userId);
                               } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Unable to verify user identity'),
-                                    backgroundColor: Colors.red,
-                                  ),
+                                FeedbackHelpers.showErrorSnackBar(
+                                  context,
+                                  'Unable to verify user identity',
                                 );
                               }
                             } else {

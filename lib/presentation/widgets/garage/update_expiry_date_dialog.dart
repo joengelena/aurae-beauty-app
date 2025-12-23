@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:motorix_app/logic/garage_provider.dart';
 import 'package:motorix_app/logic/vehicle_detail_provider.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:provider/provider.dart';
 
 class UpdateExpiryDateDialog extends StatefulWidget {
@@ -79,20 +80,16 @@ class _UpdateExpiryDateDialogState extends State<UpdateExpiryDateDialog> {
       await vehicleDetailProvider.getVehicle(widget.vehicleId);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(widget.successMessage),
-            backgroundColor: Colors.green,
-          ),
+        FeedbackHelpers.showSuccessSnackBar(
+          context,
+          widget.successMessage,
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to update: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
+        FeedbackHelpers.showErrorSnackBar(
+          context,
+          'Failed to update: ${e.toString()}',
         );
       }
     }

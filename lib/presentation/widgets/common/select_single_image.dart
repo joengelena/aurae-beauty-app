@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 
 class SelectSingleImage extends StatefulWidget {
   final Uint8List? imageBytes;
@@ -65,13 +66,10 @@ class _SelectSingleImageState extends State<SelectSingleImage> {
   void _showError(String message) {
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Theme.of(context).colorScheme.error,
-        duration: const Duration(seconds: 3),
-        behavior: SnackBarBehavior.floating,
-      ),
+    FeedbackHelpers.showErrorSnackBar(
+      context,
+      message,
+      duration: const Duration(seconds: 3),
     );
   }
 

@@ -5,6 +5,7 @@ import 'package:motorix_app/logic/watchlist_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/utils/constants.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -85,15 +86,17 @@ class ListingPreview extends StatelessWidget {
                             listing.id,
                           );
                           if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Removed from watchlist')),
+                            FeedbackHelpers.showSuccessSnackBar(
+                              context,
+                              'Removed from watchlist',
                             );
                           }
                         } else {
                           await watchlistProvider.addToWatchlist(listing.id);
                           if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Added to watchlist')),
+                            FeedbackHelpers.showSuccessSnackBar(
+                              context,
+                              'Added to watchlist',
                             );
                           }
                         }
@@ -105,10 +108,9 @@ class ListingPreview extends StatelessWidget {
                         );
 
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Failed to update watchlist'),
-                            ),
+                          FeedbackHelpers.showErrorSnackBar(
+                            context,
+                            'Failed to update watchlist',
                           );
                         }
                       }

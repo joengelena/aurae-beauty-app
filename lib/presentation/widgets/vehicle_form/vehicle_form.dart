@@ -6,6 +6,7 @@ import 'package:motorix_app/presentation/widgets/common/select_single_image.dart
 import 'package:motorix_app/presentation/widgets/vehicle_form/additional_info_section.dart';
 import 'package:motorix_app/presentation/widgets/vehicle_form/basic_vehicle_info.dart';
 import 'package:motorix_app/presentation/widgets/vehicle_form/registration_service_section.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:provider/provider.dart';
 
 enum VehicleFormMode { add, edit }
@@ -48,20 +49,10 @@ class _VehicleFormState extends State<VehicleForm> {
 
       if (!context.mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(_successMessage),
-          backgroundColor: Colors.green,
-        ),
-      );
+      FeedbackHelpers.showSuccessSnackBar(context, _successMessage);
       context.go('/garage');
     } else if (provider.errorMessage.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(provider.errorMessage),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+      FeedbackHelpers.showErrorSnackBar(context, provider.errorMessage);
     }
   }
 
