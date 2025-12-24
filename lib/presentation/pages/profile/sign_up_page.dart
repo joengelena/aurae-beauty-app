@@ -71,14 +71,12 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (authProvider.signUpSuccess && authProvider.signUpMessage.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        FeedbackHelpers.showSuccessSnackBar(
-          context,
-          'Welcome to Motorix!',
-        );
+        FeedbackHelpers.showSuccessSnackBar(context, 'Welcome to Motorix!');
       });
     }
 
     return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 24),
       child: Center(
         child: SizedBox(
           width: 300,
