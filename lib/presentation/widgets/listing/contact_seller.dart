@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
+import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class ContactSeller extends StatelessWidget {
@@ -82,7 +83,7 @@ class ContactSeller extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.phone, size: 20, color: Colors.green),
+                            Icon(Icons.phone, size: 20, color: themeGreen),
                             SizedBox(width: 12),
                             Expanded(
                               child: Text(

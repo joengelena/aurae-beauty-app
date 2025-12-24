@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/profile_provider.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
+import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -125,7 +126,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       padding: EdgeInsets.symmetric(vertical: 8.0),
                       child: Text(
                         profileProvider.updateErrorMessage,
-                        style: TextStyle(color: Colors.red, fontSize: 14),
+                        style: TextStyle(color: themeRed, fontSize: 14),
                         textAlign: TextAlign.center,
                       ),
                     ),

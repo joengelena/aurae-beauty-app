@@ -6,6 +6,7 @@ import 'package:motorix_app/logic/garage_provider.dart';
 import 'package:motorix_app/presentation/widgets/garage/compliance_card.dart';
 import 'package:motorix_app/presentation/widgets/garage/update_expiry_date_dialog.dart';
 import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
+import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:go_router/go_router.dart';
@@ -46,7 +47,7 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red),
+            Icon(Icons.error_outline, size: 64, color: themeRed),
             SizedBox(height: 16),
             Text(
               provider.errorMessage ?? 'Vehicle not found',
@@ -179,8 +180,8 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                           MenuOption(
                             icon: Icons.delete,
                             title: 'Delete',
-                            iconColor: Colors.red,
-                            titleColor: Colors.red,
+                            iconColor: themeRed,
+                            titleColor: themeRed,
                             onTap: () => _handleDeleteVehicle(vehicle),
                           ),
                         ],
@@ -547,9 +548,13 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     border: Border(
-                      bottom: isLast
-                          ? BorderSide.none
-                          : BorderSide(color: Colors.grey[300]!, width: 0.5),
+                      bottom:
+                          isLast
+                              ? BorderSide.none
+                              : BorderSide(
+                                color: Colors.grey[300]!,
+                                width: 0.5,
+                              ),
                     ),
                   ),
                   child: Column(
@@ -571,7 +576,9 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                           ),
                           Expanded(
                             child: Text(
-                              DateFormat('dd/MM/yy').format(service.serviceDate),
+                              DateFormat(
+                                'dd/MM/yy',
+                              ).format(service.serviceDate),
                               style: TextStyle(fontSize: 12),
                             ),
                           ),
@@ -589,7 +596,8 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                           ),
                         ],
                       ),
-                      if (service.notes != null && service.notes!.isNotEmpty) ...[
+                      if (service.notes != null &&
+                          service.notes!.isNotEmpty) ...[
                         SizedBox(height: 6),
                         Text(
                           service.notes!,

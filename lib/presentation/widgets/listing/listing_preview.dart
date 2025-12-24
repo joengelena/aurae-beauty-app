@@ -6,6 +6,7 @@ import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
+import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -174,7 +175,7 @@ class ListingPreview extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: Colors.red,
+                      color: themeRed,
                     ),
                   ),
                   SizedBox(width: 6),

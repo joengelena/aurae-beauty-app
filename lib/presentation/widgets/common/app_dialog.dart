@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/utils/theme.dart';
 
 class AppDialog extends StatelessWidget {
   final String title;
@@ -113,9 +114,11 @@ class AppDialog extends StatelessWidget {
             message: message,
             type: AppDialogType.warning,
             primaryButtonText: confirmText ?? 'Confirm',
-            onPrimaryButtonPressed: onConfirm ?? () => Navigator.pop(dialogContext),
+            onPrimaryButtonPressed:
+                onConfirm ?? () => Navigator.pop(dialogContext),
             secondaryButtonText: cancelText ?? 'Cancel',
-            onSecondaryButtonPressed: onCancel ?? () => Navigator.pop(dialogContext),
+            onSecondaryButtonPressed:
+                onCancel ?? () => Navigator.pop(dialogContext),
             barrierDismissible: barrierDismissible,
           ),
     );
@@ -159,13 +162,13 @@ class AppDialog extends StatelessWidget {
   Color _getIconColor() {
     switch (type) {
       case AppDialogType.success:
-        return Colors.green;
+        return themeGreen;
       case AppDialogType.error:
-        return Colors.red;
+        return themeRed;
       case AppDialogType.warning:
-        return Colors.orange;
+        return themeOrange;
       case AppDialogType.info:
-        return Colors.blue;
+        return themeBlue;
     }
   }
 

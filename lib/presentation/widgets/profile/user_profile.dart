@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/profile_provider.dart';
+import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class UserProfile extends StatelessWidget {
@@ -27,11 +28,11 @@ class UserProfile extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline, size: 48, color: Colors.red),
+              Icon(Icons.error_outline, size: 48, color: themeRed),
               SizedBox(height: 16),
               Text(
                 profileProvider.errorMessage,
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: themeRed),
                 textAlign: TextAlign.center,
               ),
             ],

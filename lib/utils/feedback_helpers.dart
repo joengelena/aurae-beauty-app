@@ -34,7 +34,7 @@ class FeedbackHelpers {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: green,
+        backgroundColor: themeGreen,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -49,7 +49,7 @@ class FeedbackHelpers {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: red,
+        backgroundColor: themeRed,
         behavior: SnackBarBehavior.floating,
         duration: duration,
       ),
@@ -61,7 +61,7 @@ class FeedbackHelpers {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        backgroundColor: themeBlue,
         behavior: SnackBarBehavior.floating,
       ),
     );

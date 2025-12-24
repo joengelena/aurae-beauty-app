@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 
+final themeBlue = Color(0xFF1E3A8A);
+final themeGreen = Color(0xFF15803D);
+final themeRed = Color(0xFFB91C1C);
+final themeOrange = Color(0xFFEA580C);
+
 final ThemeData appTheme = ThemeData(
   brightness: Brightness.light,
   scaffoldBackgroundColor: Colors.white,
   fontFamily: 'Poppins',
   colorScheme: ColorScheme.light(
     primary: Colors.black,
-    secondary: Color(0xFF1E3A8A),
+    secondary: themeBlue,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     surface: Colors.white,
@@ -51,6 +56,3 @@ final ThemeData appTheme = ThemeData(
   ),
   dividerColor: Colors.grey.shade500,
 );
-
-final green = Color(0xFF15803D);
-final red = Color(0xFFB91C1C);

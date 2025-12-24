@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:motorix_app/utils/theme.dart';
 
 enum ComplianceStatus { valid, expiringSoon, expired }
 
@@ -54,17 +55,17 @@ class ComplianceCard extends StatelessWidget {
     switch (status) {
       case ComplianceStatus.valid:
         cardColor = Colors.green[50]!;
-        textColor = Colors.green[700]!;
+        textColor = themeGreen;
         icon = Icons.check_circle;
         break;
       case ComplianceStatus.expiringSoon:
         cardColor = Colors.orange[50]!;
-        textColor = Colors.orange[700]!;
+        textColor = themeOrange;
         icon = Icons.warning;
         break;
       case ComplianceStatus.expired:
         cardColor = Colors.red[50]!;
-        textColor = Colors.red[700]!;
+        textColor = themeRed;
         icon = Icons.error;
         break;
     }

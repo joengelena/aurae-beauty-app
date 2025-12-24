@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class PostSuccess extends StatelessWidget {
@@ -20,10 +21,10 @@ class PostSuccess extends StatelessWidget {
             height: 120,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.green.shade800, width: 6),
+              border: Border.all(color: themeGreen, width: 6),
             ),
             child: Center(
-              child: Icon(Icons.check, size: 64, color: Colors.green.shade800),
+              child: Icon(Icons.check, size: 64, color: themeGreen),
             ),
           ),
 

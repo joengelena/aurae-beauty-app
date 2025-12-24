@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/app_dialog.dart';
 import 'package:motorix_app/presentation/widgets/common/password_field.dart';
+import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class ChangePasswordPage extends StatefulWidget {
@@ -115,7 +116,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Text(
                     authProvider.changePasswordMessage,
-                    style: const TextStyle(color: Colors.red, fontSize: 14),
+                    style: TextStyle(color: themeRed, fontSize: 14),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -208,9 +209,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 },
                 child: Text(
                   'Cancel',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.blue[700],
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.blue[700]),
                 ),
               ),
             ],

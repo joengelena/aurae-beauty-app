@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/utils/constants.dart';
+import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:intl/intl.dart';
 
@@ -138,10 +139,10 @@ class ListingTile extends StatelessWidget {
                                   children: [
                                     Text(
                                       formatPrice(listing.discountedPrice!),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14,
-                                        color: Colors.red,
+                                        color: themeRed,
                                       ),
                                     ),
                                     const SizedBox(width: 6),

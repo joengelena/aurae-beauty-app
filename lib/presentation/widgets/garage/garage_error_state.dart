@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/utils/theme.dart';
 
 class GarageErrorState extends StatelessWidget {
   final String errorMessage;
@@ -18,11 +19,7 @@ class GarageErrorState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.red.shade400,
-            ),
+            Icon(Icons.error_outline, size: 64, color: themeRed),
             const SizedBox(height: 16),
             Text(
               errorMessage,

@@ -8,6 +8,7 @@ import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
 import 'package:motorix_app/presentation/widgets/profile/user_profile.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
+import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -79,13 +80,17 @@ class _ProfilePageState extends State<ProfilePage> {
       await userListingsProvider.deleteListing(listingId);
 
       if (mounted) {
-        FeedbackHelpers.showSuccessSnackBar(context, 'Listing deleted successfully');
+        FeedbackHelpers.showSuccessSnackBar(
+          context,
+          'Listing deleted successfully',
+        );
       }
     } catch (e) {
       if (mounted) {
-        final errorMessage = e is AppException
-            ? e.message
-            : 'Failed to delete listing. Please try again.';
+        final errorMessage =
+            e is AppException
+                ? e.message
+                : 'Failed to delete listing. Please try again.';
         FeedbackHelpers.showErrorSnackBar(context, errorMessage);
       }
     }
@@ -106,12 +111,13 @@ class _ProfilePageState extends State<ProfilePage> {
         MenuOption(
           icon: Icons.check_circle,
           title: 'Mark as Sold',
-          onTap: () => _handleStatusChange(
-            listingId: listing.id,
-            onStatusChange: userListingsProvider.markAsSold,
-            successMessage: 'Listing marked as sold',
-            errorMessage: 'Failed to mark listing as sold',
-          ),
+          onTap:
+              () => _handleStatusChange(
+                listingId: listing.id,
+                onStatusChange: userListingsProvider.markAsSold,
+                successMessage: 'Listing marked as sold',
+                errorMessage: 'Failed to mark listing as sold',
+              ),
         ),
       );
     } else if (listing.status == 'sold') {
@@ -119,12 +125,13 @@ class _ProfilePageState extends State<ProfilePage> {
         MenuOption(
           icon: Icons.autorenew,
           title: 'Mark as Active',
-          onTap: () => _handleStatusChange(
-            listingId: listing.id,
-            onStatusChange: userListingsProvider.markAsActive,
-            successMessage: 'Listing marked as active',
-            errorMessage: 'Failed to mark listing as active',
-          ),
+          onTap:
+              () => _handleStatusChange(
+                listingId: listing.id,
+                onStatusChange: userListingsProvider.markAsActive,
+                successMessage: 'Listing marked as active',
+                errorMessage: 'Failed to mark listing as active',
+              ),
         ),
       );
     }
@@ -133,8 +140,8 @@ class _ProfilePageState extends State<ProfilePage> {
       MenuOption(
         icon: Icons.delete,
         title: 'Delete',
-        iconColor: Colors.red,
-        titleColor: Colors.red,
+        iconColor: themeRed,
+        titleColor: themeRed,
         onTap: () => _handleDeleteListing(listing.id),
       ),
     );
@@ -191,15 +198,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       padding: EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          Icon(
-                            Icons.error_outline,
-                            size: 48,
-                            color: Colors.red,
-                          ),
+                          Icon(Icons.error_outline, size: 48, color: themeRed),
                           SizedBox(height: 16),
                           Text(
                             userListingsProvider.errorMessage,
-                            style: TextStyle(color: Colors.red),
+                            style: TextStyle(color: themeRed),
                             textAlign: TextAlign.center,
                           ),
                         ],

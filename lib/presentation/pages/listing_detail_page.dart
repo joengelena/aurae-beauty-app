@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/presentation/widgets/listing/contact_seller.dart';
 import 'package:motorix_app/presentation/widgets/listing/image_carousel.dart';
+import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -161,7 +162,7 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.red,
+                            color: themeRed,
                           ),
                         ),
                         Text(

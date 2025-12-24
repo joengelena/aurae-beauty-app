@@ -5,6 +5,7 @@ import 'package:motorix_app/presentation/widgets/sign_in_to_access.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class WatchlistPage extends StatefulWidget {
@@ -36,7 +37,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
           children: [
             Text(
               watchlistProvider.errorMessage!,
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: themeRed),
             ),
             SizedBox(height: 16),
             FilledButton(

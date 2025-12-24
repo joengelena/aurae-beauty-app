@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/password_field.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
+import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -99,7 +100,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     padding: EdgeInsets.symmetric(vertical: 8.0),
                     child: Text(
                       authProvider.signUpErrorMessage,
-                      style: TextStyle(color: Colors.red, fontSize: 14),
+                      style: TextStyle(color: themeRed, fontSize: 14),
                       textAlign: TextAlign.center,
                     ),
                   ),

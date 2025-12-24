@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/app_dialog.dart';
+import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -107,10 +108,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Text(
                     authProvider.forgotPasswordMessage,
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: themeRed, fontSize: 14),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -138,9 +136,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         ? null
                         : () {
                           if (_formKey.currentState!.validate()) {
-                            authProvider.forgotPassword(
-                              emailController.text,
-                            );
+                            authProvider.forgotPassword(emailController.text);
                           }
                         },
                 style: OutlinedButton.styleFrom(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
 import 'package:motorix_app/presentation/widgets/garage/vehicle_card.dart';
+import 'package:motorix_app/utils/theme.dart';
 
 class VehicleList extends StatelessWidget {
   final List<UserVehicle> vehicles;
@@ -53,8 +54,8 @@ class VehicleList extends StatelessWidget {
       MenuOption(
         icon: Icons.delete,
         title: 'Delete',
-        iconColor: Colors.red,
-        titleColor: Colors.red,
+        iconColor: themeRed,
+        titleColor: themeRed,
         onTap: () => onDeleteVehicle(vehicle),
       ),
     ];
