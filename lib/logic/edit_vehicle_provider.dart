@@ -7,6 +7,7 @@ import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/data/services/listings_services.dart';
 import 'package:motorix_app/data/services/vehicle_services.dart';
+import 'package:motorix_app/data/services/vehicle_notification_service.dart';
 import 'package:motorix_app/logic/vehicle_form_provider.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 
@@ -178,6 +179,10 @@ class EditVehicleProvider extends ChangeNotifier
         imageBytes: _isImageChanged ? vehicleImageBytes : null,
         imageMimeType: _isImageChanged ? vehicleImageMimeType : null,
       );
+
+      // Reschedule notifications with updated vehicle data
+      final updatedVehicle = await VehicleServices().getVehicleById(vehicleId);
+      await VehicleNotificationService().rescheduleNotifications(updatedVehicle);
 
       isSuccess = true;
     } on AppException catch (e) {

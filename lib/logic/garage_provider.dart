@@ -49,10 +49,15 @@ class GarageProvider extends ChangeNotifier {
     Map<String, Object> updates,
   ) async {
     try {
+      // Update vehicle in backend
       await VehicleServices().updateVehicle(vehicleId, updates);
 
       // Refresh the vehicle list to get updated data
       await fetchVehicles();
+
+      // Reschedule notifications with updated vehicle data
+      final updatedVehicle = _vehicles.firstWhere((v) => v.id == vehicleId);
+      await VehicleNotificationService().rescheduleNotifications(updatedVehicle);
     } on AppException {
       rethrow;
     } catch (e) {
@@ -66,13 +71,7 @@ class GarageProvider extends ChangeNotifier {
       await VehicleServices().deleteVehicle(vehicleId, {});
 
       // Cancel all scheduled notifications for this vehicle
-      // This should not block deletion if it fails
-      try {
-        await VehicleNotificationService().cancelVehicleNotifications(vehicleId);
-      } catch (e) {
-        // Log the error but don't fail the deletion
-        debugPrint('Failed to cancel notifications for vehicle $vehicleId: $e');
-      }
+      await VehicleNotificationService().safelyCancelNotifications(vehicleId);
 
       // Remove the vehicle from the local list
       _vehicles.removeWhere((vehicle) => vehicle.id == vehicleId);

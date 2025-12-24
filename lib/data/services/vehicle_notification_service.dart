@@ -281,6 +281,38 @@ class VehicleNotificationService {
             scheduledDate.day == now.day);
   }
 
+  /// Reschedules all notifications for a vehicle.
+  ///
+  /// This is a convenience method that cancels existing notifications
+  /// and schedules new ones with updated vehicle data. Errors are handled
+  /// gracefully and logged without throwing to prevent blocking vehicle operations.
+  ///
+  /// Use this when updating a vehicle to ensure notifications reflect the latest data.
+  Future<void> rescheduleNotifications(UserVehicle vehicle) async {
+    try {
+      await cancelVehicleNotifications(vehicle.id);
+      await scheduleVehicleNotifications(vehicle);
+    } catch (e) {
+      // Log error but don't throw - notification failures shouldn't block vehicle updates
+      debugPrint('Failed to reschedule notifications for vehicle ${vehicle.id}: $e');
+    }
+  }
+
+  /// Safely cancels all notifications for a vehicle with error handling.
+  ///
+  /// This is a convenience method that cancels notifications and handles
+  /// any errors gracefully by logging them without throwing.
+  ///
+  /// Use this when deleting a vehicle to ensure cleanup doesn't block the operation.
+  Future<void> safelyCancelNotifications(int vehicleId) async {
+    try {
+      await cancelVehicleNotifications(vehicleId);
+    } catch (e) {
+      // Log error but don't throw - notification failures shouldn't block vehicle deletion
+      debugPrint('Failed to cancel notifications for vehicle $vehicleId: $e');
+    }
+  }
+
   /// Cancels all scheduled notifications for a specific vehicle.
   ///
   /// This removes all 6 notifications (WOF, REGO, Insurance × 2 each)
