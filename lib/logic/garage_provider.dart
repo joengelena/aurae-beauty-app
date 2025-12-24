@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/data/services/vehicle_services.dart';
+import 'package:motorix_app/data/services/vehicle_notification_service.dart';
 
 class GarageProvider extends ChangeNotifier {
   List<UserVehicle> _vehicles = [];
@@ -61,7 +62,17 @@ class GarageProvider extends ChangeNotifier {
 
   Future<void> deleteVehicle(int vehicleId) async {
     try {
+      // Delete vehicle from backend
       await VehicleServices().deleteVehicle(vehicleId, {});
+
+      // Cancel all scheduled notifications for this vehicle
+      // This should not block deletion if it fails
+      try {
+        await VehicleNotificationService().cancelVehicleNotifications(vehicleId);
+      } catch (e) {
+        // Log the error but don't fail the deletion
+        debugPrint('Failed to cancel notifications for vehicle $vehicleId: $e');
+      }
 
       // Remove the vehicle from the local list
       _vehicles.removeWhere((vehicle) => vehicle.id == vehicleId);
