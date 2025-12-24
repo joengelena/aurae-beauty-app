@@ -14,174 +14,198 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   final _formKey = GlobalKey<FormState>();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-  bool isFormValid = false;
+  bool _isFormValid = false;
 
   @override
   void initState() {
     super.initState();
-    emailController.addListener(_validateForm);
-    passwordController.addListener(_validateForm);
+    _emailController.addListener(_validateForm);
+    _passwordController.addListener(_validateForm);
   }
 
   @override
   void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    context.read<AuthProvider>().clearSignInState();
     super.dispose();
   }
 
   void _validateForm() {
     final valid =
-        emailController.text.isNotEmpty && passwordController.text.isNotEmpty;
-    if (valid != isFormValid) {
+        _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
+    if (valid != _isFormValid) {
       setState(() {
-        isFormValid = valid;
+        _isFormValid = valid;
       });
+    }
+  }
+
+  void _handleSignIn() {
+    if (_formKey.currentState!.validate()) {
+      context.read<AuthProvider>().signIn(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider authProvider = context.watch<AuthProvider>();
+    final authProvider = context.watch<AuthProvider>();
 
     return Center(
-      child: SizedBox(
-        width: 300,
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 24,
-            children: [
-              Center(
-                child: Text(
-                  'Sign In',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-              ),
-
-              if (authProvider.signInErrorMessage.isNotEmpty &&
-                  !authProvider.isLoading)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: SizedBox(
+          width: 300,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 24,
+              children: [
+                Center(
                   child: Text(
-                    authProvider.signInErrorMessage,
-                    style: TextStyle(color: Colors.red, fontSize: 14),
-                    textAlign: TextAlign.center,
+                    'Sign In',
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                 ),
-
-              TextFormField(
-                controller: emailController,
-                validator: (val) {
-                  if (val == null || val.isEmpty) return 'Required';
-                  if (!emailRegex.hasMatch(val)) return 'Enter a valid email';
-                  return null;
-                },
-                decoration: InputDecoration(labelText: 'Email'),
-              ),
-
-              PasswordField(
-                controller: passwordController,
-                labelText: 'Password',
-                textInputAction: TextInputAction.done,
-                validator: (val) {
-                  if (val == null || val.isEmpty) return 'Required';
-                  return null;
-                },
-                onFieldSubmitted: () {
-                  if (_formKey.currentState!.validate()) {
-                    context.read<AuthProvider>().signIn(
-                      emailController.text,
-                      passwordController.text,
-                    );
-                  }
-                },
-              ),
-
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    context.go('/profile/forgot-password');
-                  },
-                  child: Text(
-                    'Forgot Password?',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.blue[700],
+                if (authProvider.signInErrorMessage.isNotEmpty &&
+                    !authProvider.isLoading)
+                  Container(
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red.shade200),
                     ),
-                  ),
-                ),
-              ),
-
-              OutlinedButton(
-                onPressed:
-                    authProvider.isLoading
-                        ? null
-                        : () {
-                          if (_formKey.currentState!.validate()) {
-                            authProvider.signIn(
-                              emailController.text,
-                              passwordController.text,
-                            );
-                          }
-                        },
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  foregroundColor: isFormValid ? Colors.white : Colors.grey,
-                  side: BorderSide(
-                    color:
-                        isFormValid
-                            ? Theme.of(context).colorScheme.secondary
-                            : Colors.grey,
-                  ),
-                  backgroundColor:
-                      isFormValid
-                          ? Theme.of(context).colorScheme.secondary
-                          : Colors.transparent,
-                ),
-                child:
-                    authProvider.isLoading
-                        ? SizedBox(
-                          width: 50,
-                          height: 20, // Adjust to match text height
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Theme.of(context).colorScheme.onPrimary,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: Colors.red.shade700,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            authProvider.signInErrorMessage,
+                            style: TextStyle(
+                              color: Colors.red.shade700,
+                              fontSize: 14,
                             ),
                           ),
-                        )
-                        : Text('Sign in'),
-              ),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Don\'t have an account? ',
-                    style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      context.go('/profile/signup');
-                    },
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  autocorrect: false,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return 'Email is required';
+                    }
+                    if (!emailRegex.hasMatch(val)) {
+                      return 'Enter a valid email';
+                    }
+                    return null;
+                  },
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    hintText: 'your@email.com',
+                  ),
+                ),
+                PasswordField(
+                  controller: _passwordController,
+                  labelText: 'Password',
+                  textInputAction: TextInputAction.done,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return 'Password is required';
+                    }
+                    return null;
+                  },
+                  onFieldSubmitted: () => _handleSignIn(),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () => context.go('/profile/forgot-password'),
                     child: Text(
-                      'Sign up',
+                      'Forgot Password?',
                       style: Theme.of(
                         context,
                       ).textTheme.bodySmall?.copyWith(color: Colors.blue[700]),
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+                OutlinedButton(
+                  onPressed:
+                      authProvider.isLoading || !_isFormValid
+                          ? null
+                          : _handleSignIn,
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    foregroundColor: _isFormValid ? Colors.white : Colors.grey,
+                    side: BorderSide(
+                      color:
+                          _isFormValid
+                              ? Theme.of(context).colorScheme.secondary
+                              : Colors.grey,
+                    ),
+                    backgroundColor:
+                        _isFormValid
+                            ? Theme.of(context).colorScheme.secondary
+                            : Colors.transparent,
+                  ),
+                  child:
+                      authProvider.isLoading
+                          ? const SizedBox(
+                            width: 50,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                          )
+                          : const Text('Sign in'),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Don\'t have an account? ',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    GestureDetector(
+                      onTap: () => context.go('/profile/signup'),
+                      child: Text(
+                        'Sign up',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.blue[700],
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

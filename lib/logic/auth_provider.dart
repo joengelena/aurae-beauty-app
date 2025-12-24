@@ -192,6 +192,10 @@ class AuthProvider extends ChangeNotifier {
     signUpErrorMessage = '';
   }
 
+  void clearSignInState() {
+    signInErrorMessage = '';
+  }
+
   void clearForgotPasswordState() {
     forgotPasswordMessage = '';
     forgotPasswordSuccess = false;
