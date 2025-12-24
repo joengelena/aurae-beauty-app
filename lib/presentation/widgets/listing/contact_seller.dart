@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:provider/provider.dart';
 
 class ContactSeller extends StatelessWidget {
@@ -59,7 +61,13 @@ class ContactSeller extends StatelessWidget {
                     // Phone Number
                     InkWell(
                       onTap: () {
-                        // Add call logic
+                        Clipboard.setData(
+                          ClipboardData(text: seller.phoneNumber),
+                        );
+                        FeedbackHelpers.showInfoSnackBar(
+                          context,
+                          'Phone number copied to clipboard',
+                        );
                       },
                       borderRadius: BorderRadius.circular(8),
                       child: Container(
@@ -94,7 +102,11 @@ class ContactSeller extends StatelessWidget {
                     // Email
                     InkWell(
                       onTap: () {
-                        // Add email logic
+                        Clipboard.setData(ClipboardData(text: seller.email));
+                        FeedbackHelpers.showInfoSnackBar(
+                          context,
+                          'Email copied to clipboard',
+                        );
                       },
                       borderRadius: BorderRadius.circular(8),
                       child: Container(

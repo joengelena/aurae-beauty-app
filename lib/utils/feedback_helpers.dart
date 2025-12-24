@@ -29,10 +29,7 @@ class FeedbackHelpers {
   }
 
   /// Shows a success snackbar
-  static void showSuccessSnackBar(
-    BuildContext context,
-    String message,
-  ) {
+  static void showSuccessSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -54,6 +51,17 @@ class FeedbackHelpers {
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
         duration: duration,
+      ),
+    );
+  }
+
+  /// Shows a success snackbar
+  static void showInfoSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
