@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/presentation/widgets/common/app_dialog.dart';
+import 'package:motorix_app/utils/theme.dart';
 
 /// Helper class for user feedback operations like confirmation dialogs and snackbars
 class FeedbackHelpers {
@@ -33,7 +34,7 @@ class FeedbackHelpers {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.green,
+        backgroundColor: green,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -48,7 +49,7 @@ class FeedbackHelpers {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red,
+        backgroundColor: red,
         behavior: SnackBarBehavior.floating,
         duration: duration,
       ),

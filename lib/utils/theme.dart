@@ -51,3 +51,6 @@ final ThemeData appTheme = ThemeData(
   ),
   dividerColor: Colors.grey.shade500,
 );
+
+final green = Color(0xFF15803D);
+final red = Color(0xFFB91C1C);
