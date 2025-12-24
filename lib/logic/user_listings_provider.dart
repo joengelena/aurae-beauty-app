@@ -46,6 +46,13 @@ class UserListingsProvider extends ChangeNotifier {
     await _loadListings();
   }
 
+  Future<void> refreshListings() async {
+    final userId = await SecureStorage.read('userId');
+    if (userId != null && userId.isNotEmpty) {
+      await fetchUserListings(userId);
+    }
+  }
+
   Future<void> loadMoreListings() async {
     if (_currentUserId != null && canLoadMore) {
       await _loadListings();

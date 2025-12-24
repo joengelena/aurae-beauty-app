@@ -6,7 +6,6 @@ import 'package:motorix_app/logic/user_listings_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
 import 'package:motorix_app/presentation/widgets/profile/user_profile.dart';
-import 'package:motorix_app/utils/secure_storage.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -157,14 +156,10 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Container(
         constraints: BoxConstraints(maxWidth: 600),
         child: RefreshIndicator(
-          onRefresh: () async {
-            final userId = await SecureStorage.read('userId');
-            if (userId != null && userId.isNotEmpty) {
-              await userListingsProvider.fetchUserListings(userId);
-            }
-          },
+          onRefresh: () => userListingsProvider.refreshListings(),
           child: ListView(
             controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
             children: [
               SizedBox(height: 24),
               UserProfile(),
