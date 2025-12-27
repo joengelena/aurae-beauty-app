@@ -60,11 +60,13 @@ class _GaragePageState extends State<GaragePage> {
     }
 
     if (garageProvider.vehicles.isEmpty) {
-      return Column(
-        children: [
-          const ListingsCarouselWidget(),
-          const Expanded(child: GarageEmptyState()),
-        ],
+      return SingleChildScrollView(
+        child: Column(
+          children: [
+            const ListingsCarouselWidget(),
+            const GarageEmptyState(),
+          ],
+        ),
       );
     }
 
