@@ -100,16 +100,16 @@ class _ListingsCarouselWidgetState extends State<ListingsCarouselWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Latest Listings',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+        Padding(
+          padding: const EdgeInsets.only(left: 16.0),
+          child: Text(
+            'Latest Listings',
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+          ),
         ),
-        SizedBox(
-          height: _carouselHeight,
-          child: child,
-        ),
+        SizedBox(height: _carouselHeight, child: child),
       ],
     );
   }
@@ -274,14 +274,8 @@ class _ListingsCarouselWidgetState extends State<ListingsCarouselWidget> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Theme.of(context)
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: 0.1),
-                  Theme.of(context)
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: 0.05),
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
                 ],
               ),
             ),
@@ -308,10 +302,9 @@ class _ListingsCarouselWidgetState extends State<ListingsCarouselWidget> {
                     'Browse all listings',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withValues(alpha: 0.7),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
