@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class GarageEmptyState extends StatelessWidget {
   const GarageEmptyState({super.key});
@@ -13,23 +14,26 @@ class GarageEmptyState extends StatelessWidget {
           children: [
             Icon(
               Icons.directions_car_outlined,
-              size: 80,
-              color: Colors.grey.shade400,
+              size: 64,
+              color: Colors.grey,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             Text(
               'No Vehicles Yet',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Text(
               'Add your first vehicle to start tracking WOF, registration, and service dates',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Colors.grey.shade600,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 24),
+            FilledButton(
+              onPressed: () {
+                context.go('/garage/add');
+              },
+              child: const Text('Add vehicle'),
             ),
           ],
         ),
