@@ -14,11 +14,13 @@ class ListingsProvider extends ChangeNotifier {
     'Oldest year': 'yearAsc',
   };
   final List<Listing> listings = [];
+  final List<Listing> latestListings = [];
   final int limit = 10;
   int currentPage = 0;
   int totalPages = 1;
   int totalListings = 0;
   bool isLoading = false;
+  bool isLoadingLatest = false;
 
   TextEditingController searchController = TextEditingController();
 
@@ -134,7 +136,71 @@ class ListingsProvider extends ChangeNotifier {
     getNewListings();
   }
 
+  Future<void> fetchLatestListings() async {
+    isLoadingLatest = true;
+    notifyListeners();
+
+    try {
+      final res = await ListingsServices().getAllListings(
+        allQueries: {
+          'limit': 10,
+          'pageNumber': 1,
+          'sortBy': 'uploadDateDesc',
+          'status': 'active',
+        },
+      );
+
+      final fetchedListings = res.data
+          .map((listing) {
+            return Listing(
+              id: listing.id,
+              userIdFk: listing.userIdFk,
+              status: listing.status,
+              viewCount: listing.viewCount,
+              previewImgUrl: listing.previewImgUrl,
+              imageUrls: listing.imageUrls,
+              location: listing.location,
+              vehicleCondition: listing.vehicleCondition,
+              originalPrice: listing.originalPrice,
+              discountedPrice: listing.discountedPrice,
+              uploadDate: listing.uploadDate,
+              description: listing.description,
+              endDate: listing.endDate,
+              make: listing.make,
+              model: listing.model,
+              year: listing.year,
+              kilometers: listing.kilometers,
+              fuelType: listing.fuelType,
+              bodyType: listing.bodyType,
+              driveType: listing.driveType,
+              orcIncluded: listing.orcIncluded,
+              numberPlate: listing.numberPlate,
+              seats: listing.seats,
+              doors: listing.doors,
+              previousOwners: listing.previousOwners,
+              color: listing.color,
+              engineSize: listing.engineSize,
+              transmission: listing.transmission,
+              cylinders: listing.cylinders,
+              regoExpiryDate: listing.regoExpiryDate,
+              wofExpiryDate: listing.wofExpiryDate,
+              isInWatchlist: listing.isInWatchlist,
+            );
+          })
+          .toList();
+
+      latestListings.clear();
+      latestListings.addAll(fetchedListings);
+    } catch (e) {
+      // Silently handle latest listings loading errors
+    } finally {
+      isLoadingLatest = false;
+      notifyListeners();
+    }
+  }
+
   void toggleWatchlistStatus(int listingId, bool newStatus) {
+    // Update in main listings
     final index = listings.indexWhere((listing) => listing.id == listingId);
     if (index != -1) {
       listings[index] = Listing(
@@ -171,8 +237,48 @@ class ListingsProvider extends ChangeNotifier {
         wofExpiryDate: listings[index].wofExpiryDate,
         isInWatchlist: newStatus,
       );
-      notifyListeners();
     }
+
+    // Update in latest listings
+    final latestIndex = latestListings.indexWhere((listing) => listing.id == listingId);
+    if (latestIndex != -1) {
+      latestListings[latestIndex] = Listing(
+        id: latestListings[latestIndex].id,
+        userIdFk: latestListings[latestIndex].userIdFk,
+        status: latestListings[latestIndex].status,
+        viewCount: latestListings[latestIndex].viewCount,
+        previewImgUrl: latestListings[latestIndex].previewImgUrl,
+        imageUrls: latestListings[latestIndex].imageUrls,
+        location: latestListings[latestIndex].location,
+        vehicleCondition: latestListings[latestIndex].vehicleCondition,
+        originalPrice: latestListings[latestIndex].originalPrice,
+        discountedPrice: latestListings[latestIndex].discountedPrice,
+        uploadDate: latestListings[latestIndex].uploadDate,
+        description: latestListings[latestIndex].description,
+        endDate: latestListings[latestIndex].endDate,
+        make: latestListings[latestIndex].make,
+        model: latestListings[latestIndex].model,
+        year: latestListings[latestIndex].year,
+        kilometers: latestListings[latestIndex].kilometers,
+        fuelType: latestListings[latestIndex].fuelType,
+        bodyType: latestListings[latestIndex].bodyType,
+        driveType: latestListings[latestIndex].driveType,
+        orcIncluded: latestListings[latestIndex].orcIncluded,
+        numberPlate: latestListings[latestIndex].numberPlate,
+        seats: latestListings[latestIndex].seats,
+        doors: latestListings[latestIndex].doors,
+        previousOwners: latestListings[latestIndex].previousOwners,
+        color: latestListings[latestIndex].color,
+        engineSize: latestListings[latestIndex].engineSize,
+        transmission: latestListings[latestIndex].transmission,
+        cylinders: latestListings[latestIndex].cylinders,
+        regoExpiryDate: latestListings[latestIndex].regoExpiryDate,
+        wofExpiryDate: latestListings[latestIndex].wofExpiryDate,
+        isInWatchlist: newStatus,
+      );
+    }
+
+    notifyListeners();
   }
 
   @override
