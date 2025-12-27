@@ -4,6 +4,7 @@ class UserVehicle {
   final String make;
   final String model;
   final int year;
+  final String? nickname;
   final String? licensePlate;
   final String? color;
   final String? fuelType;
@@ -25,6 +26,7 @@ class UserVehicle {
     required this.make,
     required this.model,
     required this.year,
+    this.nickname,
     this.licensePlate,
     this.color,
     this.fuelType,
@@ -48,6 +50,7 @@ class UserVehicle {
       make: json['make'] as String,
       model: json['model'] as String,
       year: json['year'] as int,
+      nickname: json['nickname'] as String?,
       licensePlate: json['licensePlate'] as String?,
       color: json['color'] as String?,
       fuelType: json['fuelType'] as String?,
@@ -72,6 +75,7 @@ class UserVehicle {
       'make': make,
       'model': model,
       'year': year,
+      'nickname': nickname,
       'licensePlate': licensePlate,
       'color': color,
       'fuelType': fuelType,

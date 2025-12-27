@@ -163,10 +163,32 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
-                        child: Text(
-                          '${vehicle.year} ${vehicle.make} ${vehicle.model}',
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ),
+                        child: vehicle.nickname != null
+                            ? Row(
+                                crossAxisAlignment: CrossAxisAlignment.baseline,
+                                textBaseline: TextBaseline.alphabetic,
+                                children: [
+                                  Text(
+                                    vehicle.nickname!,
+                                    style: Theme.of(context).textTheme.headlineMedium,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Flexible(
+                                    child: Text(
+                                      '${vehicle.year} ${vehicle.make} ${vehicle.model}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black54,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Text(
+                                '${vehicle.year} ${vehicle.make} ${vehicle.model}',
+                                style: Theme.of(context).textTheme.headlineMedium,
+                              ),
                       ),
                       ActionMenuButton(
                         options: [

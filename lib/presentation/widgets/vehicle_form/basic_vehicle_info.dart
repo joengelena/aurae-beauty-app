@@ -39,6 +39,11 @@ class BasicVehicleInfo extends StatelessWidget {
           min: 1900,
           max: DateTime.now().year + 2,
         ),
+        const StringFormField<VehicleFormProvider>(
+          labelText: 'Nickname (optional)',
+          fieldName: 'nickname',
+          isRequired: false,
+        ),
       ],
     );
   }
