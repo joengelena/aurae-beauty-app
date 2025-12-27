@@ -90,6 +90,9 @@ class EditVehicleProvider extends ChangeNotifier
     _formData['insuranceProvider'] = vehicle.insuranceProvider;
 
     // Optional fields - only add if not null
+    if (vehicle.nickname != null) {
+      _formData['nickname'] = vehicle.nickname!;
+    }
     if (vehicle.licensePlate != null) {
       _formData['licensePlate'] = vehicle.licensePlate!;
     }
