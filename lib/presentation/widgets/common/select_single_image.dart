@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
 
 class SelectSingleImage extends StatefulWidget {
@@ -14,7 +15,7 @@ class SelectSingleImage extends StatefulWidget {
     this.imageBytes,
     required this.onImageSelected,
     required this.onImageDeleted,
-    this.aspectRatio = 4 / 3,
+    this.aspectRatio = AppConstants.listingImageAspectRatio,
   });
 
   @override

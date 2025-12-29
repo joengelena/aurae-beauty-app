@@ -6,6 +6,7 @@ import 'package:motorix_app/presentation/widgets/common/select_single_image.dart
 import 'package:motorix_app/presentation/widgets/vehicle_form/additional_info_section.dart';
 import 'package:motorix_app/presentation/widgets/vehicle_form/basic_vehicle_info.dart';
 import 'package:motorix_app/presentation/widgets/vehicle_form/registration_service_section.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:provider/provider.dart';
 
@@ -117,7 +118,7 @@ class _VehicleFormState extends State<VehicleForm> {
                   imageBytes: provider.vehicleImageBytes,
                   onImageSelected: provider.setVehicleImage,
                   onImageDeleted: provider.removeVehicleImage,
-                  aspectRatio: 4 / 3,
+                  aspectRatio: AppConstants.listingImageAspectRatio,
                 ),
                 const BasicVehicleInfo(),
                 const RegistrationServiceSection(),
