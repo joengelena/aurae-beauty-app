@@ -7,6 +7,7 @@ import 'package:motorix_app/data/api_client.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/data/models/vehicle_service.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/utils.dart';
 
 class VehicleServices {
@@ -65,14 +66,24 @@ class VehicleServices {
         });
 
         // Create multipart file from image bytes
-        final multipartFile = _createImageMultipartFile(imageBytes, imageMimeType);
+        final multipartFile = _createImageMultipartFile(
+          imageBytes,
+          imageMimeType,
+        );
 
-        response = await apiClient.postMultipart('/user/vehicles', fields, [
-          multipartFile,
-        ]);
+        response = await apiClient.postMultipart(
+          '/user/vehicles',
+          fields,
+          [multipartFile],
+          invalidateCacheKeys: [CacheKeys.vehicles],
+        );
       } else {
         // If no image, send as JSON (backend allows optional image)
-        response = await apiClient.post('/user/vehicles', vehicleData);
+        response = await apiClient.post(
+          '/user/vehicles',
+          vehicleData,
+          invalidateCacheKeys: [CacheKeys.vehicles],
+        );
       }
 
       if (response.statusCode != HttpStatus.created) {
@@ -100,7 +111,11 @@ class VehicleServices {
 
   Future<List<UserVehicle>> getAllVehicles() async {
     try {
-      http.Response response = await apiClient.get('/user/vehicles');
+      http.Response response = await apiClient.get(
+        '/user/vehicles',
+        cacheKey: CacheKeys.vehicles,
+        cacheDuration: CacheDurations.medium,
+      );
 
       if (response.statusCode != HttpStatus.ok) {
         final errorMessage = extractErrorMessage(response.body);
@@ -132,7 +147,11 @@ class VehicleServices {
 
   Future<UserVehicle> getVehicleById(int id) async {
     try {
-      http.Response response = await apiClient.get('/user/vehicles/$id');
+      http.Response response = await apiClient.get(
+        '/user/vehicles/$id',
+        cacheKey: CacheKeys.vehicle(id),
+        cacheDuration: CacheDurations.medium,
+      );
 
       if (response.statusCode != HttpStatus.ok) {
         final errorMessage = extractErrorMessage(response.body);
@@ -175,12 +194,19 @@ class VehicleServices {
         });
 
         // Create multipart file from image bytes
-        final multipartFile = _createImageMultipartFile(imageBytes, imageMimeType);
+        final multipartFile = _createImageMultipartFile(
+          imageBytes,
+          imageMimeType,
+        );
 
         response = await apiClient.patchMultipart(
           '/user/vehicles/$vehicleId',
           fields,
           [multipartFile],
+          invalidateCacheKeys: [
+            CacheKeys.vehicles,
+            CacheKeys.vehicle(vehicleId),
+          ],
         );
       } else {
         // If no image, send as JSON (same as before)
@@ -193,6 +219,10 @@ class VehicleServices {
         response = await apiClient.patch(
           '/user/vehicles/$vehicleId',
           payload,
+          invalidateCacheKeys: [
+            CacheKeys.vehicles,
+            CacheKeys.vehicle(vehicleId),
+          ],
         );
       }
 
@@ -241,6 +271,10 @@ class VehicleServices {
       http.Response response = await apiClient.delete(
         '/user/vehicles/$vehicleId',
         payload,
+        invalidateCacheKeys: [
+          CacheKeys.vehicles, // Garage list no longer contains vehicle
+          CacheKeys.vehicle(vehicleId), // Vehicle detail should show 404
+        ],
       );
 
       if (response.statusCode == HttpStatus.notFound) {
@@ -278,9 +312,13 @@ class VehicleServices {
     Map<String, dynamic> serviceData,
   ) async {
     try {
+      final vehicleId = serviceData['vehicleId'];
+
       http.Response response = await apiClient.post(
         '/user/vehicle-services',
         serviceData,
+        invalidateCacheKeys:
+            vehicleId != null ? [CacheKeys.vehicleServices(vehicleId)] : null,
       );
 
       if (response.statusCode != HttpStatus.created) {
@@ -310,6 +348,8 @@ class VehicleServices {
     try {
       http.Response response = await apiClient.get(
         '/user/vehicles/$vehicleId/services',
+        cacheKey: CacheKeys.vehicleServices(vehicleId),
+        cacheDuration: CacheDurations.medium,
       );
 
       if (response.statusCode != HttpStatus.ok) {

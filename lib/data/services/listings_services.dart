@@ -6,6 +6,7 @@ import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/data/models/listing_attribute.dart';
 import 'package:motorix_app/data/models/pagination.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/utils.dart';
 
 class ListingsServices {
@@ -13,7 +14,11 @@ class ListingsServices {
 
   Future<Listing> getListing(int listingId) async {
     try {
-      http.Response response = await apiClient.get('/listings/$listingId');
+      http.Response response = await apiClient.get(
+        '/listings/$listingId',
+        cacheKey: CacheKeys.listing(listingId),
+        cacheDuration: CacheDurations.medium,
+      );
 
       if (response.statusCode == HttpStatus.notFound) {
         final errorMessage = extractErrorMessage(response.body);
@@ -56,6 +61,8 @@ class ListingsServices {
     try {
       http.Response response = await apiClient.get(
         '/listings',
+        cacheKey: CacheKeys.listings(allQueries),
+        cacheDuration: CacheDurations.medium,
         queryParameters: allQueries,
       );
 
@@ -93,7 +100,11 @@ class ListingsServices {
 
   Future<List<ListingAttribute>> getListingAttributes() async {
     try {
-      http.Response response = await apiClient.get('/listings/attributes');
+      http.Response response = await apiClient.get(
+        '/listings/attributes',
+        cacheKey: CacheKeys.listingAttribute,
+        cacheDuration: CacheDurations.long,
+      );
 
       if (response.statusCode != HttpStatus.ok) {
         final errorMessage = extractErrorMessage(response.body);
@@ -133,9 +144,9 @@ class ListingsServices {
   ) async {
     try {
       final Map<String, String> payload = Map.fromEntries(
-        listingFields.entries
-            .where((e) => e.value.toString().isNotEmpty)
-            .map((e) {
+        listingFields.entries.where((e) => e.value.toString().isNotEmpty).map((
+          e,
+        ) {
           return MapEntry(e.key, e.value.toString());
         }),
       );
@@ -144,6 +155,7 @@ class ListingsServices {
         '/listings',
         payload,
         images,
+        invalidateCacheKeys: [CacheKeys.allListingsCache],
       );
 
       if (response.statusCode != HttpStatus.created) {
@@ -185,17 +197,18 @@ class ListingsServices {
       // If images are provided, use multipart/form-data
       if (images != null && images.isNotEmpty) {
         final Map<String, String> payload = Map.fromEntries(
-          listingFields.entries
-              .where((e) => e.value.toString().isNotEmpty)
-              .map((e) {
-            return MapEntry(e.key, e.value.toString());
-          }),
+          listingFields.entries.where((e) => e.value.toString().isNotEmpty).map(
+            (e) {
+              return MapEntry(e.key, e.value.toString());
+            },
+          ),
         );
 
         response = await apiClient.patchMultipart(
           '/listings/$listingId',
           payload,
           images,
+          invalidateCacheKeys: [CacheKeys.allListingsCache],
         );
       } else {
         // If no images, send as JSON (same as before)
@@ -208,6 +221,7 @@ class ListingsServices {
         response = await apiClient.patch(
           '/listings/$listingId',
           payload,
+          invalidateCacheKeys: [CacheKeys.allListingsCache],
         );
       }
 
@@ -256,6 +270,7 @@ class ListingsServices {
       http.Response response = await apiClient.delete(
         '/listings/$listingId',
         payload,
+        invalidateCacheKeys: [CacheKeys.allListingsCache],
       );
 
       if (response.statusCode == HttpStatus.notFound) {
@@ -291,7 +306,10 @@ class ListingsServices {
 
   Future<void> incrementViewCount(int listingId) async {
     try {
-      http.Response response = await apiClient.post('/listings/$listingId/view', {});
+      http.Response response = await apiClient.post(
+        '/listings/$listingId/view',
+        {},
+      );
 
       if (response.statusCode != HttpStatus.ok) {
         // Silently fail - view count is not critical

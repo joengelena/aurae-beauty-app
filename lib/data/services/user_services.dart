@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:motorix_app/data/api_client.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/user.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 import 'package:motorix_app/utils/utils.dart';
 
@@ -138,7 +139,11 @@ class UserServices {
 
   Future<User> getUserWithId(String userId) async {
     try {
-      http.Response response = await apiClient.get('/users/$userId');
+      http.Response response = await apiClient.get(
+        '/users/$userId',
+        cacheKey: CacheKeys.users(userId),
+        cacheDuration: CacheDurations.short,
+      );
 
       if (response.statusCode == HttpStatus.notFound) {
         throw NotFoundException('User not found with ID: $userId');
@@ -353,11 +358,15 @@ class UserServices {
     String phoneNumber,
   ) async {
     try {
-      http.Response response = await apiClient.patch('/user', {
-        'firstName': firstName,
-        'lastName': lastName,
-        'phoneNumber': phoneNumber,
-      });
+      http.Response response = await apiClient.patch(
+        '/user',
+        {
+          'firstName': firstName,
+          'lastName': lastName,
+          'phoneNumber': phoneNumber,
+        },
+        invalidateCacheKeys: [CacheKeys.userProfile],
+      );
 
       if (response.statusCode == HttpStatus.unauthorized) {
         final errorMessage = extractErrorMessage(response.body);

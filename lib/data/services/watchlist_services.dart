@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:motorix_app/data/api_client.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/utils.dart';
 
 class WatchlistServices {
@@ -11,7 +12,11 @@ class WatchlistServices {
 
   Future<List<Listing>> getWatchlist() async {
     try {
-      http.Response response = await apiClient.get('/user/watchlist');
+      http.Response response = await apiClient.get(
+        CacheKeys.userWatchlist,
+        cacheKey: CacheKeys.userWatchlist,
+        cacheDuration: CacheDurations.short,
+      );
 
       if (response.statusCode != HttpStatus.ok) {
         final errorMessage = extractErrorMessage(response.body);
@@ -54,6 +59,12 @@ class WatchlistServices {
       http.Response response = await apiClient.post(
         '/user/watchlist-add/$listingId',
         {},
+        invalidateCacheKeys: [
+          CacheKeys.userProfile,
+          CacheKeys.userWatchlist,
+          CacheKeys.allListingsCache,
+          CacheKeys.listing(listingId),
+        ],
       );
 
       if (response.statusCode != HttpStatus.ok) {
@@ -84,6 +95,12 @@ class WatchlistServices {
       http.Response response = await apiClient.delete(
         '/user/watchlist-remove/$listingId',
         {},
+        invalidateCacheKeys: [
+          CacheKeys.userProfile,
+          CacheKeys.userWatchlist,
+          CacheKeys.allListingsCache,
+          CacheKeys.listing(listingId),
+        ],
       );
 
       if (response.statusCode != HttpStatus.ok) {

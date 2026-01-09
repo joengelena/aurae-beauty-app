@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:motorix_app/app_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/filtering_provider.dart';
@@ -13,11 +14,16 @@ import 'package:motorix_app/logic/listing_form_data_provider.dart';
 import 'package:motorix_app/logic/vehicle_detail_provider.dart';
 import 'package:motorix_app/logic/watchlist_provider.dart';
 import 'package:motorix_app/data/services/vehicle_notification_service.dart';
+import 'package:motorix_app/data/cache_manager.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Hive for caching (works on all platforms)
+  await Hive.initFlutter();
+  await CacheManager.instance.initialize();
 
   // Initialize notification service
   await VehicleNotificationService().initialize();
@@ -45,8 +51,16 @@ void main() async {
         ChangeNotifierProvider<FilteringProvider>(
           create: (_) => FilteringProvider(),
         ),
-        ChangeNotifierProvider<WatchlistProvider>(
+        ChangeNotifierProxyProvider<AuthProvider, WatchlistProvider>(
           create: (_) => WatchlistProvider(),
+          update: (context, authProvider, watchlistProvider) {
+            if (authProvider.isSignedIn) {
+              watchlistProvider!.fetchWatchlist();
+            } else {
+              watchlistProvider!.watchlist.clear();
+            }
+            return watchlistProvider;
+          },
         ),
         ChangeNotifierProxyProvider<AuthProvider, GarageProvider>(
           create: (_) => GarageProvider(),
@@ -104,11 +118,6 @@ class _MyAppState extends State<MyApp> {
     // This must happen after the first frame to avoid calling notifyListeners during build
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await auth.checkAuthStatus();
-
-      // Fetch watchlist if user is signed in
-      if (auth.isSignedIn && mounted) {
-        context.read<WatchlistProvider>().fetchWatchlist();
-      }
     });
   }
 

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/filtering_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
-import 'package:motorix_app/logic/watchlist_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_preview.dart';
 
@@ -62,8 +60,6 @@ class _InfiniteGridState extends State<InfiniteGrid> {
     try {
       final filteringProvider = context.read<FilteringProvider>();
       final listingsProvider = context.read<ListingsProvider>();
-      final authProvider = context.read<AuthProvider>();
-      final watchlistProvider = context.read<WatchlistProvider>();
 
       await _waitForAttributes(filteringProvider).timeout(
         _initTimeout,
@@ -73,11 +69,6 @@ class _InfiniteGridState extends State<InfiniteGrid> {
       );
 
       if (!mounted) return;
-
-      // Fetch watchlist if user is signed in
-      if (authProvider.isSignedIn) {
-        await watchlistProvider.fetchWatchlist();
-      }
 
       // Set initial filters
       listingsProvider.equalFilters = Map.from(
