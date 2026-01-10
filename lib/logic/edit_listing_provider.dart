@@ -36,7 +36,7 @@ class EditListingProvider extends ChangeNotifier
       listingAttributeOptions = await ListingsServices().getListingAttributes();
       attributesLoaded = true;
     } catch (e) {
-      // Silently handle attribute loading errors
+      debugPrint('⚠️ Failed to load listing attributes: $e');
       attributesLoaded = true; // Set to true even on error to show the form
     } finally {
       notifyListeners();

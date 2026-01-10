@@ -34,7 +34,7 @@ class PostListingProvider extends ChangeNotifier
         }
       }
     } catch (e) {
-      // Silently handle attribute loading errors
+      debugPrint('⚠️ Failed to load listing attributes: $e');
     } finally {
       notifyListeners();
     }

@@ -49,7 +49,7 @@ class EditVehicleProvider extends ChangeNotifier
     try {
       listingAttributeOptions = await ListingsServices().getListingAttributes();
     } catch (e) {
-      // Silently handle attribute loading errors
+      debugPrint('⚠️ Failed to load listing attributes: $e');
     } finally {
       notifyListeners();
     }
@@ -120,6 +120,7 @@ class EditVehicleProvider extends ChangeNotifier
         notifyListeners();
       }
     } catch (e) {
+      debugPrint('⚠️ Failed to load vehicle image: $e');
       // Silently fail - image preview is not critical for editing other fields
       // User can still update vehicle data even if image fails to load
     }

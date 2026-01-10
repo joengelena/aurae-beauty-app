@@ -102,6 +102,7 @@ class AuthProvider extends ChangeNotifier {
       await _userServices.signOut();
     } catch (e) {
       // Silently handle sign out errors - always sign out locally even if API call fails
+      debugPrint('⚠️ Failed to sign out (continuing with local sign out): $e');
     } finally {
       isSignedIn = false;
       isLoading = false;

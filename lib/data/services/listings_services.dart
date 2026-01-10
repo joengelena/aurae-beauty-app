@@ -317,6 +317,7 @@ class ListingsServices {
       }
     } catch (e) {
       // Silently fail - view count is not critical
+      debugPrint('⚠️ Failed to increment view count: $e');
       return;
     }
   }

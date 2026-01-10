@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:http/http.dart' as http;
 import 'package:motorix_app/data/api_client.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
@@ -90,7 +90,7 @@ class UserServices {
       }
     } catch (e) {
       // Log error but don't fail the sign-in
-      // In production, use a proper logging framework
+      debugPrint('⚠️ Failed to store auth data: $e');
     }
   }
 
@@ -133,7 +133,7 @@ class UserServices {
       }
     } catch (e) {
       // Log error but don't fail the sign-out
-      // In production, use a proper logging framework
+      debugPrint('⚠️ Failed to clear auth data: $e');
     }
   }
 
@@ -348,7 +348,7 @@ class UserServices {
       }
     } catch (e) {
       // Log error but don't fail
-      // In production, use a proper logging framework
+      debugPrint('⚠️ Failed to clear auth data: $e');
     }
   }
 

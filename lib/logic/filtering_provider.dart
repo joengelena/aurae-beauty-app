@@ -27,7 +27,7 @@ class FilteringProvider extends ChangeNotifier {
           attribute.name: attribute.attributeValues.first,
       };
     } catch (e) {
-      // Silently handle filter loading errors
+      debugPrint('⚠️ Failed to load filter options: $e');
     } finally {
       notifyListeners();
     }

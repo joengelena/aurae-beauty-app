@@ -105,7 +105,7 @@ class ListingsProvider extends ChangeNotifier {
       currentPage = res.pageNumber;
       totalListings = res.totalRows;
     } catch (e) {
-      // Silently handle listing loading errors
+      debugPrint('⚠️ Failed to fetch listings: $e');
     } finally {
       isLoading = false;
       notifyListeners();
@@ -192,7 +192,7 @@ class ListingsProvider extends ChangeNotifier {
       latestListings.clear();
       latestListings.addAll(fetchedListings);
     } catch (e) {
-      // Silently handle latest listings loading errors
+      debugPrint('⚠️ Failed to fetch latest listings: $e');
     } finally {
       isLoadingLatest = false;
       notifyListeners();

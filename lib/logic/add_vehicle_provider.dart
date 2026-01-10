@@ -39,7 +39,7 @@ class AddVehicleProvider extends ChangeNotifier
     try {
       listingAttributeOptions = await ListingsServices().getListingAttributes();
     } catch (e) {
-      // Silently handle attribute loading errors
+      debugPrint('⚠️ Failed to load listing attributes: $e');
     } finally {
       notifyListeners();
     }
