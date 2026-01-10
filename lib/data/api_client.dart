@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart' as http_parser;
 import 'package:motorix_app/data/http_client.dart';
 import 'package:motorix_app/data/cache_manager.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
@@ -13,7 +15,8 @@ class ApiClient {
 
   late final http.Client _client;
 
-  bool _isRefreshing = false;
+  // Completer to coordinate multiple concurrent token refresh attempts
+  Completer<bool>? _refreshCompleter;
 
   // Auth endpoints that should skip retry to avoid infinite loops
   static const _authEndpoints = ['/signin', '/signup', '/refresh-token'];
@@ -59,17 +62,23 @@ class ApiClient {
   }
 
   Future<bool> _refreshToken() async {
-    if (_isRefreshing) {
-      return false;
+    // If a refresh is already in progress, wait for it to complete
+    if (_refreshCompleter != null) {
+      debugPrint('🔄 Token refresh already in progress, waiting...');
+      return await _refreshCompleter!.future;
     }
 
-    _isRefreshing = true;
+    // Create a new completer for this refresh operation
+    _refreshCompleter = Completer<bool>();
+    debugPrint('🔄 Starting token refresh...');
 
     try {
       final requestBody = <String, dynamic>{};
       if (!kIsWeb) {
         final refreshToken = await SecureStorage.read('refreshToken');
         if (refreshToken == null || refreshToken.isEmpty) {
+          debugPrint('❌ No refresh token available');
+          _refreshCompleter!.complete(false);
           return false;
         }
         requestBody['refreshToken'] = refreshToken;
@@ -82,6 +91,8 @@ class ApiClient {
       );
 
       if (response.statusCode != HttpStatus.ok) {
+        debugPrint('❌ Token refresh failed: ${response.statusCode}');
+        _refreshCompleter!.complete(false);
         return false;
       }
 
@@ -92,11 +103,16 @@ class ApiClient {
         await SecureStorage.write('refreshToken', data['refreshToken'] ?? '');
       }
 
+      debugPrint('✅ Token refresh successful');
+      _refreshCompleter!.complete(true);
       return true;
     } catch (e) {
+      debugPrint('❌ Token refresh error: $e');
+      _refreshCompleter!.complete(false);
       return false;
     } finally {
-      _isRefreshing = false;
+      // Reset the completer so future refresh attempts can start fresh
+      _refreshCompleter = null;
     }
   }
 
@@ -107,10 +123,14 @@ class ApiClient {
     final response = await request();
 
     if (response.statusCode == HttpStatus.unauthorized && !skipRetry) {
+      debugPrint('⚠️ Got 401, attempting token refresh...');
       final refreshed = await _refreshToken();
 
       if (refreshed) {
+        debugPrint('🔄 Token refresh succeeded, retrying request...');
         return await request();
+      } else {
+        debugPrint('❌ Token refresh failed, request will fail with 401');
       }
     }
 
@@ -243,7 +263,7 @@ class ApiClient {
       } catch (e) {
         return http.Response('Network error: ${e.toString()}', 500);
       }
-    });
+    }, skipRetry: _shouldSkipRetry(path));
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       await _invalidateCacheKeys(invalidateCacheKeys);
@@ -270,7 +290,7 @@ class ApiClient {
       } catch (e) {
         return http.Response('Network error: ${e.toString()}', 500);
       }
-    });
+    }, skipRetry: _shouldSkipRetry(path));
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       await _invalidateCacheKeys(invalidateCacheKeys);
@@ -285,6 +305,19 @@ class ApiClient {
     List<http.MultipartFile> files, {
     List<String>? invalidateCacheKeys,
   }) async {
+    // Store original file bytes to allow retry with fresh streams
+    final fileBytes = <List<int>>[];
+    final fileFields = <String>[];
+    final filenames = <String>[];
+    final contentTypes = <String?>[];
+
+    for (var file in files) {
+      fileBytes.add(await file.finalize().toBytes());
+      fileFields.add(file.field);
+      filenames.add(file.filename ?? 'file');
+      contentTypes.add(file.contentType.toString());
+    }
+
     final response = await _executeWithRetry(() async {
       try {
         final uri = _buildUri(path);
@@ -293,14 +326,29 @@ class ApiClient {
         final request = http.MultipartRequest('POST', uri);
         request.headers.addAll(headers);
         request.fields.addAll(fields);
-        request.files.addAll(files);
 
+        // Recreate files with fresh byte streams for each attempt
+        for (var i = 0; i < fileBytes.length; i++) {
+          final multipartFile = http.MultipartFile.fromBytes(
+            fileFields[i],
+            fileBytes[i],
+            filename: filenames[i],
+            contentType:
+                contentTypes[i] != null
+                    ? http_parser.MediaType.parse(contentTypes[i]!)
+                    : null,
+          );
+          request.files.add(multipartFile);
+        }
+
+        debugPrint('🌐 Sending multipart request to: $path');
         final streamedResponse = await _client.send(request);
         return await http.Response.fromStream(streamedResponse);
       } catch (e) {
+        debugPrint('❌ Multipart request error: $e');
         return http.Response('Network error: ${e.toString()}', 500);
       }
-    });
+    }, skipRetry: _shouldSkipRetry(path));
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       await _invalidateCacheKeys(invalidateCacheKeys);
@@ -315,6 +363,19 @@ class ApiClient {
     List<http.MultipartFile> files, {
     List<String>? invalidateCacheKeys,
   }) async {
+    // Store original file bytes to allow retry with fresh streams
+    final fileBytes = <List<int>>[];
+    final fileFields = <String>[];
+    final filenames = <String>[];
+    final contentTypes = <String?>[];
+
+    for (var file in files) {
+      fileBytes.add(await file.finalize().toBytes());
+      fileFields.add(file.field);
+      filenames.add(file.filename ?? 'file');
+      contentTypes.add(file.contentType?.toString());
+    }
+
     final response = await _executeWithRetry(() async {
       try {
         final uri = _buildUri(path);
@@ -323,14 +384,29 @@ class ApiClient {
         final request = http.MultipartRequest('PATCH', uri);
         request.headers.addAll(headers);
         request.fields.addAll(fields);
-        request.files.addAll(files);
 
+        // Recreate files with fresh byte streams for each attempt
+        for (var i = 0; i < fileBytes.length; i++) {
+          final multipartFile = http.MultipartFile.fromBytes(
+            fileFields[i],
+            fileBytes[i],
+            filename: filenames[i],
+            contentType:
+                contentTypes[i] != null
+                    ? http_parser.MediaType.parse(contentTypes[i]!)
+                    : null,
+          );
+          request.files.add(multipartFile);
+        }
+
+        debugPrint('🌐 Sending multipart PATCH request to: $path');
         final streamedResponse = await _client.send(request);
         return await http.Response.fromStream(streamedResponse);
       } catch (e) {
+        debugPrint('❌ Multipart PATCH error: $e');
         return http.Response('Network error: ${e.toString()}', 500);
       }
-    });
+    }, skipRetry: _shouldSkipRetry(path));
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       await _invalidateCacheKeys(invalidateCacheKeys);
