@@ -6,6 +6,7 @@ import 'package:motorix_app/logic/garage_provider.dart';
 import 'package:motorix_app/presentation/widgets/garage/compliance_card.dart';
 import 'package:motorix_app/presentation/widgets/garage/update_expiry_date_dialog.dart';
 import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
@@ -121,7 +122,7 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: AspectRatio(
-                    aspectRatio: 16 / 9,
+                    aspectRatio: AppConstants.listingImageAspectRatio,
                     child: Image.network(
                       vehicle.vehiclePhotoUrl!,
                       fit: BoxFit.cover,
@@ -139,17 +140,21 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                   ),
                 )
               else
-                Container(
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.directions_car,
-                      size: 80,
-                      color: Colors.grey[400],
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: AspectRatio(
+                    aspectRatio: AppConstants.listingImageAspectRatio,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                      ),
+                      child: Center(
+                        child: Icon(
+                          Icons.directions_car,
+                          size: 80,
+                          color: Colors.grey[400],
+                        ),
+                      ),
                     ),
                   ),
                 ),
