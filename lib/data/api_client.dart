@@ -373,7 +373,7 @@ class ApiClient {
       fileBytes.add(await file.finalize().toBytes());
       fileFields.add(file.field);
       filenames.add(file.filename ?? 'file');
-      contentTypes.add(file.contentType?.toString());
+      contentTypes.add(file.contentType.toString());
     }
 
     final response = await _executeWithRetry(() async {
