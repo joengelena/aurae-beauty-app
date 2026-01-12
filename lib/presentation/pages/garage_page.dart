@@ -4,6 +4,7 @@ import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/garage_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
+import 'package:motorix_app/presentation/widgets/common/labeled_fab.dart';
 import 'package:motorix_app/presentation/widgets/garage/listings_carousel_widget.dart';
 import 'package:motorix_app/presentation/widgets/garage/vehicle_card.dart';
 import 'package:motorix_app/presentation/widgets/sign_in_to_access.dart';
@@ -34,14 +35,9 @@ class _GaragePageState extends State<GaragePage> {
     return Stack(
       children: [
         _buildBody(garageProvider),
-        Positioned(
-          right: 16,
-          bottom: 16,
-          child: FloatingActionButton(
-            onPressed: _handleAddVehicle,
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-            child: const Icon(Icons.add),
-          ),
+        LabeledFab(
+          label: 'Add',
+          onPressed: _handleAddVehicle,
         ),
       ],
     );

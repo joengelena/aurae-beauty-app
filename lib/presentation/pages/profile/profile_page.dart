@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
+import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/logic/user_listings_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
+import 'package:motorix_app/presentation/widgets/common/labeled_fab.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
 import 'package:motorix_app/presentation/widgets/profile/user_profile.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
@@ -152,105 +154,116 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final userListingsProvider = context.watch<UserListingsProvider>();
 
-    return Center(
-      child: Container(
-        constraints: BoxConstraints(maxWidth: 600),
-        child: RefreshIndicator(
-          onRefresh: () => userListingsProvider.refreshListings(),
-          child: ListView(
-            controller: _scrollController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: [
-              SizedBox(height: 24),
-              UserProfile(),
-              SizedBox(height: 24),
-              Divider(
-                color: Colors.grey,
-                thickness: 1,
-                indent: 32,
-                endIndent: 32,
-              ),
-              Column(
+    return Stack(
+      children: [
+        Center(
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 600),
+            child: RefreshIndicator(
+              onRefresh: () => userListingsProvider.refreshListings(),
+              child: ListView(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
                 children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 16, bottom: 8),
-                    child: Text(
-                      'My Listings',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
+                  SizedBox(height: 24),
+                  UserProfile(),
+                  SizedBox(height: 24),
+                  Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                    indent: 32,
+                    endIndent: 32,
                   ),
-                  // Loading state
-                  if (userListingsProvider.isLoading &&
-                      userListingsProvider.userListings.isEmpty)
-                    Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
-                  // Error state
-                  if (userListingsProvider.errorMessage.isNotEmpty &&
-                      userListingsProvider.userListings.isEmpty)
-                    Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          Icon(Icons.error_outline, size: 48, color: themeRed),
-                          SizedBox(height: 16),
-                          Text(
-                            userListingsProvider.errorMessage,
-                            style: TextStyle(color: themeRed),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                  Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(top: 16, bottom: 8),
+                        child: Text(
+                          'My Listings',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
                       ),
-                    ),
-                  // Empty state
-                  if (!userListingsProvider.isLoading &&
-                      userListingsProvider.userListings.isEmpty &&
-                      userListingsProvider.errorMessage.isEmpty)
-                    Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.inventory_2_outlined,
-                            size: 64,
-                            color: Colors.grey,
+                      // Loading state
+                      if (userListingsProvider.isLoading &&
+                          userListingsProvider.userListings.isEmpty)
+                        Padding(
+                          padding: EdgeInsets.all(32.0),
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                      // Error state
+                      if (userListingsProvider.errorMessage.isNotEmpty &&
+                          userListingsProvider.userListings.isEmpty)
+                        Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              Icon(Icons.error_outline, size: 48, color: themeRed),
+                              SizedBox(height: 16),
+                              Text(
+                                userListingsProvider.errorMessage,
+                                style: TextStyle(color: themeRed),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 16),
-                          Text(
-                            'No listings yet',
-                            style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      // Empty state
+                      if (!userListingsProvider.isLoading &&
+                          userListingsProvider.userListings.isEmpty &&
+                          userListingsProvider.errorMessage.isEmpty)
+                        Padding(
+                          padding: EdgeInsets.all(32.0),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.inventory_2_outlined,
+                                size: 64,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                'No listings yet',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Your vehicle listings will appear here',
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Your vehicle listings will appear here',
-                            style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      // Listings
+                      ...userListingsProvider.userListings.map((listing) {
+                        return ListingTile(
+                          listing: listing,
+                          topRightButton: ActionMenuButton(
+                            options: _buildMenuOptions(listing),
                           ),
-                        ],
-                      ),
-                    ),
-                  // Listings
-                  ...userListingsProvider.userListings.map((listing) {
-                    return ListingTile(
-                      listing: listing,
-                      topRightButton: ActionMenuButton(
-                        options: _buildMenuOptions(listing),
-                      ),
-                    );
-                  }),
-                  // Loading more indicator
-                  if (userListingsProvider.isLoading &&
-                      userListingsProvider.userListings.isNotEmpty)
-                    Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
+                        );
+                      }),
+                      // Loading more indicator
+                      if (userListingsProvider.isLoading &&
+                          userListingsProvider.userListings.isNotEmpty)
+                        Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                    ],
+                  ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
-      ),
+        LabeledFab(
+          label: 'Post',
+          onPressed: () {
+            context.read<PostListingProvider>().resetProvider();
+            context.go('/listings/post');
+          },
+        ),
+      ],
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/presentation/widgets/listing/infinite_grid.dart';
 import 'package:motorix_app/presentation/widgets/listing/filters_and_sort_bar.dart';
+import 'package:motorix_app/presentation/widgets/common/labeled_fab.dart';
 import 'package:provider/provider.dart';
 
 class ListingsPage extends StatelessWidget {
@@ -18,17 +19,12 @@ class ListingsPage extends StatelessWidget {
             const Expanded(child: InfiniteGrid()),
           ],
         ),
-        Positioned(
-          right: 16,
-          bottom: 16,
-          child: FloatingActionButton(
-            onPressed: () {
-              context.read<PostListingProvider>().resetProvider();
-              context.go('/listings/post');
-            },
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-            child: const Icon(Icons.add),
-          ),
+        LabeledFab(
+          label: 'Post',
+          onPressed: () {
+            context.read<PostListingProvider>().resetProvider();
+            context.go('/listings/post');
+          },
         ),
       ],
     );
