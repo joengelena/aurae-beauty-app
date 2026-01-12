@@ -9,17 +9,13 @@ class AppNavigation extends StatelessWidget {
   int _calculateIndex(String uri) {
     if (uri.startsWith('/watchlist')) return 1;
     if (uri.startsWith('/garage')) return 2;
+    if (uri.startsWith('/profile')) return 3;
     return 0;
-  }
-
-  bool _isProfilePage(String uri) {
-    return uri.startsWith('/profile');
   }
 
   @override
   Widget build(BuildContext context) {
     final uri = state.uri.toString();
-    final isProfilePage = _isProfilePage(uri);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -31,28 +27,23 @@ class AppNavigation extends StatelessWidget {
               data: Theme.of(context).copyWith(
                 navigationBarTheme: NavigationBarThemeData(
                   height: 60,
-                  indicatorColor:
-                      isProfilePage ? Colors.transparent : Colors.grey.shade400,
+                  indicatorColor: Colors.grey.shade400,
                   iconTheme: WidgetStateProperty.resolveWith((states) {
                     final isSelected = states.contains(WidgetState.selected);
                     return IconThemeData(
                       size: 24,
-                      color:
-                          isSelected && !isProfilePage
-                              ? Theme.of(
-                                context,
-                              ).colorScheme.onSecondaryContainer
-                              : Colors.black,
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.onSecondaryContainer
+                          : Colors.black,
                     );
                   }),
                   labelTextStyle: WidgetStateProperty.resolveWith((states) {
                     final isSelected = states.contains(WidgetState.selected);
                     return TextStyle(
                       fontSize: 12,
-                      color:
-                          isSelected && !isProfilePage
-                              ? Theme.of(context).colorScheme.onSurface
-                              : Colors.black,
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.onSurface
+                          : Colors.black,
                     );
                   }),
                 ),
@@ -68,6 +59,9 @@ class AppNavigation extends StatelessWidget {
                       break;
                     case 2:
                       context.go('/garage');
+                      break;
+                    case 3:
+                      context.go('/profile');
                       break;
                   }
                 },
@@ -85,6 +79,10 @@ class AppNavigation extends StatelessWidget {
                   NavigationDestination(
                     icon: Icon(Icons.home),
                     label: 'My Garage',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.person),
+                    label: 'Profile',
                   ),
                 ],
               ),

@@ -114,14 +114,6 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
                         ),
                       ),
                     ],
-              )
-            else
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: IconButton(
-                  icon: const Icon(Icons.person),
-                  onPressed: () => context.go('/profile'),
-                ),
               ),
           ],
         ),
