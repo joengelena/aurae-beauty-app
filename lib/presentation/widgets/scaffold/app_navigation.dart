@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/logic/back_button_provider.dart';
+import 'package:provider/provider.dart';
 
 class AppNavigation extends StatelessWidget {
   final GoRouterState state;
@@ -50,6 +52,9 @@ class AppNavigation extends StatelessWidget {
               ),
               child: NavigationBar(
                 onDestinationSelected: (index) {
+                  // Reset back button provider when navigating via navbar
+                  context.read<BackButtonProvider>().reset();
+
                   switch (index) {
                     case 0:
                       context.go('/listings');

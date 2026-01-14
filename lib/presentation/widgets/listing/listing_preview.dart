@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/models/listing.dart';
+import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/logic/watchlist_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
@@ -22,6 +23,10 @@ class ListingPreview extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
+        // Push current route onto stack for back button
+        final currentRoute = GoRouterState.of(context).uri.path;
+        context.read<BackButtonProvider>().pushRoute(currentRoute);
+
         context.go('/listings/${listing.id}');
       },
       child: SizedBox(

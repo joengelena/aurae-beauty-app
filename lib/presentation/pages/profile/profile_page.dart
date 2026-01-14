@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
+import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
 import 'package:motorix_app/logic/user_listings_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
@@ -103,7 +104,13 @@ class _ProfilePageState extends State<ProfilePage> {
       MenuOption(
         icon: Icons.edit,
         title: 'Edit',
-        onTap: () => context.go('/listings/${listing.id}/edit'),
+        onTap: () {
+          // Push current route onto stack for back button
+          final currentRoute = GoRouterState.of(context).uri.path;
+          context.read<BackButtonProvider>().pushRoute(currentRoute);
+
+          context.go('/listings/${listing.id}/edit');
+        },
       ),
     ];
 
@@ -259,6 +266,10 @@ class _ProfilePageState extends State<ProfilePage> {
         LabeledFab(
           label: 'Post',
           onPressed: () {
+            // Push current route onto stack for back button
+            final currentRoute = GoRouterState.of(context).uri.path;
+            context.read<BackButtonProvider>().pushRoute(currentRoute);
+
             context.read<PostListingProvider>().resetProvider();
             context.go('/listings/post');
           },

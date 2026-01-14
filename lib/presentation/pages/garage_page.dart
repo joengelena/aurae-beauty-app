@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/logic/garage_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
 import 'package:motorix_app/presentation/widgets/common/labeled_fab.dart';
@@ -118,10 +119,18 @@ class _GaragePageState extends State<GaragePage> {
   }
 
   void _handleAddVehicle() {
+    // Push current route onto stack for back button
+    final currentRoute = GoRouterState.of(context).uri.path;
+    context.read<BackButtonProvider>().pushRoute(currentRoute);
+
     context.go('/garage/add');
   }
 
   void _handleEditVehicle(UserVehicle vehicle) {
+    // Push current route onto stack for back button
+    final currentRoute = GoRouterState.of(context).uri.path;
+    context.read<BackButtonProvider>().pushRoute(currentRoute);
+
     context.go('/garage/${vehicle.id}/edit');
   }
 

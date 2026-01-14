@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
+import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/presentation/widgets/garage/compliance_card.dart';
 import 'package:motorix_app/utils/constants.dart';
+import 'package:provider/provider.dart';
 
 class VehicleCard extends StatelessWidget {
   final UserVehicle vehicle;
@@ -17,7 +19,13 @@ class VehicleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.go('/garage/${vehicle.id}'),
+      onTap: () {
+        // Push current route onto stack for back button
+        final currentRoute = GoRouterState.of(context).uri.path;
+        context.read<BackButtonProvider>().pushRoute(currentRoute);
+
+        context.go('/garage/${vehicle.id}');
+      },
       child: Card(
         margin: const EdgeInsets.only(bottom: 16.0),
         elevation: AppConstants.cardShadowElevation,

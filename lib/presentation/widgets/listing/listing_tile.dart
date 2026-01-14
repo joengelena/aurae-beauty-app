@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/models/listing.dart';
+import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class ListingTile extends StatelessWidget {
   static const double _imageWidth = 140.0;
@@ -25,6 +27,10 @@ class ListingTile extends StatelessWidget {
       constraints: const BoxConstraints(maxWidth: 600),
       child: GestureDetector(
         onTap: () {
+          // Push current route onto stack for back button
+          final currentRoute = GoRouterState.of(context).uri.path;
+          context.read<BackButtonProvider>().pushRoute(currentRoute);
+
           context.go('/listings/${listing.id}');
         },
         child: Card(

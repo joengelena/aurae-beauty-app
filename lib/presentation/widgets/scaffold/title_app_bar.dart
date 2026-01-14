@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_search_field.dart';
 import 'package:provider/provider.dart';
@@ -52,14 +53,22 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
     final isListingsPage = currentRoute == '/listings';
 
     void onBack() {
-      if (context.canPop()) {
+      final backButtonProvider = context.read<BackButtonProvider>();
+
+      // Try to pop from the route stack
+      final previousRoute = backButtonProvider.popRoute();
+
+      if (previousRoute != null && previousRoute.isNotEmpty) {
+        // Navigate back to the route from stack
+        context.go(previousRoute);
+      } else if (context.canPop()) {
         context.pop();
       } else {
-        // Fallback if there's no navigation history
+        // Fallback: navigate to parent route
         final currentRouteInSections = currentRoute!.split('/');
         currentRouteInSections.removeLast();
         final targetRoute = currentRouteInSections.join('/');
-        context.go(targetRoute);
+        context.go(targetRoute.isEmpty ? '/listings' : targetRoute);
       }
     }
 

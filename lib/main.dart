@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:motorix_app/app_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/logic/filtering_provider.dart';
 import 'package:motorix_app/logic/garage_provider.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
@@ -34,6 +35,9 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
+        ChangeNotifierProvider<BackButtonProvider>(
+          create: (_) => BackButtonProvider(),
+        ),
         ChangeNotifierProxyProvider<AuthProvider, ProfileProvider>(
           create: (_) => ProfileProvider(),
           update: (context, authProvider, profileProvider) {

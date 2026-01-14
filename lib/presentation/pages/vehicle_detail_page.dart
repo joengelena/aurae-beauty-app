@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
+import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/logic/vehicle_detail_provider.dart';
 import 'package:motorix_app/logic/garage_provider.dart';
 import 'package:motorix_app/presentation/widgets/garage/compliance_card.dart';
@@ -201,6 +202,10 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                             icon: Icons.edit,
                             title: 'Edit',
                             onTap: () {
+                              // Push current route onto stack for back button
+                              final currentRoute = GoRouterState.of(context).uri.path;
+                              context.read<BackButtonProvider>().pushRoute(currentRoute);
+
                               context.go('/garage/${vehicle.id}/edit');
                             },
                           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/models/listing.dart';
+import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/theme.dart';
@@ -116,7 +117,13 @@ class _ListingsCarouselWidgetState extends State<ListingsCarouselWidget> {
 
   Widget _buildListingCard(BuildContext context, Listing listing) {
     return GestureDetector(
-      onTap: () => context.go('/listings/${listing.id}'),
+      onTap: () {
+        // Store current route for back button
+        final currentRoute = GoRouterState.of(context).uri.path;
+        context.read<BackButtonProvider>().pushRoute(currentRoute);
+
+        context.go('/listings/${listing.id}');
+      },
       child: SizedBox(
         width: _cardWidth,
         child: Card(
