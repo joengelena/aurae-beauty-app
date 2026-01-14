@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/models/listing.dart';
@@ -78,21 +79,29 @@ class _ListingsCarouselWidgetState extends State<ListingsCarouselWidget> {
     }
 
     return _buildCarouselWrapper(
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: displayListings.length + 1, // +1 for "View More" card
-        itemBuilder: (context, index) {
-          // Last item is the "View More" card
-          if (index == displayListings.length) {
-            return _buildViewMoreCard(context);
-          }
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+          },
+        ),
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: displayListings.length + 1, // +1 for "View More" card
+          itemBuilder: (context, index) {
+            // Last item is the "View More" card
+            if (index == displayListings.length) {
+              return _buildViewMoreCard(context);
+            }
 
-          final listing = displayListings[index];
-          return Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: _buildListingCard(context, listing),
-          );
-        },
+            final listing = displayListings[index];
+            return Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: _buildListingCard(context, listing),
+            );
+          },
+        ),
       ),
     );
   }
