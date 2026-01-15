@@ -1,20 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/filtering_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
+import 'package:motorix_app/utils/filter_utils.dart';
 import 'package:provider/provider.dart';
 
 class FilterBar extends StatelessWidget {
-  static const _filterNames = {
-    'make': 'Make',
-    'location': 'Location',
-    'vehicle_condition': 'Condition',
-    'fuel_type': 'Fuel',
-    'body_type': 'Body style',
-    'drive_type': 'Drive type',
-    'transmission': 'Transmission',
-    'cylinders': 'Cylinders',
-  };
-
   const FilterBar({super.key});
 
   Widget selectedFilter(
@@ -100,7 +90,7 @@ class FilterBar extends StatelessWidget {
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    _filterNames[attributeOption.name] ??
+                                    FilterUtils.filterDisplayNames[attributeOption.name] ??
                                         attributeOption.name,
                                     style: TextStyle(
                                       fontSize: 16,

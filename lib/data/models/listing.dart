@@ -147,6 +147,7 @@ class Listing {
     int? cylinders,
     DateTime? regoExpiryDate,
     DateTime? wofExpiryDate,
+    bool? isInWatchlist,
   }) {
     return Listing(
       id: id ?? this.id,
@@ -180,6 +181,7 @@ class Listing {
       cylinders: cylinders ?? this.cylinders,
       regoExpiryDate: regoExpiryDate ?? this.regoExpiryDate,
       wofExpiryDate: wofExpiryDate ?? this.wofExpiryDate,
+      isInWatchlist: isInWatchlist ?? this.isInWatchlist,
     );
   }
 
