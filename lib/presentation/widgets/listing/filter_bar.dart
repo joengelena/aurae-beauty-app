@@ -220,10 +220,115 @@ class FilterBar extends StatelessWidget {
     );
   }
 
+  Widget selectedRangeFilter(
+    BuildContext context,
+    String baseKey,
+    Map<String, String> values,
+  ) {
+    final filteringProvider = context.read<FilteringProvider>();
+    final listingsProvider = context.read<ListingsProvider>();
+
+    // Get min and max values
+    final fromKey = '${baseKey}From';
+    final toKey = '${baseKey}To';
+    final minValue = values[fromKey] ?? '';
+    final maxValue = values[toKey] ?? '';
+
+    // Format the display text
+    String displayText = _formatRangeFilterDisplay(baseKey, minValue, maxValue);
+
+    return FilledButton(
+      onPressed: () {
+        // Clear both min and max for this range filter
+        filteringProvider.updateRangeFilter(fromKey, '');
+        filteringProvider.updateRangeFilter(toKey, '');
+        // Apply the change
+        listingsProvider.applyFilters(filteringProvider.getAllFilters());
+      },
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(
+          Theme.of(context).colorScheme.secondary,
+        ),
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(displayText),
+          const SizedBox(width: 8),
+          const Icon(Icons.close, size: 16),
+        ],
+      ),
+    );
+  }
+
+  String _formatRangeFilterDisplay(
+    String baseKey,
+    String minValue,
+    String maxValue,
+  ) {
+    // Get the display label and prefix
+    String label = '';
+    String prefix = '';
+
+    switch (baseKey) {
+      case 'price':
+        label = 'Price';
+        prefix = '\$';
+        break;
+      case 'year':
+        label = 'Year';
+        break;
+      case 'kilometers':
+        label = 'Kms';
+        break;
+    }
+
+    // Format min and max with thousand separators for kilometers
+    String formattedMin = minValue.isEmpty
+        ? 'Any'
+        : '$prefix${baseKey == 'kilometers' ? _formatNumber(minValue) : minValue}';
+    String formattedMax = maxValue.isEmpty
+        ? 'Any'
+        : '$prefix${baseKey == 'kilometers' ? _formatNumber(maxValue) : maxValue}';
+
+    return '$label: $formattedMin - $formattedMax';
+  }
+
+  String _formatNumber(String value) {
+    // Add thousand separators
+    final intValue = int.tryParse(value);
+    if (intValue == null) return value;
+
+    return intValue.toString().replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Show badges based on APPLIED filters, not pending selections
     final appliedFilters = context.watch<ListingsProvider>().equalFilters;
+
+    // Separate equal and range filters
+    final equalFilterEntries = <MapEntry<String, String>>[];
+    final rangeFilters = <String, Map<String, String>>{};
+
+    for (var entry in appliedFilters.entries) {
+      if (entry.value == 'None' || entry.value.isEmpty) continue;
+
+      // Check if it's a range filter
+      if (entry.key.endsWith('From') || entry.key.endsWith('To')) {
+        final baseKey = entry.key.replaceAll(RegExp(r'(From|To)$'), '');
+        rangeFilters.putIfAbsent(baseKey, () => {});
+        rangeFilters[baseKey]![entry.key] = entry.value;
+      } else {
+        equalFilterEntries.add(entry);
+      }
+    }
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -253,11 +358,12 @@ class FilterBar extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             ),
           ),
-          ...[
-            for (var entry in appliedFilters.entries)
-              if (entry.value != 'None')
-                selectedFilter(context, entry.key, entry.value),
-          ],
+          // Equal filter badges
+          ...equalFilterEntries
+              .map((entry) => selectedFilter(context, entry.key, entry.value)),
+          // Range filter badges
+          ...rangeFilters.entries
+              .map((entry) => selectedRangeFilter(context, entry.key, entry.value)),
         ],
       ),
     );
