@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/filtering_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
+import 'package:motorix_app/presentation/widgets/listing/range_filter.dart';
 import 'package:motorix_app/utils/filter_utils.dart';
 import 'package:provider/provider.dart';
 
@@ -46,7 +47,7 @@ class FilterBar extends StatelessWidget {
     final filteringProvider = context.read<FilteringProvider>();
     final listingsProvider = context.read<ListingsProvider>();
 
-    // Copy applied filters to pending filters
+    // Copy applied equal filters to pending filters
     for (var key in filteringProvider.selectedEqualFilters.keys) {
       if (listingsProvider.equalFilters.containsKey(key)) {
         filteringProvider.selectedEqualFilters[key] =
@@ -54,6 +55,17 @@ class FilterBar extends StatelessWidget {
       } else {
         // If filter not in applied filters, reset to 'None'
         filteringProvider.selectedEqualFilters[key] = 'None';
+      }
+    }
+
+    // Copy applied range filters to pending filters
+    for (var key in filteringProvider.selectedRangeFilters.keys) {
+      if (listingsProvider.equalFilters.containsKey(key)) {
+        filteringProvider.selectedRangeFilters[key] =
+            listingsProvider.equalFilters[key]!;
+      } else {
+        // If filter not in applied filters, reset to empty
+        filteringProvider.selectedRangeFilters[key] = '';
       }
     }
 
@@ -79,74 +91,96 @@ class FilterBar extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    children:
-                        listingAttributeOptions.map((attributeOption) {
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 16),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                // Label
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    FilterUtils.filterDisplayNames[attributeOption.name] ??
-                                        attributeOption.name,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                    children: [
+                      // Equal filters section
+                      ...listingAttributeOptions.map((attributeOption) {
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 16),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Label
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  FilterUtils.filterDisplayNames[attributeOption
+                                          .name] ??
+                                      attributeOption.name,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
+                              ),
 
-                                Expanded(
-                                  flex: 3,
-                                  child: DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.grey.shade300,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
+                              Expanded(
+                                flex: 3,
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey.shade300,
                                     ),
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                      ),
-                                      child: DropdownButtonHideUnderline(
-                                        child: DropdownButton<String>(
-                                          value:
-                                              selectedEqualFilters[attributeOption
-                                                  .name],
-                                          isExpanded: true,
-                                          items:
-                                              attributeOption.attributeValues
-                                                  .map((val) {
-                                                    return DropdownMenuItem<
-                                                      String
-                                                    >(
-                                                      value: val,
-                                                      child: Text(val),
-                                                    );
-                                                  })
-                                                  .toList(),
-                                          onChanged: (newVal) {
-                                            if (newVal != null) {
-                                              filteringProvider
-                                                  .updateEqualFilter(
-                                                    attributeOption.name,
-                                                    newVal,
-                                                  );
-                                            }
-                                          },
-                                        ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton<String>(
+                                        value:
+                                            selectedEqualFilters[attributeOption
+                                                .name],
+                                        isExpanded: true,
+                                        items:
+                                            attributeOption.attributeValues.map(
+                                              (val) {
+                                                return DropdownMenuItem<String>(
+                                                  value: val,
+                                                  child: Text(val),
+                                                );
+                                              },
+                                            ).toList(),
+                                        onChanged: (newVal) {
+                                          if (newVal != null) {
+                                            filteringProvider.updateEqualFilter(
+                                              attributeOption.name,
+                                              newVal,
+                                            );
+                                          }
+                                        },
                                       ),
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+
+                      RangeFilter(
+                        label: 'Price',
+                        fromKey: 'priceFrom',
+                        toKey: 'priceTo',
+                        prefixText: '\$',
+                        provider: filteringProvider,
+                      ),
+
+                      RangeFilter(
+                        label: 'Year',
+                        fromKey: 'yearFrom',
+                        toKey: 'yearTo',
+                        provider: filteringProvider,
+                      ),
+
+                      RangeFilter(
+                        label: 'Kilometers',
+                        fromKey: 'kilometersFrom',
+                        toKey: 'kilometersTo',
+                        provider: filteringProvider,
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -167,7 +201,7 @@ class FilterBar extends StatelessWidget {
                     child: FilledButton(
                       onPressed: () {
                         listingsProvider.applyFilters(
-                          filteringProvider.selectedEqualFilters,
+                          filteringProvider.getAllFilters(),
                         );
                         Navigator.pop(modalContext);
                       },

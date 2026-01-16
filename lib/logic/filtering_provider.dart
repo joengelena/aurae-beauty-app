@@ -9,6 +9,14 @@ class FilteringProvider extends ChangeNotifier {
 
   List<ListingAttribute> listingAttributeOptions = [];
   Map<String, String> selectedEqualFilters = {};
+  Map<String, String> selectedRangeFilters = {
+    'priceFrom': '',
+    'priceTo': '',
+    'yearFrom': '',
+    'yearTo': '',
+    'kilometersFrom': '',
+    'kilometersTo': '',
+  };
 
   Future<void> _loadAttributes() async {
     try {
@@ -41,4 +49,38 @@ class FilteringProvider extends ChangeNotifier {
   }
 
   String? getSelected(String filterName) => selectedEqualFilters[filterName];
+
+  void updateRangeFilter(String filterKey, String value) {
+    selectedRangeFilters[filterKey] = value;
+    notifyListeners();
+  }
+
+  String getRangeValue(String filterKey) {
+    return selectedRangeFilters[filterKey] ?? '';
+  }
+
+  void clearRangeFilters() {
+    selectedRangeFilters = {
+      'priceFrom': '',
+      'priceTo': '',
+      'yearFrom': '',
+      'yearTo': '',
+      'kilometersFrom': '',
+      'kilometersTo': '',
+    };
+    notifyListeners();
+  }
+
+  Map<String, String> getAllFilters() {
+    final allFilters = Map<String, String>.from(selectedEqualFilters);
+
+    // Add non-empty range filters
+    selectedRangeFilters.forEach((key, value) {
+      if (value.isNotEmpty) {
+        allFilters[key] = value;
+      }
+    });
+
+    return allFilters;
+  }
 }

@@ -15,26 +15,33 @@ class FilterUtils {
   };
 
   /// Converts filter map to API query parameters
-  /// Excludes 'None' values and maps keys to API parameter names
+  /// Handles both equal filters and range filters
+  /// Excludes 'None' values and empty strings, maps keys to API parameter names
   ///
   /// Example:
   /// ```dart
-  /// {'make': 'Toyota', 'location': 'None', 'fuel_type': 'Petrol'}
-  /// // Returns: {'make': 'Toyota', 'fuelType': 'Petrol'}
+  /// {'make': 'Toyota', 'location': 'None', 'fuel_type': 'Petrol', 'priceFrom': '10000'}
+  /// // Returns: {'make': 'Toyota', 'fuelType': 'Petrol', 'priceFrom': '10000'}
   /// ```
   static Map<String, String> toApiQueryParams(
     Map<String, String> filters,
   ) {
-    return Map.fromEntries(
-      filters.entries
-          .where((entry) =>
-              entry.value != 'None' &&
-              filterKeyToApiParam.containsKey(entry.key))
-          .map((entry) => MapEntry(
-                filterKeyToApiParam[entry.key]!,
-                entry.value,
-              )),
-    );
+    final result = <String, String>{};
+
+    filters.forEach((key, value) {
+      if (value.isEmpty || value == 'None') return;
+
+      // Check if it's a range filter
+      if (rangeFilterKeyToApiParam.containsKey(key)) {
+        result[rangeFilterKeyToApiParam[key]!] = value;
+      }
+      // Check if it's an equal filter
+      else if (filterKeyToApiParam.containsKey(key)) {
+        result[filterKeyToApiParam[key]!] = value;
+      }
+    });
+
+    return result;
   }
 
   /// User-friendly display names for filter keys
@@ -47,5 +54,18 @@ class FilterUtils {
     'drive_type': 'Drive type',
     'transmission': 'Transmission',
     'cylinders': 'Cylinders',
+    'price': 'Price',
+    'year': 'Year',
+    'kilometers': 'Kilometers',
+  };
+
+  /// Maps range filter keys to API parameter names
+  static const Map<String, String> rangeFilterKeyToApiParam = {
+    'priceFrom': 'priceFrom',
+    'priceTo': 'priceTo',
+    'yearFrom': 'yearFrom',
+    'yearTo': 'yearTo',
+    'kilometersFrom': 'kilometersFrom',
+    'kilometersTo': 'kilometersTo',
   };
 }
