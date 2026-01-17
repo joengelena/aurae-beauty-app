@@ -68,4 +68,57 @@ class FilterUtils {
     'kilometersFrom': 'kilometersFrom',
     'kilometersTo': 'kilometersTo',
   };
+
+  /// Formats a range filter for display as a badge
+  ///
+  /// Examples:
+  /// - "Price: $1000 - $5000"
+  /// - "Price: $3000 - Any"
+  /// - "Year: 2015 - 2020"
+  /// - "Kms: 50,000 - 120,000"
+  static String formatRangeFilterDisplay(
+    String baseKey,
+    String minValue,
+    String maxValue,
+  ) {
+    // Get the display label and prefix
+    String label = '';
+    String prefix = '';
+
+    switch (baseKey) {
+      case 'price':
+        label = 'Price';
+        prefix = '\$';
+        break;
+      case 'year':
+        label = 'Year';
+        break;
+      case 'kilometers':
+        label = 'Kms';
+        break;
+    }
+
+    // Format min and max with thousand separators for kilometers
+    String formattedMin = minValue.isEmpty
+        ? 'Any'
+        : '$prefix${baseKey == 'kilometers' ? formatNumber(minValue) : minValue}';
+    String formattedMax = maxValue.isEmpty
+        ? 'Any'
+        : '$prefix${baseKey == 'kilometers' ? formatNumber(maxValue) : maxValue}';
+
+    return '$label: $formattedMin - $formattedMax';
+  }
+
+  /// Formats a number with thousand separators
+  ///
+  /// Example: 120000 → "120,000"
+  static String formatNumber(String value) {
+    final intValue = int.tryParse(value);
+    if (intValue == null) return value;
+
+    return intValue.toString().replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
+  }
 }
