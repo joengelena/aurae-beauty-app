@@ -31,16 +31,10 @@ class _ListingsCarouselWidgetState extends State<ListingsCarouselWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // Use context.select to only rebuild when latestListings or isLoadingLatest changes
-    final isLoading = context.select<ListingsProvider, bool>(
-      (provider) => provider.isLoadingLatest,
-    );
-    final displayListings = context.select<ListingsProvider, List<Listing>>(
-      (provider) => provider.latestListings,
-    );
+    final listingsProvider = context.watch<ListingsProvider>();
 
     // Show loading state when initially loading and no data
-    if (isLoading && displayListings.isEmpty) {
+    if (listingsProvider.isLoading && listingsProvider.latestListings.isEmpty) {
       return _buildCarouselWrapper(
         child: Center(
           child: CircularProgressIndicator(
@@ -51,7 +45,8 @@ class _ListingsCarouselWidgetState extends State<ListingsCarouselWidget> {
     }
 
     // Show empty state if no listings available after loading
-    if (!isLoading && displayListings.isEmpty) {
+    if (!listingsProvider.isLoading &&
+        listingsProvider.latestListings.isEmpty) {
       return _buildCarouselWrapper(
         child: Center(
           child: Column(
@@ -81,21 +76,20 @@ class _ListingsCarouselWidgetState extends State<ListingsCarouselWidget> {
     return _buildCarouselWrapper(
       child: ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(
-          dragDevices: {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.mouse,
-          },
+          dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse},
         ),
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: displayListings.length + 1, // +1 for "View More" card
+          itemCount:
+              listingsProvider.latestListings.length +
+              1, // +1 for "View More" card
           itemBuilder: (context, index) {
             // Last item is the "View More" card
-            if (index == displayListings.length) {
+            if (index == listingsProvider.latestListings.length) {
               return _buildViewMoreCard(context);
             }
 
-            final listing = displayListings[index];
+            final listing = listingsProvider.latestListings[index];
             return Padding(
               padding: const EdgeInsets.only(right: 12.0),
               child: _buildListingCard(context, listing),
