@@ -21,10 +21,16 @@ class FilterBar extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       useRootNavigator: true,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (BuildContext modalContext) => const FilterModalContent(),
+      builder: (BuildContext modalContext) {
+        return SizedBox(
+          height: MediaQuery.of(modalContext).size.height * 0.6,
+          child: const FilterModalContent(),
+        );
+      },
     );
   }
 
@@ -98,7 +104,8 @@ class FilterBar extends StatelessWidget {
   ({
     List<MapEntry<String, String>> equalFilters,
     Map<String, Map<String, String>> rangeFilters,
-  }) _categorizeAppliedFilters(Map<String, String> appliedFilters) {
+  })
+  _categorizeAppliedFilters(Map<String, String> appliedFilters) {
     final equalFilterEntries = <MapEntry<String, String>>[];
     final rangeFilters = <String, Map<String, String>>{};
 
