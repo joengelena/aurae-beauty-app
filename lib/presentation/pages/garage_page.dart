@@ -36,10 +36,7 @@ class _GaragePageState extends State<GaragePage> {
     return Stack(
       children: [
         _buildBody(garageProvider),
-        LabeledFab(
-          label: 'Add',
-          onPressed: _handleAddVehicle,
-        ),
+        LabeledFab(label: 'Add', onPressed: _handleAddVehicle),
       ],
     );
   }
@@ -50,19 +47,29 @@ class _GaragePageState extends State<GaragePage> {
     }
 
     if (garageProvider.hasError) {
-      return GarageErrorState(
-        errorMessage: garageProvider.errorMessage,
-        onRetry: garageProvider.fetchVehicles,
+      return Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: GarageErrorState(
+            errorMessage: garageProvider.errorMessage,
+            onRetry: garageProvider.fetchVehicles,
+          ),
+        ),
       );
     }
 
     if (garageProvider.vehicles.isEmpty) {
-      return SingleChildScrollView(
-        child: Column(
-          children: [
-            const ListingsCarouselWidget(),
-            const GarageEmptyState(),
-          ],
+      return Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const ListingsCarouselWidget(),
+                const GarageEmptyState(),
+              ],
+            ),
+          ),
         ),
       );
     }
