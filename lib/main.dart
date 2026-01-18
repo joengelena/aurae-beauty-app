@@ -66,12 +66,8 @@ void main() async {
             return watchlistProvider;
           },
         ),
-        ChangeNotifierProxyProvider<AuthProvider, GarageProvider>(
+        ChangeNotifierProvider<GarageProvider>(
           create: (_) => GarageProvider(),
-          update: (context, authProvider, garageProvider) {
-            garageProvider!.updateAuthStatus(authProvider.isSignedIn);
-            return garageProvider;
-          },
         ),
         ChangeNotifierProxyProvider<WatchlistProvider, ListingsProvider>(
           create: (context) => ListingsProvider(),
