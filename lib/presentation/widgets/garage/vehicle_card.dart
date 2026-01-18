@@ -64,35 +64,44 @@ class VehicleCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
-                          child: vehicle.nickname != null
-                              ? Row(
-                                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                                  textBaseline: TextBaseline.alphabetic,
-                                  children: [
-                                    Text(
-                                      vehicle.nickname!,
-                                      style: Theme.of(context).textTheme.titleLarge
-                                          ?.copyWith(fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: Text(
-                                        '${vehicle.year} ${vehicle.make} ${vehicle.model}',
-                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                          color: Colors.grey.shade600,
+                          child:
+                              vehicle.nickname != null
+                                  ? Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.baseline,
+                                    textBaseline: TextBaseline.alphabetic,
+                                    children: [
+                                      Text(
+                                        vehicle.nickname!,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.titleLarge?.copyWith(
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                    ),
-                                  ],
-                                )
-                              : Text(
-                                  '${vehicle.year} ${vehicle.make} ${vehicle.model}',
-                                  style: Theme.of(context).textTheme.titleLarge
-                                      ?.copyWith(fontWeight: FontWeight.bold),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                      const SizedBox(width: 8),
+                                      Flexible(
+                                        child: Text(
+                                          '${vehicle.year} ${vehicle.make} ${vehicle.model}',
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodySmall?.copyWith(
+                                            color: Colors.grey.shade600,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                  : Text(
+                                    '${vehicle.year} ${vehicle.make} ${vehicle.model}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                         ),
                         actionButton,
                       ],
@@ -128,9 +137,9 @@ class VehicleCard extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               ComplianceCard(
-                title:
-                    'INSURANCE provided by ${vehicle.insuranceProvider} expires on',
+                title: 'INSURANCE expires on',
                 dateString: vehicle.insuranceExpiryDate,
+                description: 'Provider: ${vehicle.insuranceProvider}',
               ),
             ],
           ),

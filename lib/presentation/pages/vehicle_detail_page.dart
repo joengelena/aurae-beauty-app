@@ -146,9 +146,7 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                   child: AspectRatio(
                     aspectRatio: AppConstants.listingImageAspectRatio,
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                      ),
+                      decoration: BoxDecoration(color: Colors.grey[200]),
                       child: Center(
                         child: Icon(
                           Icons.directions_car,
@@ -169,32 +167,40 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
-                        child: vehicle.nickname != null
-                            ? Row(
-                                crossAxisAlignment: CrossAxisAlignment.baseline,
-                                textBaseline: TextBaseline.alphabetic,
-                                children: [
-                                  Text(
-                                    vehicle.nickname!,
-                                    style: Theme.of(context).textTheme.headlineMedium,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Flexible(
-                                    child: Text(
-                                      '${vehicle.year} ${vehicle.make} ${vehicle.model}',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.black54,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
+                        child:
+                            vehicle.nickname != null
+                                ? Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.baseline,
+                                  textBaseline: TextBaseline.alphabetic,
+                                  children: [
+                                    Text(
+                                      vehicle.nickname!,
+                                      style:
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.headlineMedium,
                                     ),
-                                  ),
-                                ],
-                              )
-                            : Text(
-                                '${vehicle.year} ${vehicle.make} ${vehicle.model}',
-                                style: Theme.of(context).textTheme.headlineMedium,
-                              ),
+                                    SizedBox(width: 8),
+                                    Flexible(
+                                      child: Text(
+                                        '${vehicle.year} ${vehicle.make} ${vehicle.model}',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.black54,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                                : Text(
+                                  '${vehicle.year} ${vehicle.make} ${vehicle.model}',
+                                  style:
+                                      Theme.of(
+                                        context,
+                                      ).textTheme.headlineMedium,
+                                ),
                       ),
                       ActionMenuButton(
                         options: [
@@ -203,8 +209,11 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                             title: 'Edit',
                             onTap: () {
                               // Push current route onto stack for back button
-                              final currentRoute = GoRouterState.of(context).uri.path;
-                              context.read<BackButtonProvider>().pushRoute(currentRoute);
+                              final currentRoute =
+                                  GoRouterState.of(context).uri.path;
+                              context.read<BackButtonProvider>().pushRoute(
+                                currentRoute,
+                              );
 
                               context.go('/garage/${vehicle.id}/edit');
                             },
@@ -277,9 +286,9 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                     children: [
                       Expanded(
                         child: ComplianceCard(
-                          title:
-                              'INSURANCE provided by ${vehicle.insuranceProvider} expires on',
+                          title: 'INSURANCE expires on',
                           dateString: vehicle.insuranceExpiryDate,
+                          description: 'Provider: ${vehicle.insuranceProvider}',
                           onUpdate:
                               () => _showUpdateExpiryDialog(
                                 context,

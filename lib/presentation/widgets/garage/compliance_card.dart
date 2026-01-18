@@ -7,12 +7,14 @@ enum ComplianceStatus { valid, expiringSoon, expired }
 class ComplianceCard extends StatelessWidget {
   final String title;
   final String dateString;
+  final String? description;
   final VoidCallback? onUpdate;
 
   const ComplianceCard({
     super.key,
     required this.title,
     required this.dateString,
+    this.description,
     this.onUpdate,
   });
 
@@ -105,6 +107,13 @@ class ComplianceCard extends StatelessWidget {
               color: Colors.black87,
             ),
           ),
+          if (description != null) ...[
+            SizedBox(height: 4),
+            Text(
+              description!,
+              style: TextStyle(fontSize: 14, color: Colors.black54),
+            ),
+          ],
           if (onUpdate != null) ...[
             SizedBox(height: 8),
             SizedBox(
