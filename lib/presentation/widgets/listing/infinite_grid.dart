@@ -141,6 +141,36 @@ class _InfiniteGridState extends State<InfiniteGrid> {
             padding: _loadingPadding,
             child: Center(child: CircularProgressIndicator()),
           ),
+        // End of listings indicator
+        if (!provider.canLoadMore &&
+            !provider.isLoading &&
+            provider.listings.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.check_circle_outline,
+                  size: 48,
+                  color: Colors.grey.shade400,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  "You've reached the end",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Showing all ${provider.totalListings} listing${provider.totalListings == 1 ? '' : 's'}',
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
