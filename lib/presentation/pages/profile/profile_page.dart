@@ -211,7 +211,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           padding: EdgeInsets.all(16.0),
                           child: Column(
                             children: [
-                              Icon(Icons.error_outline, size: 48, color: themeRed),
+                              Icon(
+                                Icons.error_outline,
+                                size: 48,
+                                color: themeRed,
+                              ),
                               SizedBox(height: 16),
                               Text(
                                 userListingsProvider.errorMessage,
@@ -265,6 +269,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                     ],
                   ),
+                  SizedBox(height: 80),
                 ],
               ),
             ),

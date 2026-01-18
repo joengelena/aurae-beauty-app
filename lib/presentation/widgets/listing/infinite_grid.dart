@@ -168,6 +168,7 @@ class _InfiniteGridState extends State<InfiniteGrid> {
                   'Showing all ${provider.totalListings} listing${provider.totalListings == 1 ? '' : 's'}',
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
+                SizedBox(height: 64),
               ],
             ),
           ),

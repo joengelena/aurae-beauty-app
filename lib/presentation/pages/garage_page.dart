@@ -88,7 +88,7 @@ class _GaragePageState extends State<GaragePage> {
         child: RefreshIndicator(
           onRefresh: garageProvider.fetchVehicles,
           child: ListView.builder(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 64),
             itemCount: garageProvider.vehicles.length + 1, // +1 for carousel
             itemBuilder: (context, index) {
               // First item is the carousel
