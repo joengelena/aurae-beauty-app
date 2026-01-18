@@ -27,6 +27,13 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+
+    // Fetch user listings when profile page is mounted
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<UserListingsProvider>().refreshListings();
+      }
+    });
   }
 
   @override
