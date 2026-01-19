@@ -69,11 +69,8 @@ void main() async {
         ChangeNotifierProvider<GarageProvider>(
           create: (_) => GarageProvider(),
         ),
-        ChangeNotifierProxyProvider<WatchlistProvider, ListingsProvider>(
-          create: (context) => ListingsProvider(),
-          update: (context, watchlistProvider, listingsProvider) {
-            return listingsProvider!;
-          },
+        ChangeNotifierProvider<ListingsProvider>(
+          create: (_) => ListingsProvider(),
         ),
         ChangeNotifierProvider<PostListingProvider>(
           create: (_) => PostListingProvider(),

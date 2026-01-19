@@ -26,24 +26,42 @@ import 'package:provider/provider.dart';
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
+// Auth pages that authenticated users should not access
+const _authPages = [
+  '/profile/signin',
+  '/profile/signup',
+  '/profile/forgot-password',
+  '/profile/reset-password',
+];
+
+// Public pages accessible to unauthenticated users
+const _publicPages = [
+  '/listings',
+  '/watchlist',
+  '/garage',
+];
+
 GoRouter getAppRouter(AuthProvider authProvider) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/listings',
+    initialLocation: '/garage',
     refreshListenable: authProvider,
     redirect: (context, state) {
-      final signedIn = authProvider.isSignedIn;
+      final isSignedIn = authProvider.isSignedIn;
       final path = state.uri.path;
 
-      final pathIsAccessibleToSignedOutUser =
-          path == '/profile/signin' ||
-          path == '/profile/signup' ||
-          path == '/profile/forgot-password' ||
-          path == '/profile/reset-password';
+      final isAuthPage = _authPages.contains(path);
+      final isPublicPage = _publicPages.contains(path);
 
-      if (!signedIn && path == '/profile') return '/profile/signin';
+      // Redirect unauthenticated users to sign-in (except for auth and public pages)
+      if (!isSignedIn && !isAuthPage && !isPublicPage) {
+        return '/profile/signin';
+      }
 
-      if (signedIn && pathIsAccessibleToSignedOutUser) return '/profile';
+      // Redirect authenticated users from auth pages to garage
+      if (isSignedIn && isAuthPage) {
+        return '/garage';
+      }
 
       return null;
     },
@@ -187,9 +205,10 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                   // Supabase sends: #access_token=...&expires_at=...&type=recovery
                   // GoRouter parses the URL, so fragment contains the parameters
                   final fragment = state.uri.fragment;
-                  final params = fragment.isNotEmpty
-                      ? Uri.splitQueryString(fragment)
-                      : <String, String>{};
+                  final params =
+                      fragment.isNotEmpty
+                          ? Uri.splitQueryString(fragment)
+                          : <String, String>{};
 
                   return NoTransitionPage(
                     child: ResetPasswordPage(
