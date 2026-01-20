@@ -42,6 +42,17 @@ GoRouter getAppRouter(AuthProvider authProvider) {
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/profile/signin',
     refreshListenable: authProvider,
+    errorBuilder: (context, state) {
+      // Redirect to garage page for any routing errors (404s)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.go('/garage');
+      });
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    },
     redirect: (context, state) {
       final isSignedIn = authProvider.isSignedIn;
       final path = state.uri.path;
