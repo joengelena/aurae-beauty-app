@@ -60,15 +60,18 @@ class UserListingsProvider extends ChangeNotifier {
   }
 
   Future<void> _loadListings() async {
+    if (isLoading) return;
+
     isLoading = true;
     errorMessage = '';
+    final pageToFetch = currentPage + 1;
     notifyListeners();
 
     try {
       final resp = await ListingsServices().getAllListings(
         allQueries: {
           'limit': limit,
-          'pageNumber': currentPage + 1,
+          'pageNumber': pageToFetch,
           'userIdFk': _currentUserId!,
         },
       );
@@ -104,16 +107,15 @@ class UserListingsProvider extends ChangeNotifier {
         throw AppException('User not authenticated');
       }
 
-      await ListingsServices().patchListing(
-        listingId,
-        {
-          'currentUserId': userId,
-          'status': status,
-        },
-      );
+      await ListingsServices().patchListing(listingId, {
+        'currentUserId': userId,
+        'status': status,
+      });
 
       // Update the local listing status
-      final index = userListings.indexWhere((listing) => listing.id == listingId);
+      final index = userListings.indexWhere(
+        (listing) => listing.id == listingId,
+      );
       if (index != -1) {
         userListings[index] = userListings[index].copyWith(status: status);
         notifyListeners();
@@ -142,12 +144,9 @@ class UserListingsProvider extends ChangeNotifier {
         throw AppException('User not authenticated');
       }
 
-      await ListingsServices().deleteListing(
-        listingId,
-        {
-          'currentUserId': userId,
-        },
-      );
+      await ListingsServices().deleteListing(listingId, {
+        'currentUserId': userId,
+      });
 
       // Remove the listing from the local list
       removeListing(listingId);
