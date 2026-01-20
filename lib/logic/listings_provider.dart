@@ -28,6 +28,14 @@ class ListingsProvider extends ChangeNotifier {
   String sortBy = 'uploadDateDesc';
 
   Map<String, String> equalFilters = {};
+  bool _isSignedIn = false;
+
+  void updateAuthStatus(bool isSignedIn) {
+    if (!isSignedIn && _isSignedIn) {
+      reset();
+    }
+    _isSignedIn = isSignedIn;
+  }
 
   bool get onLastPage => currentPage >= totalPages;
   bool get canLoadMore => !onLastPage && !isLoading;
@@ -120,11 +128,29 @@ class ListingsProvider extends ChangeNotifier {
     }
 
     // Update in latest listings
-    final latestIndex = latestListings.indexWhere((listing) => listing.id == listingId);
+    final latestIndex = latestListings.indexWhere(
+      (listing) => listing.id == listingId,
+    );
     if (latestIndex != -1) {
-      latestListings[latestIndex] = latestListings[latestIndex].copyWith(isInWatchlist: newStatus);
+      latestListings[latestIndex] = latestListings[latestIndex].copyWith(
+        isInWatchlist: newStatus,
+      );
     }
 
+    notifyListeners();
+  }
+
+  void reset() {
+    listings.clear();
+    latestListings.clear();
+    currentPage = 0;
+    totalPages = 1;
+    totalListings = 0;
+    searchController.clear();
+    sortBy = 'uploadDateDesc';
+    equalFilters = {};
+    isLoading = false;
+    isLoadingLatest = false;
     notifyListeners();
   }
 

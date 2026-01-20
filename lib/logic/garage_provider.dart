@@ -8,11 +8,19 @@ class GarageProvider extends ChangeNotifier {
   List<UserVehicle> _vehicles = [];
   bool _isLoading = false;
   String _errorMessage = '';
+  bool _isSignedIn = false;
 
   List<UserVehicle> get vehicles => _vehicles;
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
   bool get hasError => _errorMessage.isNotEmpty;
+
+  void updateAuthStatus(bool isSignedIn) {
+    if (!isSignedIn && _isSignedIn) {
+      reset();
+    }
+    _isSignedIn = isSignedIn;
+  }
 
   Future<void> fetchVehicles() async {
     _isLoading = true;
@@ -32,10 +40,7 @@ class GarageProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateVehicle(
-    int vehicleId,
-    Map<String, Object> updates,
-  ) async {
+  Future<void> updateVehicle(int vehicleId, Map<String, Object> updates) async {
     try {
       // Update vehicle in backend
       await VehicleServices().updateVehicle(vehicleId, updates);
@@ -45,7 +50,9 @@ class GarageProvider extends ChangeNotifier {
 
       // Reschedule notifications with updated vehicle data
       final updatedVehicle = _vehicles.firstWhere((v) => v.id == vehicleId);
-      await VehicleNotificationService().rescheduleNotifications(updatedVehicle);
+      await VehicleNotificationService().rescheduleNotifications(
+        updatedVehicle,
+      );
     } on AppException {
       rethrow;
     } catch (e) {

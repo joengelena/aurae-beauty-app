@@ -6,6 +6,16 @@ class WatchlistProvider extends ChangeNotifier {
   final List<Listing> watchlist = [];
   bool isLoading = false;
   String? errorMessage;
+  bool _isSignedIn = false;
+
+  void updateAuthStatus(bool isSignedIn) {
+    if (isSignedIn && !_isSignedIn) {
+      fetchWatchlist();
+    } else if (!isSignedIn && _isSignedIn) {
+      clearWatchlist();
+    }
+    _isSignedIn = isSignedIn;
+  }
 
   Future<void> fetchWatchlist() async {
     try {
@@ -49,5 +59,12 @@ class WatchlistProvider extends ChangeNotifier {
 
   bool isInWatchlist(int listingId) {
     return watchlist.any((listing) => listing.id == listingId);
+  }
+
+  void clearWatchlist() {
+    watchlist.clear();
+    isLoading = false;
+    errorMessage = null;
+    notifyListeners();
   }
 }

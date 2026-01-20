@@ -20,6 +20,14 @@ class PostListingProvider extends ChangeNotifier
   List<ListingAttribute> listingAttributeOptions = [];
   final optionalDropdownFields = ['transmission', 'cylinders'];
   final Map<String, Object> postListingData = {};
+  bool _isSignedIn = false;
+
+  void updateAuthStatus(bool isSignedIn) {
+    if (!isSignedIn && _isSignedIn) {
+      resetProvider();
+    }
+    _isSignedIn = isSignedIn;
+  }
 
   @override
   Map<String, Object> get formData => postListingData;

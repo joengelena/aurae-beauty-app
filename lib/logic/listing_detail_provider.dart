@@ -11,6 +11,15 @@ class ListingDetailProvider extends ChangeNotifier {
   Listing? listing;
   User? listingOwner;
   bool isLoading = false;
+  bool _isSignedIn = false;
+
+  void updateAuthStatus(bool isSignedIn) {
+    if (!isSignedIn && _isSignedIn) {
+      // User signed out, clear cached listing data
+      reset();
+    }
+    _isSignedIn = isSignedIn;
+  }
 
   Future<void> getListing(int listingId) async {
     try {
@@ -56,5 +65,12 @@ class ListingDetailProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('Failed to increment view count: $e');
     }
+  }
+
+  void reset() {
+    listing = null;
+    listingOwner = null;
+    isLoading = false;
+    notifyListeners();
   }
 }

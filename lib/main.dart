@@ -58,31 +58,47 @@ void main() async {
         ChangeNotifierProxyProvider<AuthProvider, WatchlistProvider>(
           create: (_) => WatchlistProvider(),
           update: (context, authProvider, watchlistProvider) {
-            if (authProvider.isSignedIn) {
-              watchlistProvider!.fetchWatchlist();
-            } else {
-              watchlistProvider!.watchlist.clear();
-            }
+            watchlistProvider!.updateAuthStatus(authProvider.isSignedIn);
             return watchlistProvider;
           },
         ),
-        ChangeNotifierProvider<GarageProvider>(
+        ChangeNotifierProxyProvider<AuthProvider, GarageProvider>(
           create: (_) => GarageProvider(),
+          update: (context, authProvider, garageProvider) {
+            garageProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return garageProvider;
+          },
         ),
-        ChangeNotifierProvider<ListingsProvider>(
+        ChangeNotifierProxyProvider<AuthProvider, ListingsProvider>(
           create: (_) => ListingsProvider(),
+          update: (context, authProvider, listingsProvider) {
+            listingsProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return listingsProvider;
+          },
         ),
-        ChangeNotifierProvider<PostListingProvider>(
+        ChangeNotifierProxyProvider<AuthProvider, PostListingProvider>(
           create: (_) => PostListingProvider(),
+          update: (context, authProvider, postListingProvider) {
+            postListingProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return postListingProvider;
+          },
         ),
         Provider<ListingFormDataProvider>(
           create: (context) => context.read<PostListingProvider>(),
         ),
-        ChangeNotifierProvider<ListingDetailProvider>(
+        ChangeNotifierProxyProvider<AuthProvider, ListingDetailProvider>(
           create: (_) => ListingDetailProvider(),
+          update: (context, authProvider, listingDetailProvider) {
+            listingDetailProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return listingDetailProvider;
+          },
         ),
-        ChangeNotifierProvider<VehicleDetailProvider>(
+        ChangeNotifierProxyProvider<AuthProvider, VehicleDetailProvider>(
           create: (_) => VehicleDetailProvider(),
+          update: (context, authProvider, vehicleDetailProvider) {
+            vehicleDetailProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return vehicleDetailProvider;
+          },
         ),
       ],
       child: MyApp(),

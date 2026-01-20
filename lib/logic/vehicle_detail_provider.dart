@@ -12,6 +12,7 @@ class VehicleDetailProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isLoadingServices = false;
   String? _errorMessage;
+  bool _isSignedIn = false;
 
   UserVehicle? get vehicle => _vehicle;
   List<VehicleService> get services => _services;
@@ -19,6 +20,13 @@ class VehicleDetailProvider extends ChangeNotifier {
   bool get isLoadingServices => _isLoadingServices;
   bool get hasError => _errorMessage != null;
   String? get errorMessage => _errorMessage;
+
+  void updateAuthStatus(bool isSignedIn) {
+    if (!isSignedIn && _isSignedIn) {
+      clearVehicle();
+    }
+    _isSignedIn = isSignedIn;
+  }
 
   Future<void> getVehicle(int vehicleId) async {
     _isLoading = true;
