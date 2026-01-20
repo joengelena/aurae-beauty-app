@@ -35,16 +35,12 @@ const _authPages = [
 ];
 
 // Public pages accessible to unauthenticated users
-const _publicPages = [
-  '/listings',
-  '/watchlist',
-  '/garage',
-];
+const _publicPages = ['/listings', '/watchlist', '/garage'];
 
 GoRouter getAppRouter(AuthProvider authProvider) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/garage',
+    initialLocation: '/profile/signin',
     refreshListenable: authProvider,
     redirect: (context, state) {
       final isSignedIn = authProvider.isSignedIn;
