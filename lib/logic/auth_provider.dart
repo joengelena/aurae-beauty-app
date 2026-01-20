@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/data/cache_manager.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/services/user_services.dart';
 
@@ -104,6 +105,13 @@ class AuthProvider extends ChangeNotifier {
       // Silently handle sign out errors - always sign out locally even if API call fails
       debugPrint('⚠️ Failed to sign out (continuing with local sign out): $e');
     } finally {
+      try {
+        await CacheManager.instance.clearCache();
+        debugPrint('✅ Cache cleared on sign out');
+      } catch (e) {
+        debugPrint('⚠️ Failed to clear cache on sign out: $e');
+      }
+
       isSignedIn = false;
       isLoading = false;
       notifyListeners();
