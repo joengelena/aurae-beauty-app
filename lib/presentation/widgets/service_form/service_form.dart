@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/service_form_provider.dart';
+import 'package:motorix_app/logic/vehicle_detail_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/loading_button.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/autocomplete_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/date_form_field.dart';
@@ -41,9 +42,7 @@ class _ServiceFormState extends State<ServiceForm> {
       widget.mode == ServiceFormMode.add ? 'Add Service' : 'Edit Service';
 
   String get _submitButtonText =>
-      widget.mode == ServiceFormMode.add
-          ? 'Submit'
-          : 'Update Service Record';
+      widget.mode == ServiceFormMode.add ? 'Submit' : 'Update Service Record';
 
   String get _successMessage =>
       widget.mode == ServiceFormMode.add
@@ -78,8 +77,15 @@ class _ServiceFormState extends State<ServiceForm> {
     if (!context.mounted) return;
 
     if (provider.isSuccess) {
+      // Refresh vehicle details to show new service
+      await context.read<VehicleDetailProvider>().getVehicle(
+        provider.vehicle.id,
+      );
+
+      if (!context.mounted) return;
+
       FeedbackHelpers.showSuccessSnackBar(context, _successMessage);
-      context.pop(true);
+      context.go('/garage/${provider.vehicle.id}');
     } else if (provider.errorMessage.isNotEmpty) {
       FeedbackHelpers.showErrorSnackBar(context, provider.errorMessage);
     }

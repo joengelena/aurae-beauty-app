@@ -312,13 +312,12 @@ class VehicleServices {
     Map<String, dynamic> serviceData,
   ) async {
     try {
-      final vehicleId = serviceData['vehicleId'];
+      final vehicleId = serviceData['vehicleIdFk'];
 
       http.Response response = await apiClient.post(
         '/user/vehicle-services',
         serviceData,
-        invalidateCacheKeys:
-            vehicleId != null ? [CacheKeys.vehicleServices(vehicleId)] : null,
+        invalidateCacheKeys: [CacheKeys.vehicleServices(vehicleId)],
       );
 
       if (response.statusCode != HttpStatus.created) {

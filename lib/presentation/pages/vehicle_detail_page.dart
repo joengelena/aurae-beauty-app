@@ -513,7 +513,8 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
             SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
-                onPressed: () => _handleAddService(vehicle.id),
+                onPressed:
+                    () => context.go('/garage/${vehicle.id}/add-service'),
                 icon: const Icon(Icons.add),
                 label: const Text('Service Record'),
                 style: ButtonStyle(
@@ -662,7 +663,7 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
         SizedBox(
           width: double.infinity,
           child: FilledButton.icon(
-            onPressed: () => _handleAddService(vehicle.id),
+            onPressed: () => context.go('/garage/${vehicle.id}/add-service'),
             icon: const Icon(Icons.add),
             label: const Text('Service Record'),
             style: ButtonStyle(
@@ -674,16 +675,6 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
         ),
       ],
     );
-  }
-
-  Future<void> _handleAddService(int vehicleId) async {
-    final result = await context.push('/garage/$vehicleId/add-service');
-
-    // If service was added successfully, reload services
-    if (result == true && mounted) {
-      final provider = context.read<VehicleDetailProvider>();
-      await provider.getServices(vehicleId);
-    }
   }
 
   Future<void> _handleDeleteVehicle(UserVehicle vehicle) async {
