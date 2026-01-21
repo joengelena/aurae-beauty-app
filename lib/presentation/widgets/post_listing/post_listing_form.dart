@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:motorix_app/presentation/widgets/common/loading_button.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/listing_info_fields.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/select_multiple_images.dart';
 import 'package:motorix_app/presentation/widgets/post_listing/vehicle_info_fields.dart';
@@ -97,9 +99,35 @@ class _PostListingFormState extends State<PostListingForm> {
     }
   }
 
+  Future<void> _handleSubmit() async {
+    final postListingProvider = context.read<PostListingProvider>();
+    final listingsProvider = context.read<ListingsProvider>();
+
+    if (!_formKey.currentState!.validate()) {
+      _scrollToFirstError();
+      return;
+    }
+
+    if (postListingProvider.imageBytesList.isEmpty) {
+      FeedbackHelpers.showErrorSnackBar(
+        context,
+        'Please add at least one photo',
+      );
+      return;
+    }
+
+    await postListingProvider.postListing();
+
+    if (!context.mounted) return;
+
+    if (postListingProvider.successfulPost) {
+      listingsProvider.getNewListings();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<PostListingProvider>();
+    final provider = context.watch<PostListingProvider>();
 
     return SingleChildScrollView(
       controller: _scrollController,
@@ -118,39 +146,10 @@ class _PostListingFormState extends State<PostListingForm> {
                 ListingInfoFields(),
                 SelectMultipleImages(),
                 SizedBox(height: 20),
-                FilledButton(
-                  onPressed:
-                      provider.isLoading
-                          ? null // disables the button when loading
-                          : () {
-                            if (_formKey.currentState!.validate()) {
-                              if (provider.imageBytesList.isEmpty) {
-                                FeedbackHelpers.showErrorSnackBar(
-                                  context,
-                                  'Please add at least one photo',
-                                );
-                                return;
-                              }
-
-                              provider.postListing();
-                            } else {
-                              // Validation failed, scroll to first error
-                              _scrollToFirstError();
-                            }
-                          },
-                  child:
-                      provider.isLoading
-                          ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Theme.of(context).colorScheme.onPrimary,
-                              ),
-                            ),
-                          )
-                          : Text('Submit listing'),
+                LoadingButton(
+                  onPressed: _handleSubmit,
+                  label: 'Submit listing',
+                  isLoading: provider.isLoading,
                 ),
               ],
             ),
