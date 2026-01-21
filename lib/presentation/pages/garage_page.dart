@@ -89,18 +89,30 @@ class _GaragePageState extends State<GaragePage> {
           onRefresh: garageProvider.fetchVehicles,
           child: ListView.builder(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 64),
-            itemCount: garageProvider.vehicles.length + 1, // +1 for carousel
+            itemCount:
+                garageProvider.vehicles.length +
+                2, // +1 for carousel and +1 for title
             itemBuilder: (context, index) {
-              // First item is the carousel
               if (index == 0) {
-                return const Padding(
+                return Padding(
                   padding: EdgeInsets.only(bottom: 16.0),
                   child: ListingsCarouselWidget(),
                 );
               }
 
-              // Adjust index for vehicles list
-              final vehicleIndex = index - 1;
+              if (index == 1) {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Text(
+                    'My Vehicles',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                );
+              }
+
+              final vehicleIndex = index - 2;
               final vehicle = garageProvider.vehicles[vehicleIndex];
 
               return VehicleCard(
