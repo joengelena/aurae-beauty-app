@@ -167,7 +167,7 @@ class _SignInPageState extends State<SignInPage> {
                   child:
                       authProvider.isLoading
                           ? const SizedBox(
-                            width: 50,
+                            width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
