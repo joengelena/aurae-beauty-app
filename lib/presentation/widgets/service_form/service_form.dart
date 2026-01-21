@@ -77,15 +77,9 @@ class _ServiceFormState extends State<ServiceForm> {
     if (!context.mounted) return;
 
     if (provider.isSuccess) {
-      // Refresh vehicle details to show new service
-      await context.read<VehicleDetailProvider>().getVehicle(
-        provider.vehicle.id,
-      );
-
-      if (!context.mounted) return;
-
-      FeedbackHelpers.showSuccessSnackBar(context, _successMessage);
+      context.read<VehicleDetailProvider>().getVehicle(provider.vehicle.id);
       context.go('/garage/${provider.vehicle.id}');
+      FeedbackHelpers.showSuccessSnackBar(context, _successMessage);
     } else if (provider.errorMessage.isNotEmpty) {
       FeedbackHelpers.showErrorSnackBar(context, provider.errorMessage);
     }
