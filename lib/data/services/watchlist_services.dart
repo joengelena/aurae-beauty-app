@@ -60,7 +60,6 @@ class WatchlistServices {
         '/user/watchlist-add/$listingId',
         {},
         invalidateCacheKeys: [
-          CacheKeys.userProfile,
           CacheKeys.userWatchlist,
           CacheKeys.allListingsCache,
           CacheKeys.listing(listingId),
@@ -96,7 +95,6 @@ class WatchlistServices {
         '/user/watchlist-remove/$listingId',
         {},
         invalidateCacheKeys: [
-          CacheKeys.userProfile,
           CacheKeys.userWatchlist,
           CacheKeys.allListingsCache,
           CacheKeys.listing(listingId),

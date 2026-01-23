@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/edit_listing_provider.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
+import 'package:motorix_app/logic/user_listings_provider.dart';
 import 'package:motorix_app/presentation/widgets/edit_listing/edit_listing_form.dart';
 import 'package:motorix_app/logic/listing_form_data_provider.dart';
 import 'package:motorix_app/presentation/widgets/sign_in_to_access.dart';
@@ -146,8 +147,8 @@ class _EditListingPageState extends State<EditListingPage> {
                   context,
                   'Listing updated successfully!',
                 );
-                // Refresh the listing detail and navigate back
                 context.read<ListingDetailProvider>().getListing(listing.id);
+                context.read<UserListingsProvider>().refreshListings();
                 context.go('/listings/${listing.id}');
               }
             });

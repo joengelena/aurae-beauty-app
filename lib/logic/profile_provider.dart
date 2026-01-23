@@ -69,16 +69,10 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _userServices.updateUser(firstName, lastName, phoneNumber);
+      final userId = await SecureStorage.read('userId') ?? '';
+      await _userServices.updateUser(firstName, lastName, phoneNumber, userId);
 
-      if (currentUser != null) {
-        currentUser = User(
-          firstName: firstName,
-          lastName: lastName,
-          email: currentUser!.email,
-          phoneNumber: phoneNumber,
-        );
-      }
+      await _fetchCurrentUserProfile();
 
       updateSuccess = true;
       updateMessage = 'Profile updated successfully!';

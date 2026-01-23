@@ -49,8 +49,7 @@ class CacheKeys {
   static String allListingsCache = '*listings*';
 
   // User
-  static String users(String id) => '/users/$id';
-  static const String userProfile = '/user/profile';
+  static String userDetails(String id) => '/users/$id';
   static const String userWatchlist = '/user/watchlist';
 
   // Vehicles

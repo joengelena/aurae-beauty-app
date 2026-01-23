@@ -141,7 +141,7 @@ class UserServices {
     try {
       http.Response response = await apiClient.get(
         '/users/$userId',
-        cacheKey: CacheKeys.users(userId),
+        cacheKey: CacheKeys.userDetails(userId),
         cacheDuration: CacheDurations.short,
       );
 
@@ -356,6 +356,7 @@ class UserServices {
     String firstName,
     String lastName,
     String phoneNumber,
+    String userId,
   ) async {
     try {
       http.Response response = await apiClient.patch(
@@ -365,7 +366,7 @@ class UserServices {
           'lastName': lastName,
           'phoneNumber': phoneNumber,
         },
-        invalidateCacheKeys: [CacheKeys.userProfile],
+        invalidateCacheKeys: [CacheKeys.userDetails(userId)],
       );
 
       if (response.statusCode == HttpStatus.unauthorized) {
