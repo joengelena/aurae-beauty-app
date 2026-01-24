@@ -1,5 +1,19 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:motorix_app/data/models/user_vehicle.dart';
+
+/// Formats a number with thousand separators
+///
+/// Example: 120000 → "120,000"
+String formatNumber(String value) {
+  final intValue = int.tryParse(value);
+  if (intValue == null) return value;
+
+  return intValue.toString().replaceAllMapped(
+    RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+    (Match m) => '${m[1]},',
+  );
+}
 
 String formatDate(DateTime date) {
   final day = date.day.toString().padLeft(2, '0');
@@ -7,6 +21,10 @@ String formatDate(DateTime date) {
   final year = date.year.toString();
 
   return '$day-$month-$year';
+}
+
+String formatVehicleName(UserVehicle vehicle) {
+  return '${vehicle.year} ${vehicle.make} ${vehicle.model}';
 }
 
 String formatKilometers(int km) {

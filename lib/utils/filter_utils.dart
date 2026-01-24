@@ -1,3 +1,5 @@
+import 'package:motorix_app/utils/utils.dart';
+
 /// Utility class for filter-related operations
 /// Centralizes filter key mapping to avoid duplication across providers
 class FilterUtils {
@@ -23,9 +25,7 @@ class FilterUtils {
   /// {'make': 'Toyota', 'location': 'None', 'fuel_type': 'Petrol', 'priceFrom': '10000'}
   /// // Returns: {'make': 'Toyota', 'fuelType': 'Petrol', 'priceFrom': '10000'}
   /// ```
-  static Map<String, String> toApiQueryParams(
-    Map<String, String> filters,
-  ) {
+  static Map<String, String> toApiQueryParams(Map<String, String> filters) {
     final result = <String, String>{};
 
     filters.forEach((key, value) {
@@ -99,26 +99,15 @@ class FilterUtils {
     }
 
     // Format min and max with thousand separators for kilometers
-    String formattedMin = minValue.isEmpty
-        ? 'Any'
-        : '$prefix${baseKey == 'kilometers' ? formatNumber(minValue) : minValue}';
-    String formattedMax = maxValue.isEmpty
-        ? 'Any'
-        : '$prefix${baseKey == 'kilometers' ? formatNumber(maxValue) : maxValue}';
+    String formattedMin =
+        minValue.isEmpty
+            ? 'Any'
+            : '$prefix${baseKey == 'kilometers' ? formatNumber(minValue) : minValue}';
+    String formattedMax =
+        maxValue.isEmpty
+            ? 'Any'
+            : '$prefix${baseKey == 'kilometers' ? formatNumber(maxValue) : maxValue}';
 
     return '$label: $formattedMin - $formattedMax';
-  }
-
-  /// Formats a number with thousand separators
-  ///
-  /// Example: 120000 → "120,000"
-  static String formatNumber(String value) {
-    final intValue = int.tryParse(value);
-    if (intValue == null) return value;
-
-    return intValue.toString().replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (Match m) => '${m[1]},',
-        );
   }
 }

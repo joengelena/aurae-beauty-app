@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
-import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/logic/vehicle_detail_provider.dart';
 import 'package:motorix_app/logic/garage_provider.dart';
+import 'package:motorix_app/presentation/widgets/garage/add_service_button.dart';
 import 'package:motorix_app/presentation/widgets/garage/compliance_card.dart';
+import 'package:motorix_app/presentation/widgets/garage/service_history_table.dart';
 import 'package:motorix_app/presentation/widgets/garage/update_expiry_date_dialog.dart';
+import 'package:motorix_app/presentation/widgets/garage/vehicle_image.dart';
+import 'package:motorix_app/presentation/widgets/garage/vehicle_spec_card.dart';
+import 'package:motorix_app/presentation/widgets/garage/vehicle_title.dart';
 import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
-import 'package:motorix_app/utils/constants.dart';
-import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
+import 'package:motorix_app/utils/theme.dart';
+import 'package:motorix_app/utils/utils.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -68,80 +71,15 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
   }
 
   Widget _buildDetailPage(BuildContext context, UserVehicle vehicle) {
-    // Key specs for grid display
-    final keySpecs = [
-      {
-        'icon': Icons.speed,
-        'label': 'Odometer',
-        'value':
-            vehicle.odometerReading != null
-                ? '${NumberFormat('#,###').format(vehicle.odometerReading!)} ${vehicle.odometerUnit}'
-                : 'Not recorded',
-      },
-      {
-        'icon': Icons.local_gas_station,
-        'label': 'Fuel Type',
-        'value': vehicle.fuelType ?? 'Not specified',
-      },
-      {
-        'icon': Icons.settings,
-        'label': 'Transmission',
-        'value': vehicle.transmission ?? 'Not specified',
-      },
-      {
-        'icon': Icons.palette,
-        'label': 'Color',
-        'value': vehicle.color ?? 'Not specified',
-      },
-    ];
-
     return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Center(
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 600),
+          constraints: const BoxConstraints(maxWidth: 600),
           child: Column(
             spacing: 12,
             children: [
-              // Vehicle Image
-              if (vehicle.vehiclePhotoUrl != null)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: AspectRatio(
-                    aspectRatio: AppConstants.listingImageAspectRatio,
-                    child: Image.network(
-                      vehicle.vehiclePhotoUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey[300],
-                          child: const Icon(
-                            Icons.directions_car,
-                            size: 80,
-                            color: Colors.grey,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                )
-              else
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: AspectRatio(
-                    aspectRatio: AppConstants.listingImageAspectRatio,
-                    child: Container(
-                      decoration: BoxDecoration(color: Colors.grey[200]),
-                      child: Center(
-                        child: Icon(
-                          Icons.directions_car,
-                          size: 80,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+              VehicleImage(imageUrl: vehicle.vehiclePhotoUrl),
 
               // Title and Menu Button
               Column(
@@ -151,74 +89,15 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child:
-                            vehicle.nickname != null
-                                ? Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.baseline,
-                                  textBaseline: TextBaseline.alphabetic,
-                                  children: [
-                                    Text(
-                                      vehicle.nickname!,
-                                      style:
-                                          Theme.of(
-                                            context,
-                                          ).textTheme.headlineMedium,
-                                    ),
-                                    SizedBox(width: 8),
-                                    Flexible(
-                                      child: Text(
-                                        '${vehicle.year} ${vehicle.make} ${vehicle.model}',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.black54,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                                : Text(
-                                  '${vehicle.year} ${vehicle.make} ${vehicle.model}',
-                                  style:
-                                      Theme.of(
-                                        context,
-                                      ).textTheme.headlineMedium,
-                                ),
-                      ),
-                      ActionMenuButton(
-                        options: [
-                          MenuOption(
-                            icon: Icons.edit,
-                            title: 'Edit',
-                            onTap: () {
-                              // Push current route onto stack for back button
-                              final currentRoute =
-                                  GoRouterState.of(context).uri.path;
-                              context.read<BackButtonProvider>().pushRoute(
-                                currentRoute,
-                              );
-
-                              context.go('/garage/${vehicle.id}/edit');
-                            },
-                          ),
-                          MenuOption(
-                            icon: Icons.delete,
-                            title: 'Delete',
-                            iconColor: themeRed,
-                            titleColor: themeRed,
-                            onTap: () => _handleDeleteVehicle(vehicle),
-                          ),
-                        ],
-                      ),
+                      Expanded(child: VehicleTitle(vehicle: vehicle)),
+                      ActionMenuButton(options: _buildMenuOptions(vehicle)),
                     ],
                   ),
                   if (vehicle.licensePlate != null) ...[
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       vehicle.licensePlate!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black54,
                         fontWeight: FontWeight.w500,
@@ -228,123 +107,9 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                 ],
               ),
 
-              // Compliance Status Cards
-              Column(
-                spacing: 12,
-                children: [
-                  Row(
-                    spacing: 12,
-                    children: [
-                      Expanded(
-                        child: ComplianceCard(
-                          title: 'REGO expires on',
-                          dateString: vehicle.regoExpiryDate,
-                          onUpdate:
-                              () => _showUpdateExpiryDialog(
-                                context,
-                                title: 'Update Registration',
-                                currentDate: vehicle.regoExpiryDate,
-                                fieldName: 'regoExpiryDate',
-                                successMessage:
-                                    'Registration expiry updated successfully',
-                              ),
-                        ),
-                      ),
-                      Expanded(
-                        child: ComplianceCard(
-                          title: 'WOF expires on',
-                          dateString: vehicle.wofExpiryDate,
-                          onUpdate:
-                              () => _showUpdateExpiryDialog(
-                                context,
-                                title: 'Update WOF',
-                                currentDate: vehicle.wofExpiryDate,
-                                fieldName: 'wofExpiryDate',
-                                successMessage:
-                                    'WOF expiry updated successfully',
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ComplianceCard(
-                          title: 'INSURANCE expires on',
-                          dateString: vehicle.insuranceExpiryDate,
-                          description: 'Provider: ${vehicle.insuranceProvider}',
-                          onUpdate:
-                              () => _showUpdateExpiryDialog(
-                                context,
-                                title: 'Update Insurance',
-                                currentDate: vehicle.insuranceExpiryDate,
-                                fieldName: 'insuranceExpiryDate',
-                                successMessage:
-                                    'Insurance expiry updated successfully',
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              _buildComplianceCards(vehicle),
 
-              // Key Specs Grid
-              GridView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  mainAxisExtent: 60,
-                ),
-                itemCount: keySpecs.length,
-                itemBuilder: (context, index) {
-                  final spec = keySpecs[index];
-                  return Container(
-                    padding: EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          spec['icon'] as IconData,
-                          size: 20,
-                          color: Colors.black54,
-                        ),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                spec['label'] as String,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                              Text(
-                                spec['value'] as String,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+              _buildSpecsGrid(vehicle),
 
               // Notes Section (if exists)
               if (vehicle.notes != null && vehicle.notes!.isNotEmpty) ...[
@@ -421,18 +186,18 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
 
     if (provider.isLoadingServices) {
       return Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.grey[50],
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Center(child: CircularProgressIndicator()),
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (services.isEmpty) {
       return Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.grey[50],
           borderRadius: BorderRadius.circular(8),
@@ -444,26 +209,13 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
               size: 48,
               color: Colors.grey[400],
             ),
-            SizedBox(height: 12),
-            Text(
+            const SizedBox(height: 12),
+            const Text(
               'No service history yet',
               style: TextStyle(fontSize: 14, color: Colors.black54),
             ),
-            SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed:
-                    () => context.go('/garage/${vehicle.id}/add-service'),
-                icon: const Icon(Icons.add),
-                label: const Text('Service Record'),
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(
-                    Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-              ),
-            ),
+            const SizedBox(height: 16),
+            AddServiceButton(vehicleId: vehicle.id),
           ],
         ),
       );
@@ -472,148 +224,142 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
     return Column(
       spacing: 12,
       children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Column(
-            children: [
-              // Table Header
-              Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(8),
-                    topRight: Radius.circular(8),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        'Service',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        'Date',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        'Cost',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Table Rows
-              ...services.asMap().entries.map((entry) {
-                final index = entry.key;
-                final service = entry.value;
-                final isLast = index == services.length - 1;
+        ServiceHistoryTable(services: services),
+        AddServiceButton(vehicleId: vehicle.id),
+      ],
+    );
+  }
 
-                return Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom:
-                          isLast
-                              ? BorderSide.none
-                              : BorderSide(
-                                color: Colors.grey[300]!,
-                                width: 0.5,
-                              ),
+  List<MenuOption> _buildMenuOptions(UserVehicle vehicle) {
+    return [
+      MenuOption(
+        icon: Icons.edit,
+        title: 'Edit Vehicle',
+        onTap: () => context.go('/garage/${vehicle.id}/edit'),
+      ),
+      MenuOption(
+        icon: Icons.delete,
+        title: 'Delete Vehicle',
+        onTap: () => _handleDeleteVehicle(vehicle),
+        iconColor: themeRed,
+        titleColor: themeRed,
+      ),
+    ];
+  }
+
+  Widget _buildComplianceCards(UserVehicle vehicle) {
+    return Column(
+      spacing: 12,
+      children: [
+        Row(
+          spacing: 12,
+          children: [
+            Expanded(
+              child: ComplianceCard(
+                title: 'Registration',
+                dateString: vehicle.regoExpiryDate,
+                onUpdate:
+                    () => _showUpdateExpiryDialog(
+                      context,
+                      title: 'Update Registration Expiry',
+                      currentDate: vehicle.regoExpiryDate,
+                      fieldName: 'regoExpiryDate',
+                      successMessage:
+                          'Registration expiry updated successfully',
                     ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              service.serviceProviderName != null
-                                  ? '${service.typeOfService} (${service.serviceProviderName})'
-                                  : service.typeOfService,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              DateFormat(
-                                'dd/MM/yy',
-                              ).format(service.serviceDate),
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              service.cost != null
-                                  ? '\$${service.cost!.toStringAsFixed(2)}'
-                                  : '-',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              textAlign: TextAlign.right,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (service.notes != null &&
-                          service.notes!.isNotEmpty) ...[
-                        SizedBox(height: 6),
-                        Text(
-                          service.notes!,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.black54,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                );
-              }).toList(),
-            ],
-          ),
-        ),
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton.icon(
-            onPressed: () => context.go('/garage/${vehicle.id}/add-service'),
-            icon: const Icon(Icons.add),
-            label: const Text('Service Record'),
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(
-                Theme.of(context).colorScheme.secondary,
               ),
             ),
-          ),
+            Expanded(
+              child: ComplianceCard(
+                title: 'WOF',
+                dateString: vehicle.wofExpiryDate,
+                onUpdate:
+                    () => _showUpdateExpiryDialog(
+                      context,
+                      title: 'Update WOF Expiry',
+                      currentDate: vehicle.wofExpiryDate,
+                      fieldName: 'wofExpiryDate',
+                      successMessage: 'WOF expiry updated successfully',
+                    ),
+              ),
+            ),
+          ],
+        ),
+        ComplianceCard(
+          title: 'Insurance',
+          dateString: vehicle.insuranceExpiryDate,
+          description: vehicle.insuranceProvider,
+          onUpdate:
+              () => _showUpdateExpiryDialog(
+                context,
+                title: 'Update Insurance Expiry',
+                currentDate: vehicle.insuranceExpiryDate,
+                fieldName: 'insuranceExpiryDate',
+                successMessage: 'Insurance expiry updated successfully',
+              ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSpecsGrid(UserVehicle vehicle) {
+    final specs = <Map<String, dynamic>>[];
+
+    if (vehicle.color != null) {
+      specs.add({
+        'icon': Icons.palette,
+        'label': 'Color',
+        'value': vehicle.color,
+      });
+    }
+
+    if (vehicle.fuelType != null) {
+      specs.add({
+        'icon': Icons.local_gas_station,
+        'label': 'Fuel Type',
+        'value': vehicle.fuelType,
+      });
+    }
+
+    if (vehicle.transmission != null) {
+      specs.add({
+        'icon': Icons.settings,
+        'label': 'Transmission',
+        'value': vehicle.transmission,
+      });
+    }
+
+    if (vehicle.odometerReading != null) {
+      specs.add({
+        'icon': Icons.speed,
+        'label': 'Odometer',
+        'value':
+            '${formatNumber(vehicle.odometerReading.toString())} ${vehicle.odometerUnit}',
+      });
+    }
+
+    if (specs.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        mainAxisExtent: 60,
+      ),
+      itemCount: specs.length,
+      itemBuilder: (context, index) {
+        final spec = specs[index];
+        return VehicleSpecCard(
+          icon: spec['icon'],
+          label: spec['label'],
+          value: spec['value'],
+        );
+      },
     );
   }
 
