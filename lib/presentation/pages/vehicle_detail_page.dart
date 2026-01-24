@@ -9,7 +9,6 @@ import 'package:motorix_app/presentation/widgets/garage/update_expiry_date_dialo
 import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
 import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/theme.dart';
-import 'package:motorix_app/utils/utils.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -95,20 +94,6 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
         'value': vehicle.color ?? 'Not specified',
       },
     ];
-
-    // Vehicle details
-    final vehicleDetails = {
-      'License Plate': vehicle.licensePlate,
-      'Color': vehicle.color,
-      'Fuel Type': vehicle.fuelType,
-      'Transmission': vehicle.transmission,
-      'Odometer':
-          vehicle.odometerReading != null
-              ? '${NumberFormat('#,###').format(vehicle.odometerReading!)} ${vehicle.odometerUnit}'
-              : null,
-      'Added': formatDate(vehicle.createdAt),
-      'Last Updated': formatDate(vehicle.updatedAt),
-    };
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: 12),
@@ -359,51 +344,6 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                     ),
                   );
                 },
-              ),
-
-              // Vehicle Details Section
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Vehicle Details',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  spacing: 8,
-                  children: [
-                    for (var entry in vehicleDetails.entries)
-                      if (entry.value != null)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              entry.key,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            Text(
-                              '${entry.value}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                  ],
-                ),
               ),
 
               // Notes Section (if exists)
