@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/logic/vehicle_detail_provider.dart';
-import 'package:motorix_app/logic/garage_provider.dart';
 import 'package:motorix_app/presentation/widgets/garage/add_service_button.dart';
 import 'package:motorix_app/presentation/widgets/garage/compliance_card.dart';
 import 'package:motorix_app/presentation/widgets/garage/service_history_table.dart';
 import 'package:motorix_app/presentation/widgets/garage/update_expiry_date_dialog.dart';
+import 'package:motorix_app/presentation/widgets/garage/vehicle_action_menu.dart';
 import 'package:motorix_app/presentation/widgets/garage/vehicle_image.dart';
 import 'package:motorix_app/presentation/widgets/garage/vehicle_spec_card.dart';
 import 'package:motorix_app/presentation/widgets/garage/vehicle_title.dart';
-import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
-import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class VehicleDetailPage extends StatefulWidget {
@@ -57,11 +54,6 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
               provider.errorMessage ?? 'Vehicle not found',
               style: TextStyle(fontSize: 16),
             ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => context.pop(),
-              child: Text('Go Back'),
-            ),
           ],
         ),
       );
@@ -90,7 +82,10 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(child: VehicleTitle(vehicle: vehicle)),
-                      ActionMenuButton(options: _buildMenuOptions(vehicle)),
+                      VehicleActionMenu(
+                        vehicle: vehicle,
+                        redirectAfterDelete: true,
+                      ),
                     ],
                   ),
                   if (vehicle.licensePlate != null) ...[
@@ -230,23 +225,6 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
     );
   }
 
-  List<MenuOption> _buildMenuOptions(UserVehicle vehicle) {
-    return [
-      MenuOption(
-        icon: Icons.edit,
-        title: 'Edit Vehicle',
-        onTap: () => context.go('/garage/${vehicle.id}/edit'),
-      ),
-      MenuOption(
-        icon: Icons.delete,
-        title: 'Delete Vehicle',
-        onTap: () => _handleDeleteVehicle(vehicle),
-        iconColor: themeRed,
-        titleColor: themeRed,
-      ),
-    ];
-  }
-
   Widget _buildComplianceCards(UserVehicle vehicle) {
     return Column(
       spacing: 12,
@@ -361,38 +339,5 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
         );
       },
     );
-  }
-
-  Future<void> _handleDeleteVehicle(UserVehicle vehicle) async {
-    final vehicleName = '${vehicle.year} ${vehicle.make} ${vehicle.model}';
-    final confirmed = await FeedbackHelpers.showDeleteConfirmation(
-      context,
-      title: 'Delete Vehicle',
-      message:
-          'Are you sure you want to delete $vehicleName? This action cannot be undone.',
-    );
-
-    if (!confirmed || !mounted) return;
-
-    final garageProvider = context.read<GarageProvider>();
-
-    try {
-      await garageProvider.deleteVehicle(vehicle.id);
-
-      if (mounted) {
-        FeedbackHelpers.showSuccessSnackBar(
-          context,
-          'Vehicle deleted successfully',
-        );
-        context.go('/garage');
-      }
-    } catch (e) {
-      if (mounted) {
-        FeedbackHelpers.showErrorSnackBar(
-          context,
-          'Failed to delete vehicle: ${e.toString()}',
-        );
-      }
-    }
   }
 }
