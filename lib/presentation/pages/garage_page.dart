@@ -102,7 +102,7 @@ class _GaragePageState extends State<GaragePage> {
 
               if (index == 1) {
                 return Padding(
-                  padding: const EdgeInsets.only(left: 16.0),
+                  padding: const EdgeInsets.only(left: 16, bottom: 8),
                   child: Text(
                     'My Vehicles',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
