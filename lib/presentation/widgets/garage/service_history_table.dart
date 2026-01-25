@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:motorix_app/data/models/vehicle_service.dart';
+import 'package:motorix_app/utils/theme.dart';
 
 class ServiceHistoryTable extends StatelessWidget {
   final List<VehicleService> services;
+  final Function(VehicleService)? onDelete;
 
-  const ServiceHistoryTable({super.key, required this.services});
+  const ServiceHistoryTable({
+    super.key,
+    required this.services,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +28,7 @@ class ServiceHistoryTable extends StatelessWidget {
             return _ServiceRow(
               service: entry.value,
               isLast: isLast,
+              onDelete: onDelete,
             );
           }).toList(),
         ],
@@ -79,8 +86,13 @@ class ServiceHistoryTable extends StatelessWidget {
 class _ServiceRow extends StatelessWidget {
   final VehicleService service;
   final bool isLast;
+  final Function(VehicleService)? onDelete;
 
-  const _ServiceRow({required this.service, required this.isLast});
+  const _ServiceRow({
+    required this.service,
+    required this.isLast,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -127,6 +139,14 @@ class _ServiceRow extends StatelessWidget {
                   textAlign: TextAlign.right,
                 ),
               ),
+              if (onDelete != null)
+                IconButton(
+                  icon: Icon(Icons.delete, color: themeRed, size: 20),
+                  onPressed: () => onDelete!(service),
+                  padding: const EdgeInsets.all(4),
+                  constraints: const BoxConstraints(),
+                  visualDensity: VisualDensity.compact,
+                ),
             ],
           ),
           if (service.notes != null && service.notes!.isNotEmpty) ...[

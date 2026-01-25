@@ -69,6 +69,15 @@ class VehicleDetailProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> deleteService(int serviceId, int vehicleId) async {
+    try {
+      await _vehicleServices.deleteService(serviceId, vehicleId);
+      await getServices(vehicleId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   void clearVehicle() {
     _vehicle = null;
     _services = [];

@@ -378,4 +378,43 @@ class VehicleServices {
       );
     }
   }
+
+  Future<void> deleteService(int serviceId, int vehicleId) async {
+    try {
+      http.Response response = await apiClient.delete(
+        '/user/vehicle-services/$serviceId',
+        {},
+        invalidateCacheKeys: [CacheKeys.vehicleServices(vehicleId)],
+      );
+
+      if (response.statusCode == HttpStatus.notFound) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NotFoundException(errorMessage);
+      }
+
+      if (response.statusCode == HttpStatus.forbidden) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw ForbiddenException(errorMessage);
+      }
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NetworkException(
+          errorMessage,
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+    } catch (e) {
+      if (e is NotFoundException ||
+          e is ForbiddenException ||
+          e is NetworkException) {
+        rethrow;
+      }
+      throw NetworkException(
+        'Network error deleting service record',
+        details: e.toString(),
+      );
+    }
+  }
 }

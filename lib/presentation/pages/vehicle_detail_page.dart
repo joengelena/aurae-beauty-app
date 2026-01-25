@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
+import 'package:motorix_app/data/models/vehicle_service.dart';
 import 'package:motorix_app/logic/vehicle_detail_provider.dart';
 import 'package:motorix_app/presentation/widgets/garage/add_service_button.dart';
 import 'package:motorix_app/presentation/widgets/garage/compliance_card.dart';
@@ -9,6 +10,7 @@ import 'package:motorix_app/presentation/widgets/garage/vehicle_action_menu.dart
 import 'package:motorix_app/presentation/widgets/garage/vehicle_image.dart';
 import 'package:motorix_app/presentation/widgets/garage/vehicle_spec_card.dart';
 import 'package:motorix_app/presentation/widgets/garage/vehicle_title.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
@@ -219,10 +221,48 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
     return Column(
       spacing: 12,
       children: [
-        ServiceHistoryTable(services: services),
+        ServiceHistoryTable(
+          services: services,
+          onDelete: (service) => _handleDeleteService(service, vehicle.id),
+        ),
         AddServiceButton(vehicleId: vehicle.id),
       ],
     );
+  }
+
+  Future<void> _handleDeleteService(
+    VehicleService service,
+    int vehicleId,
+  ) async {
+    final serviceName = service.typeOfService;
+    final confirmed = await FeedbackHelpers.showDeleteConfirmation(
+      context,
+      title: 'Delete Service Record',
+      message:
+          'Are you sure you want to delete the $serviceName service record? This action cannot be undone.',
+    );
+
+    if (!confirmed || !mounted) return;
+
+    final provider = context.read<VehicleDetailProvider>();
+
+    try {
+      await provider.deleteService(service.id, vehicleId);
+
+      if (mounted) {
+        FeedbackHelpers.showSuccessSnackBar(
+          context,
+          'Service record deleted successfully',
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        FeedbackHelpers.showErrorSnackBar(
+          context,
+          'Failed to delete service record: ${e.toString()}',
+        );
+      }
+    }
   }
 
   Widget _buildComplianceCards(UserVehicle vehicle) {
