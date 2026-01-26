@@ -5,6 +5,7 @@ import 'package:motorix_app/logic/garage_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:motorix_app/utils/theme.dart';
+import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class VehicleActionMenu extends StatelessWidget {
@@ -42,7 +43,7 @@ class VehicleActionMenu extends StatelessWidget {
   }
 
   Future<void> _handleDeleteVehicle(BuildContext context) async {
-    final vehicleName = '${vehicle.year} ${vehicle.make} ${vehicle.model}';
+    final vehicleName = formatVehicleName(vehicle);
     final confirmed = await FeedbackHelpers.showDeleteConfirmation(
       context,
       title: 'Delete Vehicle',

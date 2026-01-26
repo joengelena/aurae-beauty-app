@@ -10,6 +10,7 @@ import 'package:motorix_app/presentation/widgets/garage/vehicle_card.dart';
 import 'package:motorix_app/presentation/widgets/sign_in_to_access.dart';
 import 'package:motorix_app/presentation/widgets/garage/garage_empty_state.dart';
 import 'package:motorix_app/presentation/widgets/garage/garage_error_state.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 class GaragePage extends StatefulWidget {
@@ -20,12 +21,21 @@ class GaragePage extends StatefulWidget {
 }
 
 class _GaragePageState extends State<GaragePage> {
+  static const _horizontalPadding =
+      AppConstants.spacingLarge * 2; // 16 left + 16 right
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<GarageProvider>().fetchVehicles();
     });
+  }
+
+  double _calculateItemWidth(double availableWidth, int crossAxisCount) {
+    final totalSpacing = _horizontalPadding +
+        (AppConstants.spacingMedium * (crossAxisCount - 1));
+    return (availableWidth - totalSpacing) / crossAxisCount;
   }
 
   @override
@@ -54,7 +64,9 @@ class _GaragePageState extends State<GaragePage> {
     if (garageProvider.hasError) {
       return Center(
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 600),
+          constraints: const BoxConstraints(
+            maxWidth: AppConstants.contentMaxWidth,
+          ),
           child: GarageErrorState(
             errorMessage: garageProvider.errorMessage,
             onRetry: garageProvider.fetchVehicles,
@@ -66,7 +78,9 @@ class _GaragePageState extends State<GaragePage> {
     if (garageProvider.vehicles.isEmpty) {
       return Center(
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 600),
+          constraints: const BoxConstraints(
+            maxWidth: AppConstants.contentMaxWidth,
+          ),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -81,43 +95,61 @@ class _GaragePageState extends State<GaragePage> {
 
     return Center(
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 600),
-        child: RefreshIndicator(
-          onRefresh: garageProvider.fetchVehicles,
-          child: ListView.builder(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 64),
-            itemCount:
-                garageProvider.vehicles.length +
-                2, // +1 for carousel and +1 for title
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return Padding(
-                  padding: EdgeInsets.only(bottom: 16.0),
-                  child: ListingsCarouselWidget(),
-                );
-              }
+        constraints: const BoxConstraints(
+          maxWidth: AppConstants.contentMaxWidth,
+        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final availableWidth = constraints.maxWidth;
+            final crossAxisCount =
+                availableWidth >= AppConstants.twoColumnBreakpoint ? 2 : 1;
+            final itemWidth = _calculateItemWidth(
+              availableWidth,
+              crossAxisCount,
+            );
 
-              if (index == 1) {
-                return Padding(
-                  padding: const EdgeInsets.only(left: 16, bottom: 8),
-                  child: Text(
-                    'My Vehicles',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+            return RefreshIndicator(
+              onRefresh: garageProvider.fetchVehicles,
+              child: ListView(
+                padding: EdgeInsets.fromLTRB(
+                  AppConstants.spacingLarge,
+                  AppConstants.spacingLarge,
+                  AppConstants.spacingLarge,
+                  AppConstants.spacingExtraLarge,
+                ),
+                children: [
+                  const ListingsCarouselWidget(),
+                  const SizedBox(height: AppConstants.spacingLarge),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: AppConstants.spacingLarge,
+                    ),
+                    child: Text(
+                      'My Vehicles',
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                   ),
-                );
-              }
-
-              final vehicleIndex = index - 2;
-              final vehicle = garageProvider.vehicles[vehicleIndex];
-
-              return VehicleCard(
-                vehicle: vehicle,
-                actionButton: VehicleActionMenu(vehicle: vehicle),
-              );
-            },
-          ),
+                  const SizedBox(height: AppConstants.spacingSmall),
+                  Wrap(
+                    spacing: AppConstants.spacingMedium,
+                    runSpacing: AppConstants.spacingMedium,
+                    children: garageProvider.vehicles.map((vehicle) {
+                      return SizedBox(
+                        width: itemWidth,
+                        child: VehicleCard(
+                          vehicle: vehicle,
+                          actionButton: VehicleActionMenu(vehicle: vehicle),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
