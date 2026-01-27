@@ -65,14 +65,16 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
 
   Widget _buildDetailPage(BuildContext context, UserVehicle vehicle) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: AppConstants.spacingMedium),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppConstants.spacingSmall,
+      ),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(
             maxWidth: AppConstants.contentMaxWidth,
           ),
           child: Column(
-            spacing: AppConstants.spacingMedium,
+            spacing: AppConstants.spacingSmall,
             children: [
               VehicleImage(imageUrl: vehicle.vehiclePhotoUrl),
 
@@ -91,8 +93,7 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                       ),
                     ],
                   ),
-                  if (vehicle.licensePlate != null) ...[
-                    const SizedBox(height: 4),
+                  if (vehicle.licensePlate != null)
                     Text(
                       vehicle.licensePlate!,
                       style: const TextStyle(
@@ -101,7 +102,6 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                  ],
                 ],
               ),
 
