@@ -7,11 +7,7 @@ class ServiceHistoryTable extends StatelessWidget {
   final List<VehicleService> services;
   final Function(VehicleService)? onDelete;
 
-  const ServiceHistoryTable({
-    super.key,
-    required this.services,
-    this.onDelete,
-  });
+  const ServiceHistoryTable({super.key, required this.services, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -52,29 +48,19 @@ class ServiceHistoryTable extends StatelessWidget {
             flex: 2,
             child: Text(
               'Service',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
             ),
           ),
           Expanded(
             child: Text(
               'Date',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
             ),
           ),
           Expanded(
             child: Text(
               'Cost',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              ),
-              textAlign: TextAlign.right,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
             ),
           ),
         ],
@@ -100,12 +86,10 @@ class _ServiceRow extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         border: Border(
-          bottom: isLast
-              ? BorderSide.none
-              : BorderSide(
-                  color: Colors.grey[300]!,
-                  width: 0.5,
-                ),
+          bottom:
+              isLast
+                  ? BorderSide.none
+                  : BorderSide(color: Colors.grey[300]!, width: 0.5),
         ),
       ),
       child: Column(
