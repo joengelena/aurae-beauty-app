@@ -65,6 +65,8 @@ class UserProfile extends StatelessWidget {
         Text(user.email, style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 4),
         Text(user.phoneNumber, style: Theme.of(context).textTheme.bodyMedium),
+        const SizedBox(height: 4),
+        Text(user.location, style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 24),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -42,6 +42,7 @@ class AuthProvider extends ChangeNotifier {
     String email,
     String password,
     String phoneNumber,
+    String location,
   ) async {
     isLoading = true;
     signUpErrorMessage = '';
@@ -56,6 +57,7 @@ class AuthProvider extends ChangeNotifier {
         email,
         password,
         phoneNumber,
+        location,
       );
 
       signUpSuccess = true;

@@ -61,6 +61,7 @@ class ProfileProvider extends ChangeNotifier {
     String firstName,
     String lastName,
     String phoneNumber,
+    String location,
   ) async {
     isLoading = true;
     updateErrorMessage = '';
@@ -70,7 +71,13 @@ class ProfileProvider extends ChangeNotifier {
 
     try {
       final userId = await SecureStorage.read('userId') ?? '';
-      await _userServices.updateUser(firstName, lastName, phoneNumber, userId);
+      await _userServices.updateUser(
+        firstName,
+        lastName,
+        phoneNumber,
+        location,
+        userId,
+      );
 
       await _fetchCurrentUserProfile();
 

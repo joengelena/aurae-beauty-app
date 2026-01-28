@@ -18,6 +18,7 @@ class UserServices {
     String email,
     String password,
     String phoneNumber,
+    String location,
   ) async {
     try {
       http.Response response = await apiClient.post('/user/signup', {
@@ -26,6 +27,7 @@ class UserServices {
         'email': email,
         'password': password,
         'phoneNumber': phoneNumber,
+        'location': location,
       });
 
       if (response.statusCode != HttpStatus.created) {
@@ -305,8 +307,9 @@ class UserServices {
     String email,
     String password,
     String phoneNumber,
+    String location,
   ) async {
-    await signUp(firstName, lastName, email, password, phoneNumber);
+    await signUp(firstName, lastName, email, password, phoneNumber, location);
     await signIn(email, password);
   }
 
@@ -356,6 +359,7 @@ class UserServices {
     String firstName,
     String lastName,
     String phoneNumber,
+    String location,
     String userId,
   ) async {
     try {
@@ -365,6 +369,7 @@ class UserServices {
           'firstName': firstName,
           'lastName': lastName,
           'phoneNumber': phoneNumber,
+          'location': location,
         },
         invalidateCacheKeys: [CacheKeys.userDetails(userId)],
       );
