@@ -64,17 +64,21 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
   }
 
   Widget _buildDetailPage(BuildContext context, UserVehicle vehicle) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppConstants.spacingSmall,
-      ),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: AppConstants.contentMaxWidth,
-          ),
-          child: Column(
-            spacing: AppConstants.spacingSmall,
+    final provider = context.read<VehicleDetailProvider>();
+
+    return RefreshIndicator(
+      onRefresh: () => provider.getVehicle(vehicle.id),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppConstants.spacingSmall,
+        ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: AppConstants.contentMaxWidth,
+            ),
+            child: Column(
+              spacing: AppConstants.spacingSmall,
             children: [
               VehicleImage(imageUrl: vehicle.vehiclePhotoUrl),
 
@@ -152,6 +156,7 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
           ),
         ),
       ),
+    ),
     );
   }
 
