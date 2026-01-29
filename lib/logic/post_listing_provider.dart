@@ -29,6 +29,12 @@ class PostListingProvider extends ChangeNotifier
     _isSignedIn = isSignedIn;
   }
 
+  void setDefaultLocation(String? userLocation) {
+    if (userLocation != null && !postListingData.containsKey('location')) {
+      postListingData['location'] = userLocation;
+    }
+  }
+
   @override
   Map<String, Object> get formData => postListingData;
 

@@ -77,10 +77,11 @@ void main() async {
             return listingsProvider;
           },
         ),
-        ChangeNotifierProxyProvider<AuthProvider, PostListingProvider>(
+        ChangeNotifierProxyProvider2<AuthProvider, ProfileProvider, PostListingProvider>(
           create: (_) => PostListingProvider(),
-          update: (context, authProvider, postListingProvider) {
+          update: (context, authProvider, profileProvider, postListingProvider) {
             postListingProvider!.updateAuthStatus(authProvider.isSignedIn);
+            postListingProvider.setDefaultLocation(profileProvider.currentUser?.location);
             return postListingProvider;
           },
         ),
