@@ -29,12 +29,33 @@ class ListingsProvider extends ChangeNotifier {
 
   Map<String, String> equalFilters = {};
   bool _isSignedIn = false;
+  String? _userLocation;
 
   void updateAuthStatus(bool isSignedIn) {
     if (!isSignedIn && _isSignedIn) {
       reset();
     }
     _isSignedIn = isSignedIn;
+  }
+
+  void updateUserLocation(String? userLocation) {
+    final bool locationChanged = _userLocation != userLocation;
+    _userLocation = userLocation;
+
+    if (!locationChanged) return;
+
+    // Apply default location filter if user is signed in
+    if (_isSignedIn && _userLocation != null) {
+      // Check if location filter hasn't been explicitly set or removed by user
+      final hasNoLocationFilter =
+          !equalFilters.containsKey('location') ||
+          equalFilters['location'] == null ||
+          equalFilters['location'] == 'None';
+
+      if (hasNoLocationFilter) {
+        equalFilters['location'] = _userLocation!;
+      }
+    }
   }
 
   bool get onLastPage => currentPage >= totalPages;
@@ -60,6 +81,9 @@ class ListingsProvider extends ChangeNotifier {
 
   Future<void> fetchListings() async {
     try {
+      // Apply default location filter if user is signed in and has location
+      final filters = _getFiltersWithDefault();
+
       final res = await ListingsServices().getAllListings(
         allQueries: {
           'limit': limit,
@@ -67,7 +91,7 @@ class ListingsProvider extends ChangeNotifier {
           'searchString': searchController.text,
           'sortBy': sortBy,
           'status': 'active',
-          ...getEqualFilters(),
+          ...filters,
         },
       );
 
@@ -83,6 +107,10 @@ class ListingsProvider extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  Map<String, String> _getFiltersWithDefault() {
+    return FilterUtils.toApiQueryParams(equalFilters);
   }
 
   Map<String, String> getEqualFilters() {
@@ -149,6 +177,7 @@ class ListingsProvider extends ChangeNotifier {
     searchController.clear();
     sortBy = 'uploadDateDesc';
     equalFilters = {};
+    _userLocation = null;
     isLoading = false;
     isLoadingLatest = false;
     notifyListeners();

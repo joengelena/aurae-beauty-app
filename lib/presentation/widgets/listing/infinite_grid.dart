@@ -70,10 +70,13 @@ class _InfiniteGridState extends State<InfiniteGrid> {
 
       if (!mounted) return;
 
-      // Set initial filters
-      listingsProvider.equalFilters = Map.from(
-        filteringProvider.selectedEqualFilters,
-      );
+      // Only initialize filters if they haven't been set yet
+      // This preserves default filters (like location) that were set before page load
+      if (listingsProvider.equalFilters.isEmpty) {
+        listingsProvider.equalFilters = Map.from(
+          filteringProvider.selectedEqualFilters,
+        );
+      }
 
       // Fetch listings
       await listingsProvider.getNewListings();

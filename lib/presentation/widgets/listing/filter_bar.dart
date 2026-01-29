@@ -39,17 +39,22 @@ class FilterBar extends StatelessWidget {
     FilteringProvider filteringProvider,
     ListingsProvider listingsProvider,
   ) {
-    // Copy applied equal filters to pending filters
     for (var key in filteringProvider.selectedEqualFilters.keys) {
       filteringProvider.selectedEqualFilters[key] =
           listingsProvider.equalFilters[key] ?? 'None';
     }
 
-    // Copy applied range filters to pending filters
     for (var key in filteringProvider.selectedRangeFilters.keys) {
       filteringProvider.selectedRangeFilters[key] =
           listingsProvider.equalFilters[key] ?? '';
     }
+
+    listingsProvider.equalFilters.forEach((key, value) {
+      if (!filteringProvider.selectedEqualFilters.containsKey(key) &&
+          !filteringProvider.selectedRangeFilters.containsKey(key)) {
+        filteringProvider.selectedEqualFilters[key] = value;
+      }
+    });
   }
 
   /// Creates a badge for an equal filter (e.g., "Toyota", "Dubai")

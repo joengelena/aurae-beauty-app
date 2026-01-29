@@ -69,10 +69,11 @@ void main() async {
             return garageProvider;
           },
         ),
-        ChangeNotifierProxyProvider<AuthProvider, ListingsProvider>(
+        ChangeNotifierProxyProvider2<AuthProvider, ProfileProvider, ListingsProvider>(
           create: (_) => ListingsProvider(),
-          update: (context, authProvider, listingsProvider) {
+          update: (context, authProvider, profileProvider, listingsProvider) {
             listingsProvider!.updateAuthStatus(authProvider.isSignedIn);
+            listingsProvider.updateUserLocation(profileProvider.currentUser?.location);
             return listingsProvider;
           },
         ),
