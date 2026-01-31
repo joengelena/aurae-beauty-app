@@ -5,6 +5,7 @@ class User {
   final String lastName;
   final String email;
   final String phoneNumber;
+  final String location;
   final String? profilePhotoUrl;
 
   User({
@@ -12,6 +13,7 @@ class User {
     required this.lastName,
     required this.email,
     required this.phoneNumber,
+    required this.location,
     this.profilePhotoUrl,
   });
 
@@ -23,6 +25,7 @@ class User {
       lastName: decodedJson['lastName'] as String,
       email: decodedJson['email'] as String,
       phoneNumber: decodedJson['phoneNumber'] as String,
+      location: decodedJson['location'] as String,
       profilePhotoUrl: decodedJson['profilePhotoUrl'] as String?,
     );
   }

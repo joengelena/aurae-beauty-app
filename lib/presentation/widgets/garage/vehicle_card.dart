@@ -27,7 +27,7 @@ class VehicleCard extends StatelessWidget {
         context.go('/garage/${vehicle.id}');
       },
       child: Card(
-        margin: const EdgeInsets.only(bottom: 16.0),
+        margin: EdgeInsets.zero,
         elevation: AppConstants.cardShadowElevation,
         child: Padding(
           padding: const EdgeInsets.all(8.0),

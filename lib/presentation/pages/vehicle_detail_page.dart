@@ -10,6 +10,7 @@ import 'package:motorix_app/presentation/widgets/garage/vehicle_action_menu.dart
 import 'package:motorix_app/presentation/widgets/garage/vehicle_image.dart';
 import 'package:motorix_app/presentation/widgets/garage/vehicle_spec_card.dart';
 import 'package:motorix_app/presentation/widgets/garage/vehicle_title.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
@@ -63,13 +64,21 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
   }
 
   Widget _buildDetailPage(BuildContext context, UserVehicle vehicle) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 600),
-          child: Column(
-            spacing: 12,
+    final provider = context.read<VehicleDetailProvider>();
+
+    return RefreshIndicator(
+      onRefresh: () => provider.getVehicle(vehicle.id),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppConstants.spacingSmall,
+        ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: AppConstants.contentMaxWidth,
+            ),
+            child: Column(
+              spacing: AppConstants.spacingSmall,
             children: [
               VehicleImage(imageUrl: vehicle.vehiclePhotoUrl),
 
@@ -88,8 +97,7 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                       ),
                     ],
                   ),
-                  if (vehicle.licensePlate != null) ...[
-                    const SizedBox(height: 4),
+                  if (vehicle.licensePlate != null)
                     Text(
                       vehicle.licensePlate!,
                       style: const TextStyle(
@@ -98,7 +106,6 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                  ],
                 ],
               ),
 
@@ -149,6 +156,7 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
           ),
         ),
       ),
+    ),
     );
   }
 
@@ -265,10 +273,10 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
 
   Widget _buildComplianceCards(UserVehicle vehicle) {
     return Column(
-      spacing: 12,
+      spacing: AppConstants.spacingMedium,
       children: [
         Row(
-          spacing: 12,
+          spacing: AppConstants.spacingMedium,
           children: [
             Expanded(
               child: ComplianceCard(
@@ -363,8 +371,8 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
+        mainAxisSpacing: AppConstants.spacingMedium,
+        crossAxisSpacing: AppConstants.spacingMedium,
         mainAxisExtent: 60,
       ),
       itemCount: specs.length,

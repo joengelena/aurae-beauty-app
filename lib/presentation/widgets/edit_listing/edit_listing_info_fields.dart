@@ -13,7 +13,6 @@ class EditListingInfoFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<EditListingProvider>();
-    final originalPrice = provider.formData['originalPrice'] as int;
     final initialDiscountedValue =
         provider.formData['discountedPrice']?.toString() ?? '';
 
@@ -30,7 +29,7 @@ class EditListingInfoFields extends StatelessWidget {
           min: 0,
           max: 100000000,
           isRequired: true,
-          isReadOnly: true,
+          isReadOnly: false,
         ),
         TextFormField(
           initialValue: initialDiscountedValue,
@@ -55,8 +54,9 @@ class EditListingInfoFields extends StatelessWidget {
               return 'Must be between 0 and 100000000';
             }
 
-            if (discountedPrice >= originalPrice) {
-              return 'Discounted price must be less than original price (\$$originalPrice)';
+            final currentOriginalPrice = provider.formData['originalPrice'] as int;
+            if (discountedPrice >= currentOriginalPrice) {
+              return 'Discounted price must be less than original price (\$$currentOriginalPrice)';
             }
 
             return null;

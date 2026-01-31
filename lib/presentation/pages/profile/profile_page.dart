@@ -4,6 +4,7 @@ import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
+import 'package:motorix_app/logic/profile_provider.dart';
 import 'package:motorix_app/logic/user_listings_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
 import 'package:motorix_app/presentation/widgets/common/labeled_fab.dart';
@@ -282,7 +283,12 @@ class _ProfilePageState extends State<ProfilePage> {
             final currentRoute = GoRouterState.of(context).uri.path;
             context.read<BackButtonProvider>().pushRoute(currentRoute);
 
-            context.read<PostListingProvider>().resetProvider();
+            final postListingProvider = context.read<PostListingProvider>();
+            final profileProvider = context.read<ProfileProvider>();
+
+            postListingProvider.resetProvider();
+            postListingProvider.setDefaultLocation(profileProvider.currentUser?.location);
+
             context.go('/listings/post');
           },
         ),

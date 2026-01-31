@@ -4,6 +4,18 @@ class AppConstants {
   /// This ensures consistent image sizing across the app
   static const double listingImageAspectRatio = 4 / 3;
   static const double cardShadowElevation = 3;
+
+  /// Maximum width for content containers
+  static const double contentMaxWidth = 600;
+
+  /// Screen width breakpoint for 2-column grid layout
+  static const double twoColumnBreakpoint = 550;
+
+  /// Standard spacing values
+  static const double spacingSmall = 8;
+  static const double spacingMedium = 12;
+  static const double spacingLarge = 16;
+  static const double spacingExtraLarge = 64;
 }
 
 /// HTTP cache duration constants

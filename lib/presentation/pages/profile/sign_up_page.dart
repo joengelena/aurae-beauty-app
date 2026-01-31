@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/data/models/listing_attribute.dart';
+import 'package:motorix_app/data/services/listings_services.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/password_field.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
@@ -25,6 +27,8 @@ class _SignUpPageState extends State<SignUpPage> {
   bool agreedToTermsAndConditions = false;
   bool showCheckboxError = false;
   bool isFormValid = false;
+  List<String> locationOptions = [];
+  String? selectedLocation;
 
   @override
   void initState() {
@@ -35,6 +39,22 @@ class _SignUpPageState extends State<SignUpPage> {
     phoneNumberController.addListener(_validateForm);
     passwordController.addListener(_validateForm);
     confirmPasswordController.addListener(_validateForm);
+    _loadLocationOptions();
+  }
+
+  Future<void> _loadLocationOptions() async {
+    try {
+      final attributes = await ListingsServices().getListingAttributes();
+      final locationAttribute = attributes.firstWhere(
+        (attr) => attr.name == 'location',
+        orElse: () => ListingAttribute(name: 'location', attributeValues: []),
+      );
+      setState(() {
+        locationOptions = locationAttribute.attributeValues;
+      });
+    } catch (e) {
+      debugPrint('⚠️ Failed to load location options: $e');
+    }
   }
 
   @override
@@ -57,7 +77,8 @@ class _SignUpPageState extends State<SignUpPage> {
         emailController.text.isNotEmpty &&
         phoneNumberController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
-        confirmPasswordController.text.isNotEmpty;
+        confirmPasswordController.text.isNotEmpty &&
+        selectedLocation != null;
 
     if (valid != isFormValid) {
       setState(() {
@@ -144,6 +165,27 @@ class _SignUpPageState extends State<SignUpPage> {
                   decoration: InputDecoration(labelText: 'Phone Number'),
                 ),
 
+                DropdownButtonFormField<String>(
+                  value: selectedLocation,
+                  decoration: InputDecoration(labelText: 'Location'),
+                  items: locationOptions.map((location) {
+                    return DropdownMenuItem<String>(
+                      value: location,
+                      child: Text(location),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedLocation = value;
+                      _validateForm();
+                    });
+                  },
+                  validator: (val) {
+                    if (val == null || val.isEmpty) return 'Required';
+                    return null;
+                  },
+                ),
+
                 PasswordField(
                   controller: passwordController,
                   labelText: 'Password',
@@ -216,13 +258,15 @@ class _SignUpPageState extends State<SignUpPage> {
                           ? null
                           : () {
                             if (_formKey.currentState!.validate() &&
-                                agreedToTermsAndConditions) {
+                                agreedToTermsAndConditions &&
+                                selectedLocation != null) {
                               authProvider.signUp(
                                 firstNameController.text,
                                 lastNameController.text,
                                 emailController.text,
                                 passwordController.text,
                                 phoneNumberController.text,
+                                selectedLocation!,
                               );
                             } else if (!agreedToTermsAndConditions) {
                               setState(() {

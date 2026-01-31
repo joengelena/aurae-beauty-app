@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/data/models/listing_attribute.dart';
+import 'package:motorix_app/data/services/listings_services.dart';
 import 'package:motorix_app/logic/profile_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/select_single_image.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
@@ -20,10 +22,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final phoneNumberController = TextEditingController();
   bool isFormValid = false;
   bool hasChanges = false;
+  List<String> locationOptions = [];
+  String? selectedLocation;
 
   @override
   void initState() {
     super.initState();
+    _loadLocationOptions();
 
     // Initialize controllers with current user data
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -34,6 +39,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         firstNameController.text = user.firstName;
         lastNameController.text = user.lastName;
         phoneNumberController.text = user.phoneNumber;
+        selectedLocation = user.location;
 
         // Add listeners after initializing values
         firstNameController.addListener(_validateForm);
@@ -44,6 +50,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
       // Clear any previous update state
       profileProvider.clearUpdateState();
     });
+  }
+
+  Future<void> _loadLocationOptions() async {
+    try {
+      final attributes = await ListingsServices().getListingAttributes();
+      final locationAttribute = attributes.firstWhere(
+        (attr) => attr.name == 'location',
+        orElse: () => ListingAttribute(name: 'location', attributeValues: []),
+      );
+      setState(() {
+        locationOptions = locationAttribute.attributeValues;
+      });
+    } catch (e) {
+      debugPrint('⚠️ Failed to load location options: $e');
+    }
   }
 
   @override
@@ -63,13 +84,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final valid =
         firstNameController.text.isNotEmpty &&
         lastNameController.text.isNotEmpty &&
-        phoneNumberController.text.isNotEmpty;
+        phoneNumberController.text.isNotEmpty &&
+        selectedLocation != null;
 
     // Check if any values changed (including photo)
     final changed =
         firstNameController.text != user.firstName ||
         lastNameController.text != user.lastName ||
         phoneNumberController.text != user.phoneNumber ||
+        selectedLocation != user.location ||
         profileProvider.isPhotoChanged;
 
     if (valid != isFormValid || changed != hasChanges) {
@@ -175,6 +198,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     decoration: InputDecoration(labelText: 'Phone Number'),
                   ),
 
+                  DropdownButtonFormField<String>(
+                    value: selectedLocation,
+                    decoration: InputDecoration(labelText: 'Location'),
+                    items: locationOptions.map((location) {
+                      return DropdownMenuItem<String>(
+                        value: location,
+                        child: Text(location),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedLocation = value;
+                        _validateForm();
+                      });
+                    },
+                    validator: (val) {
+                      if (val == null || val.isEmpty) return 'Required';
+                      return null;
+                    },
+                  ),
+
                   SizedBox(height: 16),
 
                   FilledButton(
@@ -182,11 +226,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         profileProvider.isLoading || !isFormValid || !hasChanges
                             ? null
                             : () {
-                              if (_formKey.currentState!.validate()) {
+                              if (_formKey.currentState!.validate() &&
+                                  selectedLocation != null) {
                                 profileProvider.updateUserProfile(
                                   firstNameController.text.trim(),
                                   lastNameController.text.trim(),
                                   phoneNumberController.text.trim(),
+                                  selectedLocation!,
                                 );
                               }
                             },
