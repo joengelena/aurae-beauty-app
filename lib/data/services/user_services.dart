@@ -386,12 +386,12 @@ class UserServices {
   Future<String> updateUser(
     String firstName,
     String lastName,
-    String phoneNumber, 
+    String phoneNumber,
     String location,
-    String userId,
+    String userId, {
     Uint8List? imageBytes,
     String? imageMimeType,
-  ) async {
+  }) async {
     try {
       http.Response response;
 
@@ -400,19 +400,31 @@ class UserServices {
           'firstName': firstName,
           'lastName': lastName,
           'phoneNumber': phoneNumber,
+          'location': location,
         };
 
-        final multipartFile = _createImageMultipartFile(imageBytes, imageMimeType);
-        response = await apiClient.patchMultipart('/user', fields, [multipartFile]);
+        final multipartFile = _createImageMultipartFile(
+          imageBytes,
+          imageMimeType,
+        );
+        response = await apiClient.patchMultipart(
+          '/user',
+          fields,
+          [multipartFile],
+          invalidateCacheKeys: [CacheKeys.userDetails(userId)],
+        );
       } else {
-        response = await apiClient.patch('/user', {
-          'firstName': firstName,
-          'lastName': lastName,
-          'phoneNumber': phoneNumber,
-          'location': location,
-        },
-        invalidateCacheKeys: [CacheKeys.userDetails(userId)],
-      );
+        response = await apiClient.patch(
+          '/user',
+          {
+            'firstName': firstName,
+            'lastName': lastName,
+            'phoneNumber': phoneNumber,
+            'location': location,
+          },
+          invalidateCacheKeys: [CacheKeys.userDetails(userId)],
+        );
+      }
 
       if (response.statusCode == HttpStatus.unauthorized) {
         final errorMessage = extractErrorMessage(response.body);
@@ -426,7 +438,6 @@ class UserServices {
           statusCode: response.statusCode,
           details: response.body,
         );
-      }
       }
 
       return response.body;
