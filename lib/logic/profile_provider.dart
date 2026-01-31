@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/user.dart';
@@ -14,6 +15,13 @@ class ProfileProvider extends ChangeNotifier {
   String updateMessage = '';
   String updateErrorMessage = '';
   bool updateSuccess = false;
+
+  // Profile photo state
+  Uint8List? profilePhotoBytes;
+  String? profilePhotoMimeType;
+  bool _isPhotoChanged = false;
+
+  bool get isPhotoChanged => _isPhotoChanged;
 
   void updateAuthStatus(bool isSignedIn) {
     if (isSignedIn && !_isSignedIn) {
@@ -57,6 +65,20 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setProfilePhoto(Uint8List imageBytes, String mimeType) {
+    profilePhotoBytes = imageBytes;
+    profilePhotoMimeType = mimeType;
+    _isPhotoChanged = true;
+    notifyListeners();
+  }
+
+  void removeProfilePhoto() {
+    profilePhotoBytes = null;
+    profilePhotoMimeType = null;
+    _isPhotoChanged = false;
+    notifyListeners();
+  }
+
   Future<void> updateUserProfile(
     String firstName,
     String lastName,
@@ -70,9 +92,21 @@ class ProfileProvider extends ChangeNotifier {
 
     try {
       final userId = await SecureStorage.read('userId') ?? '';
-      await _userServices.updateUser(firstName, lastName, phoneNumber, userId);
+      await _userServices.updateUser(
+        firstName,
+        lastName,
+        phoneNumber,
+        userId,
+        imageBytes: _isPhotoChanged ? profilePhotoBytes : null,
+        imageMimeType: _isPhotoChanged ? profilePhotoMimeType : null,
+      );
 
       await _fetchCurrentUserProfile();
+
+      // Clear photo state after successful upload
+      profilePhotoBytes = null;
+      profilePhotoMimeType = null;
+      _isPhotoChanged = false;
 
       updateSuccess = true;
       updateMessage = 'Profile updated successfully!';
@@ -92,5 +126,9 @@ class ProfileProvider extends ChangeNotifier {
     updateMessage = '';
     updateSuccess = false;
     updateErrorMessage = '';
+    profilePhotoBytes = null;
+    profilePhotoMimeType = null;
+    _isPhotoChanged = false;
+    notifyListeners();
   }
 }

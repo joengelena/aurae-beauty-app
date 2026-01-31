@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/profile_provider.dart';
+import 'package:motorix_app/presentation/widgets/common/select_single_image.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -64,11 +65,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
         lastNameController.text.isNotEmpty &&
         phoneNumberController.text.isNotEmpty;
 
-    // Check if any values changed
+    // Check if any values changed (including photo)
     final changed =
         firstNameController.text != user.firstName ||
         lastNameController.text != user.lastName ||
-        phoneNumberController.text != user.phoneNumber;
+        phoneNumberController.text != user.phoneNumber ||
+        profileProvider.isPhotoChanged;
 
     if (valid != isFormValid || changed != hasChanges) {
       setState(() {
@@ -130,6 +132,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         textAlign: TextAlign.center,
                       ),
                     ),
+
+                  SelectSingleImage(
+                    imageBytes: profileProvider.profilePhotoBytes,
+                    imageUrl: user.profilePhotoUrl,
+                    onImageSelected: (bytes, mimeType) {
+                      profileProvider.setProfilePhoto(bytes, mimeType);
+                      _validateForm();
+                    },
+                    onImageDeleted: () {
+                      profileProvider.removeProfilePhoto();
+                      _validateForm();
+                    },
+                    aspectRatio: 1.0,
+                  ),
 
                   TextFormField(
                     controller: firstNameController,

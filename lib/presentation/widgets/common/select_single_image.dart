@@ -6,6 +6,7 @@ import 'package:motorix_app/utils/feedback_helpers.dart';
 
 class SelectSingleImage extends StatefulWidget {
   final Uint8List? imageBytes;
+  final String? imageUrl;
   final void Function(Uint8List imageBytes, String mimeType) onImageSelected;
   final VoidCallback onImageDeleted;
   final double aspectRatio;
@@ -13,6 +14,7 @@ class SelectSingleImage extends StatefulWidget {
   const SelectSingleImage({
     super.key,
     this.imageBytes,
+    this.imageUrl,
     required this.onImageSelected,
     required this.onImageDeleted,
     this.aspectRatio = AppConstants.listingImageAspectRatio,
@@ -76,11 +78,13 @@ class _SelectSingleImageState extends State<SelectSingleImage> {
 
   @override
   Widget build(BuildContext context) {
+    final hasImage = widget.imageBytes != null || widget.imageUrl != null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       spacing: 12,
       children: [
-        widget.imageBytes != null
+        hasImage
             ? _buildImagePreview()
             : _buildEmptyState(context),
         _buildActionButton(),
@@ -95,11 +99,27 @@ class _SelectSingleImageState extends State<SelectSingleImage> {
           aspectRatio: widget.aspectRatio,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.memory(
-              widget.imageBytes!,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+            child: widget.imageBytes != null
+                ? Image.memory(
+                    widget.imageBytes!,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  )
+                : Image.network(
+                    widget.imageUrl!,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[300],
+                        child: const Icon(
+                          Icons.broken_image,
+                          size: 48,
+                          color: Colors.grey,
+                        ),
+                      );
+                    },
+                  ),
           ),
         ),
         Positioned(
@@ -146,7 +166,7 @@ class _SelectSingleImageState extends State<SelectSingleImage> {
   }
 
   Widget _buildActionButton() {
-    final hasImage = widget.imageBytes != null;
+    final hasImage = widget.imageBytes != null || widget.imageUrl != null;
 
     return OutlinedButton.icon(
       onPressed: _isLoading ? null : _pickImage,
