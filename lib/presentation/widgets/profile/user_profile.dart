@@ -54,12 +54,11 @@ class UserProfile extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 48,
-          backgroundImage: user.profilePhotoUrl != null
-              ? NetworkImage(
-                  '${user.profilePhotoUrl!}?t=${DateTime.now().millisecondsSinceEpoch}',
-                )
-              : const AssetImage('assets/imgs/default_profile.jpg')
-                  as ImageProvider,
+          backgroundImage:
+              user.profilePhotoUrl != null
+                  ? NetworkImage(user.profilePhotoUrl!)
+                  : const AssetImage('assets/imgs/default_profile.jpg')
+                      as ImageProvider,
         ),
         const SizedBox(height: 16),
         Text(
