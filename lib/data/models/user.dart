@@ -6,6 +6,7 @@ class User {
   final String email;
   final String phoneNumber;
   final String location;
+  final String? profilePhotoUrl;
 
   User({
     required this.firstName,
@@ -13,6 +14,7 @@ class User {
     required this.email,
     required this.phoneNumber,
     required this.location,
+    this.profilePhotoUrl,
   });
 
   factory User.fromJsonString(String jsonString) {
@@ -24,6 +26,7 @@ class User {
       email: decodedJson['email'] as String,
       phoneNumber: decodedJson['phoneNumber'] as String,
       location: decodedJson['location'] as String,
+      profilePhotoUrl: decodedJson['profilePhotoUrl'] as String?,
     );
   }
 }

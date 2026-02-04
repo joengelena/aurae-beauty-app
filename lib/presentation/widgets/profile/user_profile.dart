@@ -52,9 +52,13 @@ class UserProfile extends StatelessWidget {
 
     return Column(
       children: [
-        const CircleAvatar(
+        CircleAvatar(
           radius: 48,
-          backgroundImage: AssetImage('assets/imgs/default_profile.jpg'),
+          backgroundImage:
+              user.profilePhotoUrl != null
+                  ? NetworkImage(user.profilePhotoUrl!)
+                  : const AssetImage('assets/imgs/default_profile.jpg')
+                      as ImageProvider,
         ),
         const SizedBox(height: 16),
         Text(

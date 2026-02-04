@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:motorix_app/data/api_client.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/user.dart';
@@ -355,24 +357,74 @@ class UserServices {
     }
   }
 
+  static http.MultipartFile _createImageMultipartFile(
+    Uint8List imageBytes,
+    String? mimeType,
+  ) {
+    final resolvedMimeType = mimeType ?? 'image/jpeg';
+    final mimeTypeParts = resolvedMimeType.split('/');
+
+    String extension = 'jpg';
+    if (mimeTypeParts.length > 1) {
+      extension = mimeTypeParts[1].toLowerCase();
+      if (extension == 'jpeg') extension = 'jpg';
+    }
+
+    final contentType = MediaType(
+      mimeTypeParts[0],
+      mimeTypeParts.length > 1 ? mimeTypeParts[1] : 'jpeg',
+    );
+
+    return http.MultipartFile.fromBytes(
+      'image',
+      imageBytes,
+      filename: 'profile_photo.$extension',
+      contentType: contentType,
+    );
+  }
+
   Future<String> updateUser(
     String firstName,
     String lastName,
     String phoneNumber,
     String location,
-    String userId,
-  ) async {
+    String userId, {
+    Uint8List? imageBytes,
+    String? imageMimeType,
+  }) async {
     try {
-      http.Response response = await apiClient.patch(
-        '/user',
-        {
+      http.Response response;
+
+      if (imageBytes != null) {
+        final fields = <String, String>{
           'firstName': firstName,
           'lastName': lastName,
           'phoneNumber': phoneNumber,
           'location': location,
-        },
-        invalidateCacheKeys: [CacheKeys.userDetails(userId)],
-      );
+        };
+
+        final multipartFile = _createImageMultipartFile(
+          imageBytes,
+          imageMimeType,
+        );
+        response = await apiClient.patchMultipart(
+          '/user',
+          fields,
+          [multipartFile],
+          invalidateCacheKeys: [CacheKeys.userDetails(userId)],
+        );
+      } else {
+        response = await apiClient.patch(
+          '/user',
+          {
+            'firstName': firstName,
+            'lastName': lastName,
+            'phoneNumber': phoneNumber,
+            'location': location,
+          },
+          invalidateCacheKeys: [CacheKeys.userDetails(userId)],
+        );
+      }
 
       if (response.statusCode == HttpStatus.unauthorized) {
         final errorMessage = extractErrorMessage(response.body);
