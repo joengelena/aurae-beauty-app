@@ -5,7 +5,6 @@ import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class ListingTile extends StatelessWidget {
@@ -16,10 +15,6 @@ class ListingTile extends StatelessWidget {
   final Widget? topRightButton;
 
   const ListingTile({super.key, required this.listing, this.topRightButton});
-
-  String _formatEndDate(DateTime endDate) {
-    return 'Ends ${DateFormat('d MMMM').format(endDate)}';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,13 +124,6 @@ class ListingTile extends StatelessWidget {
                                 ),
                               ),
                             ],
-                          ),
-                          Text(
-                            _formatEndDate(listing.endDate),
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,

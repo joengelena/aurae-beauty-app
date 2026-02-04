@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/post_listing_provider.dart';
-import 'package:motorix_app/presentation/widgets/form_fields/date_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
 import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
@@ -37,11 +36,6 @@ class ListingInfoFields extends StatelessWidget {
           labelText: 'Location',
           fieldName: 'location',
           options: provider.getAttributeValues('location'),
-          isRequired: true,
-        ),
-        DateFormField<PostListingProvider>(
-          labelText: 'Listing End Date',
-          fieldName: 'endDate',
           isRequired: true,
         ),
         StringFormField<PostListingProvider>(

@@ -104,7 +104,6 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
           listing.orcIncluded == 1
               ? 'Yes'
               : (listing.orcIncluded == 0 ? 'No' : null),
-      'Listing Ends': formatDate(listing.endDate),
     };
 
     return SingleChildScrollView(

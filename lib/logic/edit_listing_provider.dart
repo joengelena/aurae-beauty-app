@@ -62,8 +62,6 @@ class EditListingProvider extends ChangeNotifier
       editListingData['discountedPrice'] = listing.discountedPrice!;
     }
     editListingData['description'] = listing.description;
-    editListingData['endDate'] =
-        listing.endDate.toIso8601String().split('T')[0];
     editListingData['make'] = listing.make;
     editListingData['model'] = listing.model;
     editListingData['year'] = listing.year;

@@ -13,7 +13,6 @@ class Listing {
   final int? discountedPrice;
   final DateTime uploadDate;
   final String description;
-  final DateTime endDate;
   final String make;
   final String model;
   final int year;
@@ -47,7 +46,6 @@ class Listing {
     this.discountedPrice,
     required this.uploadDate,
     required this.description,
-    required this.endDate,
     required this.make,
     required this.model,
     required this.year,
@@ -83,7 +81,6 @@ class Listing {
       discountedPrice: json['discountedPrice'] as int?,
       uploadDate: DateTime.parse(json['uploadDate'] as String),
       description: json['description'] as String,
-      endDate: DateTime.parse(json['endDate'] as String),
       make: json['make'] as String,
       model: json['model'] as String,
       year: json['year'] as int,
@@ -128,7 +125,6 @@ class Listing {
     int? discountedPrice,
     DateTime? uploadDate,
     String? description,
-    DateTime? endDate,
     String? make,
     String? model,
     int? year,
@@ -162,7 +158,6 @@ class Listing {
       discountedPrice: discountedPrice ?? this.discountedPrice,
       uploadDate: uploadDate ?? this.uploadDate,
       description: description ?? this.description,
-      endDate: endDate ?? this.endDate,
       make: make ?? this.make,
       model: model ?? this.model,
       year: year ?? this.year,
