@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
+import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/logic/garage_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
@@ -39,6 +40,8 @@ class VehicleActionMenu extends StatelessWidget {
   }
 
   void _handleEditVehicle(BuildContext context) {
+    final currentRoute = GoRouterState.of(context).uri.path;
+    context.read<BackButtonProvider>().pushRoute(currentRoute);
     context.go('/garage/${vehicle.id}/edit');
   }
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:motorix_app/logic/back_button_provider.dart';
+import 'package:provider/provider.dart';
 
 class AddServiceButton extends StatelessWidget {
   final int vehicleId;
@@ -11,7 +13,11 @@ class AddServiceButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: FilledButton.icon(
-        onPressed: () => context.go('/garage/$vehicleId/add-service'),
+        onPressed: () {
+          final currentRoute = GoRouterState.of(context).uri.path;
+          context.read<BackButtonProvider>().pushRoute(currentRoute);
+          context.go('/garage/$vehicleId/add-service');
+        },
         icon: const Icon(Icons.add),
         label: const Text('Service Record'),
         style: ButtonStyle(
