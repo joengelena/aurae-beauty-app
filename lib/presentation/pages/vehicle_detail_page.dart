@@ -80,7 +80,8 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
             child: Column(
               spacing: AppConstants.spacingSmall,
             children: [
-              VehicleImage(imageUrl: vehicle.vehiclePhotoUrl),
+              if (vehicle.vehiclePhotoUrl != null)
+                VehicleImage(imageUrl: vehicle.vehiclePhotoUrl),
 
               // Title and Menu Button
               Column(
