@@ -31,10 +31,10 @@ class _ExpiryConfig {
 
 /// Service for scheduling and managing vehicle expiry notifications.
 ///
-/// Schedules 6 notifications per vehicle:
-/// - WOF: 1 month before and 1 week before expiry
-/// - REGO: 1 month before and 1 week before expiry
-/// - Insurance: 1 month before and 1 week before expiry
+/// Schedules 15 notifications per vehicle (5 per expiry type):
+/// - WOF: 1 month before, 1 week before, 1 day before, on expiry day, 1 day after
+/// - REGO: 1 month before, 1 week before, 1 day before, on expiry day, 1 day after
+/// - Insurance: 1 month before, 1 week before, 1 day before, on expiry day, 1 day after
 ///
 /// All notifications are scheduled at 9:00 AM NZ time.
 class VehicleNotificationService {
@@ -132,8 +132,8 @@ class VehicleNotificationService {
 
   /// Schedules all expiry notifications for a vehicle.
   ///
-  /// Creates 6 notifications: WOF, REGO, and Insurance, each with
-  /// 1-month-before and 1-week-before reminders.
+  /// Creates 15 notifications: WOF, REGO, and Insurance, each with
+  /// 1-month-before, 1-week-before, 1-day-before, on-expiry-day, and 1-day-after reminders.
   ///
   /// Notifications scheduled for past dates are sent immediately.
   /// Errors are logged but do not throw to avoid blocking vehicle creation.
@@ -194,11 +194,31 @@ class VehicleNotificationService {
         idOffset: 1,
         date: _calculateOneMonthBefore(expiryDate),
         title: '$expiryType Expiring Soon',
+        body: 'Your $vehicleName\'s $expiryType expires on $formattedDate',
       ),
       (
         idOffset: 2,
         date: _calculateOneWeekBefore(expiryDate),
         title: '$expiryType Expiring This Week',
+        body: 'Your $vehicleName\'s $expiryType expires on $formattedDate',
+      ),
+      (
+        idOffset: 3,
+        date: _calculateOneDayBefore(expiryDate),
+        title: '$expiryType Expires Tomorrow',
+        body: 'Your $vehicleName\'s $expiryType expires on $formattedDate',
+      ),
+      (
+        idOffset: 4,
+        date: _calculateExpiryDay(expiryDate),
+        title: '$expiryType Expires Today',
+        body: 'Your $vehicleName\'s $expiryType expires today! Please renew immediately.',
+      ),
+      (
+        idOffset: 5,
+        date: _calculateOneDayAfter(expiryDate),
+        title: '$expiryType Expired',
+        body: 'Your $vehicleName\'s $expiryType expired on $formattedDate. Renew urgently!',
       ),
     ];
 
@@ -208,7 +228,7 @@ class VehicleNotificationService {
         id: notificationIdBase + period.idOffset,
         scheduledDate: period.date,
         title: period.title,
-        body: 'Your $vehicleName\'s $expiryType expires on $formattedDate',
+        body: period.body,
         vehicleId: vehicle.id,
         now: now,
       );
@@ -235,6 +255,39 @@ class VehicleNotificationService {
       date.year,
       date.month,
       date.day - _daysInOneWeek,
+      _notificationHour,
+      0,
+    );
+  }
+
+  /// Calculates the date one day before the given date at 9:00 AM.
+  DateTime _calculateOneDayBefore(DateTime date) {
+    return DateTime(
+      date.year,
+      date.month,
+      date.day - 1,
+      _notificationHour,
+      0,
+    );
+  }
+
+  /// Calculates the given date at 9:00 AM.
+  DateTime _calculateExpiryDay(DateTime date) {
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+      _notificationHour,
+      0,
+    );
+  }
+
+  /// Calculates the date one day after the given date at 9:00 AM.
+  DateTime _calculateOneDayAfter(DateTime date) {
+    return DateTime(
+      date.year,
+      date.month,
+      date.day + 1,
       _notificationHour,
       0,
     );
@@ -344,7 +397,7 @@ class VehicleNotificationService {
 
   /// Cancels all scheduled notifications for a specific vehicle.
   ///
-  /// This removes all 6 notifications (WOF, REGO, Insurance × 2 each)
+  /// This removes all 15 notifications (WOF, REGO, Insurance × 5 each)
   /// associated with the vehicle ID.
   Future<void> cancelVehicleNotifications(int vehicleId) async {
     final baseId = vehicleId * _notificationIdMultiplier;
