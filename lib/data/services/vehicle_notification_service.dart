@@ -222,15 +222,53 @@ class VehicleNotificationService {
       ),
     ];
 
-    // Schedule each notification period
+    // Split notifications into past and future
+    final pastNotifications = <({int id, DateTime date, String title, String body})>[];
+    final futureNotifications = <({int id, DateTime date, String title, String body})>[];
+
     for (final period in notificationPeriods) {
-      await _scheduleOrSendNotification(
+      final notification = (
         id: notificationIdBase + period.idOffset,
-        scheduledDate: period.date,
+        date: period.date,
         title: period.title,
         body: period.body,
-        vehicleId: vehicle.id,
-        now: now,
+      );
+
+      if (_isPastOrToday(period.date, now)) {
+        pastNotifications.add(notification);
+      } else {
+        futureNotifications.add(notification);
+      }
+    }
+
+    // Send only the most recent past notification
+    if (pastNotifications.isNotEmpty) {
+      // Sort by date descending (most recent first)
+      pastNotifications.sort((a, b) => b.date.compareTo(a.date));
+
+      final mostRecent = pastNotifications.first;
+      await _notifications.show(
+        mostRecent.id,
+        mostRecent.title,
+        mostRecent.body,
+        _createNotificationDetails(),
+        payload: vehicle.id.toString(),
+      );
+    }
+
+    // Schedule all future notifications
+    for (final notification in futureNotifications) {
+      final tzScheduledDate = tz.TZDateTime.from(notification.date, tz.local);
+      await _notifications.zonedSchedule(
+        notification.id,
+        notification.title,
+        notification.body,
+        tzScheduledDate,
+        _createNotificationDetails(),
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        payload: vehicle.id.toString(),
       );
     }
   }
@@ -291,43 +329,6 @@ class VehicleNotificationService {
       _notificationHour,
       0,
     );
-  }
-
-  Future<void> _scheduleOrSendNotification({
-    required int id,
-    required DateTime scheduledDate,
-    required String title,
-    required String body,
-    required int vehicleId,
-    required DateTime now,
-  }) async {
-    final notificationDetails = _createNotificationDetails();
-    final payload = vehicleId.toString();
-
-    // If scheduled date is in the past or today, send immediately
-    if (_isPastOrToday(scheduledDate, now)) {
-      await _notifications.show(
-        id,
-        title,
-        body,
-        notificationDetails,
-        payload: payload,
-      );
-    } else {
-      // Schedule for future
-      final tzScheduledDate = tz.TZDateTime.from(scheduledDate, tz.local);
-      await _notifications.zonedSchedule(
-        id,
-        title,
-        body,
-        tzScheduledDate,
-        notificationDetails,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        payload: payload,
-      );
-    }
   }
 
   /// Creates the notification details for both Android and iOS.
