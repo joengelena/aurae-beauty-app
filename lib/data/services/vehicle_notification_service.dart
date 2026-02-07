@@ -6,6 +6,29 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:intl/intl.dart';
 
+/// Types of vehicle compliance that require expiry notifications.
+///
+/// Each type has a unique ID offset to prevent notification ID collisions.
+/// ID offsets are spaced by 20 to allow for future expansion of notification types.
+enum ExpiryType {
+  wof('WOF', 0),
+  rego('REGO', 20),
+  insurance('Insurance', 40);
+
+  final String displayName;
+  final int idOffset;
+
+  const ExpiryType(this.displayName, this.idOffset);
+}
+
+/// Configuration for a single expiry notification
+class _ExpiryConfig {
+  final ExpiryType type;
+  final DateTime expiryDate;
+
+  const _ExpiryConfig({required this.type, required this.expiryDate});
+}
+
 /// Service for scheduling and managing vehicle expiry notifications.
 ///
 /// Schedules 6 notifications per vehicle:
@@ -20,17 +43,21 @@ class VehicleNotificationService {
       VehicleNotificationService._internal();
   factory VehicleNotificationService() => _instance;
 
-  // Constants
+  // Notification channel configuration
   static const String _notificationChannelId = 'vehicle_expiry_channel';
   static const String _notificationChannelName = 'Vehicle Expiry Notifications';
   static const String _notificationChannelDescription =
       'Notifications for vehicle registration, WOF, and insurance expiry';
+
+  // Notification timing
   static const int _notificationHour = 9; // 9:00 AM
+  static const int _daysInOneWeek = 7;
+
+  // Notification ID calculation
   static const int _notificationIdMultiplier = 100;
-  static const int _wofIdOffset = 0;
-  static const int _regoIdOffset = 20;
-  static const int _insuranceIdOffset = 40;
   static const int _maxNotificationsPerVehicle = 60;
+
+  // Date calculation
   static const int _maxDayForMonthEnd = 28;
 
   final FlutterLocalNotificationsPlugin _notifications =
@@ -40,40 +67,39 @@ class VehicleNotificationService {
   /// Receives the vehicle ID as a parameter.
   static Function(int vehicleId)? onNotificationTap;
 
+  /// Checks if the current platform supports notifications
+  bool get _isMobilePlatform => !kIsWeb && (Platform.isIOS || Platform.isAndroid);
+
   /// Initializes the notification service and requests permissions.
   ///
   /// Should be called once during app initialization.
   /// Only operates on iOS and Android platforms.
   Future<void> initialize() async {
-    // Only initialize on mobile platforms
-    if (!kIsWeb && (Platform.isIOS || Platform.isAndroid)) {
-      // Initialize timezone database
-      tz.initializeTimeZones();
+    if (!_isMobilePlatform) return;
 
-      // Set timezone to New Zealand (all users are in NZ)
-      tz.setLocalLocation(tz.getLocation('Pacific/Auckland'));
+    tz.initializeTimeZones();
+    tz.setLocalLocation(tz.getLocation('Pacific/Auckland'));
 
-      const androidSettings =
-          AndroidInitializationSettings('@mipmap/ic_launcher');
-      const iosSettings = DarwinInitializationSettings(
-        requestAlertPermission: true,
-        requestBadgePermission: true,
-        requestSoundPermission: true,
-      );
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
 
-      const initSettings = InitializationSettings(
-        android: androidSettings,
-        iOS: iosSettings,
-      );
+    const initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+    );
 
-      await _notifications.initialize(
-        initSettings,
-        onDidReceiveNotificationResponse: _handleNotificationTap,
-      );
+    await _notifications.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: _handleNotificationTap,
+    );
 
-      // Request permissions
-      await _requestPermissions();
-    }
+    // Request permissions
+    await _requestPermissions();
   }
 
   /// Handles notification tap events by invoking the registered callback.
@@ -112,45 +138,43 @@ class VehicleNotificationService {
   /// Notifications scheduled for past dates are sent immediately.
   /// Errors are logged but do not throw to avoid blocking vehicle creation.
   Future<void> scheduleVehicleNotifications(UserVehicle vehicle) async {
-    // Only schedule on mobile platforms
-    if (!kIsWeb && (Platform.isIOS || Platform.isAndroid)) {
-      try {
-        final now = DateTime.now();
+    if (!_isMobilePlatform) return;
 
-        // Schedule notifications for WOF
-        await _scheduleExpiryNotifications(
-          vehicle: vehicle,
+    try {
+      final now = DateTime.now();
+
+      // Build list of expiry configurations
+      final expiryConfigs = [
+        _ExpiryConfig(
+          type: ExpiryType.wof,
           expiryDate: DateTime.parse(vehicle.wofExpiryDate),
-          expiryType: 'WOF',
-          notificationIdBase:
-              vehicle.id * _notificationIdMultiplier + _wofIdOffset,
-          now: now,
-        );
-
-        // Schedule notifications for REGO
-        await _scheduleExpiryNotifications(
-          vehicle: vehicle,
+        ),
+        _ExpiryConfig(
+          type: ExpiryType.rego,
           expiryDate: DateTime.parse(vehicle.regoExpiryDate),
-          expiryType: 'REGO',
-          notificationIdBase:
-              vehicle.id * _notificationIdMultiplier + _regoIdOffset,
-          now: now,
-        );
+        ),
+        _ExpiryConfig(
+          type: ExpiryType.insurance,
+          expiryDate: DateTime.parse(vehicle.insuranceExpiryDate),
+        ),
+      ];
 
-        // Schedule notifications for Insurance
+      // Schedule notifications for each expiry type
+      for (final config in expiryConfigs) {
         await _scheduleExpiryNotifications(
           vehicle: vehicle,
-          expiryDate: DateTime.parse(vehicle.insuranceExpiryDate),
-          expiryType: 'Insurance',
+          expiryDate: config.expiryDate,
+          expiryType: config.type.displayName,
           notificationIdBase:
-              vehicle.id * _notificationIdMultiplier + _insuranceIdOffset,
+              vehicle.id * _notificationIdMultiplier + config.type.idOffset,
           now: now,
         );
-      } catch (e, stackTrace) {
-        // Log error but don't throw - vehicle creation should succeed even if notifications fail
-        debugPrint(
-            'Failed to schedule notifications for vehicle ${vehicle.id}: $e\n$stackTrace');
       }
+    } catch (e, stackTrace) {
+      // Log error but don't throw - vehicle creation should succeed even if notifications fail
+      debugPrint(
+        'Failed to schedule notifications for vehicle ${vehicle.id}: $e\n$stackTrace',
+      );
     }
   }
 
@@ -164,29 +188,31 @@ class VehicleNotificationService {
     final vehicleName = '${vehicle.year} ${vehicle.make} ${vehicle.model}';
     final formattedDate = DateFormat('dd MMM yyyy').format(expiryDate);
 
-    // Calculate notification dates
-    final oneMonthBefore = _calculateOneMonthBefore(expiryDate);
-    final oneWeekBefore = _calculateOneWeekBefore(expiryDate);
+    // Define notification periods with their configurations
+    final notificationPeriods = [
+      (
+        idOffset: 1,
+        date: _calculateOneMonthBefore(expiryDate),
+        title: '$expiryType Expiring Soon',
+      ),
+      (
+        idOffset: 2,
+        date: _calculateOneWeekBefore(expiryDate),
+        title: '$expiryType Expiring This Week',
+      ),
+    ];
 
-    // Schedule 1 month before notification
-    await _scheduleOrSendNotification(
-      id: notificationIdBase + 1,
-      scheduledDate: oneMonthBefore,
-      title: '$expiryType Expiring Soon',
-      body: 'Your $vehicleName\'s $expiryType expires on $formattedDate',
-      vehicleId: vehicle.id,
-      now: now,
-    );
-
-    // Schedule 1 week before notification
-    await _scheduleOrSendNotification(
-      id: notificationIdBase + 2,
-      scheduledDate: oneWeekBefore,
-      title: '$expiryType Expiring This Week',
-      body: 'Your $vehicleName\'s $expiryType expires on $formattedDate',
-      vehicleId: vehicle.id,
-      now: now,
-    );
+    // Schedule each notification period
+    for (final period in notificationPeriods) {
+      await _scheduleOrSendNotification(
+        id: notificationIdBase + period.idOffset,
+        scheduledDate: period.date,
+        title: period.title,
+        body: 'Your $vehicleName\'s $expiryType expires on $formattedDate',
+        vehicleId: vehicle.id,
+        now: now,
+      );
+    }
   }
 
   /// Calculates the date one month before the given date at 9:00 AM.
@@ -199,7 +225,7 @@ class VehicleNotificationService {
       date.month == 1 ? 12 : date.month - 1,
       date.day > _maxDayForMonthEnd ? _maxDayForMonthEnd : date.day,
       _notificationHour,
-      0, // 0 minutes
+      0,
     );
   }
 
@@ -208,9 +234,9 @@ class VehicleNotificationService {
     return DateTime(
       date.year,
       date.month,
-      date.day - 7,
+      date.day - _daysInOneWeek,
       _notificationHour,
-      0, // 0 minutes
+      0,
     );
   }
 
@@ -275,10 +301,13 @@ class VehicleNotificationService {
 
   /// Checks if the scheduled date is in the past or is today.
   bool _isPastOrToday(DateTime scheduledDate, DateTime now) {
-    return scheduledDate.isBefore(now) ||
-        (scheduledDate.year == now.year &&
-            scheduledDate.month == now.month &&
-            scheduledDate.day == now.day);
+    final today = DateTime(now.year, now.month, now.day);
+    final scheduleDay = DateTime(
+      scheduledDate.year,
+      scheduledDate.month,
+      scheduledDate.day,
+    );
+    return scheduleDay.isBefore(today) || scheduleDay.isAtSameMomentAs(today);
   }
 
   /// Reschedules all notifications for a vehicle.
