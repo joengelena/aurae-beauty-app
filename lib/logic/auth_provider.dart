@@ -35,7 +35,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Sign up a new user and automatically sign them in
+  /// Sign up a new user (email verification required before sign in)
   Future<void> signUp(
     String firstName,
     String lastName,
@@ -51,7 +51,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _userServices.signUpAndSignIn(
+      final response = await _userServices.signUp(
         firstName,
         lastName,
         email,
@@ -61,8 +61,7 @@ class AuthProvider extends ChangeNotifier {
       );
 
       signUpSuccess = true;
-      signUpMessage = 'Account created successfully!';
-      isSignedIn = true;
+      signUpMessage = response['message'] ?? 'Account created successfully!';
     } catch (e) {
       if (e is AppException) {
         signUpErrorMessage = e.message;

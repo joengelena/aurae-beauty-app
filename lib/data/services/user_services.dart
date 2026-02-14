@@ -14,7 +14,7 @@ import 'package:motorix_app/utils/utils.dart';
 class UserServices {
   static final ApiClient apiClient = ApiClient();
 
-  Future<String> signUp(
+  Future<Map<String, dynamic>> signUp(
     String firstName,
     String lastName,
     String email,
@@ -37,9 +37,16 @@ class UserServices {
         throw AuthException(errorMessage, details: response.body);
       }
 
-      return response.body;
+      try {
+        return json.decode(response.body) as Map<String, dynamic>;
+      } catch (e) {
+        throw DataParseException(
+          'Invalid signup response format',
+          details: e.toString(),
+        );
+      }
     } catch (e) {
-      if (e is AuthException) rethrow;
+      if (e is AuthException || e is DataParseException) rethrow;
       throw NetworkException(
         'Network error during sign up',
         details: e.toString(),

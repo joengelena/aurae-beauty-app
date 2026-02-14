@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:motorix_app/presentation/widgets/common/app_dialog.dart';
 import 'package:motorix_app/presentation/widgets/common/password_field.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
@@ -31,6 +32,7 @@ class _SignInPageState extends State<SignInPage> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    context.read<AuthProvider>().clearSignInState();
     super.dispose();
   }
 
@@ -56,6 +58,20 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+
+    if (authProvider.signUpSuccess && authProvider.signUpMessage.isNotEmpty) {
+      final message = authProvider.signUpMessage;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        authProvider.clearSignUpState();
+        AppDialog.showSuccess(
+          context: context,
+          title: 'Account Created',
+          message: message,
+          buttonText: 'OK',
+          barrierDismissible: false,
+        );
+      });
+    }
 
     return Center(
       child: SingleChildScrollView(
