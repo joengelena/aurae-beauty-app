@@ -199,14 +199,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
 
                   DropdownButtonFormField<String>(
-                    value: selectedLocation,
+                    initialValue: selectedLocation,
                     decoration: InputDecoration(labelText: 'Location'),
-                    items: locationOptions.map((location) {
-                      return DropdownMenuItem<String>(
-                        value: location,
-                        child: Text(location),
-                      );
-                    }).toList(),
+                    items:
+                        locationOptions.map((location) {
+                          return DropdownMenuItem<String>(
+                            value: location,
+                            child: Text(location),
+                          );
+                        }).toList(),
                     onChanged: (value) {
                       setState(() {
                         selectedLocation = value;

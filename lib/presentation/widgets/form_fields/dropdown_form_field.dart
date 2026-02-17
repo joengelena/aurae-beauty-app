@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/form_data_provider.dart';
 import 'package:provider/provider.dart';
 
-class DropdownFormField<T extends FormDataProvider>
-    extends StatelessWidget {
+class DropdownFormField<T extends FormDataProvider> extends StatelessWidget {
   final String labelText;
   final bool isRequired;
   final String fieldName;
@@ -24,7 +23,7 @@ class DropdownFormField<T extends FormDataProvider>
     final currentValue = rawValue as String?;
 
     return DropdownButtonFormField<String>(
-      value: currentValue,
+      initialValue: currentValue,
       decoration: InputDecoration(
         labelText: isRequired ? '$labelText *' : labelText,
         border: const OutlineInputBorder(),
