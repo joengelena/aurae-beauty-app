@@ -1,11 +1,11 @@
 {
-    "name": "motorix_app",
-    "short_name": "motorix_app",
+    "name": "Motorex",
+    "short_name": "Motorex",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Motorex - Car Marketplace",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

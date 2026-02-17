@@ -86,7 +86,7 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
                       );
                     },
                   )
-                  : const Text('Motorix'),
+                  : const Text('Motorex'),
           centerTitle: !isListingsPage,
           scrolledUnderElevation: 0,
           actions: [
