@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/utils/theme.dart';
 
-class EmailVerifiedPage extends StatelessWidget {
-  const EmailVerifiedPage({super.key});
+class EmailVerificationSuccess extends StatelessWidget {
+  const EmailVerificationSuccess({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,6 @@ class EmailVerifiedPage extends StatelessWidget {
         spacing: 16,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Green check icon inside a circle
           Container(
             width: 120,
             height: 120,
@@ -25,7 +24,10 @@ class EmailVerifiedPage extends StatelessWidget {
             ),
           ),
 
-          Text('Email Verified!', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'Email Verified!',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -37,21 +39,17 @@ class EmailVerifiedPage extends StatelessWidget {
           ),
 
           OutlinedButton(
-            onPressed: () {
-              context.go('/profile/signin');
-            },
+            onPressed: () => context.go('/profile/signin'),
             style: OutlinedButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
               foregroundColor: Colors.white,
-              side: BorderSide(
-                color: Theme.of(context).colorScheme.secondary,
-              ),
+              side: BorderSide(color: Theme.of(context).colorScheme.secondary),
               backgroundColor: Theme.of(context).colorScheme.secondary,
             ),
-            child: Text('Continue to Sign In'),
+            child: const Text('Continue to Sign In'),
           ),
         ],
       ),

@@ -6,7 +6,7 @@ import 'package:motorix_app/presentation/pages/edit_listing_page.dart';
 import 'package:motorix_app/presentation/pages/post_listing_page.dart';
 import 'package:motorix_app/presentation/pages/profile/change_password_page.dart';
 import 'package:motorix_app/presentation/pages/profile/edit_profile_page.dart';
-import 'package:motorix_app/presentation/pages/profile/email_verified_page.dart';
+import 'package:motorix_app/presentation/pages/profile/email_verification_page.dart';
 import 'package:motorix_app/presentation/pages/profile/forgot_password_page.dart';
 import 'package:motorix_app/presentation/pages/listing_detail_page.dart';
 import 'package:motorix_app/presentation/pages/listings_page.dart';
@@ -32,7 +32,7 @@ const _authPages = [
   '/profile/signup',
   '/profile/forgot-password',
   '/profile/reset-password',
-  '/profile/email-verified',
+  '/profile/email-verification',
 ];
 
 // Public pages accessible to unauthenticated users
@@ -48,15 +48,17 @@ GoRouter getAppRouter(AuthProvider authProvider) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         context.go('/garage');
       });
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     },
     redirect: (context, state) {
       final isSignedIn = authProvider.isSignedIn;
       final path = state.uri.path;
+
+      // Handle Supabase email verification errors by redirecting to a dedicated page
+      String? errorCode = Uri.splitQueryString(state.uri.path)['error_code'];
+      if (errorCode != null && path != '/profile/email-verification') {
+        return '/profile/email-verification?error_code=$errorCode';
+      }
 
       final isAuthPage = _authPages.contains(path);
       final isPublicPage = _publicPages.contains(path);
@@ -230,9 +232,16 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                 },
               ),
               GoRoute(
-                path: 'email-verified',
+                path: 'email-verification',
                 pageBuilder: (context, state) {
-                  return NoTransitionPage(child: EmailVerifiedPage());
+                  // error_code may arrive as a query param (forwarded by our
+                  // redirect above) or in the fragment (direct Supabase redirect)
+                  final errorCode =
+                      Uri.splitQueryString(state.uri.path)['error_code'];
+
+                  return NoTransitionPage(
+                    child: EmailVerificationPage(errorCode: errorCode),
+                  );
                 },
               ),
               GoRoute(
