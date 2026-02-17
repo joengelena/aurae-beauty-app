@@ -189,6 +189,26 @@ class UserServices {
     }
   }
 
+  Future<void> resendVerificationEmail(String email) async {
+    try {
+      http.Response response = await apiClient.post(
+        '/user/resend-verification-email',
+        {'email': email},
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw AuthException(errorMessage, details: response.body);
+      }
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw NetworkException(
+        'Network error resending verification email',
+        details: e.toString(),
+      );
+    }
+  }
+
   Future<String> forgotPassword(String email) async {
     try {
       http.Response response = await apiClient.post('/user/forgot-password', {

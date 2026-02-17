@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/presentation/widgets/common/app_dialog.dart';
 import 'package:motorix_app/presentation/widgets/common/password_field.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
@@ -91,25 +92,64 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 if (authProvider.signInErrorMessage.isNotEmpty &&
                     !authProvider.isLoading)
-                  Container(
-                    padding: const EdgeInsets.all(12.0),
-                    decoration: BoxDecoration(
-                      color: Colors.red.shade50,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.red.shade200),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.error_outline, color: themeRed, size: 20),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            authProvider.signInErrorMessage,
-                            style: TextStyle(color: themeRed, fontSize: 14),
-                          ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: 8,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12.0),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.red.shade200),
                         ),
-                      ],
-                    ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              color: themeRed,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                authProvider.signInErrorMessage,
+                                style: TextStyle(
+                                  color: themeRed,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (authProvider.isEmailNotVerifiedError)
+                        TextButton(
+                          onPressed: authProvider.isResendingVerificationEmail
+                              ? null
+                              : () async {
+                                  final email =
+                                      _emailController.text.trim();
+                                  await authProvider
+                                      .resendVerificationEmail(email);
+                                  if (context.mounted) {
+                                    FeedbackHelpers.showSuccessSnackBar(
+                                      context,
+                                      'Verification email sent. Please check your inbox.',
+                                    );
+                                  }
+                                },
+                          child: authProvider.isResendingVerificationEmail
+                              ? const SizedBox(
+                                  height: 16,
+                                  width: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text('Resend verification email'),
+                        ),
+                    ],
                   ),
                 TextFormField(
                   controller: _emailController,

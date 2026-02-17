@@ -13,12 +13,16 @@ class AuthProvider extends ChangeNotifier {
   String signUpErrorMessage = '';
   String signUpMessage = '';
   bool signUpSuccess = false;
+  bool isResendingVerificationEmail = false;
   String forgotPasswordMessage = '';
   bool forgotPasswordSuccess = false;
   String resetPasswordMessage = '';
   bool resetPasswordSuccess = false;
   String changePasswordMessage = '';
   bool changePasswordSuccess = false;
+
+  bool get isEmailNotVerifiedError =>
+      signInErrorMessage.contains('verify your email');
 
   /// Check if user is authenticated on app startup
   Future<void> checkAuthStatus() async {
@@ -91,6 +95,19 @@ class AuthProvider extends ChangeNotifier {
       }
     } finally {
       isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Resend verification email to the user
+  Future<void> resendVerificationEmail(String email) async {
+    isResendingVerificationEmail = true;
+    notifyListeners();
+
+    try {
+      await _userServices.resendVerificationEmail(email);
+    } finally {
+      isResendingVerificationEmail = false;
       notifyListeners();
     }
   }
