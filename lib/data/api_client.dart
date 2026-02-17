@@ -11,6 +11,7 @@ import 'package:motorix_app/utils/secure_storage.dart';
 class ApiClient {
   // final String _baseUrl =
   //     'https://motorix-api-production.up.railway.app/api/v1';
+  // final String _baseUrl = 'https://api.motorexnz.com/api/v1';
   final String _baseUrl = 'http://localhost:4941/api/v1';
 
   late final http.Client _client;

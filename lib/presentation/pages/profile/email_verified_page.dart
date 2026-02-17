@@ -25,24 +25,33 @@ class EmailVerifiedPage extends StatelessWidget {
             ),
           ),
 
-          Text('Email verified', style: Theme.of(context).textTheme.titleLarge),
+          Text('Email Verified!', style: Theme.of(context).textTheme.titleLarge),
 
-          Text(
-            'Email has been successfully verified',
-            style: Theme.of(context).textTheme.bodyMedium,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              'Your email has been successfully verified. You can now sign in to your account.',
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
           ),
 
           OutlinedButton(
             onPressed: () {
-              context.go('/listings');
+              context.go('/profile/signin');
             },
             style: OutlinedButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 32, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
+              foregroundColor: Colors.white,
+              side: BorderSide(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              backgroundColor: Theme.of(context).colorScheme.secondary,
             ),
-            child: Text('Explore listings'),
+            child: Text('Continue to Sign In'),
           ),
         ],
       ),

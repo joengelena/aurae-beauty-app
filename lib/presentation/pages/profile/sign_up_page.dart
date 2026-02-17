@@ -64,7 +64,6 @@ class _SignUpPageState extends State<SignUpPage> {
     phoneNumberController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
-    context.read<AuthProvider>().clearSignUpState();
     super.dispose();
   }
 
@@ -165,14 +164,15 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
 
                 DropdownButtonFormField<String>(
-                  value: selectedLocation,
+                  initialValue: selectedLocation,
                   decoration: InputDecoration(labelText: 'Location'),
-                  items: locationOptions.map((location) {
-                    return DropdownMenuItem<String>(
-                      value: location,
-                      child: Text(location),
-                    );
-                  }).toList(),
+                  items:
+                      locationOptions.map((location) {
+                        return DropdownMenuItem<String>(
+                          value: location,
+                          child: Text(location),
+                        );
+                      }).toList(),
                   onChanged: (value) {
                     setState(() {
                       selectedLocation = value;

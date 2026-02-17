@@ -32,6 +32,7 @@ const _authPages = [
   '/profile/signup',
   '/profile/forgot-password',
   '/profile/reset-password',
+  '/profile/email-verified',
 ];
 
 // Public pages accessible to unauthenticated users

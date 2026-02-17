@@ -32,7 +32,6 @@ class _SignInPageState extends State<SignInPage> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    context.read<AuthProvider>().clearSignInState();
     super.dispose();
   }
 
