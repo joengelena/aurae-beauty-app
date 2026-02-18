@@ -189,16 +189,32 @@ class UserServices {
     }
   }
 
+  // Called directly on Supabase rather than through the API because
+  // Supabase does not send emails when resend() is called server-side
+  // with a service role key — it must originate from the client.
+  static const _supabaseUrl = 'https://wrmlkvdddujmycsehlec.supabase.co';
+  static const _supabaseAnonKey =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndybWxrdmRkZHVqbXljc2VobGVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkxMzUzOTksImV4cCI6MjA3NDcxMTM5OX0.-1NYseiZxBcfh-Zw0D_WdoJZAoAiG5Hq3UNZPXeI8Aw';
+  static const _emailVerificationRedirectUrl =
+      'https://motorexnz.com/#/profile/email-verification';
+
   Future<void> resendVerificationEmail(String email) async {
     try {
-      http.Response response = await apiClient.post(
-        '/user/resend-verification-email',
-        {'email': email},
+      final response = await http.post(
+        Uri.parse('$_supabaseUrl/auth/v1/resend'),
+        headers: {
+          'apikey': _supabaseAnonKey,
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'type': 'signup',
+          'email': email,
+          'options': {'emailRedirectTo': _emailVerificationRedirectUrl},
+        }),
       );
 
       if (response.statusCode != HttpStatus.ok) {
-        final errorMessage = extractErrorMessage(response.body);
-        throw AuthException(errorMessage, details: response.body);
+        throw AuthException('Failed to resend verification email');
       }
     } catch (e) {
       if (e is AuthException) rethrow;
