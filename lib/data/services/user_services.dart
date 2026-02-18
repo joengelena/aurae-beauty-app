@@ -196,7 +196,7 @@ class UserServices {
   static const _supabaseAnonKey =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndybWxrdmRkZHVqbXljc2VobGVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkxMzUzOTksImV4cCI6MjA3NDcxMTM5OX0.-1NYseiZxBcfh-Zw0D_WdoJZAoAiG5Hq3UNZPXeI8Aw';
   static const _emailVerificationRedirectUrl =
-      'https://motorexnz.com/#/profile/email-verification';
+      'https://www.motorexnz.com/#/profile/email-verification';
 
   Future<void> resendVerificationEmail(String email) async {
     try {
