@@ -10,6 +10,7 @@ import 'package:motorix_app/data/models/user.dart';
 import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 import 'package:motorix_app/utils/utils.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 class UserServices {
   static final ApiClient apiClient = ApiClient();
@@ -192,32 +193,19 @@ class UserServices {
   // Called directly on Supabase rather than through the API because
   // Supabase does not send emails when resend() is called server-side
   // with a service role key — it must originate from the client.
-  static const _supabaseUrl = 'https://higphpzkintacqkappdb.supabase.co';
-
-  static const _supabaseAnonKey =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpZ3BocHpraW50YWNxa2FwcGRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0ODU5NDksImV4cCI6MjA4NjA2MTk0OX0.vGovpApSoHxlHlGhX48-92Ie9sGxXXMy_nsA-5l_R5s';
-
-  static const _emailVerificationRedirectUrl =
-      'https://www.motorexnz.com/#/profile/email-verification';
-
   Future<void> resendVerificationEmail(String email) async {
     try {
-      final response = await http.post(
-        Uri.parse('$_supabaseUrl/auth/v1/resend'),
-        headers: {
-          'apikey': _supabaseAnonKey,
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'type': 'signup',
-          'email': email,
-          'options': {'emailRedirectTo': _emailVerificationRedirectUrl},
-        }),
+      await supabase.Supabase.instance.client.auth.resend(
+        type: supabase.OtpType.signup,
+        email: email,
+        emailRedirectTo:
+            'https://www.motorexnz.com/#/profile/email-verification',
       );
-
-      if (response.statusCode != HttpStatus.ok) {
-        throw AuthException('Failed to resend verification email');
-      }
+    } on supabase.AuthException catch (e) {
+      throw AuthException(
+        e.message,
+        details: e.statusCode,
+      );
     } catch (e) {
       if (e is AuthException) rethrow;
       throw NetworkException(

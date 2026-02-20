@@ -18,6 +18,7 @@ import 'package:motorix_app/data/services/vehicle_notification_service.dart';
 import 'package:motorix_app/data/cache_manager.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +26,12 @@ void main() async {
   // Initialize Hive for caching (works on all platforms)
   await Hive.initFlutter();
   await CacheManager.instance.initialize();
+
+  // Initialize Supabase
+  await Supabase.initialize(
+    url: 'https://higphpzkintacqkappdb.supabase.co',
+    anonKey: 'sb_publishable_Zt2IwHVM0wHdwmGE1b8WJg_SO6yHh9m',
+  );
 
   // Initialize notification service
   await VehicleNotificationService().initialize();
@@ -69,19 +76,36 @@ void main() async {
             return garageProvider;
           },
         ),
-        ChangeNotifierProxyProvider2<AuthProvider, ProfileProvider, ListingsProvider>(
+        ChangeNotifierProxyProvider2<
+          AuthProvider,
+          ProfileProvider,
+          ListingsProvider
+        >(
           create: (_) => ListingsProvider(),
           update: (context, authProvider, profileProvider, listingsProvider) {
             listingsProvider!.updateAuthStatus(authProvider.isSignedIn);
-            listingsProvider.updateUserLocation(profileProvider.currentUser?.location);
+            listingsProvider.updateUserLocation(
+              profileProvider.currentUser?.location,
+            );
             return listingsProvider;
           },
         ),
-        ChangeNotifierProxyProvider2<AuthProvider, ProfileProvider, PostListingProvider>(
+        ChangeNotifierProxyProvider2<
+          AuthProvider,
+          ProfileProvider,
+          PostListingProvider
+        >(
           create: (_) => PostListingProvider(),
-          update: (context, authProvider, profileProvider, postListingProvider) {
+          update: (
+            context,
+            authProvider,
+            profileProvider,
+            postListingProvider,
+          ) {
             postListingProvider!.updateAuthStatus(authProvider.isSignedIn);
-            postListingProvider.setDefaultLocation(profileProvider.currentUser?.location);
+            postListingProvider.setDefaultLocation(
+              profileProvider.currentUser?.location,
+            );
             return postListingProvider;
           },
         ),
