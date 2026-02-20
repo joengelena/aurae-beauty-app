@@ -193,8 +193,10 @@ class UserServices {
   // Supabase does not send emails when resend() is called server-side
   // with a service role key — it must originate from the client.
   static const _supabaseUrl = 'https://higphpzkintacqkappdb.supabase.co';
+
   static const _supabaseAnonKey =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpZ3BocHpraW50YWNxa2FwcGRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0ODU5NDksImV4cCI6MjA4NjA2MTk0OX0.vGovpApSoHxlHlGhX48-92Ie9sGxXXMy_nsA-5l_R5s';
+
   static const _emailVerificationRedirectUrl =
       'https://www.motorexnz.com/#/profile/email-verification';
 
