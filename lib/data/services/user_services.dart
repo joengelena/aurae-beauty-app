@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as console;
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
@@ -195,6 +196,7 @@ class UserServices {
   // with a service role key — it must originate from the client.
   Future<void> resendVerificationEmail(String email) async {
     try {
+      console.log('Attempting to resend verification email for: $email');
       await supabase.Supabase.instance.client.auth.resend(
         type: supabase.OtpType.signup,
         email: email,
@@ -202,10 +204,7 @@ class UserServices {
             'https://www.motorexnz.com/#/profile/email-verification',
       );
     } on supabase.AuthException catch (e) {
-      throw AuthException(
-        e.message,
-        details: e.statusCode,
-      );
+      throw AuthException(e.message, details: e.statusCode);
     } catch (e) {
       if (e is AuthException) rethrow;
       throw NetworkException(

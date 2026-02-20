@@ -27,10 +27,20 @@ void main() async {
   await Hive.initFlutter();
   await CacheManager.instance.initialize();
 
-  // Initialize Supabase
+  // Initialize Supabase - uses compile-time constants for environment-specific config
+  const supabaseUrl = String.fromEnvironment(
+    'SUPABASE_URL',
+    defaultValue: 'https://wrmlkvdddujmycsehlec.supabase.co', // Dev default
+  );
+  const supabaseAnonKey = String.fromEnvironment(
+    'SUPABASE_ANON_KEY',
+    defaultValue:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndybWxrdmRkZHVqbXljc2VobGVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkxMzUzOTksImV4cCI6MjA3NDcxMTM5OX0.-1NYseiZxBcfh-Zw0D_WdoJZAoAiG5Hq3UNZPXeI8Aw', // Dev default
+  );
+
   await Supabase.initialize(
-    url: 'https://higphpzkintacqkappdb.supabase.co',
-    anonKey: 'sb_publishable_Zt2IwHVM0wHdwmGE1b8WJg_SO6yHh9m',
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
 
   // Initialize notification service
