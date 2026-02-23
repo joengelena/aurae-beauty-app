@@ -12,8 +12,8 @@
 // API Configuration
 const apiBaseUrl = String.fromEnvironment(
   'API_BASE_URL',
-  defaultValue: 'https://api.motorexnz.com/api/v1', // Production
-  // defaultValue: 'http://localhost:4941/api/v1', // Development
+  // defaultValue: 'http://localhost:4941/api/v1',
+  defaultValue: 'https://motorix-api-production.up.railway.app/api/v1',
 );
 
 // Supabase Configuration
@@ -24,8 +24,7 @@ const supabaseUrl = String.fromEnvironment(
 
 const supabaseAnonKey = String.fromEnvironment(
   'SUPABASE_ANON_KEY',
-  defaultValue:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndybWxrdmRkZHVqbXljc2VobGVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkxMzUzOTksImV4cCI6MjA3NDcxMTM5OX0.-1NYseiZxBcfh-Zw0D_WdoJZAoAiG5Hq3UNZPXeI8Aw', // Development
+  defaultValue: 'sb_publishable_GfRWXx4SXn6s6i6FUB0A0w_r7WWqSD6',
 );
 
 // App URLs - used for redirects from emails
