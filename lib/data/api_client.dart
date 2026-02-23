@@ -6,14 +6,10 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as http_parser;
 import 'package:motorix_app/data/http_client.dart';
 import 'package:motorix_app/data/cache_manager.dart';
+import 'package:motorix_app/env_constants.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 
 class ApiClient {
-  // final String _baseUrl =
-  //     'https://motorix-api-production.up.railway.app/api/v1';
-  final String _baseUrl = 'https://api.motorexnz.com/api/v1';
-  // final String _baseUrl = 'http://localhost:4941/api/v1';
-
   late final http.Client _client;
 
   // Completer to coordinate multiple concurrent token refresh attempts
@@ -28,7 +24,7 @@ class ApiClient {
 
   /// Build complete URL from path
   Uri _buildUri(String path, {Map<String, dynamic>? queryParameters}) {
-    final uri = Uri.parse('$_baseUrl$path');
+    final uri = Uri.parse('$apiBaseUrl$path');
     if (queryParameters != null && queryParameters.isNotEmpty) {
       return uri.replace(
         queryParameters: queryParameters.map(
@@ -86,7 +82,7 @@ class ApiClient {
       }
 
       final response = await _client.post(
-        Uri.parse('$_baseUrl/user/refresh-token'),
+        Uri.parse('$apiBaseUrl/user/refresh-token'),
         headers: await _buildHeaders(),
         body: json.encode(requestBody),
       );

@@ -8,6 +8,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:motorix_app/data/api_client.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/models/user.dart';
+import 'package:motorix_app/env_constants.dart';
 import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/secure_storage.dart';
 import 'package:motorix_app/utils/utils.dart';
@@ -200,8 +201,7 @@ class UserServices {
       await supabase.Supabase.instance.client.auth.resend(
         type: supabase.OtpType.signup,
         email: email,
-        emailRedirectTo:
-            'https://www.motorexnz.com/#/profile/email-verification',
+        emailRedirectTo: emailVerificationRedirectUrl,
       );
     } on supabase.AuthException catch (e) {
       throw AuthException(e.message, details: e.statusCode);
