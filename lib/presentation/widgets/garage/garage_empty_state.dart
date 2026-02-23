@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/back_button_provider.dart';
@@ -15,32 +16,36 @@ class GarageEmptyState extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.directions_car_outlined,
+              kIsWeb ? Icons.phone_android : Icons.directions_car_outlined,
               size: 64,
               color: Colors.grey,
             ),
             const SizedBox(height: 16),
             Text(
-              'No Vehicles Yet',
+              kIsWeb ? 'Mobile App Only Feature' : 'No Vehicles Yet',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             Text(
-              'Add your first vehicle to start tracking WOF, registration, and service dates',
+              kIsWeb
+                  ? 'Adding vehicles and scheduling service reminders is only available on the Motorex mobile app. Download the app to track WOF, registration, insurance, and service dates with automatic notifications.'
+                  : 'Add your first vehicle to start tracking WOF, registration, and service dates',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: () {
-                // Push current route onto stack for back button
-                final currentRoute = GoRouterState.of(context).uri.path;
-                context.read<BackButtonProvider>().pushRoute(currentRoute);
+            if (!kIsWeb) ...[
+              const SizedBox(height: 24),
+              FilledButton(
+                onPressed: () {
+                  // Push current route onto stack for back button
+                  final currentRoute = GoRouterState.of(context).uri.path;
+                  context.read<BackButtonProvider>().pushRoute(currentRoute);
 
-                context.go('/garage/add');
-              },
-              child: const Text('Add vehicle'),
-            ),
+                  context.go('/garage/add');
+                },
+                child: const Text('Add vehicle'),
+              ),
+            ],
           ],
         ),
       ),

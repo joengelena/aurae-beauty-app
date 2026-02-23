@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
@@ -23,11 +24,13 @@ class VehicleActionMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return ActionMenuButton(
       options: [
-        MenuOption(
-          icon: Icons.edit,
-          title: 'Edit',
-          onTap: () => _handleEditVehicle(context),
-        ),
+        // Edit option only available on mobile app
+        if (!kIsWeb)
+          MenuOption(
+            icon: Icons.edit,
+            title: 'Edit',
+            onTap: () => _handleEditVehicle(context),
+          ),
         MenuOption(
           icon: Icons.delete,
           title: 'Delete',

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:motorix_app/logic/auth_provider.dart';
@@ -51,12 +52,26 @@ class _GaragePageState extends State<GaragePage> {
     return Stack(
       children: [
         _buildBody(garageProvider),
-        LabeledFab(label: 'Add', onPressed: _handleAddVehicle),
+        // FAB only available on mobile - web users should download the app
+        if (!kIsWeb)
+          LabeledFab(label: 'Add', onPressed: _handleAddVehicle),
       ],
     );
   }
 
   Widget _buildBody(GarageProvider garageProvider) {
+    // On web, show mobile-only message regardless of state
+    if (kIsWeb) {
+      return Center(
+        child: Container(
+          constraints: const BoxConstraints(
+            maxWidth: AppConstants.contentMaxWidth,
+          ),
+          child: const GarageEmptyState(),
+        ),
+      );
+    }
+
     if (garageProvider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -81,14 +96,7 @@ class _GaragePageState extends State<GaragePage> {
           constraints: const BoxConstraints(
             maxWidth: AppConstants.contentMaxWidth,
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const ListingsCarouselWidget(),
-                const GarageEmptyState(),
-              ],
-            ),
-          ),
+          child: const GarageEmptyState(),
         ),
       );
     }
