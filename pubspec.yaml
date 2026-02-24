@@ -76,6 +76,7 @@ flutter:
         - assets/imgs/motorix_logo.jpeg
         - assets/imgs/Motorix-logo-2.png
         - assets/imgs/motorex-logo-3.png
+        - assets/imgs/motorex-logo-4.png
 
     # An image asset can refer to one or more resolution-specific "variants", see
     # https://flutter.dev/to/resolution-aware-images
@@ -94,6 +95,6 @@ flutter:
 flutter_launcher_icons:
     android: true
     ios: true
-    image_path: 'assets/imgs/motorex-logo-3.png'
-    adaptive_icon_background: '#FFFFFF'
-    adaptive_icon_foreground: 'assets/imgs/motorex-logo-3.png'
+    image_path: 'assets/imgs/motorex-logo-4.png'
+    adaptive_icon_background: '#1E3A8A'
+    adaptive_icon_foreground: 'assets/imgs/motorex-logo-4.png'
