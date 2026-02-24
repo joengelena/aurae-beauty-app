@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:motorix_app/data/models/vehicle_service.dart';
@@ -79,85 +80,114 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
             ),
             child: Column(
               spacing: AppConstants.spacingSmall,
-            children: [
-              if (vehicle.vehiclePhotoUrl != null)
-                VehicleImage(imageUrl: vehicle.vehiclePhotoUrl),
-
-              // Title and Menu Button
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(child: VehicleTitle(vehicle: vehicle)),
-                      VehicleActionMenu(
-                        vehicle: vehicle,
-                        redirectAfterDelete: true,
-                      ),
-                    ],
+              children: [
+                // Web-only banner
+                if (kIsWeb)
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: AppConstants.spacingSmall,
+                    ),
+                    padding: const EdgeInsets.all(AppConstants.spacingLarge),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.blue.shade200),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline, color: Colors.blue.shade700),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Download the Motorex app to update compliance dates and receive expiry notifications',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.blue.shade900,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  if (vehicle.licensePlate != null)
-                    Text(
-                      vehicle.licensePlate!,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black54,
-                        fontWeight: FontWeight.w500,
+
+                if (vehicle.vehiclePhotoUrl != null)
+                  VehicleImage(imageUrl: vehicle.vehiclePhotoUrl),
+
+                // Title and Menu Button
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(child: VehicleTitle(vehicle: vehicle)),
+                        VehicleActionMenu(
+                          vehicle: vehicle,
+                          redirectAfterDelete: true,
+                        ),
+                      ],
+                    ),
+                    if (vehicle.licensePlate != null)
+                      Text(
+                        vehicle.licensePlate!,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                  ],
+                ),
+
+                _buildComplianceCards(vehicle),
+
+                _buildSpecsGrid(vehicle),
+
+                // Notes Section (if exists)
+                if (vehicle.notes != null && vehicle.notes!.isNotEmpty) ...[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Notes',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      vehicle.notes!,
+                      style: TextStyle(fontSize: 14, color: Colors.black87),
+                    ),
+                  ),
                 ],
-              ),
 
-              _buildComplianceCards(vehicle),
-
-              _buildSpecsGrid(vehicle),
-
-              // Notes Section (if exists)
-              if (vehicle.notes != null && vehicle.notes!.isNotEmpty) ...[
+                // Maintenance Section
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Notes',
+                    'Maintenance',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    vehicle.notes!,
-                    style: TextStyle(fontSize: 14, color: Colors.black87),
-                  ),
-                ),
+
+                _buildServiceHistorySection(context, vehicle),
+
+                SizedBox(height: 16),
               ],
-
-              // Maintenance Section
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Maintenance',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-
-              _buildServiceHistorySection(context, vehicle),
-
-              SizedBox(height: 16),
-            ],
+            ),
           ),
         ),
       ),
-    ),
     );
   }
 
@@ -230,7 +260,11 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
       children: [
         ServiceHistoryTable(
           services: services,
-          onDelete: (service) => _handleDeleteService(service, vehicle.id),
+          // Delete only available on mobile app
+          onDelete:
+              kIsWeb
+                  ? null
+                  : (service) => _handleDeleteService(service, vehicle.id),
         ),
         AddServiceButton(vehicleId: vehicle.id),
       ],
@@ -283,29 +317,35 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
               child: ComplianceCard(
                 title: 'Registration',
                 dateString: vehicle.regoExpiryDate,
+                // Updates only available on mobile app
                 onUpdate:
-                    () => _showUpdateExpiryDialog(
-                      context,
-                      title: 'Update Registration Expiry',
-                      currentDate: vehicle.regoExpiryDate,
-                      fieldName: 'regoExpiryDate',
-                      successMessage:
-                          'Registration expiry updated successfully',
-                    ),
+                    kIsWeb
+                        ? null
+                        : () => _showUpdateExpiryDialog(
+                          context,
+                          title: 'Update Registration Expiry',
+                          currentDate: vehicle.regoExpiryDate,
+                          fieldName: 'regoExpiryDate',
+                          successMessage:
+                              'Registration expiry updated successfully',
+                        ),
               ),
             ),
             Expanded(
               child: ComplianceCard(
                 title: 'WOF',
                 dateString: vehicle.wofExpiryDate,
+                // Updates only available on mobile app
                 onUpdate:
-                    () => _showUpdateExpiryDialog(
-                      context,
-                      title: 'Update WOF Expiry',
-                      currentDate: vehicle.wofExpiryDate,
-                      fieldName: 'wofExpiryDate',
-                      successMessage: 'WOF expiry updated successfully',
-                    ),
+                    kIsWeb
+                        ? null
+                        : () => _showUpdateExpiryDialog(
+                          context,
+                          title: 'Update WOF Expiry',
+                          currentDate: vehicle.wofExpiryDate,
+                          fieldName: 'wofExpiryDate',
+                          successMessage: 'WOF expiry updated successfully',
+                        ),
               ),
             ),
           ],
@@ -314,14 +354,17 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
           title: 'Insurance',
           dateString: vehicle.insuranceExpiryDate,
           description: vehicle.insuranceProvider,
+          // Updates only available on mobile app
           onUpdate:
-              () => _showUpdateExpiryDialog(
-                context,
-                title: 'Update Insurance Expiry',
-                currentDate: vehicle.insuranceExpiryDate,
-                fieldName: 'insuranceExpiryDate',
-                successMessage: 'Insurance expiry updated successfully',
-              ),
+              kIsWeb
+                  ? null
+                  : () => _showUpdateExpiryDialog(
+                    context,
+                    title: 'Update Insurance Expiry',
+                    currentDate: vehicle.insuranceExpiryDate,
+                    fieldName: 'insuranceExpiryDate',
+                    successMessage: 'Insurance expiry updated successfully',
+                  ),
         ),
       ],
     );

@@ -34,7 +34,8 @@ class _GaragePageState extends State<GaragePage> {
   }
 
   double _calculateItemWidth(double availableWidth, int crossAxisCount) {
-    final totalSpacing = _horizontalPadding +
+    final totalSpacing =
+        _horizontalPadding +
         (AppConstants.spacingMedium * (crossAxisCount - 1));
     return (availableWidth - totalSpacing) / crossAxisCount;
   }
@@ -53,25 +54,12 @@ class _GaragePageState extends State<GaragePage> {
       children: [
         _buildBody(garageProvider),
         // FAB only available on mobile - web users should download the app
-        if (!kIsWeb)
-          LabeledFab(label: 'Add', onPressed: _handleAddVehicle),
+        if (!kIsWeb) LabeledFab(label: 'Add', onPressed: _handleAddVehicle),
       ],
     );
   }
 
   Widget _buildBody(GarageProvider garageProvider) {
-    // On web, show mobile-only message regardless of state
-    if (kIsWeb) {
-      return Center(
-        child: Container(
-          constraints: const BoxConstraints(
-            maxWidth: AppConstants.contentMaxWidth,
-          ),
-          child: const GarageEmptyState(),
-        ),
-      );
-    }
-
     if (garageProvider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -134,25 +122,24 @@ class _GaragePageState extends State<GaragePage> {
                     ),
                     child: Text(
                       'My Vehicles',
-                      style:
-                          Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: AppConstants.spacingSmall),
                   Wrap(
                     spacing: AppConstants.spacingMedium,
                     runSpacing: AppConstants.spacingMedium,
-                    children: garageProvider.vehicles.map((vehicle) {
-                      return SizedBox(
-                        width: itemWidth,
-                        child: VehicleCard(
-                          vehicle: vehicle,
-                          actionButton: VehicleActionMenu(vehicle: vehicle),
-                        ),
-                      );
-                    }).toList(),
+                    children:
+                        garageProvider.vehicles.map((vehicle) {
+                          return SizedBox(
+                            width: itemWidth,
+                            child: VehicleCard(
+                              vehicle: vehicle,
+                              actionButton: VehicleActionMenu(vehicle: vehicle),
+                            ),
+                          );
+                        }).toList(),
                   ),
                 ],
               ),
