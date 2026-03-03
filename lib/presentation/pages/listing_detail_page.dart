@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/presentation/widgets/listing/contact_seller.dart';
 import 'package:motorix_app/presentation/widgets/listing/image_carousel.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/theme.dart';
 import 'package:motorix_app/utils/utils.dart';
 import 'package:provider/provider.dart';
@@ -110,7 +111,7 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Center(
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 600),
+          constraints: BoxConstraints(maxWidth: AppConstants.contentMaxWidth),
           child: Column(
             spacing: 16,
             children: [

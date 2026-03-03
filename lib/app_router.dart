@@ -20,6 +20,7 @@ import 'package:motorix_app/presentation/pages/add_vehicle_page.dart';
 import 'package:motorix_app/presentation/pages/edit_vehicle_page.dart';
 import 'package:motorix_app/presentation/pages/add_service_page.dart';
 import 'package:motorix_app/presentation/pages/vehicle_detail_page.dart';
+import 'package:motorix_app/presentation/pages/privacy_policy_page.dart';
 import 'package:motorix_app/presentation/widgets/scaffold/app_scaffold.dart';
 import 'package:provider/provider.dart';
 
@@ -36,7 +37,7 @@ const _authPages = [
 ];
 
 // Public pages accessible to unauthenticated users
-const _publicPages = ['/listings', '/watchlist', '/garage'];
+const _publicPages = ['/listings', '/watchlist', '/garage', '/privacy'];
 
 GoRouter getAppRouter(AuthProvider authProvider) {
   return GoRouter(
@@ -257,6 +258,12 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                 },
               ),
             ],
+          ),
+          GoRoute(
+            path: '/privacy',
+            parentNavigatorKey: _shellNavigatorKey,
+            pageBuilder:
+                (context, state) => NoTransitionPage(child: PrivacyPolicyPage()),
           ),
         ],
       ),
