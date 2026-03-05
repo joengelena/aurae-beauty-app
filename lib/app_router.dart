@@ -5,6 +5,7 @@ import 'package:motorix_app/logic/listing_detail_provider.dart';
 import 'package:motorix_app/presentation/pages/edit_listing_page.dart';
 import 'package:motorix_app/presentation/pages/post_listing_page.dart';
 import 'package:motorix_app/presentation/pages/profile/change_password_page.dart';
+import 'package:motorix_app/presentation/pages/profile/delete_account_page.dart';
 import 'package:motorix_app/presentation/pages/profile/edit_profile_page.dart';
 import 'package:motorix_app/presentation/pages/profile/email_verification_page.dart';
 import 'package:motorix_app/presentation/pages/profile/forgot_password_page.dart';
@@ -255,6 +256,12 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                 path: 'edit',
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: EditProfilePage());
+                },
+              ),
+              GoRoute(
+                path: 'delete-account',
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: DeleteAccountPage());
                 },
               ),
             ],

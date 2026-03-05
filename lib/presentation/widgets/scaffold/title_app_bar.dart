@@ -4,6 +4,7 @@ import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
 import 'package:motorix_app/presentation/widgets/listing/listing_search_field.dart';
+import 'package:motorix_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -97,6 +98,8 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onSelected: (value) {
                   if (value == 'Sign out') {
                     _showSignOutDialog(context, authProvider);
+                  } else if (value == 'Delete account') {
+                    context.go('/profile/delete-account');
                   }
                 },
                 itemBuilder:
@@ -119,6 +122,19 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
                                 ),
                               ),
                             ],
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'Delete account',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete_forever, size: 20, color: themeRed),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Delete account',
+                              style: TextStyle(color: themeRed),
+                            ),
                           ],
                         ),
                       ),

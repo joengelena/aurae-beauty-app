@@ -335,6 +335,46 @@ class UserServices {
     }
   }
 
+  Future<String> deleteAccount(String password) async {
+    try {
+      http.Response response = await apiClient.delete('/user', {
+        'currentPassword': password,
+      });
+
+      if (response.statusCode == HttpStatus.unauthorized) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw UnauthenticatedException(errorMessage, details: response.body);
+      }
+
+      if (response.statusCode == HttpStatus.forbidden) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw AuthException(errorMessage, details: response.body);
+      }
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NetworkException(
+          errorMessage,
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+
+      await _clearAuthData();
+
+      return response.body;
+    } catch (e) {
+      if (e is UnauthenticatedException ||
+          e is AuthException ||
+          e is NetworkException)
+        rethrow;
+      throw NetworkException(
+        'Network error during account deletion',
+        details: e.toString(),
+      );
+    }
+  }
+
   Future<void> signUpAndSignIn(
     String firstName,
     String lastName,
