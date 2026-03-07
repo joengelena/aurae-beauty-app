@@ -5,6 +5,7 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:motorix_app/data/models/user_vehicle.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /// Types of vehicle compliance that require expiry notifications.
 ///
@@ -130,6 +131,71 @@ class VehicleNotificationService {
         ?.requestNotificationsPermission();
   }
 
+  /// Requests notification permission on Android 13+ (API 33+).
+  ///
+  /// This permission is required to show any notifications to the user.
+  /// Without it, scheduled notifications won't appear even if they're scheduled.
+  ///
+  /// Returns true if permission is granted, false otherwise.
+  Future<bool> requestNotificationPermission() async {
+    if (!Platform.isAndroid) return true;
+
+    try {
+      final status = await Permission.notification.status;
+      if (status.isGranted) return true;
+
+      // Request the permission - shows system dialog
+      final result = await Permission.notification.request();
+
+      if (result.isDenied || result.isPermanentlyDenied) {
+        debugPrint('Notification permission denied. Opening app settings.');
+        await openAppSettings();
+        return false;
+      }
+
+      return result.isGranted;
+    } catch (e) {
+      debugPrint('Error requesting notification permission: $e');
+      return false;
+    }
+  }
+
+  /// Requests SCHEDULE_EXACT_ALARM permission on Android 12+ (API 31+).
+  ///
+  /// This permission is required to schedule exact alarms for timely vehicle
+  /// expiry notifications (WOF, registration, insurance).
+  ///
+  /// Opens system settings where user must manually enable the permission.
+  ///
+  /// Returns true if permission is granted, false otherwise.
+  Future<bool> requestExactAlarmPermission() async {
+    if (!Platform.isAndroid) return true;
+
+    try {
+      // Check if permission is already granted
+      final status = await Permission.scheduleExactAlarm.status;
+      if (status.isGranted) return true;
+
+      // Request the permission
+      // Note: On Android 12+, this opens system settings where user must manually enable
+      final result = await Permission.scheduleExactAlarm.request();
+
+      if (result.isDenied || result.isPermanentlyDenied) {
+        debugPrint(
+          'SCHEDULE_EXACT_ALARM permission denied. Opening app settings.',
+        );
+        // Open app settings for user to manually grant permission
+        await openAppSettings();
+        return false;
+      }
+
+      return result.isGranted;
+    } catch (e) {
+      debugPrint('Error requesting exact alarm permission: $e');
+      return false;
+    }
+  }
+
   /// Schedules all expiry notifications for a vehicle.
   ///
   /// Creates 15 notifications: WOF, REGO, and Insurance, each with
@@ -137,10 +203,36 @@ class VehicleNotificationService {
   ///
   /// Notifications scheduled for past dates are sent immediately.
   /// Errors are logged but do not throw to avoid blocking vehicle creation.
+  ///
+  /// On Android, requires both POST_NOTIFICATIONS and SCHEDULE_EXACT_ALARM permissions.
   Future<void> scheduleVehicleNotifications(UserVehicle vehicle) async {
     if (!_isMobilePlatform) return;
 
     try {
+      // Check and request permissions on Android
+      if (Platform.isAndroid) {
+        // First, request notification permission (required to show any notifications)
+        final hasNotificationPermission = await requestNotificationPermission();
+        if (!hasNotificationPermission) {
+          debugPrint(
+            'Cannot schedule notifications without notification permission. '
+            'User will not receive vehicle expiry reminders.',
+          );
+          // Don't continue - without notification permission, there's no point scheduling
+          return;
+        }
+
+        // Then request exact alarm permission (for timely delivery)
+        final hasExactAlarmPermission = await requestExactAlarmPermission();
+        if (!hasExactAlarmPermission) {
+          debugPrint(
+            'Cannot schedule exact notifications without SCHEDULE_EXACT_ALARM permission. '
+            'Vehicle notifications may not be delivered at exact times.',
+          );
+          // Continue anyway - notifications will be scheduled but may not fire exactly
+        }
+      }
+
       final now = DateTime.now();
 
       // Build list of expiry configurations
