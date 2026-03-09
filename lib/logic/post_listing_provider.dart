@@ -18,7 +18,6 @@ class PostListingProvider extends ChangeNotifier
   String errorMessage = '';
   @override
   List<ListingAttribute> listingAttributeOptions = [];
-  final optionalDropdownFields = ['transmission', 'cylinders'];
   final Map<String, Object> postListingData = {};
   bool _isSignedIn = false;
 
@@ -41,12 +40,6 @@ class PostListingProvider extends ChangeNotifier
   Future<void> _loadAttributes() async {
     try {
       listingAttributeOptions = await ListingsServices().getListingAttributes();
-      // Add 'None' option to optional dropdown fields
-      for (var attributeWithoutNone in listingAttributeOptions) {
-        if (optionalDropdownFields.contains(attributeWithoutNone.name)) {
-          attributeWithoutNone.attributeValues.insert(0, 'None');
-        }
-      }
     } catch (e) {
       debugPrint('⚠️ Failed to load listing attributes: $e');
     } finally {
