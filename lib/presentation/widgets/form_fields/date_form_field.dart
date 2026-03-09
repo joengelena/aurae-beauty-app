@@ -61,6 +61,14 @@ class _DateFormFieldState<T extends FormDataProvider>
     final formatted = DateFormat('yyyy-MM-dd').format(picked);
     _controller.text = formatted;
     provider.formData[widget.fieldName] = formatted;
+    setState(() {});
+  }
+
+  void _clearField() {
+    final provider = context.read<T>();
+    _controller.clear();
+    provider.formData.remove(widget.fieldName);
+    setState(() {});
   }
 
   @override
@@ -68,6 +76,7 @@ class _DateFormFieldState<T extends FormDataProvider>
     final provider = context.read<T>();
     final firstDate = widget.firstDate ?? DateTime.now();
     final lastDate = widget.lastDate ?? DateTime(2035);
+    final hasValue = _controller.text.isNotEmpty;
 
     return TextFormField(
       controller: _controller,
@@ -75,7 +84,20 @@ class _DateFormFieldState<T extends FormDataProvider>
       decoration: InputDecoration(
         labelText:
             widget.isRequired ? '${widget.labelText} *' : widget.labelText,
-        suffixIcon: const Icon(Icons.calendar_today),
+        suffixIcon:
+            !widget.isRequired && hasValue
+                ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: _clearField,
+                    ),
+                    const Icon(Icons.calendar_today),
+                    const SizedBox(width: 12),
+                  ],
+                )
+                : const Icon(Icons.calendar_today),
         border: const OutlineInputBorder(),
       ),
       validator:

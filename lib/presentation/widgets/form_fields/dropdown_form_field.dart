@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/form_data_provider.dart';
 import 'package:provider/provider.dart';
 
-class DropdownFormField<T extends FormDataProvider> extends StatelessWidget {
+class DropdownFormField<T extends FormDataProvider> extends StatefulWidget {
   final String labelText;
   final bool isRequired;
   final String fieldName;
@@ -17,28 +17,62 @@ class DropdownFormField<T extends FormDataProvider> extends StatelessWidget {
   });
 
   @override
+  State<DropdownFormField<T>> createState() => _DropdownFormFieldState<T>();
+}
+
+class _DropdownFormFieldState<T extends FormDataProvider>
+    extends State<DropdownFormField<T>> {
+  String? _currentValue;
+
+  @override
+  void initState() {
+    super.initState();
+    final provider = context.read<T>();
+    final rawValue = provider.formData[widget.fieldName];
+    _currentValue = rawValue as String?;
+  }
+
+  void _clearField() {
+    final provider = context.read<T>();
+    provider.formData.remove(widget.fieldName);
+    setState(() {
+      _currentValue = null;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final provider = context.read<T>();
-    final rawValue = provider.formData[fieldName];
-    final currentValue = rawValue as String?;
+    final hasValue = _currentValue != null && _currentValue != 'None';
 
     return DropdownButtonFormField<String>(
-      initialValue: currentValue,
+      initialValue: _currentValue,
       decoration: InputDecoration(
-        labelText: isRequired ? '$labelText *' : labelText,
+        labelText:
+            widget.isRequired ? '${widget.labelText} *' : widget.labelText,
         border: const OutlineInputBorder(),
+        suffixIcon:
+            !widget.isRequired && hasValue
+                ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: _clearField,
+                )
+                : null,
       ),
       items:
-          options.map((option) {
+          widget.options.map((option) {
             return DropdownMenuItem(value: option, child: Text(option));
           }).toList(),
       onChanged: (value) {
         if (value != null) {
-          provider.formData[fieldName] = value;
+          provider.formData[widget.fieldName] = value;
+          setState(() {
+            _currentValue = value;
+          });
         }
       },
       validator:
-          isRequired
+          widget.isRequired
               ? (value) {
                 if (value == null || value.isEmpty || value == 'None') {
                   return 'Required';

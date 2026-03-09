@@ -7,8 +7,7 @@ import 'package:provider/provider.dart';
 ///
 /// Only accepts integer input and validates against min/max constraints.
 /// Automatically removes optional fields from formData when empty.
-class NumberFormField<T extends FormDataProvider>
-    extends StatelessWidget {
+class NumberFormField<T extends FormDataProvider> extends StatefulWidget {
   /// The label text displayed in the field
   final String labelText;
 
@@ -37,9 +36,38 @@ class NumberFormField<T extends FormDataProvider>
     this.isReadOnly = false,
   });
 
+  @override
+  State<NumberFormField<T>> createState() => _NumberFormFieldState<T>();
+}
+
+class _NumberFormFieldState<T extends FormDataProvider>
+    extends State<NumberFormField<T>> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    final provider = context.read<T>();
+    final initialValue = provider.formData[widget.fieldName]?.toString() ?? '';
+    _controller = TextEditingController(text: initialValue);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _clearField() {
+    final provider = context.read<T>();
+    _controller.clear();
+    provider.formData.remove(widget.fieldName);
+    setState(() {});
+  }
+
   String? _validator(String? value) {
     if (value == null || value.isEmpty) {
-      return isRequired ? 'Required' : null;
+      return widget.isRequired ? 'Required' : null;
     }
 
     final intVal = int.tryParse(value);
@@ -48,8 +76,8 @@ class NumberFormField<T extends FormDataProvider>
       return 'Must be a number';
     }
 
-    if (intVal < min || intVal > max) {
-      return 'Must be between $min and $max';
+    if (intVal < widget.min || intVal > widget.max) {
+      return 'Must be between ${widget.min} and ${widget.max}';
     }
 
     return null;
@@ -58,31 +86,37 @@ class NumberFormField<T extends FormDataProvider>
   @override
   Widget build(BuildContext context) {
     final provider = context.read<T>();
-    final initialValue = provider.formData[fieldName]?.toString() ?? '';
+    final hasValue = _controller.text.isNotEmpty;
 
     return TextFormField(
-      initialValue: initialValue,
-      readOnly: isReadOnly,
-      enabled: !isReadOnly,
+      controller: _controller,
+      readOnly: widget.isReadOnly,
+      enabled: !widget.isReadOnly,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
-        labelText: isRequired ? '$labelText *' : labelText,
+        labelText:
+            widget.isRequired ? '${widget.labelText} *' : widget.labelText,
         border: const OutlineInputBorder(),
+        suffixIcon:
+            !widget.isRequired && hasValue && !widget.isReadOnly
+                ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: _clearField,
+                )
+                : null,
       ),
       validator: _validator,
       onChanged: (val) {
-        if (val.isEmpty && !isRequired) {
-          // Remove the field if empty (for optional fields)
-          provider.formData.remove(fieldName);
+        if (val.isEmpty && !widget.isRequired) {
+          provider.formData.remove(widget.fieldName);
         } else {
           final intValue = int.tryParse(val);
           if (intValue != null) {
-            provider.formData[fieldName] = intValue;
+            provider.formData[widget.fieldName] = intValue;
           }
-          // Note: If parsing fails but field has content,
-          // validator will catch it - don't store invalid data
         }
+        setState(() {});
       },
     );
   }

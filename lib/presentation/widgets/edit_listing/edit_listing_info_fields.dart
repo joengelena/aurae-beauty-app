@@ -6,14 +6,44 @@ import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.d
 import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
 import 'package:provider/provider.dart';
 
-class EditListingInfoFields extends StatelessWidget {
+class EditListingInfoFields extends StatefulWidget {
   const EditListingInfoFields({super.key});
+
+  @override
+  State<EditListingInfoFields> createState() => _EditListingInfoFieldsState();
+}
+
+class _EditListingInfoFieldsState extends State<EditListingInfoFields> {
+  late final TextEditingController _discountedPriceController;
+
+  @override
+  void initState() {
+    super.initState();
+    final provider = context.read<EditListingProvider>();
+    final initialDiscountedValue =
+        provider.formData['discountedPrice']?.toString() ?? '';
+    _discountedPriceController = TextEditingController(
+      text: initialDiscountedValue,
+    );
+  }
+
+  @override
+  void dispose() {
+    _discountedPriceController.dispose();
+    super.dispose();
+  }
+
+  void _clearDiscountedPrice() {
+    final provider = context.read<EditListingProvider>();
+    _discountedPriceController.clear();
+    provider.formData.remove('discountedPrice');
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<EditListingProvider>();
-    final initialDiscountedValue =
-        provider.formData['discountedPrice']?.toString() ?? '';
+    final hasDiscountedValue = _discountedPriceController.text.isNotEmpty;
 
     return Column(
       spacing: 12,
@@ -31,12 +61,19 @@ class EditListingInfoFields extends StatelessWidget {
           isReadOnly: false,
         ),
         TextFormField(
-          initialValue: initialDiscountedValue,
+          controller: _discountedPriceController,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
             labelText: 'Discounted Price (optional)',
             border: const OutlineInputBorder(),
+            suffixIcon:
+                hasDiscountedValue
+                    ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: _clearDiscountedPrice,
+                    )
+                    : null,
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -53,7 +90,8 @@ class EditListingInfoFields extends StatelessWidget {
               return 'Must be between 0 and 100000000';
             }
 
-            final currentOriginalPrice = provider.formData['originalPrice'] as int;
+            final currentOriginalPrice =
+                provider.formData['originalPrice'] as int;
             if (discountedPrice >= currentOriginalPrice) {
               return 'Discounted price must be less than original price (\$$currentOriginalPrice)';
             }
@@ -69,6 +107,7 @@ class EditListingInfoFields extends StatelessWidget {
                 provider.formData['discountedPrice'] = intValue;
               }
             }
+            setState(() {});
           },
         ),
         DropdownFormField<EditListingProvider>(
