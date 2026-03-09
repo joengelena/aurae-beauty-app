@@ -89,10 +89,6 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
       'Previous Owners': listing.previousOwners,
       'Vehicle Condition': listing.vehicleCondition,
       'Number Plate': listing.numberPlate,
-    };
-
-    // Documentation
-    final documentation = {
       'Rego Expiry':
           listing.regoExpiryDate != null
               ? formatDate(listing.regoExpiryDate!)
@@ -284,51 +280,6 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                 ),
               ),
 
-              // Documentation Section
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Documentation',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  spacing: 8,
-                  children: [
-                    for (var entry in documentation.entries)
-                      if (entry.value != null)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              entry.key,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            Text(
-                              '${entry.value}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                  ],
-                ),
-              ),
-
               // Description
               Align(
                 alignment: Alignment.centerLeft,
@@ -346,7 +297,7 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                 ),
               ),
 
-              // Documentation Section
+              // Seller's contact information
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
