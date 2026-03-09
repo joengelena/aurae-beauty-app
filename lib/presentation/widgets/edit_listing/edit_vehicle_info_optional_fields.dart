@@ -24,10 +24,7 @@ class _EditVehicleInfoOptionalFieldsState
 
     return ExpansionTile(
       tilePadding: EdgeInsets.zero,
-      title: Text(
-        'Specifications & Features',
-        style: Theme.of(context).textTheme.headlineSmall,
-      ),
+      title: Text('Optional', style: Theme.of(context).textTheme.headlineSmall),
       childrenPadding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
       children: [
         Column(
@@ -73,7 +70,10 @@ class _EditVehicleInfoOptionalFieldsState
               min: 0,
               max: 50,
             ),
-            const StringFormField<EditListingProvider>(labelText: 'Color', fieldName: 'color'),
+            const StringFormField<EditListingProvider>(
+              labelText: 'Color',
+              fieldName: 'color',
+            ),
             NumberFormField<EditListingProvider>(
               labelText: 'Engine Size (cc)',
               fieldName: 'engineSize',

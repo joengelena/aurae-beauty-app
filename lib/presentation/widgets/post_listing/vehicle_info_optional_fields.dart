@@ -23,10 +23,7 @@ class _VehicleInfoOptionalFieldsState extends State<VehicleInfoOptionalFields> {
 
     return ExpansionTile(
       tilePadding: EdgeInsets.zero,
-      title: Text(
-        'Specifications & Features',
-        style: Theme.of(context).textTheme.headlineSmall,
-      ),
+      title: Text('Optional', style: Theme.of(context).textTheme.headlineSmall),
       childrenPadding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
       children: [
         Column(
@@ -67,7 +64,10 @@ class _VehicleInfoOptionalFieldsState extends State<VehicleInfoOptionalFields> {
               min: 1,
               max: 20,
             ),
-            const StringFormField<PostListingProvider>(labelText: 'Color', fieldName: 'color'),
+            const StringFormField<PostListingProvider>(
+              labelText: 'Color',
+              fieldName: 'color',
+            ),
             NumberFormField<PostListingProvider>(
               labelText: 'Engine Size (cc)',
               fieldName: 'engineSize',
