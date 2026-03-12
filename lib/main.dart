@@ -149,12 +149,6 @@ class _MyAppState extends State<MyApp> {
     VehicleNotificationService.onNotificationTap = (vehicleId) {
       _router.go('/garage/$vehicleId');
     };
-
-    // Check if user is already authenticated (e.g., from previous session)
-    // This must happen after the first frame to avoid calling notifyListeners during build
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await auth.checkAuthStatus();
-    });
   }
 
   @override

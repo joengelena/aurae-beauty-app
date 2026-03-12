@@ -15,6 +15,7 @@ import 'package:motorix_app/presentation/pages/profile/profile_page.dart';
 import 'package:motorix_app/presentation/pages/profile/reset_password_page.dart';
 import 'package:motorix_app/presentation/pages/profile/sign_in_page.dart';
 import 'package:motorix_app/presentation/pages/profile/sign_up_page.dart';
+import 'package:motorix_app/presentation/pages/splash_page.dart';
 import 'package:motorix_app/presentation/pages/watchlist_page.dart';
 import 'package:motorix_app/presentation/pages/garage_page.dart';
 import 'package:motorix_app/presentation/pages/add_vehicle_page.dart';
@@ -43,7 +44,7 @@ const _publicPages = ['/listings', '/watchlist', '/garage', '/privacy'];
 GoRouter getAppRouter(AuthProvider authProvider) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/profile/signin',
+    initialLocation: '/splash',
     refreshListenable: authProvider,
     errorBuilder: (context, state) {
       // Redirect to garage page for any routing errors (404s)
@@ -55,6 +56,11 @@ GoRouter getAppRouter(AuthProvider authProvider) {
     redirect: (context, state) {
       final isSignedIn = authProvider.isSignedIn;
       final path = state.uri.path;
+
+      // Allow splash page without any redirects
+      if (path == '/splash') {
+        return null;
+      }
 
       // Handle Supabase email verification errors by redirecting to a dedicated page
       String? errorCode = Uri.splitQueryString(state.uri.path)['error_code'];
@@ -78,6 +84,13 @@ GoRouter getAppRouter(AuthProvider authProvider) {
       return null;
     },
     routes: [
+      // Splash route - outside ShellRoute to hide bottom navigation
+      GoRoute(
+        path: '/splash',
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: SplashPage(),
+        ),
+      ),
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, GoRouterState state, child) {
