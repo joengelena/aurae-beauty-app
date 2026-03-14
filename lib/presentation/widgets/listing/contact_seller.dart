@@ -34,9 +34,10 @@ class ContactSeller extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundImage: AssetImage(
-                      'assets/imgs/default_profile.jpg',
-                    ),
+                    backgroundImage:
+                        seller.profilePhotoUrl != null
+                            ? NetworkImage(seller.profilePhotoUrl!)
+                            : AssetImage('assets/imgs/default_profile.jpg'),
                   ),
                   SizedBox(height: 12),
                   SizedBox(
