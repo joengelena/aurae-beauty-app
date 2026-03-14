@@ -84,12 +84,6 @@ class PostListingProvider extends ChangeNotifier
     notifyListeners();
   }
 
-  Map<String, Object> _filterNoneValues() {
-    return Map.fromEntries(
-      postListingData.entries.where((entry) => entry.value != 'None'),
-    );
-  }
-
   Future<void> postListing() async {
     isLoading = true;
     errorMessage = '';
@@ -99,9 +93,10 @@ class PostListingProvider extends ChangeNotifier
     try {
       final images = await buildMultipartFiles();
 
-      final filteredData = _filterNoneValues();
-
-      final result = await ListingsServices().postListing(filteredData, images);
+      final result = await ListingsServices().postListing(
+        postListingData,
+        images,
+      );
 
       newListingId = result['listingId'] as int?;
       successfulPost = true;
