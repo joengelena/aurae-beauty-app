@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:motorix_app/data/cache_manager.dart';
 import 'package:motorix_app/data/exceptions/app_exception.dart';
 import 'package:motorix_app/data/services/user_services.dart';
+import 'package:motorix_app/utils/secure_storage.dart';
 
 class AuthProvider extends ChangeNotifier {
   final UserServices _userServices = UserServices();
@@ -9,6 +10,7 @@ class AuthProvider extends ChangeNotifier {
   // State properties
   bool isLoading = false;
   bool isSignedIn = false;
+  bool isAuthInitialized = false; // Track if initial auth check completed
   String signInErrorMessage = '';
   String signUpErrorMessage = '';
   String signUpMessage = '';
@@ -24,7 +26,19 @@ class AuthProvider extends ChangeNotifier {
   bool get isEmailNotVerifiedError =>
       signInErrorMessage.contains('verify your email');
 
+  /// Quick check to see if user has stored tokens (without API call)
+  /// Used to detect if this is a page refresh vs cold start
+  Future<bool> hasStoredTokens() async {
+    try {
+      final userId = await SecureStorage.read('userId');
+      return userId != null && userId.isNotEmpty;
+    } catch (e) {
+      return false;
+    }
+  }
+
   /// Check if user is authenticated on app startup
+  /// Sets isLoading=true during check, isAuthInitialized=true when complete
   Future<void> checkAuthStatus() async {
     isLoading = true;
     notifyListeners();
@@ -34,6 +48,7 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       isSignedIn = false;
     } finally {
+      isAuthInitialized = true;
       isLoading = false;
       notifyListeners();
     }

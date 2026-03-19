@@ -149,6 +149,23 @@ class _MyAppState extends State<MyApp> {
     VehicleNotificationService.onNotificationTap = (vehicleId) {
       _router.go('/garage/$vehicleId');
     };
+
+    // Check auth silently on startup for refresh scenarios
+    // This allows users who refresh to stay authenticated without going through splash
+    _checkAuthSilently(auth);
+  }
+
+  /// Check authentication status if tokens exist (refresh scenario)
+  /// If no tokens exist, user goes through splash page for full health + auth check
+  Future<void> _checkAuthSilently(AuthProvider auth) async {
+    final hasTokens = await auth.hasStoredTokens();
+
+    if (hasTokens) {
+      // User has tokens - likely a refresh, check auth in background
+      // This allows staying on the current page without going through splash
+      await auth.checkAuthStatus();
+    }
+    // If no tokens, user will be redirected to splash by router for full health + auth check
   }
 
   @override

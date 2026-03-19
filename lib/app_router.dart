@@ -55,6 +55,8 @@ GoRouter getAppRouter(AuthProvider authProvider) {
     },
     redirect: (context, state) {
       final isSignedIn = authProvider.isSignedIn;
+      final isAuthInitialized = authProvider.isAuthInitialized;
+      final isLoading = authProvider.isLoading;
       final path = state.uri.path;
 
       // Allow splash page without any redirects
@@ -70,6 +72,18 @@ GoRouter getAppRouter(AuthProvider authProvider) {
 
       final isAuthPage = _authPages.contains(path);
       final isPublicPage = _publicPages.contains(path);
+
+      // If auth hasn't been initialized yet:
+      // - If auth check is in progress (refresh scenario): stay on current page
+      // - Otherwise (cold start): redirect to splash for health + auth check
+      if (!isAuthInitialized && !isAuthPage && !isPublicPage) {
+        if (isLoading) {
+          // Auth check in progress - stay on current page while checking
+          return null;
+        }
+        // Cold start - redirect to splash for full health + auth check
+        return '/splash';
+      }
 
       // Redirect unauthenticated users to sign-in (except for auth and public pages)
       if (!isSignedIn && !isAuthPage && !isPublicPage) {
