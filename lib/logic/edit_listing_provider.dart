@@ -96,7 +96,7 @@ class EditListingProvider extends ChangeNotifier
       editListingData['transmission'] = listing.transmission!;
     }
     if (listing.cylinders != null) {
-      editListingData['cylinders'] = listing.cylinders!;
+      editListingData['cylinders'] = listing.cylinders!.toString();
     }
     if (listing.regoExpiryDate != null) {
       editListingData['regoExpiryDate'] =
@@ -148,6 +148,11 @@ class EditListingProvider extends ChangeNotifier
 
     try {
       editListingData['currentUserId'] = userId;
+
+      if (editListingData['cylinders'] is String) {
+        editListingData['cylinders'] =
+            int.tryParse(editListingData['cylinders'] as String) ?? 0;
+      }
 
       // Build image files if images were changed
       List<http.MultipartFile>? images;

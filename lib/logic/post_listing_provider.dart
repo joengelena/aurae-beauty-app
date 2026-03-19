@@ -93,6 +93,11 @@ class PostListingProvider extends ChangeNotifier
     try {
       final images = await buildMultipartFiles();
 
+      if (postListingData['cylinders'] is String) {
+        postListingData['cylinders'] =
+            int.tryParse(postListingData['cylinders'] as String) ?? 0;
+      }
+
       final result = await ListingsServices().postListing(
         postListingData,
         images,
