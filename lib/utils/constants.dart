@@ -17,7 +17,7 @@ class AppConstants {
   static const double spacingLarge = 16;
   static const double spacingExtraLarge = 64;
 
-  static const Duration snackBarDurationSeconds = Duration(seconds: 4);
+  static const Duration snackBarDurationSeconds = Duration(seconds: 3);
 }
 
 /// HTTP cache duration constants
