@@ -25,7 +25,8 @@ class SelectSingleImage extends StatefulWidget {
 }
 
 class _SelectSingleImageState extends State<SelectSingleImage> {
-  static const int _maxFileSizeBytes = 10 * 1024 * 1024; // 10MB (matches backend)
+  static const int _maxFileSizeBytes =
+      10 * 1024 * 1024; // 10MB (matches backend)
   static const double _maxImageWidth = 1920;
   static const double _maxImageHeight = 1080;
   static const int _imageQuality = 85;
@@ -69,11 +70,7 @@ class _SelectSingleImageState extends State<SelectSingleImage> {
   void _showError(String message) {
     if (!mounted) return;
 
-    FeedbackHelpers.showErrorSnackBar(
-      context,
-      message,
-      duration: const Duration(seconds: 3),
-    );
+    FeedbackHelpers.showErrorSnackBar(context, message);
   }
 
   @override
@@ -84,9 +81,7 @@ class _SelectSingleImageState extends State<SelectSingleImage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       spacing: 12,
       children: [
-        hasImage
-            ? _buildImagePreview()
-            : _buildEmptyState(context),
+        hasImage ? _buildImagePreview() : _buildEmptyState(context),
         _buildActionButton(),
       ],
     );
@@ -99,27 +94,28 @@ class _SelectSingleImageState extends State<SelectSingleImage> {
           aspectRatio: widget.aspectRatio,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: widget.imageBytes != null
-                ? Image.memory(
-                    widget.imageBytes!,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  )
-                : Image.network(
-                    widget.imageUrl!,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.grey[300],
-                        child: const Icon(
-                          Icons.broken_image,
-                          size: 48,
-                          color: Colors.grey,
-                        ),
-                      );
-                    },
-                  ),
+            child:
+                widget.imageBytes != null
+                    ? Image.memory(
+                      widget.imageBytes!,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                    : Image.network(
+                      widget.imageUrl!,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[300],
+                          child: const Icon(
+                            Icons.broken_image,
+                            size: 48,
+                            color: Colors.grey,
+                          ),
+                        );
+                      },
+                    ),
           ),
         ),
         Positioned(

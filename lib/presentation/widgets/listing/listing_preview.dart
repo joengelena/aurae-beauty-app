@@ -4,7 +4,6 @@ import 'package:motorix_app/data/models/listing.dart';
 import 'package:motorix_app/logic/back_button_provider.dart';
 import 'package:motorix_app/logic/watchlist_provider.dart';
 import 'package:motorix_app/logic/listings_provider.dart';
-import 'package:motorix_app/logic/auth_provider.dart';
 import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:motorix_app/utils/theme.dart';
@@ -54,28 +53,6 @@ class ListingPreview extends StatelessWidget {
                   right: 8,
                   child: GestureDetector(
                     onTap: () async {
-                      final authProvider = context.read<AuthProvider>();
-
-                      // Check if user is signed in
-                      if (!authProvider.isSignedIn) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Please sign in or sign up to add listings to your watchlist',
-                              ),
-                              action: SnackBarAction(
-                                label: 'Sign In',
-                                onPressed: () {
-                                  context.go('/profile/signin');
-                                },
-                              ),
-                            ),
-                          );
-                        }
-                        return;
-                      }
-
                       final watchlistProvider =
                           context.read<WatchlistProvider>();
                       final listingsProvider = context.read<ListingsProvider>();

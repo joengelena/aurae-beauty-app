@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/presentation/widgets/common/app_dialog.dart';
+import 'package:motorix_app/utils/constants.dart';
 import 'package:motorix_app/utils/theme.dart';
 
 /// Helper class for user feedback operations like confirmation dialogs and snackbars
@@ -36,22 +37,21 @@ class FeedbackHelpers {
         content: Text(message),
         backgroundColor: themeGreen,
         behavior: SnackBarBehavior.floating,
+        duration: AppConstants.snackBarDurationSeconds,
+        width: AppConstants.contentMaxWidth,
       ),
     );
   }
 
   /// Shows an error snackbar
-  static void showErrorSnackBar(
-    BuildContext context,
-    String message, {
-    Duration duration = const Duration(seconds: 4),
-  }) {
+  static void showErrorSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: themeRed,
         behavior: SnackBarBehavior.floating,
-        duration: duration,
+        duration: AppConstants.snackBarDurationSeconds,
+        width: AppConstants.contentMaxWidth,
       ),
     );
   }
@@ -63,6 +63,8 @@ class FeedbackHelpers {
         content: Text(message),
         backgroundColor: themeBlue,
         behavior: SnackBarBehavior.floating,
+        duration: AppConstants.snackBarDurationSeconds,
+        width: AppConstants.contentMaxWidth,
       ),
     );
   }

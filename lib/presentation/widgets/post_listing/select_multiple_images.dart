@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motorix_app/logic/listing_form_data_provider.dart';
 import 'package:motorix_app/utils/constants.dart';
+import 'package:motorix_app/utils/feedback_helpers.dart';
 import 'package:provider/provider.dart';
 
 class SelectMultipleImages extends StatefulWidget {
@@ -12,21 +13,10 @@ class SelectMultipleImages extends StatefulWidget {
 
 class _SelectMultipleImagesState extends State<SelectMultipleImages> {
   Future<void> _handlePickImage(ListingFormDataProvider provider) async {
-    // Capture context values before async operation
-    final messenger = ScaffoldMessenger.of(context);
-    final errorColor = Theme.of(context).colorScheme.error;
-
     final error = await provider.pickImage();
 
     if (error != null && mounted) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: errorColor,
-          duration: Duration(seconds: 5),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      FeedbackHelpers.showErrorSnackBar(context, error);
     }
   }
 
@@ -52,7 +42,8 @@ class _SelectMultipleImagesState extends State<SelectMultipleImages> {
                             SizedBox(
                               width: 150,
                               child: AspectRatio(
-                                aspectRatio: AppConstants.listingImageAspectRatio,
+                                aspectRatio:
+                                    AppConstants.listingImageAspectRatio,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
                                   child: Image.memory(
