@@ -25,6 +25,81 @@ You are transforming an **existing Flutter car marketplace app** into a **beauty
 
 ---
 
+# 0.1. 📊 CURRENT PROGRESS STATUS
+
+**Last Updated:** 2026-04-12
+**Git Commit:** 1163617 - "Transform Shine car marketplace to AURAE dress rental platform"
+
+### ✅ COMPLETED (Phase 1 - Partial)
+
+1. **Branding**
+   - Theme colors implemented (AURAE palette)
+   - Android app name: "Aurae"
+   - iOS display name: "Aurae"
+   - Android package: `com.aurae.app`
+
+2. **New Models Created**
+   - `DressListing` (lib/data/models/dress_listing.dart)
+   - `BusinessDress` (lib/data/models/business_dress.dart)
+   - `RentalBooking` (lib/data/models/rental_booking.dart)
+
+3. **Code Cleanup**
+   - No "motorex" references remain
+   - UI pages cleaned of vehicle terminology
+
+### ⚠️ IN PROGRESS / TODO
+
+**HIGH PRIORITY:**
+1. Fix iOS CFBundleName in Info.plist (line 16: still "motorix_app")
+2. Consolidate models: Choose `Listing` OR `DressListing` (currently both exist)
+3. Rename providers: `GarageProvider` → `WardrobeProvider`
+
+**MEDIUM PRIORITY:**
+4. Rename package: `shine_app` → `aurae_app` (affects all imports)
+5. Rename services: `VehicleNotificationService` → `DressNotificationService`
+
+**LOW PRIORITY:**
+6. Migrate or remove old models: `UserVehicle`, `VehicleService`
+7. Update internal variable names from vehicle terminology
+
+### 🎯 NEXT PHASE: Phase 2 (Model/Provider Consolidation)
+
+Before proceeding to booking system, must complete model consolidation.
+
+---
+
+# 0.2. 🚀 PERFORMANCE & TOKEN OPTIMIZATION
+
+**Token Usage Strategy:**
+
+1. **NEVER read files speculatively**
+   - Only read files when explicitly needed for current task
+   - Use Grep to find specific patterns before reading full files
+   - Use file path limits (offset/limit) for large files
+
+2. **Use targeted searches**
+   - Grep with `files_with_matches` mode first
+   - Only use `content` mode when you need actual content
+   - Use `head_limit` to restrict output
+
+3. **Batch operations efficiently**
+   - Group related Bash commands with `&&`
+   - Make parallel tool calls in single message when independent
+   - Avoid sequential file reads when one Grep can find the answer
+
+4. **Avoid redundant reviews**
+   - Trust previous work unless explicitly asked to verify
+   - Reference file:line_number format instead of showing code
+   - Don't re-read files that were just modified
+
+5. **Model-specific guidance**
+   - Current dual-model system: `Listing` (old) + `DressListing` (new) coexist
+   - Services/providers still reference old `Listing` model
+   - When making changes, prefer modifying `Listing` to match dress domain
+   - Only create new files when absolutely necessary
+
+---
+
 # 1. Project Overview
 
 **App Name:** AURAE
