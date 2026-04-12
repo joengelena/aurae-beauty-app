@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/utils/theme.dart';
+import 'package:shine_app/utils/theme.dart';
 
 class GarageErrorState extends StatelessWidget {
   final String errorMessage;

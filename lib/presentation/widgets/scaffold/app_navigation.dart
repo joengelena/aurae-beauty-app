@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/logic/back_button_provider.dart';
+import 'package:shine_app/logic/back_button_provider.dart';
+import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class AppNavigation extends StatelessWidget {
@@ -28,24 +29,23 @@ class AppNavigation extends StatelessWidget {
             child: Theme(
               data: Theme.of(context).copyWith(
                 navigationBarTheme: NavigationBarThemeData(
-                  height: 60,
-                  indicatorColor: Colors.grey.shade400,
+                  height: 64,
+                  indicatorColor: themeAccent.withOpacity(0.3),
+                  backgroundColor: themeBackground,
+                  elevation: 0,
                   iconTheme: WidgetStateProperty.resolveWith((states) {
                     final isSelected = states.contains(WidgetState.selected);
                     return IconThemeData(
-                      size: 24,
-                      color: isSelected
-                          ? Theme.of(context).colorScheme.onSecondaryContainer
-                          : Colors.black,
+                      size: 26,
+                      color: isSelected ? themeAccent : themeTaupe,
                     );
                   }),
                   labelTextStyle: WidgetStateProperty.resolveWith((states) {
                     final isSelected = states.contains(WidgetState.selected);
                     return TextStyle(
                       fontSize: 12,
-                      color: isSelected
-                          ? Theme.of(context).colorScheme.onSurface
-                          : Colors.black,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                      color: isSelected ? themeAccent : themeTaupe,
                     );
                   }),
                 ),
@@ -71,22 +71,25 @@ class AppNavigation extends StatelessWidget {
                   }
                 },
                 selectedIndex: _calculateIndex(uri),
-                backgroundColor: Colors.white,
                 destinations: const [
                   NavigationDestination(
-                    icon: Icon(Icons.search),
-                    label: 'Explore',
+                    icon: Icon(Icons.grid_view_rounded),
+                    selectedIcon: Icon(Icons.grid_view_rounded),
+                    label: 'Browse',
                   ),
                   NavigationDestination(
-                    icon: Icon(Icons.bookmark),
-                    label: 'Watchlist',
+                    icon: Icon(Icons.favorite_border_rounded),
+                    selectedIcon: Icon(Icons.favorite_rounded),
+                    label: 'Favorites',
                   ),
                   NavigationDestination(
-                    icon: Icon(Icons.home),
-                    label: 'My Garage',
+                    icon: Icon(Icons.checkroom_outlined),
+                    selectedIcon: Icon(Icons.checkroom),
+                    label: 'Wardrobe',
                   ),
                   NavigationDestination(
-                    icon: Icon(Icons.person),
+                    icon: Icon(Icons.person_outline_rounded),
+                    selectedIcon: Icon(Icons.person_rounded),
                     label: 'Profile',
                   ),
                 ],

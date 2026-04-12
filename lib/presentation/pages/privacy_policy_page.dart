@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/utils/constants.dart';
+import 'package:shine_app/utils/constants.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
   const PrivacyPolicyPage({super.key});
@@ -75,7 +75,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
-                const Text('support@motorexnz.com'),
+                const Text('support@aurae.com'),
                 const SizedBox(height: 24),
               ],
             ),

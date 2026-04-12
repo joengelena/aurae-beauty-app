@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/models/listing.dart';
-import 'package:motorix_app/data/services/watchlist_services.dart';
+import 'package:shine_app/data/models/listing.dart';
+import 'package:shine_app/data/services/watchlist_services.dart';
 
 class WatchlistProvider extends ChangeNotifier {
   final List<Listing> watchlist = [];

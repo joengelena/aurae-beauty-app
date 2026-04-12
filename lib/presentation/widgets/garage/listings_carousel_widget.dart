@@ -1,12 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/data/models/listing.dart';
-import 'package:motorix_app/logic/back_button_provider.dart';
-import 'package:motorix_app/logic/listings_provider.dart';
-import 'package:motorix_app/utils/constants.dart';
-import 'package:motorix_app/utils/theme.dart';
-import 'package:motorix_app/utils/utils.dart';
+import 'package:shine_app/data/models/listing.dart';
+import 'package:shine_app/logic/back_button_provider.dart';
+import 'package:shine_app/logic/listings_provider.dart';
+import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/theme.dart';
+import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class ListingsCarouselWidget extends StatefulWidget {

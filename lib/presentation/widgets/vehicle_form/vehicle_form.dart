@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/logic/garage_provider.dart';
-import 'package:motorix_app/logic/vehicle_form_provider.dart';
-import 'package:motorix_app/presentation/widgets/common/select_single_image.dart';
-import 'package:motorix_app/presentation/widgets/vehicle_form/additional_info_section.dart';
-import 'package:motorix_app/presentation/widgets/vehicle_form/basic_vehicle_info.dart';
-import 'package:motorix_app/presentation/widgets/vehicle_form/registration_service_section.dart';
-import 'package:motorix_app/utils/constants.dart';
-import 'package:motorix_app/utils/feedback_helpers.dart';
+import 'package:shine_app/logic/garage_provider.dart';
+import 'package:shine_app/logic/vehicle_form_provider.dart';
+import 'package:shine_app/presentation/widgets/common/select_single_image.dart';
+import 'package:shine_app/presentation/widgets/vehicle_form/additional_info_section.dart';
+import 'package:shine_app/presentation/widgets/vehicle_form/basic_vehicle_info.dart';
+import 'package:shine_app/presentation/widgets/vehicle_form/registration_service_section.dart';
+import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:provider/provider.dart';
 
 enum VehicleFormMode { add, edit }

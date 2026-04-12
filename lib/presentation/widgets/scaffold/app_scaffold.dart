@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/presentation/widgets/scaffold/app_navigation.dart';
-import 'package:motorix_app/presentation/widgets/scaffold/title_app_bar.dart';
+import 'package:shine_app/presentation/widgets/scaffold/app_navigation.dart';
+import 'package:shine_app/presentation/widgets/scaffold/title_app_bar.dart';
 
 class AppScaffold extends StatelessWidget {
   final Widget child;

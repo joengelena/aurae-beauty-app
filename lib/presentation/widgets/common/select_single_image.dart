@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:motorix_app/utils/constants.dart';
-import 'package:motorix_app/utils/feedback_helpers.dart';
+import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/feedback_helpers.dart';
 
 class SelectSingleImage extends StatefulWidget {
   final Uint8List? imageBytes;

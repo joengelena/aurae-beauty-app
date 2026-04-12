@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/auth_provider.dart';
-import 'package:motorix_app/logic/watchlist_provider.dart';
-import 'package:motorix_app/presentation/widgets/sign_in_to_access.dart';
-import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
-import 'package:motorix_app/utils/feedback_helpers.dart';
+import 'package:shine_app/logic/auth_provider.dart';
+import 'package:shine_app/logic/watchlist_provider.dart';
+import 'package:shine_app/presentation/widgets/sign_in_to_access.dart';
+import 'package:shine_app/presentation/widgets/listing/listing_tile.dart';
+import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/utils/theme.dart';
+import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class WatchlistPage extends StatefulWidget {

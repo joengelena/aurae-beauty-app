@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/form_data_provider.dart';
+import 'package:shine_app/logic/form_data_provider.dart';
 import 'package:provider/provider.dart';
 
 /// A reusable autocomplete form field that integrates with FormDataProvider.

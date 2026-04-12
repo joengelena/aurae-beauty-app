@@ -1,5 +1,5 @@
-name: motorix_app
-description: 'A car marketplace application for buying and selling cars.'
+name: shine_app
+description: 'An elegant dress rental marketplace for small businesses and fashion lovers.'
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+3
+version: 1.0.0+1
 
 environment:
     sdk: ^3.7.2
@@ -45,6 +45,7 @@ dependencies:
     timezone: 0.9.4
     supabase_flutter: ^2.8.0
     permission_handler: ^11.0.0
+    table_calendar: ^3.1.2
 
 dev_dependencies:
     flutter_test:
@@ -74,10 +75,8 @@ flutter:
     #   - images/a_dot_ham.jpeg
     assets:
         - assets/imgs/default_profile.jpg
-        - assets/imgs/motorix_logo.jpeg
-        - assets/imgs/Motorix-logo-2.png
-        - assets/imgs/motorex-logo-3.png
-        - assets/imgs/motorex-logo-4.png
+        - assets/imgs/shine_logo.png
+        - assets/imgs/shine_logo.jpg
 
     # An image asset can refer to one or more resolution-specific "variants", see
     # https://flutter.dev/to/resolution-aware-images
@@ -96,6 +95,6 @@ flutter:
 flutter_launcher_icons:
     android: true
     ios: true
-    image_path: 'assets/imgs/motorex-logo-4.png'
-    adaptive_icon_background: '#1E3A8A'
-    adaptive_icon_foreground: 'assets/imgs/motorex-logo-4.png'
+    image_path: 'assets/imgs/shine_logo.png'
+    adaptive_icon_background: '#EC4899'
+    adaptive_icon_foreground: 'assets/imgs/shine_logo.png'

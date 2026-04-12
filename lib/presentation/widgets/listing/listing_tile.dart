@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/data/models/listing.dart';
-import 'package:motorix_app/logic/back_button_provider.dart';
-import 'package:motorix_app/utils/constants.dart';
-import 'package:motorix_app/utils/theme.dart';
-import 'package:motorix_app/utils/utils.dart';
+import 'package:shine_app/data/models/listing.dart';
+import 'package:shine_app/logic/back_button_provider.dart';
+import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/theme.dart';
+import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class ListingTile extends StatelessWidget {
   static const double _imageWidth = 140.0;
-  static const double _borderRadius = 12.0;
+  static const double _borderRadius = 18.0;
 
   final Listing listing;
   final Widget? topRightButton;
@@ -29,10 +29,13 @@ class ListingTile extends StatelessWidget {
           context.go('/listings/${listing.id}');
         },
         child: Card(
-          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
-          elevation: AppConstants.cardShadowElevation,
+          margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+          elevation: 0.5,
+          shadowColor: Colors.black.withOpacity(0.08),
+          color: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(_borderRadius),
+            side: BorderSide(color: themePrimary.withOpacity(0.3), width: 0.5),
           ),
           child: Stack(
             children: [
@@ -70,61 +73,66 @@ class ListingTile extends StatelessWidget {
                   // Right side content
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                       child: Column(
-                        spacing: 2,
+                        spacing: 4,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             listing.location,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.black54,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: themeTaupe,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                           Text(
                             '${listing.year} ${listing.make} ${listing.model}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              fontSize: 12,
+                              fontSize: 13,
+                              color: themeText,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.speed,
-                                size: 16,
-                                color: Colors.black45,
+                                size: 14,
+                                color: themeTaupe,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 formatKilometers(listing.kilometers),
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w400,
+                                  color: themeTaupe,
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              const Icon(
+                              const SizedBox(width: 10),
+                              Icon(
                                 Icons.local_gas_station,
-                                size: 16,
-                                color: Colors.black45,
+                                size: 14,
+                                color: themeTaupe,
                               ),
                               const SizedBox(width: 4),
                               Flexible(
                                 child: Text(
                                   listing.fuelType,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w400,
+                                    color: themeTaupe,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],
                           ),
+                          const SizedBox(height: 2),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -134,17 +142,17 @@ class ListingTile extends StatelessWidget {
                                     Text(
                                       formatPrice(listing.discountedPrice!),
                                       style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                        color: themeRed,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15,
+                                        color: themeAccent,
                                       ),
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
                                       formatPrice(listing.originalPrice),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         decoration: TextDecoration.lineThrough,
-                                        color: Colors.black,
+                                        color: themeTaupe,
                                         fontSize: 11,
                                       ),
                                     ),
@@ -153,24 +161,28 @@ class ListingTile extends StatelessWidget {
                               ] else
                                 Text(
                                   formatPrice(listing.originalPrice),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15,
+                                    color: themeText,
                                   ),
                                 ),
                               Row(
                                 spacing: 4,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.remove_red_eye_outlined,
-                                    size: 16,
+                                    size: 14,
+                                    color: themeTaupe,
                                   ),
                                   Text(
                                     listing.viewCount.toString(),
-                                    style:
-                                        Theme.of(context).textTheme.bodySmall,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: themeTaupe,
+                                    ),
                                   ),
-                                  const SizedBox(width: 12),
+                                  const SizedBox(width: 8),
                                 ],
                               ),
                             ],
@@ -183,23 +195,24 @@ class ListingTile extends StatelessWidget {
               ),
               if (listing.status == 'sold')
                 Positioned(
-                  top: 8,
-                  left: 8,
+                  top: 10,
+                  left: 10,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
+                      horizontal: 10,
+                      vertical: 5,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(6),
+                      color: themeRose,
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text(
                       'SOLD',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ),

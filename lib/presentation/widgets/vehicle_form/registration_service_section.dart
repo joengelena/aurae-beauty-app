@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/vehicle_form_provider.dart';
-import 'package:motorix_app/presentation/widgets/form_fields/date_form_field.dart';
-import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
+import 'package:shine_app/logic/vehicle_form_provider.dart';
+import 'package:shine_app/presentation/widgets/form_fields/date_form_field.dart';
+import 'package:shine_app/presentation/widgets/form_fields/string_form_field.dart';
 
 class RegistrationServiceSection extends StatelessWidget {
   const RegistrationServiceSection({super.key});

@@ -3,12 +3,12 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import 'package:motorix_app/data/api_client.dart';
-import 'package:motorix_app/data/exceptions/app_exception.dart';
-import 'package:motorix_app/data/models/user_vehicle.dart';
-import 'package:motorix_app/data/models/vehicle_service.dart';
-import 'package:motorix_app/utils/constants.dart';
-import 'package:motorix_app/utils/utils.dart';
+import 'package:shine_app/data/api_client.dart';
+import 'package:shine_app/data/exceptions/app_exception.dart';
+import 'package:shine_app/data/models/user_vehicle.dart';
+import 'package:shine_app/data/models/vehicle_service.dart';
+import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/utils.dart';
 
 class VehicleServices {
   static final ApiClient apiClient = ApiClient();

@@ -5,13 +5,13 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import 'package:motorix_app/data/api_client.dart';
-import 'package:motorix_app/data/exceptions/app_exception.dart';
-import 'package:motorix_app/data/models/user.dart';
-import 'package:motorix_app/env_constants.dart';
-import 'package:motorix_app/utils/constants.dart';
-import 'package:motorix_app/utils/secure_storage.dart';
-import 'package:motorix_app/utils/utils.dart';
+import 'package:shine_app/data/api_client.dart';
+import 'package:shine_app/data/exceptions/app_exception.dart';
+import 'package:shine_app/data/models/user.dart';
+import 'package:shine_app/env_constants.dart';
+import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/secure_storage.dart';
+import 'package:shine_app/utils/utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 class UserServices {

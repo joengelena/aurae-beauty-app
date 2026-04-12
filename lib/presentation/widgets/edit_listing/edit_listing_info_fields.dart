@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/edit_listing_provider.dart';
+import 'package:shine_app/logic/edit_listing_provider.dart';
 import 'package:flutter/services.dart';
-import 'package:motorix_app/presentation/widgets/form_fields/dropdown_form_field.dart';
-import 'package:motorix_app/presentation/widgets/form_fields/number_form_field.dart';
-import 'package:motorix_app/presentation/widgets/form_fields/string_form_field.dart';
+import 'package:shine_app/presentation/widgets/form_fields/dropdown_form_field.dart';
+import 'package:shine_app/presentation/widgets/form_fields/number_form_field.dart';
+import 'package:shine_app/presentation/widgets/form_fields/string_form_field.dart';
 import 'package:provider/provider.dart';
 
 class EditListingInfoFields extends StatefulWidget {

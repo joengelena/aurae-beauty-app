@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/filtering_provider.dart';
-import 'package:motorix_app/logic/listings_provider.dart';
-import 'package:motorix_app/presentation/widgets/listing/filter_badge.dart';
-import 'package:motorix_app/presentation/widgets/listing/filter_modal_content.dart';
-import 'package:motorix_app/utils/filter_utils.dart';
+import 'package:shine_app/logic/filtering_provider.dart';
+import 'package:shine_app/logic/listings_provider.dart';
+import 'package:shine_app/presentation/widgets/listing/filter_badge.dart';
+import 'package:shine_app/presentation/widgets/listing/filter_modal_content.dart';
+import 'package:shine_app/utils/filter_utils.dart';
 import 'package:provider/provider.dart';
 
 /// Displays a horizontal scrollable bar with filter badges

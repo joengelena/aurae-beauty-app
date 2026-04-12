@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/logic/auth_provider.dart';
-import 'package:motorix_app/logic/edit_listing_provider.dart';
-import 'package:motorix_app/logic/listing_detail_provider.dart';
-import 'package:motorix_app/logic/user_listings_provider.dart';
-import 'package:motorix_app/presentation/widgets/edit_listing/edit_listing_form.dart';
-import 'package:motorix_app/logic/listing_form_data_provider.dart';
-import 'package:motorix_app/presentation/widgets/sign_in_to_access.dart';
-import 'package:motorix_app/utils/feedback_helpers.dart';
-import 'package:motorix_app/utils/secure_storage.dart';
+import 'package:shine_app/logic/auth_provider.dart';
+import 'package:shine_app/logic/edit_listing_provider.dart';
+import 'package:shine_app/logic/listing_detail_provider.dart';
+import 'package:shine_app/logic/user_listings_provider.dart';
+import 'package:shine_app/presentation/widgets/edit_listing/edit_listing_form.dart';
+import 'package:shine_app/logic/listing_form_data_provider.dart';
+import 'package:shine_app/presentation/widgets/sign_in_to_access.dart';
+import 'package:shine_app/utils/feedback_helpers.dart';
+import 'package:shine_app/utils/secure_storage.dart';
 import 'package:provider/provider.dart';
 
 class EditListingPage extends StatefulWidget {

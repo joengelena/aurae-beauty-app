@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/data/services/health_service.dart';
-import 'package:motorix_app/logic/auth_provider.dart';
+import 'package:shine_app/data/services/health_service.dart';
+import 'package:shine_app/logic/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 /// Splash screen that performs health check before navigating to the app
@@ -78,7 +78,7 @@ class _SplashPageState extends State<SplashPage> {
               children: [
                 // Logo at top
                 Image.asset(
-                  'assets/imgs/motorex-logo-4.png',
+                  'assets/imgs/shine_logo.jpg',
                   width: 200,
                   height: 200,
                   fit: BoxFit.contain,
@@ -96,7 +96,7 @@ class _SplashPageState extends State<SplashPage> {
                       ),
                       const SizedBox(height: 24),
                       const Text(
-                        'Unable to connect to Motorex servers. Please check your internet connection and try again.',
+                        'Unable to connect to Aurae servers. Please check your internet connection and try again.',
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16, color: Colors.black87),
                       ),
@@ -121,7 +121,7 @@ class _SplashPageState extends State<SplashPage> {
                       const CircularProgressIndicator(),
                       const SizedBox(height: 24),
                       Text(
-                        'Welcome to Motorex',
+                        'Welcome to Aurae',
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(fontWeight: FontWeight.w600),
                       ),

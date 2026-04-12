@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/presentation/widgets/common/app_dialog.dart';
-import 'package:motorix_app/utils/constants.dart';
-import 'package:motorix_app/utils/theme.dart';
+import 'package:shine_app/presentation/widgets/common/app_dialog.dart';
+import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/theme.dart';
 
 /// Helper class for user feedback operations like confirmation dialogs and snackbars
 class FeedbackHelpers {

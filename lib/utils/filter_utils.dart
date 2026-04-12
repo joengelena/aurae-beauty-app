@@ -1,4 +1,4 @@
-import 'package:motorix_app/utils/utils.dart';
+import 'package:shine_app/utils/utils.dart';
 
 /// Utility class for filter-related operations
 /// Centralizes filter key mapping to avoid duplication across providers

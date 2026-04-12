@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/utils/constants.dart';
+import 'package:shine_app/utils/constants.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class ImageCarousel extends StatefulWidget {

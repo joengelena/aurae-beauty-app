@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/models/user_vehicle.dart';
-import 'package:motorix_app/utils/utils.dart';
+import 'package:shine_app/data/models/user_vehicle.dart';
+import 'package:shine_app/utils/utils.dart';
 
 class VehicleTitle extends StatelessWidget {
   final UserVehicle vehicle;

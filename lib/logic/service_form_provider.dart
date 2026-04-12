@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/models/user_vehicle.dart';
-import 'package:motorix_app/logic/form_data_provider.dart';
+import 'package:shine_app/data/models/user_vehicle.dart';
+import 'package:shine_app/logic/form_data_provider.dart';
 
 /// Interface for providers that manage service record form data.
 ///

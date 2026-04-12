@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/listings_provider.dart';
-import 'package:motorix_app/presentation/widgets/listing/filter_bar.dart';
-import 'package:motorix_app/presentation/widgets/listing/listings_count_and_sort.dart';
+import 'package:shine_app/logic/listings_provider.dart';
+import 'package:shine_app/presentation/widgets/listing/filter_bar.dart';
+import 'package:shine_app/presentation/widgets/listing/listings_count_and_sort.dart';
 import 'package:provider/provider.dart';
 
 class FiltersAndSortBar extends StatefulWidget {

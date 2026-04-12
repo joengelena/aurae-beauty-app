@@ -1,14 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/exceptions/app_exception.dart';
-import 'package:motorix_app/data/models/listing_attribute.dart';
-import 'package:motorix_app/data/models/user_vehicle.dart';
-import 'package:motorix_app/data/services/listings_services.dart';
-import 'package:motorix_app/data/services/vehicle_services.dart';
-import 'package:motorix_app/data/services/vehicle_notification_service.dart';
-import 'package:motorix_app/logic/vehicle_form_provider.dart';
-import 'package:motorix_app/utils/secure_storage.dart';
+import 'package:shine_app/data/exceptions/app_exception.dart';
+import 'package:shine_app/data/models/listing_attribute.dart';
+import 'package:shine_app/data/models/user_vehicle.dart';
+import 'package:shine_app/data/services/listings_services.dart';
+import 'package:shine_app/data/services/vehicle_services.dart';
+import 'package:shine_app/data/services/vehicle_notification_service.dart';
+import 'package:shine_app/logic/vehicle_form_provider.dart';
+import 'package:shine_app/utils/secure_storage.dart';
 
 class AddVehicleProvider extends ChangeNotifier
     implements VehicleFormProvider {

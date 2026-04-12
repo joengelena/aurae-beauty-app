@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/logic/auth_provider.dart';
-import 'package:motorix_app/logic/back_button_provider.dart';
-import 'package:motorix_app/logic/listings_provider.dart';
-import 'package:motorix_app/presentation/widgets/listing/listing_search_field.dart';
-import 'package:motorix_app/utils/theme.dart';
+import 'package:shine_app/logic/auth_provider.dart';
+import 'package:shine_app/logic/back_button_provider.dart';
+import 'package:shine_app/logic/listings_provider.dart';
+import 'package:shine_app/presentation/widgets/listing/listing_search_field.dart';
+import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -87,7 +87,7 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
                       );
                     },
                   )
-                  : const Text('Motorex'),
+                  : const Text('Aurae'),
           centerTitle: !isListingsPage,
           scrolledUnderElevation: 0,
           actions: [

@@ -4,7 +4,7 @@
 // This file centralizes all environment-specific constants.
 // Override defaults at build time using --dart-define flags:
 //
-// flutter build web --dart-define=API_BASE_URL=https://api.motorexnz.com/api/v1
+// flutter build web --dart-define=API_BASE_URL=https://api.aurae.com/api/v1
 //
 // For development, uncomment the localhost URLs below.
 // ============================================================================
@@ -12,8 +12,8 @@
 // API Configuration
 const apiBaseUrl = String.fromEnvironment(
   'API_BASE_URL',
-  // defaultValue: 'http://localhost:4941/api/v1',
-  defaultValue: 'https://motorix-api-production.up.railway.app/api/v1',
+  defaultValue: 'http://localhost:4941/api/v1',
+  // defaultValue: 'https://shine-api-production.up.railway.app/api/v1',
 );
 
 // Supabase Configuration

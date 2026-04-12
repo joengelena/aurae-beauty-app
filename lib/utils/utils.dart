@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
-import 'package:motorix_app/data/models/user_vehicle.dart';
+import 'package:shine_app/data/models/user_vehicle.dart';
 
 /// Formats a number with thousand separators
 ///

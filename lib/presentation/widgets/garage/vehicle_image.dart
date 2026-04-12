@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/utils/constants.dart';
+import 'package:shine_app/utils/constants.dart';
 
 class VehicleImage extends StatelessWidget {
   final String? imageUrl;

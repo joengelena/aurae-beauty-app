@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/filtering_provider.dart';
-import 'package:motorix_app/logic/listings_provider.dart';
+import 'package:shine_app/logic/filtering_provider.dart';
+import 'package:shine_app/logic/listings_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:motorix_app/presentation/widgets/listing/listing_preview.dart';
+import 'package:shine_app/presentation/widgets/listing/listing_preview.dart';
 
 class InfiniteGrid extends StatefulWidget {
   const InfiniteGrid({super.key});

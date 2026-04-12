@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/models/listing.dart';
-import 'package:motorix_app/data/services/listings_services.dart';
-import 'package:motorix_app/utils/filter_utils.dart';
+import 'package:shine_app/data/models/listing.dart';
+import 'package:shine_app/data/services/listings_services.dart';
+import 'package:shine_app/utils/filter_utils.dart';
 
 class ListingsProvider extends ChangeNotifier {
   final Map<String, String> sortByOptions = {

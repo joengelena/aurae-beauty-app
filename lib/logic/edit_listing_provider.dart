@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:motorix_app/data/exceptions/app_exception.dart';
-import 'package:motorix_app/data/models/listing.dart';
-import 'package:motorix_app/data/models/listing_attribute.dart';
-import 'package:motorix_app/data/services/listings_services.dart';
-import 'package:motorix_app/logic/listing_form_data_provider.dart';
-import 'package:motorix_app/logic/listing_image_picker_mixin.dart';
+import 'package:shine_app/data/exceptions/app_exception.dart';
+import 'package:shine_app/data/models/listing.dart';
+import 'package:shine_app/data/models/listing_attribute.dart';
+import 'package:shine_app/data/services/listings_services.dart';
+import 'package:shine_app/logic/listing_form_data_provider.dart';
+import 'package:shine_app/logic/listing_image_picker_mixin.dart';
 
 class EditListingProvider extends ChangeNotifier
     with ListingImagePickerMixin

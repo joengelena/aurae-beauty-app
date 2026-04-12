@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/data/models/listing_attribute.dart';
-import 'package:motorix_app/data/services/listings_services.dart';
-import 'package:motorix_app/logic/auth_provider.dart';
-import 'package:motorix_app/presentation/widgets/common/password_field.dart';
-import 'package:motorix_app/utils/theme.dart';
-import 'package:motorix_app/utils/utils.dart';
+import 'package:shine_app/data/models/listing_attribute.dart';
+import 'package:shine_app/data/services/listings_services.dart';
+import 'package:shine_app/logic/auth_provider.dart';
+import 'package:shine_app/presentation/widgets/common/password_field.dart';
+import 'package:shine_app/utils/theme.dart';
+import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -164,7 +164,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
 
                 DropdownButtonFormField<String>(
-                  initialValue: selectedLocation,
+                  value: selectedLocation,
                   decoration: InputDecoration(labelText: 'Location'),
                   items:
                       locationOptions.map((location) {

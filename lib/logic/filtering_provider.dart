@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/models/listing_attribute.dart';
-import 'package:motorix_app/data/services/listings_services.dart';
+import 'package:shine_app/data/models/listing_attribute.dart';
+import 'package:shine_app/data/services/listings_services.dart';
 
 class FilteringProvider extends ChangeNotifier {
   FilteringProvider() {

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/logic/service_form_provider.dart';
-import 'package:motorix_app/logic/vehicle_detail_provider.dart';
-import 'package:motorix_app/presentation/widgets/common/loading_button.dart';
-import 'package:motorix_app/presentation/widgets/form_fields/autocomplete_form_field.dart';
-import 'package:motorix_app/presentation/widgets/form_fields/date_form_field.dart';
-import 'package:motorix_app/presentation/widgets/form_fields/decimal_form_field.dart';
-import 'package:motorix_app/utils/feedback_helpers.dart';
+import 'package:shine_app/logic/service_form_provider.dart';
+import 'package:shine_app/logic/vehicle_detail_provider.dart';
+import 'package:shine_app/presentation/widgets/common/loading_button.dart';
+import 'package:shine_app/presentation/widgets/form_fields/autocomplete_form_field.dart';
+import 'package:shine_app/presentation/widgets/form_fields/date_form_field.dart';
+import 'package:shine_app/presentation/widgets/form_fields/decimal_form_field.dart';
+import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:provider/provider.dart';
 
 enum ServiceFormMode { add, edit }

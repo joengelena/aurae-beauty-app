@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/data/models/user_vehicle.dart';
-import 'package:motorix_app/logic/back_button_provider.dart';
-import 'package:motorix_app/logic/garage_provider.dart';
-import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
-import 'package:motorix_app/utils/feedback_helpers.dart';
-import 'package:motorix_app/utils/theme.dart';
-import 'package:motorix_app/utils/utils.dart';
+import 'package:shine_app/data/models/user_vehicle.dart';
+import 'package:shine_app/logic/back_button_provider.dart';
+import 'package:shine_app/logic/garage_provider.dart';
+import 'package:shine_app/presentation/widgets/common/action_menu_button.dart';
+import 'package:shine_app/utils/feedback_helpers.dart';
+import 'package:shine_app/utils/theme.dart';
+import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class VehicleActionMenu extends StatelessWidget {

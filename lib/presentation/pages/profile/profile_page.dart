@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/data/exceptions/app_exception.dart';
-import 'package:motorix_app/data/models/listing.dart';
-import 'package:motorix_app/logic/back_button_provider.dart';
-import 'package:motorix_app/logic/post_listing_provider.dart';
-import 'package:motorix_app/logic/profile_provider.dart';
-import 'package:motorix_app/logic/user_listings_provider.dart';
-import 'package:motorix_app/presentation/widgets/common/action_menu_button.dart';
-import 'package:motorix_app/presentation/widgets/common/labeled_fab.dart';
-import 'package:motorix_app/presentation/widgets/listing/listing_tile.dart';
-import 'package:motorix_app/presentation/widgets/profile/user_profile.dart';
-import 'package:motorix_app/utils/feedback_helpers.dart';
-import 'package:motorix_app/utils/theme.dart';
+import 'package:shine_app/data/exceptions/app_exception.dart';
+import 'package:shine_app/data/models/listing.dart';
+import 'package:shine_app/logic/back_button_provider.dart';
+import 'package:shine_app/logic/post_listing_provider.dart';
+import 'package:shine_app/logic/profile_provider.dart';
+import 'package:shine_app/logic/user_listings_provider.dart';
+import 'package:shine_app/presentation/widgets/common/action_menu_button.dart';
+import 'package:shine_app/presentation/widgets/common/labeled_fab.dart';
+import 'package:shine_app/presentation/widgets/listing/listing_tile.dart';
+import 'package:shine_app/presentation/widgets/profile/user_profile.dart';
+import 'package:shine_app/utils/feedback_helpers.dart';
+import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {

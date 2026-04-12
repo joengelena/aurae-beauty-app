@@ -1,4 +1,4 @@
-package com.motorex.app
+package com.aurae.app
 
 import io.flutter.embedding.android.FlutterActivity
 

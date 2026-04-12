@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/listing_form_data_provider.dart';
-import 'package:motorix_app/utils/constants.dart';
-import 'package:motorix_app/utils/feedback_helpers.dart';
+import 'package:shine_app/logic/listing_form_data_provider.dart';
+import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:provider/provider.dart';
 
 class SelectMultipleImages extends StatefulWidget {

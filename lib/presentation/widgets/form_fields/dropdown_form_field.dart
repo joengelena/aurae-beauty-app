@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/form_data_provider.dart';
+import 'package:shine_app/logic/form_data_provider.dart';
 import 'package:provider/provider.dart';
 
 class DropdownFormField<T extends FormDataProvider> extends StatefulWidget {
@@ -46,7 +46,7 @@ class _DropdownFormFieldState<T extends FormDataProvider>
     final hasValue = _currentValue != null && _currentValue != 'None';
 
     return DropdownButtonFormField<String>(
-      initialValue: _currentValue,
+      value: _currentValue,
       decoration: InputDecoration(
         labelText:
             widget.isRequired ? '${widget.labelText} *' : widget.labelText,

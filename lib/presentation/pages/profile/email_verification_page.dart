@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/presentation/widgets/profile/email_verification_expired.dart';
-import 'package:motorix_app/presentation/widgets/profile/email_verification_success.dart';
+import 'package:shine_app/presentation/widgets/profile/email_verification_expired.dart';
+import 'package:shine_app/presentation/widgets/profile/email_verification_success.dart';
 
 class EmailVerificationPage extends StatelessWidget {
   final String? errorCode;

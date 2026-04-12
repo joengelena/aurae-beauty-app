@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/listing_detail_provider.dart';
-import 'package:motorix_app/presentation/widgets/listing/contact_seller.dart';
-import 'package:motorix_app/presentation/widgets/listing/image_carousel.dart';
-import 'package:motorix_app/utils/constants.dart';
-import 'package:motorix_app/utils/theme.dart';
-import 'package:motorix_app/utils/utils.dart';
+import 'package:shine_app/logic/listing_detail_provider.dart';
+import 'package:shine_app/presentation/widgets/listing/contact_seller.dart';
+import 'package:shine_app/presentation/widgets/listing/image_carousel.dart';
+import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/theme.dart';
+import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class ListingDetailPage extends StatefulWidget {

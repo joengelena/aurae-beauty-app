@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/exceptions/app_exception.dart';
-import 'package:motorix_app/data/models/listing.dart';
-import 'package:motorix_app/data/services/listings_services.dart';
-import 'package:motorix_app/utils/secure_storage.dart';
+import 'package:shine_app/data/exceptions/app_exception.dart';
+import 'package:shine_app/data/models/listing.dart';
+import 'package:shine_app/data/services/listings_services.dart';
+import 'package:shine_app/utils/secure_storage.dart';
 
 class UserListingsProvider extends ChangeNotifier {
   UserListingsProvider();

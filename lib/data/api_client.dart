@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as http_parser;
-import 'package:motorix_app/data/http_client.dart';
-import 'package:motorix_app/data/cache_manager.dart';
-import 'package:motorix_app/env_constants.dart';
-import 'package:motorix_app/utils/secure_storage.dart';
+import 'package:shine_app/data/http_client.dart';
+import 'package:shine_app/data/cache_manager.dart';
+import 'package:shine_app/env_constants.dart';
+import 'package:shine_app/utils/secure_storage.dart';
 
 class ApiClient {
   late final http.Client _client;

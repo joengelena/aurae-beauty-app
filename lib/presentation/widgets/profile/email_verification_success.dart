@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/utils/theme.dart';
+import 'package:shine_app/utils/theme.dart';
 
 class EmailVerificationSuccess extends StatelessWidget {
   const EmailVerificationSuccess({super.key});

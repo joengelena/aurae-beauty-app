@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/filtering_provider.dart';
-import 'package:motorix_app/logic/listings_provider.dart';
-import 'package:motorix_app/presentation/widgets/listing/range_filter.dart';
-import 'package:motorix_app/utils/filter_utils.dart';
+import 'package:shine_app/logic/filtering_provider.dart';
+import 'package:shine_app/logic/listings_provider.dart';
+import 'package:shine_app/presentation/widgets/listing/range_filter.dart';
+import 'package:shine_app/utils/filter_utils.dart';
 import 'package:provider/provider.dart';
 
 /// Modal content for the filter bottom sheet

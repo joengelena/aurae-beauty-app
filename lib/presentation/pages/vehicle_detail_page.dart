@@ -1,20 +1,20 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/models/user_vehicle.dart';
-import 'package:motorix_app/data/models/vehicle_service.dart';
-import 'package:motorix_app/logic/vehicle_detail_provider.dart';
-import 'package:motorix_app/presentation/widgets/garage/add_service_button.dart';
-import 'package:motorix_app/presentation/widgets/garage/compliance_card.dart';
-import 'package:motorix_app/presentation/widgets/garage/service_history_table.dart';
-import 'package:motorix_app/presentation/widgets/garage/update_expiry_date_dialog.dart';
-import 'package:motorix_app/presentation/widgets/garage/vehicle_action_menu.dart';
-import 'package:motorix_app/presentation/widgets/garage/vehicle_image.dart';
-import 'package:motorix_app/presentation/widgets/garage/vehicle_spec_card.dart';
-import 'package:motorix_app/presentation/widgets/garage/vehicle_title.dart';
-import 'package:motorix_app/utils/constants.dart';
-import 'package:motorix_app/utils/feedback_helpers.dart';
-import 'package:motorix_app/utils/theme.dart';
-import 'package:motorix_app/utils/utils.dart';
+import 'package:shine_app/data/models/user_vehicle.dart';
+import 'package:shine_app/data/models/vehicle_service.dart';
+import 'package:shine_app/logic/vehicle_detail_provider.dart';
+import 'package:shine_app/presentation/widgets/garage/add_service_button.dart';
+import 'package:shine_app/presentation/widgets/garage/compliance_card.dart';
+import 'package:shine_app/presentation/widgets/garage/service_history_table.dart';
+import 'package:shine_app/presentation/widgets/garage/update_expiry_date_dialog.dart';
+import 'package:shine_app/presentation/widgets/garage/vehicle_action_menu.dart';
+import 'package:shine_app/presentation/widgets/garage/vehicle_image.dart';
+import 'package:shine_app/presentation/widgets/garage/vehicle_spec_card.dart';
+import 'package:shine_app/presentation/widgets/garage/vehicle_title.dart';
+import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/feedback_helpers.dart';
+import 'package:shine_app/utils/theme.dart';
+import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class VehicleDetailPage extends StatefulWidget {
@@ -99,7 +99,7 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'Download the Motorex app to update compliance dates and receive expiry notifications',
+                            'Download the Aurae app to update compliance dates and receive expiry notifications',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.blue.shade900,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:motorix_app/data/models/vehicle_service.dart';
-import 'package:motorix_app/utils/theme.dart';
+import 'package:shine_app/data/models/vehicle_service.dart';
+import 'package:shine_app/utils/theme.dart';
 
 class ServiceHistoryTable extends StatelessWidget {
   final List<VehicleService> services;

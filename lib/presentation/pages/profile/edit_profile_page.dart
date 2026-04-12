@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/data/models/listing_attribute.dart';
-import 'package:motorix_app/data/services/listings_services.dart';
-import 'package:motorix_app/logic/profile_provider.dart';
-import 'package:motorix_app/presentation/widgets/common/select_single_image.dart';
-import 'package:motorix_app/utils/feedback_helpers.dart';
-import 'package:motorix_app/utils/theme.dart';
+import 'package:shine_app/data/models/listing_attribute.dart';
+import 'package:shine_app/data/services/listings_services.dart';
+import 'package:shine_app/logic/profile_provider.dart';
+import 'package:shine_app/presentation/widgets/common/select_single_image.dart';
+import 'package:shine_app/utils/feedback_helpers.dart';
+import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -199,7 +199,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
 
                   DropdownButtonFormField<String>(
-                    initialValue: selectedLocation,
+                    value: selectedLocation,
                     decoration: InputDecoration(labelText: 'Location'),
                     items:
                         locationOptions.map((location) {

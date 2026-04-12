@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/auth_provider.dart';
-import 'package:motorix_app/logic/post_listing_provider.dart';
-import 'package:motorix_app/presentation/widgets/sign_in_to_access.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/post_listing_form.dart';
-import 'package:motorix_app/presentation/widgets/post_listing/post_success.dart';
+import 'package:shine_app/logic/auth_provider.dart';
+import 'package:shine_app/logic/post_listing_provider.dart';
+import 'package:shine_app/presentation/widgets/sign_in_to_access.dart';
+import 'package:shine_app/presentation/widgets/post_listing/post_listing_form.dart';
+import 'package:shine_app/presentation/widgets/post_listing/post_success.dart';
 import 'package:provider/provider.dart';
 
 class PostListingPage extends StatelessWidget {

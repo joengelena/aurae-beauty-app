@@ -1,17 +1,17 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:motorix_app/logic/auth_provider.dart';
-import 'package:motorix_app/logic/back_button_provider.dart';
-import 'package:motorix_app/logic/garage_provider.dart';
-import 'package:motorix_app/presentation/widgets/common/labeled_fab.dart';
-import 'package:motorix_app/presentation/widgets/garage/listings_carousel_widget.dart';
-import 'package:motorix_app/presentation/widgets/garage/vehicle_action_menu.dart';
-import 'package:motorix_app/presentation/widgets/garage/vehicle_card.dart';
-import 'package:motorix_app/presentation/widgets/sign_in_to_access.dart';
-import 'package:motorix_app/presentation/widgets/garage/garage_empty_state.dart';
-import 'package:motorix_app/presentation/widgets/garage/garage_error_state.dart';
-import 'package:motorix_app/utils/constants.dart';
+import 'package:shine_app/logic/auth_provider.dart';
+import 'package:shine_app/logic/back_button_provider.dart';
+import 'package:shine_app/logic/garage_provider.dart';
+import 'package:shine_app/presentation/widgets/common/labeled_fab.dart';
+import 'package:shine_app/presentation/widgets/garage/listings_carousel_widget.dart';
+import 'package:shine_app/presentation/widgets/garage/vehicle_action_menu.dart';
+import 'package:shine_app/presentation/widgets/garage/vehicle_card.dart';
+import 'package:shine_app/presentation/widgets/sign_in_to_access.dart';
+import 'package:shine_app/presentation/widgets/garage/garage_empty_state.dart';
+import 'package:shine_app/presentation/widgets/garage/garage_error_state.dart';
+import 'package:shine_app/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 class GaragePage extends StatefulWidget {

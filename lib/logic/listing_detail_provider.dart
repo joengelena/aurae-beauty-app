@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/data/api_client.dart';
-import 'package:motorix_app/data/models/listing.dart';
-import 'package:motorix_app/data/models/user.dart';
-import 'package:motorix_app/data/services/listings_services.dart';
-import 'package:motorix_app/data/services/user_services.dart';
+import 'package:shine_app/data/api_client.dart';
+import 'package:shine_app/data/models/listing.dart';
+import 'package:shine_app/data/models/user.dart';
+import 'package:shine_app/data/services/listings_services.dart';
+import 'package:shine_app/data/services/user_services.dart';
 
 class ListingDetailProvider extends ChangeNotifier {
   ListingDetailProvider();

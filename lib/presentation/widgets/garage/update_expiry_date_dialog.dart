@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:motorix_app/logic/garage_provider.dart';
-import 'package:motorix_app/logic/vehicle_detail_provider.dart';
-import 'package:motorix_app/utils/feedback_helpers.dart';
+import 'package:shine_app/logic/garage_provider.dart';
+import 'package:shine_app/logic/vehicle_detail_provider.dart';
+import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:provider/provider.dart';
 
 class UpdateExpiryDateDialog extends StatefulWidget {

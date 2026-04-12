@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:motorix_app/data/api_client.dart';
-import 'package:motorix_app/data/exceptions/app_exception.dart';
-import 'package:motorix_app/data/models/listing.dart';
-import 'package:motorix_app/utils/constants.dart';
-import 'package:motorix_app/utils/utils.dart';
+import 'package:shine_app/data/api_client.dart';
+import 'package:shine_app/data/exceptions/app_exception.dart';
+import 'package:shine_app/data/models/listing.dart';
+import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/utils.dart';
 
 class WatchlistServices {
   static final ApiClient apiClient = ApiClient();

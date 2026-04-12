@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:motorix_app/logic/add_service_provider.dart';
-import 'package:motorix_app/logic/garage_provider.dart';
-import 'package:motorix_app/logic/service_form_provider.dart';
-import 'package:motorix_app/presentation/widgets/service_form/service_form.dart';
+import 'package:shine_app/logic/add_service_provider.dart';
+import 'package:shine_app/logic/garage_provider.dart';
+import 'package:shine_app/logic/service_form_provider.dart';
+import 'package:shine_app/presentation/widgets/service_form/service_form.dart';
 import 'package:provider/provider.dart';
 
 class AddServicePage extends StatelessWidget {

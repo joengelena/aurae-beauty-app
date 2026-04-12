@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:motorix_app/logic/auth_provider.dart';
-import 'package:motorix_app/presentation/pages/splash_page.dart';
+import 'package:shine_app/logic/auth_provider.dart';
+import 'package:shine_app/presentation/pages/splash_page.dart';
 import 'package:provider/provider.dart';
 
 /// SplashPage Widget Tests
@@ -31,7 +31,7 @@ void main() {
       expect(find.text('Retry'), findsOneWidget);
       expect(
         find.text(
-          'Unable to connect to Motorex servers. Please check your internet connection and try again.',
+          'Unable to connect to Aurae servers. Please check your internet connection and try again.',
         ),
         findsOneWidget,
       );
@@ -66,7 +66,7 @@ void main() {
 
       // Loading state should be shown again
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.text('Welcome to Motorex'), findsOneWidget);
+      expect(find.text('Welcome to Aurae'), findsOneWidget);
 
       // Error UI should be hidden
       expect(find.byIcon(Icons.error_outline), findsNothing);
@@ -103,7 +103,7 @@ void main() {
 
       // Get the AssetImage and verify path
       final assetImage = imageWidget.image as AssetImage;
-      expect(assetImage.assetName, 'assets/imgs/motorex-logo-4.png');
+      expect(assetImage.assetName, 'assets/imgs/shine_logo.jpg');
     });
 
     testWidgets('SplashPage has correct UI structure in error state',

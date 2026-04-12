@@ -1,11 +1,11 @@
 {
-    "name": "Motorex",
-    "short_name": "Motorex",
+    "name": "Aurae",
+    "short_name": "Aurae",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "Motorex - Car Marketplace",
+    "description": "Aurae - Beauty Rental Marketplace",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

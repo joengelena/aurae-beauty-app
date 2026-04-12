@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:motorix_app/data/http_client.dart';
-import 'package:motorix_app/env_constants.dart';
+import 'package:shine_app/data/http_client.dart';
+import 'package:shine_app/env_constants.dart';
 
 /// Service for checking API health status
 /// Does not use ApiClient to avoid auth/token refresh logic

@@ -18,4 +18,4 @@
 -keep class * implements com.google.gson.JsonDeserializer
 
 ## Keep model classes (adjust package name to match your models)
--keep class com.motorex.app.** { *; }
+-keep class com.aurae.app.** { *; }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:motorix_app/logic/filtering_provider.dart';
+import 'package:shine_app/logic/filtering_provider.dart';
 
 class RangeFilter extends StatefulWidget {
   final String label;
