@@ -66,6 +66,19 @@ You are transforming an **existing Flutter car marketplace app** into a **beauty
 
 Before proceeding to booking system, must complete model consolidation.
 
+### 📝 TODAY'S SESSION NOTES (2026-04-12)
+
+**Also worked on:** `shine_api` transformation
+- ✅ Renamed all controllers, repositories, routes from vehicle → dress
+- ✅ Updated API endpoints: `/user/vehicles` → `/user/dresses`
+- ⚠️ **API changes NOT yet committed** - ready to commit
+- ⚠️ **Database still needs migration** - tables still named `user_vehicles`, `vehicle_service`
+
+**Coordination needed:**
+- Flutter app and API must use matching endpoint names
+- Database schema must be updated before API will work
+- Both repos transforming in parallel
+
 ---
 
 # 0.2. 🚀 PERFORMANCE & TOKEN OPTIMIZATION
