@@ -27,10 +27,9 @@ You are transforming an **existing Flutter car marketplace app** into a **beauty
 
 # 0.1. 📊 CURRENT PROGRESS STATUS
 
-**Last Updated:** 2026-04-12
-**Git Commit:** 1163617 - "Transform Shine car marketplace to AURAE dress rental platform"
+**Last Updated:** 2026-05-17
 
-### ✅ COMPLETED (Phase 1 - Partial)
+### ✅ COMPLETED
 
 1. **Branding**
    - Theme colors implemented (AURAE palette)
@@ -47,16 +46,69 @@ You are transforming an **existing Flutter car marketplace app** into a **beauty
    - No "motorex" references remain
    - UI pages cleaned of vehicle terminology
 
-### ⚠️ IN PROGRESS / TODO
+4. **iOS HTTP Fix**
+   - Added `NSAllowsLocalNetworking` to Info.plist so simulator can reach local API over HTTP
 
-**HIGH PRIORITY:**
-1. Fix iOS CFBundleName in Info.plist (line 16: still "motorix_app")
-2. Consolidate models: Choose `Listing` OR `DressListing` (currently both exist)
-3. Rename providers: `GarageProvider` → `WardrobeProvider`
+5. **API (shine_api) — fully transformed & pushed**
+   - All controllers, repositories, routes renamed: vehicle → dress
+   - Endpoints: `/user/vehicles` → `/user/dresses`, `/user/vehicle-services` → `/user/dress-bookings`
+   - AJV schemas renamed: `postVehicle` → `postDress`, `patchVehicle` → `patchDress`, `postVehicleService` → `postBooking`
+   - Types updated: `vehiclePhotoUrl` → `dressPhotoUrl`, `vehicleIdFk` → `dressIdFk`
 
-**MEDIUM PRIORITY:**
-4. Rename package: `shine_app` → `aurae_app` (affects all imports)
-5. Rename services: `VehicleNotificationService` → `DressNotificationService`
+---
+
+### 🚧 WARDROBE PAGE — CURRENT SPRINT
+
+Build the Wardrobe page (replaces GaragePage) for business owners to manage their dress inventory.
+
+**Step 1 — Service layer** `lib/data/services/`
+- [x] Created `dress_services.dart` with all methods:
+  - `getAllDresses()` → GET `/user/dresses`
+  - `getDressById(id)` → GET `/user/dresses/:id`
+  - `addDress(data, imageBytes?)` → POST `/user/dresses` (multipart)
+  - `updateDress(id, updates, imageBytes?)` → PATCH `/user/dresses/:id`
+  - `deleteDress(id)` → DELETE `/user/dresses/:id`
+  - `getBookingsByDressId(id)` → GET `/user/dresses/:id/bookings`
+  - `addBooking(data)` → POST `/user/dress-bookings`
+  - `deleteBooking(bookingId, dressId)` → DELETE `/user/dress-bookings/:id`
+- [x] Added `CacheKeys.dresses`, `CacheKeys.dress(id)`, `CacheKeys.dressBookings(id)` to `constants.dart`
+
+**Step 2 — State management** `lib/logic/`
+- [ ] Create `wardrobe_provider.dart` (modelled on `garage_provider.dart`)
+  - Uses `BusinessDress` model (already exists)
+  - Methods: `fetchDresses()`, `addDress()`, `updateDress()`, `deleteDress()`, `reset()`
+
+**Step 3 — Wardrobe page** `lib/presentation/pages/`
+- [ ] Create `wardrobe_page.dart` (rename/restyle from `garage_page.dart`)
+  - Grid of dress cards (photo, brand, style, color)
+  - FAB → Add dress
+  - Pull-to-refresh
+  - Empty state, error state
+
+**Step 4 — Dress card widget** `lib/presentation/widgets/wardrobe/`
+- [ ] `dress_card.dart` — photo, brand, style, color chip, action menu (edit / delete)
+- [ ] `wardrobe_empty_state.dart`
+
+**Step 5 — Add / Edit dress form** `lib/presentation/pages/`
+- [ ] `add_dress_page.dart` — form fields: brand, style, color, size, purchaseYear, internalName, notes, optional photo
+- [ ] `edit_dress_page.dart` — same form pre-populated
+
+**Step 6 — Dress detail page** `lib/presentation/pages/`
+- [ ] `dress_detail_page.dart` — full dress info + list of rental bookings
+- [ ] `add_booking_page.dart` — log a rental booking (dressIdFk, typeOfService, serviceDate, renter)
+
+**Step 7 — Routing** `lib/app_router.dart`
+- [ ] Add `/wardrobe` route (replace or alias `/garage`)
+- [ ] Sub-routes: `/wardrobe/add`, `/wardrobe/:id`, `/wardrobe/:id/edit`, `/wardrobe/:id/add-booking`
+- [ ] Register `WardrobeProvider` in `main.dart`
+
+---
+
+### ⚠️ OTHER KNOWN ISSUES (fix when touching related files)
+
+- `CFBundleName` in `ios/Runner/Info.plist` still says "motorix_app" (cosmetic, low priority)
+- Both `Listing` and `DressListing` models coexist — consolidate after wardrobe sprint
+- `VehicleServices` still calls old `/user/vehicles` endpoints — leave until wardrobe sprint replaces it
 
 **LOW PRIORITY:**
 6. Migrate or remove old models: `UserVehicle`, `VehicleService`
