@@ -15,6 +15,8 @@ class BusinessDress {
   final String insuranceProvider;
   final String? dressPhotoUrl;
   final String? notes;
+  final String? damageDescription;
+  final List<String> damagePhotoUrls;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -35,6 +37,8 @@ class BusinessDress {
     required this.insuranceProvider,
     this.dressPhotoUrl,
     this.notes,
+    this.damageDescription,
+    this.damagePhotoUrls = const [],
     required this.createdAt,
     required this.updatedAt,
   });
@@ -59,6 +63,11 @@ class BusinessDress {
       insuranceProvider: json['insuranceProvider'] as String,
       dressPhotoUrl: json['dressPhotoUrl'] as String? ?? json['vehiclePhotoUrl'] as String?,
       notes: json['notes'] as String?,
+      damageDescription: json['damageDescription'] as String?,
+      damagePhotoUrls: (json['damagePhotoUrls'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
@@ -82,6 +91,8 @@ class BusinessDress {
       'insuranceProvider': insuranceProvider,
       'dressPhotoUrl': dressPhotoUrl,
       'notes': notes,
+      'damageDescription': damageDescription,
+      'damagePhotoUrls': damagePhotoUrls,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };

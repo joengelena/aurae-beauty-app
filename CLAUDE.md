@@ -27,7 +27,7 @@ You are transforming an **existing Flutter car marketplace app** into a **beauty
 
 # 0.1. 📊 CURRENT PROGRESS STATUS
 
-**Last Updated:** 2026-05-17
+**Last Updated:** 2026-05-20
 
 ### ✅ COMPLETED
 
@@ -62,6 +62,7 @@ You are transforming an **existing Flutter car marketplace app** into a **beauty
 Build the Wardrobe page (replaces GaragePage) for business owners to manage their dress inventory.
 
 **Step 1 — Service layer** `lib/data/services/`
+
 - [x] Created `dress_services.dart` with all methods:
   - `getAllDresses()` → GET `/user/dresses`
   - `getDressById(id)` → GET `/user/dresses/:id`
@@ -74,33 +75,48 @@ Build the Wardrobe page (replaces GaragePage) for business owners to manage thei
 - [x] Added `CacheKeys.dresses`, `CacheKeys.dress(id)`, `CacheKeys.dressBookings(id)` to `constants.dart`
 
 **Step 2 — State management** `lib/logic/`
-- [ ] Create `wardrobe_provider.dart` (modelled on `garage_provider.dart`)
-  - Uses `BusinessDress` model (already exists)
-  - Methods: `fetchDresses()`, `addDress()`, `updateDress()`, `deleteDress()`, `reset()`
+
+- [x] Created `wardrobe_provider.dart` — fetchDresses, addDress, updateDress, deleteDress, reset
+- [x] Created `dress_detail_provider.dart` — loadDress, loadBookings, addBooking, deleteBooking
 
 **Step 3 — Wardrobe page** `lib/presentation/pages/`
-- [ ] Create `wardrobe_page.dart` (rename/restyle from `garage_page.dart`)
-  - Grid of dress cards (photo, brand, style, color)
-  - FAB → Add dress
-  - Pull-to-refresh
-  - Empty state, error state
 
-**Step 4 — Dress card widget** `lib/presentation/widgets/wardrobe/`
-- [ ] `dress_card.dart` — photo, brand, style, color chip, action menu (edit / delete)
-- [ ] `wardrobe_empty_state.dart`
+- [x] Created `wardrobe_page.dart` — grid of dress cards, FAB, pull-to-refresh, empty/error states
+
+**Step 4 — Dress card widgets** `lib/presentation/widgets/wardrobe/`
+
+- [x] `dress_card.dart` — photo, brand/style, size+color chips, action menu
+- [x] `dress_action_menu.dart` — edit + delete (web and mobile)
+- [x] `wardrobe_empty_state.dart`
+- [x] `wardrobe_error_state.dart`
 
 **Step 5 — Add / Edit dress form** `lib/presentation/pages/`
-- [ ] `add_dress_page.dart` — form fields: brand, style, color, size, purchaseYear, internalName, notes, optional photo
-- [ ] `edit_dress_page.dart` — same form pre-populated
+
+- [x] `add_dress_page.dart` — brand, style, size, color, purchaseYear, condition, insurance, photo
+- [x] `edit_dress_page.dart` — same form pre-populated from WardrobeProvider
 
 **Step 6 — Dress detail page** `lib/presentation/pages/`
-- [ ] `dress_detail_page.dart` — full dress info + list of rental bookings
-- [ ] `add_booking_page.dart` — log a rental booking (dressIdFk, typeOfService, serviceDate, renter)
+
+- [x] `dress_detail_page.dart` — full dress info + rental bookings list
+- [x] `add_booking_page.dart` — log a rental booking
 
 **Step 7 — Routing** `lib/app_router.dart`
-- [ ] Add `/wardrobe` route (replace or alias `/garage`)
-- [ ] Sub-routes: `/wardrobe/add`, `/wardrobe/:id`, `/wardrobe/:id/edit`, `/wardrobe/:id/add-booking`
-- [ ] Register `WardrobeProvider` in `main.dart`
+
+- [x] Added `/wardrobe`, `/wardrobe/add`, `/wardrobe/:id`, `/wardrobe/:id/edit`, `/wardrobe/:id/add-booking`
+- [x] Registered `WardrobeProvider` + `DressDetailProvider` in `main.dart`
+- [x] Bottom nav index 2 now points to `/wardrobe`
+- [x] Fixed post-signin redirect: was `/garage` (triggered `fetchVehicles` → 404), now `/listings`
+- [x] Fixed `errorBuilder` redirect: same fix
+- [x] Removed `/garage` from `_publicPages`
+
+**Step 8 — Damage Report** `lib/presentation/pages/`
+
+- [x] Optional collapsible "Damage Report" section added to `add_dress_page.dart` and `edit_dress_page.dart`
+  - Text area for damage description
+  - Multi-photo picker (up to 5 damage photos, with thumbnail + remove button)
+  - Edit page pre-populates existing `damageDescription` and shows existing `damagePhotoUrls`
+- [x] `BusinessDress` model updated: added `damageDescription` + `damagePhotoUrls` fields
+- [x] AJV schema updated: `damageDescription` added to `postDress` and `patchDress`
 
 ---
 
@@ -110,26 +126,76 @@ Build the Wardrobe page (replaces GaragePage) for business owners to manage thei
 - Both `Listing` and `DressListing` models coexist — consolidate after wardrobe sprint
 - `VehicleServices` still calls old `/user/vehicles` endpoints — leave until wardrobe sprint replaces it
 
-**LOW PRIORITY:**
-6. Migrate or remove old models: `UserVehicle`, `VehicleService`
-7. Update internal variable names from vehicle terminology
+**LOW PRIORITY:** 6. Migrate or remove old models: `UserVehicle`, `VehicleService` 7. Update internal variable names from vehicle terminology
 
-### 🎯 NEXT PHASE: Phase 2 (Model/Provider Consolidation)
+---
 
-Before proceeding to booking system, must complete model consolidation.
+### 🎯 NEXT STEPS
 
-### 📝 TODAY'S SESSION NOTES (2026-04-12)
+#### 1. Database Migration (BLOCKING — API won't work until this is done)
 
-**Also worked on:** `shine_api` transformation
-- ✅ Renamed all controllers, repositories, routes from vehicle → dress
-- ✅ Updated API endpoints: `/user/vehicles` → `/user/dresses`
-- ⚠️ **API changes NOT yet committed** - ready to commit
-- ⚠️ **Database still needs migration** - tables still named `user_vehicles`, `vehicle_service`
+The API code is fully transformed (vehicle → dress) but the DB still has old tables.
 
-**Coordination needed:**
-- Flutter app and API must use matching endpoint names
-- Database schema must be updated before API will work
-- Both repos transforming in parallel
+Run the following migration SQL:
+
+```sql
+-- Rename tables
+ALTER TABLE user_vehicles RENAME TO user_dresses;
+ALTER TABLE vehicle_service RENAME TO dress_bookings;
+
+-- Rename columns in user_dresses
+ALTER TABLE user_dresses RENAME COLUMN make TO brand;
+ALTER TABLE user_dresses RENAME COLUMN model TO style;
+ALTER TABLE user_dresses RENAME COLUMN year TO purchase_year;
+ALTER TABLE user_dresses RENAME COLUMN nickname TO internal_name;
+ALTER TABLE user_dresses RENAME COLUMN license_plate TO internal_ref;
+ALTER TABLE user_dresses RENAME COLUMN odometer_reading TO rental_count;
+ALTER TABLE user_dresses RENAME COLUMN vehicle_photo_url TO dress_photo_url;
+-- Drop vehicle-specific columns no longer needed:
+-- fuel_type, transmission, odometer_unit, rego_expiry_date, wof_expiry_date
+
+-- Add new dress-specific columns
+ALTER TABLE user_dresses ADD COLUMN size VARCHAR(10);
+ALTER TABLE user_dresses ADD COLUMN condition VARCHAR(50);
+ALTER TABLE user_dresses ADD COLUMN purchase_price INTEGER;
+ALTER TABLE user_dresses ADD COLUMN damage_description TEXT;
+ALTER TABLE user_dresses ADD COLUMN damage_photo_urls TEXT[];
+
+-- Rename columns in dress_bookings
+ALTER TABLE dress_bookings RENAME COLUMN vehicle_id_fk TO dress_id_fk;
+```
+
+After migration, also update the dress repository SQL queries to use the new column names.
+
+#### 2. Damage Photos — Backend Support
+
+The Flutter UI collects up to 5 damage photos but the API doesn't yet accept or store them. To complete this:
+
+- Extend `POST /user/dresses` and `PATCH /user/dresses/:id` to accept `damageImages` as multipart files
+- Upload them to R2 and store URLs in the `damage_photo_urls` column
+- Return `damagePhotoUrls` in the API response
+- Update `DressServices.addDress()` / `updateDress()` to send `_damagePhotoBytes` as multipart files
+
+#### 3. Phase 2 — Model/Provider Consolidation
+
+Before building the public booking system:
+
+- Remove or migrate old `Listing` model (consolidate with `DressListing`)
+- Remove `VehicleDetailProvider` and `GarageProvider` once confirmed unused
+- Remove `VehicleServices` once no pages reference it
+
+#### 4. Phase 3 — Customer Booking Flow
+
+- Browse page: show dress listings to customers
+- Booking flow: date picker → availability check → confirm booking → payment (future)
+- `BookingProvider` (new) to manage customer-side bookings
+
+### 📝 SESSION NOTES (2026-05-20)
+
+- ✅ Fixed wardrobe not loading: post-signin redirect was `/garage` → triggered `GaragePage.initState()` → `fetchVehicles()` → `/user/vehicles` 404. Fixed to redirect to `/listings`.
+- ✅ Fixed signup duplicate-key error: `signUpUserSupabase.ts` used MySQL error code (`ER_DUP_ENTRY` + `sqlMessage`) — updated to PostgreSQL (`23505` + `constraint`).
+- ✅ Damage Report UI added to Add/Edit dress forms.
+- ⚠️ API changes in `shine_api` not yet committed to git.
 
 ---
 
@@ -463,7 +529,22 @@ If unsure:
 
 ---
 
-# 15. Summary
+# 15. Dev Workflow Reminder (IMPORTANT)
+
+**ALWAYS remind the user to run the Flutter web app through the VS Code Run button (not `flutter run` in terminal).**
+
+This ensures the app runs on `http://localhost:8080`, which is the origin whitelisted in the API's `ALLOWED_COOKIE_ORIGINS`. Running on any other port causes CORS errors on the health check and all API calls, showing "Unable to connect to Aurae servers."
+
+✅ Correct: VS Code → Run button (guaranteed port 8080)
+❌ Wrong: `flutter run -d chrome` in terminal (random port, CORS fails)
+
+**ALWAYS remind the user of the test user**
+EMAIL: elena@test.com
+PASSWORD: password
+
+---
+
+# 16. Summary
 
 You are NOT building a new app.
 

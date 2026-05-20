@@ -22,6 +22,11 @@ import 'package:shine_app/presentation/pages/add_vehicle_page.dart';
 import 'package:shine_app/presentation/pages/edit_vehicle_page.dart';
 import 'package:shine_app/presentation/pages/add_service_page.dart';
 import 'package:shine_app/presentation/pages/vehicle_detail_page.dart';
+import 'package:shine_app/presentation/pages/wardrobe_page.dart';
+import 'package:shine_app/presentation/pages/add_dress_page.dart';
+import 'package:shine_app/presentation/pages/edit_dress_page.dart';
+import 'package:shine_app/presentation/pages/dress_detail_page.dart';
+import 'package:shine_app/presentation/pages/add_booking_page.dart';
 import 'package:shine_app/presentation/pages/privacy_policy_page.dart';
 import 'package:shine_app/presentation/widgets/scaffold/app_scaffold.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +44,7 @@ const _authPages = [
 ];
 
 // Public pages accessible to unauthenticated users
-const _publicPages = ['/listings', '/watchlist', '/garage', '/privacy'];
+const _publicPages = ['/listings', '/watchlist', '/wardrobe', '/privacy'];
 
 GoRouter getAppRouter(AuthProvider authProvider) {
   return GoRouter(
@@ -47,9 +52,8 @@ GoRouter getAppRouter(AuthProvider authProvider) {
     initialLocation: '/splash',
     refreshListenable: authProvider,
     errorBuilder: (context, state) {
-      // Redirect to garage page for any routing errors (404s)
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.go('/garage');
+        context.go('/listings');
       });
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     },
@@ -90,9 +94,9 @@ GoRouter getAppRouter(AuthProvider authProvider) {
         return '/profile/signin';
       }
 
-      // Redirect authenticated users from auth pages to garage
+      // Redirect authenticated users from auth pages to listings
       if (isSignedIn && isAuthPage) {
-        return '/garage';
+        return '/listings';
       }
 
       return null;
@@ -206,6 +210,49 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                       );
                       return NoTransitionPage(
                         child: AddServicePage(vehicleId: vehicleId),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/wardrobe',
+            parentNavigatorKey: _shellNavigatorKey,
+            pageBuilder:
+                (context, state) => NoTransitionPage(child: WardrobePage()),
+            routes: [
+              GoRoute(
+                path: 'add',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: AddDressPage()),
+              ),
+              GoRoute(
+                path: ':dressId',
+                pageBuilder: (context, state) {
+                  final dressId = state.pathParameters['dressId']!;
+                  return NoTransitionPage(
+                    child: DressDetailPage(dressId: dressId),
+                  );
+                },
+                routes: [
+                  GoRoute(
+                    path: 'edit',
+                    pageBuilder: (context, state) {
+                      final dressId = state.pathParameters['dressId']!;
+                      return NoTransitionPage(
+                        child: EditDressPage(dressId: dressId),
+                      );
+                    },
+                  ),
+                  GoRoute(
+                    path: 'add-booking',
+                    pageBuilder: (context, state) {
+                      final dressId =
+                          int.parse(state.pathParameters['dressId']!);
+                      return NoTransitionPage(
+                        child: AddBookingPage(dressId: dressId),
                       );
                     },
                   ),

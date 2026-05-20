@@ -15,6 +15,8 @@ import 'package:shine_app/logic/user_listings_provider.dart';
 import 'package:shine_app/logic/listing_form_data_provider.dart';
 import 'package:shine_app/logic/vehicle_detail_provider.dart';
 import 'package:shine_app/logic/watchlist_provider.dart';
+import 'package:shine_app/logic/wardrobe_provider.dart';
+import 'package:shine_app/logic/dress_detail_provider.dart';
 import 'package:shine_app/data/services/vehicle_notification_service.dart';
 import 'package:shine_app/data/cache_manager.dart';
 import 'package:shine_app/utils/theme.dart';
@@ -71,6 +73,20 @@ void main() async {
           update: (context, authProvider, garageProvider) {
             garageProvider!.updateAuthStatus(authProvider.isSignedIn);
             return garageProvider;
+          },
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, WardrobeProvider>(
+          create: (_) => WardrobeProvider(),
+          update: (context, authProvider, wardrobeProvider) {
+            wardrobeProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return wardrobeProvider;
+          },
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, DressDetailProvider>(
+          create: (_) => DressDetailProvider(),
+          update: (context, authProvider, dressDetailProvider) {
+            dressDetailProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return dressDetailProvider;
           },
         ),
         ChangeNotifierProxyProvider2<
@@ -147,7 +163,7 @@ class _MyAppState extends State<MyApp> {
 
     // Set up notification tap handler
     VehicleNotificationService.onNotificationTap = (vehicleId) {
-      _router.go('/garage/$vehicleId');
+      _router.go('/wardrobe/$vehicleId');
     };
 
     // Check auth silently on startup for refresh scenarios
