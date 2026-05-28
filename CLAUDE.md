@@ -120,6 +120,28 @@ Build the Wardrobe page (replaces GaragePage) for business owners to manage thei
 
 ---
 
+### 🐛 ACTIVE BUG — Wardrobe "Invalid response format" (2026-05-28)
+
+**Symptom**: After adding a dress, the wardrobe page shows an error state: *"Invalid response format"*. The dress IS created (POST 201), but the subsequent GET `/user/dresses` fails to parse in Flutter.
+
+**Where it fails**: `lib/data/services/dress_services.dart` → `getAllDresses()` → the `catch (e)` block throws `DataParseException('Invalid response format', details: e.toString())`. The real cause is in `e.toString()` but that's not surfaced in the UI.
+
+**Two likely causes — fix both**:
+
+1. **`http_client.dart:19` — wrong credentials value**
+   `credentials: RequestCredentials.cors` should be `credentials: RequestCredentials.include`.
+   Without `include`, the browser may not send httpOnly auth cookies on cross-origin GET requests, returning 401. Even if POST works (CORS preflight may differ), GET can silently fail.
+
+2. **`business_dress.dart` — non-nullable fallback casts throw on null**
+   `json['brand'] as String? ?? json['make'] as String` — the trailing `as String` (non-nullable) throws `TypeError` if `json['brand']` is null and `json['make']` doesn't exist in the JSON (returns null from map access).
+   Fix: change `json['make'] as String` → `json['make'] as String?` and `json['model'] as String` → `json['model'] as String?`.
+
+**Files to fix**:
+- `lib/data/http_client.dart` line 19: `RequestCredentials.cors` → `RequestCredentials.include`
+- `lib/data/models/business_dress.dart` `fromJson`: both `as String` fallbacks → `as String?`
+
+---
+
 ### ⚠️ OTHER KNOWN ISSUES (fix when touching related files)
 
 - `CFBundleName` in `ios/Runner/Info.plist` still says "motorix_app" (cosmetic, low priority)

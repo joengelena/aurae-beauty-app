@@ -126,19 +126,8 @@ class _DressDetailPageState extends State<DressDetailPage> {
                     _chip(context, 'Size: ${dress.size}'),
                     if (dress.color != null) _chip(context, dress.color!),
                     _chip(context, dress.condition),
-                    if (dress.purchaseYear != 0)
+                    if (dress.purchaseYear != null)
                       _chip(context, 'Purchased ${dress.purchaseYear}'),
-                  ],
-                ),
-
-                const SizedBox(height: AppConstants.spacingLarge),
-
-                _sectionCard(
-                  context,
-                  title: 'Insurance',
-                  children: [
-                    _infoRow('Provider', dress.insuranceProvider),
-                    _infoRow('Expires', dress.insuranceExpiryDate),
                   ],
                 ),
 

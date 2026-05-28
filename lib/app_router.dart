@@ -44,7 +44,7 @@ const _authPages = [
 ];
 
 // Public pages accessible to unauthenticated users
-const _publicPages = ['/listings', '/watchlist', '/wardrobe', '/privacy'];
+const _publicPages = ['/listings', '/watchlist', '/privacy'];
 
 GoRouter getAppRouter(AuthProvider authProvider) {
   return GoRouter(

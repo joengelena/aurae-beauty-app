@@ -23,13 +23,11 @@ class _AddDressPageState extends State<AddDressPage> {
   final _colorController = TextEditingController();
   final _purchaseYearController = TextEditingController();
   final _purchasePriceController = TextEditingController();
-  final _insuranceProviderController = TextEditingController();
   final _notesController = TextEditingController();
   final _damageDescriptionController = TextEditingController();
 
   String _size = 'M';
   String _condition = 'Excellent';
-  DateTime? _insuranceExpiryDate;
 
   Uint8List? _imageBytes;
   String? _imageMimeType;
@@ -47,7 +45,6 @@ class _AddDressPageState extends State<AddDressPage> {
     _colorController.dispose();
     _purchaseYearController.dispose();
     _purchasePriceController.dispose();
-    _insuranceProviderController.dispose();
     _notesController.dispose();
     _damageDescriptionController.dispose();
     super.dispose();
@@ -74,23 +71,8 @@ class _AddDressPageState extends State<AddDressPage> {
     setState(() => _damagePhotoBytes.add(bytes));
   }
 
-  Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _insuranceExpiryDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) setState(() => _insuranceExpiryDate = picked);
-  }
-
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_insuranceExpiryDate == null) {
-      FeedbackHelpers.showErrorSnackBar(context, 'Please select an insurance expiry date.');
-      return;
-    }
-
     setState(() => _isSubmitting = true);
 
     final data = <String, dynamic>{
@@ -98,8 +80,6 @@ class _AddDressPageState extends State<AddDressPage> {
       'style': _styleController.text.trim(),
       'size': _size,
       'condition': _condition,
-      'insuranceExpiryDate': _insuranceExpiryDate!.toIso8601String().substring(0, 10),
-      'insuranceProvider': _insuranceProviderController.text.trim(),
     };
     if (_internalNameController.text.trim().isNotEmpty) {
       data['internalName'] = _internalNameController.text.trim();
@@ -192,11 +172,6 @@ class _AddDressPageState extends State<AddDressPage> {
                 (v) => setState(() => _condition = v!),
                 showLabel: false,
               ),
-              const SizedBox(height: 16),
-              const Text('Insurance', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-              const SizedBox(height: 8),
-              _field(_insuranceProviderController, 'Insurance Provider', required: true),
-              _datePicker(),
               const SizedBox(height: 16),
               const Text('Optional', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
               const SizedBox(height: 8),
@@ -382,23 +357,4 @@ class _AddDressPageState extends State<AddDressPage> {
     );
   }
 
-  Widget _datePicker() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: _pickDate,
-        child: InputDecorator(
-          decoration: const InputDecoration(labelText: 'Insurance Expiry Date *'),
-          child: Text(
-            _insuranceExpiryDate != null
-                ? _insuranceExpiryDate!.toIso8601String().substring(0, 10)
-                : 'Select date',
-            style: TextStyle(
-              color: _insuranceExpiryDate != null ? Colors.black87 : Colors.grey,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }

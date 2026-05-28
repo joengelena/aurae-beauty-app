@@ -3,7 +3,7 @@ class BusinessDress {
   final String userIdFk;
   final String brand;
   final String style;
-  final int purchaseYear;
+  final int? purchaseYear;
   final String? internalName;
   final String? color;
   final int? rentalCount;
@@ -11,8 +11,6 @@ class BusinessDress {
   final String size;
   final int? purchasePrice;
   final String condition;
-  final String insuranceExpiryDate;
-  final String insuranceProvider;
   final String? dressPhotoUrl;
   final String? notes;
   final String? damageDescription;
@@ -25,7 +23,7 @@ class BusinessDress {
     required this.userIdFk,
     required this.brand,
     required this.style,
-    required this.purchaseYear,
+    this.purchaseYear,
     this.internalName,
     this.color,
     this.rentalCount,
@@ -33,8 +31,6 @@ class BusinessDress {
     required this.size,
     this.purchasePrice,
     required this.condition,
-    required this.insuranceExpiryDate,
-    required this.insuranceProvider,
     this.dressPhotoUrl,
     this.notes,
     this.damageDescription,
@@ -49,7 +45,7 @@ class BusinessDress {
       userIdFk: json['userIdFk'] as String,
       brand: json['brand'] as String? ?? json['make'] as String,
       style: json['style'] as String? ?? json['model'] as String,
-      purchaseYear: json['purchaseYear'] as int? ?? json['year'] as int,
+      purchaseYear: json['purchaseYear'] as int? ?? json['year'] as int?,
       internalName: json['internalName'] as String? ?? json['nickname'] as String?,
       color: json['color'] as String?,
       rentalCount: json['rentalCount'] as int? ?? 0,
@@ -59,8 +55,6 @@ class BusinessDress {
       size: json['size'] as String? ?? 'M',
       purchasePrice: json['purchasePrice'] as int?,
       condition: json['condition'] as String? ?? 'Excellent',
-      insuranceExpiryDate: json['insuranceExpiryDate'] as String,
-      insuranceProvider: json['insuranceProvider'] as String,
       dressPhotoUrl: json['dressPhotoUrl'] as String? ?? json['vehiclePhotoUrl'] as String?,
       notes: json['notes'] as String?,
       damageDescription: json['damageDescription'] as String?,
@@ -87,8 +81,6 @@ class BusinessDress {
       'size': size,
       'purchasePrice': purchasePrice,
       'condition': condition,
-      'insuranceExpiryDate': insuranceExpiryDate,
-      'insuranceProvider': insuranceProvider,
       'dressPhotoUrl': dressPhotoUrl,
       'notes': notes,
       'damageDescription': damageDescription,
