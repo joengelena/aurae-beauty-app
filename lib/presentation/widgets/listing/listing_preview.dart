@@ -116,65 +116,37 @@ class ListingPreview extends StatelessWidget {
             ),
             SizedBox(height: 6),
             Text(
-              '${listing.year} ${listing.make} ${listing.model}',
+              '${listing.brand} — ${listing.style}',
               style: Theme.of(context).textTheme.headlineSmall,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             Row(
               children: [
                 Icon(Icons.location_on, size: 16),
                 SizedBox(width: 4),
-                Text(
-                  listing.location,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                Flexible(
+                  child: Text(
+                    listing.location,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
             Row(
               children: [
-                Icon(Icons.speed, size: 16),
+                Icon(Icons.straighten, size: 16),
                 SizedBox(width: 4),
                 Text(
-                  listing.kilometers.toString(),
+                  'Size ${listing.size}',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
             ),
-            Row(
-              children: [
-                Icon(Icons.local_gas_station, size: 16),
-                SizedBox(width: 4),
-                Text(
-                  listing.fuelType,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                if (listing.discountedPrice != null) ...[
-                  Text(
-                    formatPrice(listing.discountedPrice!),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: themeRed,
-                    ),
-                  ),
-                  SizedBox(width: 6),
-                  Text(
-                    formatPrice(listing.originalPrice),
-                    style: TextStyle(
-                      decoration: TextDecoration.lineThrough,
-                      color: Colors.black,
-                      fontSize: 12,
-                    ),
-                  ),
-                ] else
-                  Text(
-                    formatPrice(listing.originalPrice),
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-              ],
+            Text(
+              '${formatPrice(listing.pricePerDay)}/day',
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ],
         ),

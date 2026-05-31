@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:motorix_app/data/services/health_service.dart';
+import 'package:shine_app/data/services/health_service.dart';
 
 void main() {
   group('HealthService', () {

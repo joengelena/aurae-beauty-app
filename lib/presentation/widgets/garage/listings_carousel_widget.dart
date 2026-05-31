@@ -175,7 +175,7 @@ class _ListingsCarouselWidgetState extends State<ListingsCarouselWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${listing.year} ${listing.make} ${listing.model}',
+                            '${listing.brand} — ${listing.style}',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -209,13 +209,13 @@ class _ListingsCarouselWidgetState extends State<ListingsCarouselWidget> {
                           Row(
                             children: [
                               const Icon(
-                                Icons.speed,
+                                Icons.straighten,
                                 size: 14,
                                 color: Colors.black54,
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                formatKilometers(listing.kilometers),
+                                'Size ${listing.size}',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   color: Colors.black54,
@@ -226,36 +226,13 @@ class _ListingsCarouselWidgetState extends State<ListingsCarouselWidget> {
                         ],
                       ),
                       // Price
-                      if (listing.discountedPrice != null) ...[
-                        Row(
-                          children: [
-                            Text(
-                              formatPrice(listing.discountedPrice!),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: themeRed,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              formatPrice(listing.originalPrice),
-                              style: const TextStyle(
-                                decoration: TextDecoration.lineThrough,
-                                color: Colors.black54,
-                                fontSize: 11,
-                              ),
-                            ),
-                          ],
+                      Text(
+                        '${formatPrice(listing.pricePerDay)}/day',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
                         ),
-                      ] else
-                        Text(
-                          formatPrice(listing.originalPrice),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
+                      ),
                     ],
                   ),
                 ),

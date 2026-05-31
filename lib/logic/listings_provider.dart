@@ -9,10 +9,6 @@ class ListingsProvider extends ChangeNotifier {
     'Lowest price': 'priceAsc',
     'Latest listings': 'uploadDateDesc',
     'Oldest listings': 'uploadDateAsc',
-    'Highest kilometers': 'kilometersDesc',
-    'Lowest kilometers': 'kilometersAsc',
-    'Latest year': 'yearDesc',
-    'Oldest year': 'yearAsc',
   };
   final List<Listing> listings = [];
   final List<Listing> latestListings = [];

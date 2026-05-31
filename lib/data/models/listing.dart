@@ -8,29 +8,15 @@ class Listing {
   final String previewImgUrl;
   final List<dynamic> imageUrls;
   final String location;
-  final String vehicleCondition;
-  final int originalPrice;
-  final int? discountedPrice;
+  final String condition;
+  final int pricePerDay;
   final DateTime uploadDate;
   final String description;
-  final String make;
-  final String model;
-  final int year;
-  final int kilometers;
-  final String fuelType;
-  final String bodyType;
-  final String driveType;
-  final int? orcIncluded;
-  final String? numberPlate;
-  final int? seats;
-  final int? doors;
-  final int? previousOwners;
+  final String brand;
+  final String style;
+  final String size;
   final String? color;
-  final int? engineSize;
-  final String? transmission;
-  final int? cylinders;
-  final DateTime? regoExpiryDate;
-  final DateTime? wofExpiryDate;
+  final String? dressType;
   final bool? isInWatchlist;
 
   Listing({
@@ -41,29 +27,15 @@ class Listing {
     required this.previewImgUrl,
     required this.imageUrls,
     required this.location,
-    required this.vehicleCondition,
-    required this.originalPrice,
-    this.discountedPrice,
+    required this.condition,
+    required this.pricePerDay,
     required this.uploadDate,
     required this.description,
-    required this.make,
-    required this.model,
-    required this.year,
-    required this.kilometers,
-    required this.fuelType,
-    required this.bodyType,
-    required this.driveType,
-    this.orcIncluded,
-    this.numberPlate,
-    this.seats,
-    this.doors,
-    this.previousOwners,
+    required this.brand,
+    required this.style,
+    required this.size,
     this.color,
-    this.engineSize,
-    this.transmission,
-    this.cylinders,
-    this.regoExpiryDate,
-    this.wofExpiryDate,
+    this.dressType,
     this.isInWatchlist,
   });
 
@@ -76,33 +48,15 @@ class Listing {
       previewImgUrl: json['previewImgUrl'] as String,
       imageUrls: json['imageUrls'] as List<dynamic>,
       location: json['location'] as String,
-      vehicleCondition: json['vehicleCondition'] as String,
-      originalPrice: json['originalPrice'] as int,
-      discountedPrice: json['discountedPrice'] as int?,
+      condition: json['condition'] as String,
+      pricePerDay: json['pricePerDay'] as int,
       uploadDate: DateTime.parse(json['uploadDate'] as String),
       description: json['description'] as String,
-      make: json['make'] as String,
-      model: json['model'] as String,
-      year: json['year'] as int,
-      kilometers: json['kilometers'] as int,
-      fuelType: json['fuelType'] as String,
-      bodyType: json['bodyType'] as String,
-      driveType: json['driveType'] as String,
-      orcIncluded: json['orcIncluded'] as int?,
-      numberPlate: json['numberPlate'] as String?,
-      seats: json['seats'] as int?,
-      doors: json['doors'] as int?,
-      previousOwners: json['previousOwners'] as int?,
+      brand: json['brand'] as String,
+      style: json['style'] as String,
+      size: json['size'] as String,
       color: json['color'] as String?,
-      engineSize: json['engineSize'] as int?,
-      transmission: json['transmission'] as String?,
-      cylinders: json['cylinders'] as int?,
-      regoExpiryDate: json['regoExpiryDate'] != null
-          ? DateTime.parse(json['regoExpiryDate'] as String)
-          : null,
-      wofExpiryDate: json['wofExpiryDate'] != null
-          ? DateTime.parse(json['wofExpiryDate'] as String)
-          : null,
+      dressType: json['dressType'] as String?,
       isInWatchlist: json['isInWatchlist'] != null
           ? (json['isInWatchlist'] == 1 || json['isInWatchlist'] == true)
           : null,
@@ -120,29 +74,15 @@ class Listing {
     String? previewImgUrl,
     List<dynamic>? imageUrls,
     String? location,
-    String? vehicleCondition,
-    int? originalPrice,
-    int? discountedPrice,
+    String? condition,
+    int? pricePerDay,
     DateTime? uploadDate,
     String? description,
-    String? make,
-    String? model,
-    int? year,
-    int? kilometers,
-    String? fuelType,
-    String? bodyType,
-    String? driveType,
-    int? orcIncluded,
-    String? numberPlate,
-    int? seats,
-    int? doors,
-    int? previousOwners,
+    String? brand,
+    String? style,
+    String? size,
     String? color,
-    int? engineSize,
-    String? transmission,
-    int? cylinders,
-    DateTime? regoExpiryDate,
-    DateTime? wofExpiryDate,
+    String? dressType,
     bool? isInWatchlist,
   }) {
     return Listing(
@@ -153,35 +93,21 @@ class Listing {
       previewImgUrl: previewImgUrl ?? this.previewImgUrl,
       imageUrls: imageUrls ?? this.imageUrls,
       location: location ?? this.location,
-      vehicleCondition: vehicleCondition ?? this.vehicleCondition,
-      originalPrice: originalPrice ?? this.originalPrice,
-      discountedPrice: discountedPrice ?? this.discountedPrice,
+      condition: condition ?? this.condition,
+      pricePerDay: pricePerDay ?? this.pricePerDay,
       uploadDate: uploadDate ?? this.uploadDate,
       description: description ?? this.description,
-      make: make ?? this.make,
-      model: model ?? this.model,
-      year: year ?? this.year,
-      kilometers: kilometers ?? this.kilometers,
-      fuelType: fuelType ?? this.fuelType,
-      bodyType: bodyType ?? this.bodyType,
-      driveType: driveType ?? this.driveType,
-      orcIncluded: orcIncluded ?? this.orcIncluded,
-      numberPlate: numberPlate ?? this.numberPlate,
-      seats: seats ?? this.seats,
-      doors: doors ?? this.doors,
-      previousOwners: previousOwners ?? this.previousOwners,
+      brand: brand ?? this.brand,
+      style: style ?? this.style,
+      size: size ?? this.size,
       color: color ?? this.color,
-      engineSize: engineSize ?? this.engineSize,
-      transmission: transmission ?? this.transmission,
-      cylinders: cylinders ?? this.cylinders,
-      regoExpiryDate: regoExpiryDate ?? this.regoExpiryDate,
-      wofExpiryDate: wofExpiryDate ?? this.wofExpiryDate,
+      dressType: dressType ?? this.dressType,
       isInWatchlist: isInWatchlist ?? this.isInWatchlist,
     );
   }
 
   @override
   String toString() {
-    return 'Listing(id: $id, ownerUserId: $userIdFk, make: $make, model: $model, year: $year, originalPrice: $originalPrice, discountedPrice: $discountedPrice)';
+    return 'Listing(id: $id, userIdFk: $userIdFk, brand: $brand, style: $style, size: $size, pricePerDay: $pricePerDay)';
   }
 }

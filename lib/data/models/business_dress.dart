@@ -43,8 +43,8 @@ class BusinessDress {
     return BusinessDress(
       id: json['id'] as int,
       userIdFk: json['userIdFk'] as String,
-      brand: json['brand'] as String? ?? json['make'] as String,
-      style: json['style'] as String? ?? json['model'] as String,
+      brand: json['brand'] as String? ?? json['make'] as String? ?? '',
+      style: json['style'] as String? ?? json['model'] as String? ?? '',
       purchaseYear: json['purchaseYear'] as int? ?? json['year'] as int?,
       internalName: json['internalName'] as String? ?? json['nickname'] as String?,
       color: json['color'] as String?,

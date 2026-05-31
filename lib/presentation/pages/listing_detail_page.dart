@@ -56,51 +56,37 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
     // Key specs for grid display
     final keySpecs = [
       {
-        'icon': Icons.speed,
-        'label': 'Kilometers',
-        'value': formatKilometers(listing.kilometers),
+        'icon': Icons.straighten,
+        'label': 'Size',
+        'value': listing.size,
       },
       {
-        'icon': Icons.local_gas_station,
-        'label': 'Fuel Type',
-        'value': listing.fuelType,
+        'icon': Icons.check_circle_outline,
+        'label': 'Condition',
+        'value': listing.condition,
       },
-      {
-        'icon': Icons.directions_car,
-        'label': 'Body Type',
-        'value': listing.bodyType,
-      },
-      {
-        'icon': Icons.settings,
-        'label': 'Drive Type',
-        'value': listing.driveType,
-      },
+      if (listing.dressType != null)
+        {
+          'icon': Icons.checkroom,
+          'label': 'Type',
+          'value': listing.dressType!,
+        },
+      if (listing.color != null)
+        {
+          'icon': Icons.palette_outlined,
+          'label': 'Color',
+          'value': listing.color!,
+        },
     ];
 
-    // Vehicle details
-    final vehicleDetails = {
-      'Drive Type': listing.driveType,
-      'Doors': listing.doors,
-      'Seats': listing.seats,
-      'Color': listing.color,
-      'Engine Size':
-          listing.engineSize != null ? '${listing.engineSize} cc' : null,
-      'Cylinders': listing.cylinders,
-      'Previous Owners': listing.previousOwners,
-      'Vehicle Condition': listing.vehicleCondition,
-      'Number Plate': listing.numberPlate,
-      'Rego Expiry':
-          listing.regoExpiryDate != null
-              ? formatDate(listing.regoExpiryDate!)
-              : null,
-      'WOF Expiry':
-          listing.wofExpiryDate != null
-              ? formatDate(listing.wofExpiryDate!)
-              : null,
-      'ORC Included':
-          listing.orcIncluded == 1
-              ? 'Yes'
-              : (listing.orcIncluded == 0 ? 'No' : null),
+    // Dress details
+    final dressDetails = {
+      'Brand': listing.brand,
+      'Style': listing.style,
+      'Size': listing.size,
+      'Condition': listing.condition,
+      if (listing.dressType != null) 'Dress Type': listing.dressType,
+      if (listing.color != null) 'Color': listing.color,
     };
 
     return SingleChildScrollView(
@@ -136,46 +122,25 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  '${listing.year} ${listing.make} ${listing.model}',
+                  '${listing.brand} — ${listing.style}',
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
               ),
 
-              // Asking price
+              // Rental price
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Asking price',
+                    'Rental price',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  if (listing.discountedPrice != null)
-                    Row(
-                      spacing: 10,
-                      children: [
-                        Text(
-                          formatPrice(listing.discountedPrice!),
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: themeRed,
-                          ),
-                        ),
-                        Text(
-                          formatPrice(listing.originalPrice),
-                          style: TextStyle(
-                            decoration: TextDecoration.lineThrough,
-                            color: Colors.black,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    )
-                  else
-                    Text(
-                      formatPrice(listing.originalPrice),
-                      style: Theme.of(context).textTheme.bodyLarge,
+                  Text(
+                    '${formatPrice(listing.pricePerDay)}/day',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
+                  ),
                 ],
               ),
 
@@ -235,11 +200,11 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                 },
               ),
 
-              // Vehicle Details Section
+              // Dress Details Section
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Vehicle Details',
+                  'Dress Details',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -255,7 +220,7 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                 child: Column(
                   spacing: 8,
                   children: [
-                    for (var entry in vehicleDetails.entries)
+                    for (var entry in dressDetails.entries)
                       if (entry.value != null)
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,

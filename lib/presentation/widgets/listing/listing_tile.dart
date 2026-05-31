@@ -87,7 +87,7 @@ class ListingTile extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '${listing.year} ${listing.make} ${listing.model}',
+                            '${listing.brand} — ${listing.style}',
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
@@ -99,13 +99,13 @@ class ListingTile extends StatelessWidget {
                           Row(
                             children: [
                               Icon(
-                                Icons.speed,
+                                Icons.straighten,
                                 size: 14,
                                 color: themeTaupe,
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                formatKilometers(listing.kilometers),
+                                'Size ${listing.size}',
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w400,
@@ -114,14 +114,14 @@ class ListingTile extends StatelessWidget {
                               ),
                               const SizedBox(width: 10),
                               Icon(
-                                Icons.local_gas_station,
+                                Icons.check_circle_outline,
                                 size: 14,
                                 color: themeTaupe,
                               ),
                               const SizedBox(width: 4),
                               Flexible(
                                 child: Text(
-                                  listing.fuelType,
+                                  listing.condition,
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w400,
@@ -136,37 +136,14 @@ class ListingTile extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              if (listing.discountedPrice != null) ...[
-                                Row(
-                                  children: [
-                                    Text(
-                                      formatPrice(listing.discountedPrice!),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 15,
-                                        color: themeAccent,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      formatPrice(listing.originalPrice),
-                                      style: TextStyle(
-                                        decoration: TextDecoration.lineThrough,
-                                        color: themeTaupe,
-                                        fontSize: 11,
-                                      ),
-                                    ),
-                                  ],
+                              Text(
+                                '${formatPrice(listing.pricePerDay)}/day',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                  color: themeText,
                                 ),
-                              ] else
-                                Text(
-                                  formatPrice(listing.originalPrice),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15,
-                                    color: themeText,
-                                  ),
-                                ),
+                              ),
                               Row(
                                 spacing: 4,
                                 children: [
@@ -193,7 +170,7 @@ class ListingTile extends StatelessWidget {
                   ),
                 ],
               ),
-              if (listing.status == 'sold')
+              if (listing.status == 'sold' || listing.status == 'rented')
                 Positioned(
                   top: 10,
                   left: 10,
@@ -203,12 +180,12 @@ class ListingTile extends StatelessWidget {
                       vertical: 5,
                     ),
                     decoration: BoxDecoration(
-                      color: themeRose,
+                      color: listing.status == 'rented' ? themeTaupe : themeRose,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Text(
-                      'SOLD',
-                      style: TextStyle(
+                    child: Text(
+                      listing.status.toUpperCase(),
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,

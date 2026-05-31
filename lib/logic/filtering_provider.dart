@@ -12,10 +12,6 @@ class FilteringProvider extends ChangeNotifier {
   Map<String, String> selectedRangeFilters = {
     'priceFrom': '',
     'priceTo': '',
-    'yearFrom': '',
-    'yearTo': '',
-    'kilometersFrom': '',
-    'kilometersTo': '',
   };
 
   Future<void> _loadAttributes() async {
@@ -63,10 +59,6 @@ class FilteringProvider extends ChangeNotifier {
     selectedRangeFilters = {
       'priceFrom': '',
       'priceTo': '',
-      'yearFrom': '',
-      'yearTo': '',
-      'kilometersFrom': '',
-      'kilometersTo': '',
     };
     notifyListeners();
   }

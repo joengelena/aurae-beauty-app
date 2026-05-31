@@ -54,57 +54,18 @@ class EditListingProvider extends ChangeNotifier
   }
 
   void _initializeData() {
-    // Initialize with existing listing data
     editListingData['location'] = listing.location;
-    editListingData['vehicleCondition'] = listing.vehicleCondition;
-    editListingData['originalPrice'] = listing.originalPrice;
-    if (listing.discountedPrice != null) {
-      editListingData['discountedPrice'] = listing.discountedPrice!;
-    }
+    editListingData['condition'] = listing.condition;
+    editListingData['pricePerDay'] = listing.pricePerDay;
     editListingData['description'] = listing.description;
-    editListingData['make'] = listing.make;
-    editListingData['model'] = listing.model;
-    editListingData['year'] = listing.year;
-    editListingData['kilometers'] = listing.kilometers;
-    editListingData['fuelType'] = listing.fuelType;
-    editListingData['bodyType'] = listing.bodyType;
-    editListingData['driveType'] = listing.driveType;
-
-    // Optional fields
-    if (listing.orcIncluded != null) {
-      editListingData['orcIncluded'] = listing.orcIncluded!;
-    }
-    if (listing.numberPlate != null) {
-      editListingData['numberPlate'] = listing.numberPlate!;
-    }
-    if (listing.seats != null) {
-      editListingData['seats'] = listing.seats!;
-    }
-    if (listing.doors != null) {
-      editListingData['doors'] = listing.doors!;
-    }
-    if (listing.previousOwners != null) {
-      editListingData['previousOwners'] = listing.previousOwners!;
-    }
+    editListingData['brand'] = listing.brand;
+    editListingData['style'] = listing.style;
+    editListingData['size'] = listing.size;
     if (listing.color != null) {
       editListingData['color'] = listing.color!;
     }
-    if (listing.engineSize != null) {
-      editListingData['engineSize'] = listing.engineSize!;
-    }
-    if (listing.transmission != null) {
-      editListingData['transmission'] = listing.transmission!;
-    }
-    if (listing.cylinders != null) {
-      editListingData['cylinders'] = listing.cylinders!.toString();
-    }
-    if (listing.regoExpiryDate != null) {
-      editListingData['regoExpiryDate'] =
-          listing.regoExpiryDate!.toIso8601String().split('T')[0];
-    }
-    if (listing.wofExpiryDate != null) {
-      editListingData['wofExpiryDate'] =
-          listing.wofExpiryDate!.toIso8601String().split('T')[0];
+    if (listing.dressType != null) {
+      editListingData['dressType'] = listing.dressType!;
     }
   }
 
@@ -148,11 +109,6 @@ class EditListingProvider extends ChangeNotifier
 
     try {
       editListingData['currentUserId'] = userId;
-
-      if (editListingData['cylinders'] is String) {
-        editListingData['cylinders'] =
-            int.tryParse(editListingData['cylinders'] as String) ?? 0;
-      }
 
       // Build image files if images were changed
       List<http.MultipartFile>? images;
