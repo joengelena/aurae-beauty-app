@@ -246,7 +246,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               SizedBox(height: 8),
                               Text(
-                                'Your vehicle listings will appear here',
+                                'Your dress listings will appear here',
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
                             ],

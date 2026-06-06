@@ -13,7 +13,6 @@ class FilterUtils {
     'body_type': 'bodyType',
     'drive_type': 'driveType',
     'transmission': 'transmission',
-    'cylinders': 'cylinders',
   };
 
   /// Converts filter map to API query parameters
@@ -46,17 +45,15 @@ class FilterUtils {
 
   /// User-friendly display names for filter keys
   static const Map<String, String> filterDisplayNames = {
-    'make': 'Make',
+    'make': 'Brand',
     'location': 'Location',
     'vehicle_condition': 'Condition',
-    'fuel_type': 'Fuel',
-    'body_type': 'Body style',
-    'drive_type': 'Drive type',
-    'transmission': 'Transmission',
-    'cylinders': 'Cylinders',
+    'fuel_type': 'Fabric',
+    'body_type': 'Dress Style',
+    'drive_type': 'Fit Type',
+    'transmission': 'Fit',
     'price': 'Price',
     'year': 'Year',
-    'kilometers': 'Kilometers',
   };
 
   /// Maps range filter keys to API parameter names
@@ -65,8 +62,6 @@ class FilterUtils {
     'priceTo': 'priceTo',
     'yearFrom': 'yearFrom',
     'yearTo': 'yearTo',
-    'kilometersFrom': 'kilometersFrom',
-    'kilometersTo': 'kilometersTo',
   };
 
   /// Formats a range filter for display as a badge
@@ -93,20 +88,13 @@ class FilterUtils {
       case 'year':
         label = 'Year';
         break;
-      case 'kilometers':
-        label = 'Kms';
-        break;
     }
 
     // Format min and max with thousand separators for kilometers
     String formattedMin =
-        minValue.isEmpty
-            ? 'Any'
-            : '$prefix${baseKey == 'kilometers' ? formatNumber(minValue) : minValue}';
+        minValue.isEmpty ? 'Any' : '$prefix$minValue';
     String formattedMax =
-        maxValue.isEmpty
-            ? 'Any'
-            : '$prefix${baseKey == 'kilometers' ? formatNumber(maxValue) : maxValue}';
+        maxValue.isEmpty ? 'Any' : '$prefix$maxValue';
 
     return '$label: $formattedMin - $formattedMax';
   }

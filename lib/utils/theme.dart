@@ -15,6 +15,27 @@ final themePeach = Color(0xFFFB923C);       // Warning (soft peach)
 final themeCream = themeBackground;         // Background tint (cream)
 final themeTaupe = Color(0xFF78716C);       // Secondary text (taupe)
 
+// Dress color palette — maps color name strings to display colors
+const Map<String, Color> dressColorMap = {
+  'Black':     Color(0xFF1C1C1C),
+  'White':     Color(0xFFF0EDE8),
+  'Ivory':     Color(0xFFFFF0C8),
+  'Blush':     Color(0xFFE8B4B8),
+  'Pink':      Color(0xFFF472B6),
+  'Red':       Color(0xFFDC2626),
+  'Burgundy':  Color(0xFF800020),
+  'Navy':      Color(0xFF1E3A5F),
+  'Blue':      Color(0xFF3B82F6),
+  'Sage':      Color(0xFF84A98C),
+  'Green':     Color(0xFF22C55E),
+  'Emerald':   Color(0xFF059669),
+  'Gold':      Color(0xFFD4AF37),
+  'Silver':    Color(0xFFB8B8B8),
+  'Champagne': Color(0xFFF7E7CE),
+  'Lilac':     Color(0xFFB39DDB),
+  'Nude':      Color(0xFFE5C9B0),
+};
+
 // Legacy color names for backward compatibility during migration
 final themeBlue = themeLavender;
 final themeGreen = themeSage;

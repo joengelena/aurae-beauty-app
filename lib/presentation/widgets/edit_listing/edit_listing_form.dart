@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/logic/edit_listing_provider.dart';
 import 'package:shine_app/presentation/widgets/edit_listing/edit_listing_info_fields.dart';
-import 'package:shine_app/presentation/widgets/edit_listing/edit_vehicle_info_fields.dart';
-import 'package:shine_app/presentation/widgets/edit_listing/edit_vehicle_info_optional_fields.dart';
+import 'package:shine_app/presentation/widgets/edit_listing/edit_dress_info_fields.dart';
 import 'package:shine_app/presentation/widgets/post_listing/select_multiple_images.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:shine_app/utils/secure_storage.dart';
@@ -143,8 +142,7 @@ class _EditListingFormState extends State<EditListingForm> {
                       ],
                     ),
                   ),
-                EditVehicleInfoFields(),
-                EditVehicleInfoOptionalFields(),
+                EditDressInfoFields(),
                 EditListingInfoFields(),
                 SelectMultipleImages(),
                 SizedBox(height: 20),

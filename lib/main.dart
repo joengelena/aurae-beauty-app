@@ -6,18 +6,15 @@ import 'package:shine_app/env_constants.dart';
 import 'package:shine_app/logic/auth_provider.dart';
 import 'package:shine_app/logic/back_button_provider.dart';
 import 'package:shine_app/logic/filtering_provider.dart';
-import 'package:shine_app/logic/garage_provider.dart';
 import 'package:shine_app/logic/listing_detail_provider.dart';
 import 'package:shine_app/logic/listings_provider.dart';
 import 'package:shine_app/logic/post_listing_provider.dart';
 import 'package:shine_app/logic/profile_provider.dart';
 import 'package:shine_app/logic/user_listings_provider.dart';
 import 'package:shine_app/logic/listing_form_data_provider.dart';
-import 'package:shine_app/logic/vehicle_detail_provider.dart';
 import 'package:shine_app/logic/watchlist_provider.dart';
 import 'package:shine_app/logic/wardrobe_provider.dart';
 import 'package:shine_app/logic/dress_detail_provider.dart';
-import 'package:shine_app/data/services/vehicle_notification_service.dart';
 import 'package:shine_app/data/cache_manager.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -31,9 +28,6 @@ void main() async {
   await CacheManager.instance.initialize();
 
   await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
-
-  // Initialize notification service
-  await VehicleNotificationService().initialize();
 
   // Disable Provider type checking for interface types that are only accessed via context.read<>
   Provider.debugCheckInvalidValueType = null;
@@ -66,13 +60,6 @@ void main() async {
           update: (context, authProvider, watchlistProvider) {
             watchlistProvider!.updateAuthStatus(authProvider.isSignedIn);
             return watchlistProvider;
-          },
-        ),
-        ChangeNotifierProxyProvider<AuthProvider, GarageProvider>(
-          create: (_) => GarageProvider(),
-          update: (context, authProvider, garageProvider) {
-            garageProvider!.updateAuthStatus(authProvider.isSignedIn);
-            return garageProvider;
           },
         ),
         ChangeNotifierProxyProvider<AuthProvider, WardrobeProvider>(
@@ -132,13 +119,6 @@ void main() async {
             return listingDetailProvider;
           },
         ),
-        ChangeNotifierProxyProvider<AuthProvider, VehicleDetailProvider>(
-          create: (_) => VehicleDetailProvider(),
-          update: (context, authProvider, vehicleDetailProvider) {
-            vehicleDetailProvider!.updateAuthStatus(authProvider.isSignedIn);
-            return vehicleDetailProvider;
-          },
-        ),
       ],
       child: MyApp(),
     ),
@@ -160,11 +140,6 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     final auth = context.read<AuthProvider>();
     _router = getAppRouter(auth);
-
-    // Set up notification tap handler
-    VehicleNotificationService.onNotificationTap = (vehicleId) {
-      _router.go('/wardrobe/$vehicleId');
-    };
 
     // Check auth silently on startup for refresh scenarios
     // This allows users who refresh to stay authenticated without going through splash

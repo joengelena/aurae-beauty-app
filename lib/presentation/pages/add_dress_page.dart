@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shine_app/data/exceptions/app_exception.dart';
 import 'package:shine_app/logic/wardrobe_provider.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
+import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class AddDressPage extends StatefulWidget {
@@ -20,7 +21,6 @@ class _AddDressPageState extends State<AddDressPage> {
   final _brandController = TextEditingController();
   final _styleController = TextEditingController();
   final _internalNameController = TextEditingController();
-  final _colorController = TextEditingController();
   final _purchaseYearController = TextEditingController();
   final _purchasePriceController = TextEditingController();
   final _notesController = TextEditingController();
@@ -28,6 +28,8 @@ class _AddDressPageState extends State<AddDressPage> {
 
   String _size = 'M';
   String _condition = 'Excellent';
+  String? _selectedColor;
+  bool _colorError = false;
 
   Uint8List? _imageBytes;
   String? _imageMimeType;
@@ -42,7 +44,6 @@ class _AddDressPageState extends State<AddDressPage> {
     _brandController.dispose();
     _styleController.dispose();
     _internalNameController.dispose();
-    _colorController.dispose();
     _purchaseYearController.dispose();
     _purchasePriceController.dispose();
     _notesController.dispose();
@@ -72,7 +73,9 @@ class _AddDressPageState extends State<AddDressPage> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    final formValid = _formKey.currentState!.validate();
+    if (_selectedColor == null) setState(() => _colorError = true);
+    if (!formValid || _selectedColor == null) return;
     setState(() => _isSubmitting = true);
 
     final data = <String, dynamic>{
@@ -80,12 +83,10 @@ class _AddDressPageState extends State<AddDressPage> {
       'style': _styleController.text.trim(),
       'size': _size,
       'condition': _condition,
+      'color': _selectedColor!,
     };
     if (_internalNameController.text.trim().isNotEmpty) {
       data['internalName'] = _internalNameController.text.trim();
-    }
-    if (_colorController.text.trim().isNotEmpty) {
-      data['color'] = _colorController.text.trim();
     }
     if (_purchaseYearController.text.trim().isNotEmpty) {
       data['purchaseYear'] = int.parse(_purchaseYearController.text.trim());
@@ -149,7 +150,7 @@ class _AddDressPageState extends State<AddDressPage> {
               _field(_brandController, 'Brand', required: true),
               _field(_styleController, 'Style', required: true),
               _dropdown('Size', _size, _sizes, (v) => setState(() => _size = v!)),
-              _field(_colorController, 'Color'),
+              _buildColorPicker(),
               _field(
                 _purchaseYearController,
                 'Purchase Year',
@@ -285,6 +286,74 @@ class _AddDressPageState extends State<AddDressPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildColorPicker() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RichText(
+            text: TextSpan(
+              style: const TextStyle(fontSize: 14, color: Color(0xFF3A2E2A)),
+              children: [
+                const TextSpan(text: 'Color  '),
+                TextSpan(text: '*', style: TextStyle(color: themeRose)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: dressColorMap.entries.map((entry) {
+              final selected = _selectedColor == entry.key;
+              final isLight = entry.value.computeLuminance() > 0.85;
+              return GestureDetector(
+                onTap: () => setState(() {
+                  _selectedColor = entry.key;
+                  _colorError = false;
+                }),
+                child: Tooltip(
+                  message: entry.key,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: entry.value,
+                      shape: BoxShape.circle,
+                      border: selected
+                          ? Border.all(color: themeText, width: 2.5)
+                          : isLight
+                              ? Border.all(color: const Color(0xFFD0C8C0), width: 0.8)
+                              : null,
+                      boxShadow: selected
+                          ? [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 2))]
+                          : null,
+                    ),
+                    child: selected
+                        ? Icon(Icons.check, size: 16, color: isLight ? themeText : Colors.white)
+                        : null,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          if (_selectedColor != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(_selectedColor!, style: TextStyle(fontSize: 12, color: themeTaupe)),
+            ),
+          if (_colorError)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text('Please select a color', style: TextStyle(fontSize: 12, color: themeRose)),
+            ),
+        ],
+      ),
     );
   }
 

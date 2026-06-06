@@ -17,11 +17,6 @@ import 'package:shine_app/presentation/pages/profile/sign_in_page.dart';
 import 'package:shine_app/presentation/pages/profile/sign_up_page.dart';
 import 'package:shine_app/presentation/pages/splash_page.dart';
 import 'package:shine_app/presentation/pages/watchlist_page.dart';
-import 'package:shine_app/presentation/pages/garage_page.dart';
-import 'package:shine_app/presentation/pages/add_vehicle_page.dart';
-import 'package:shine_app/presentation/pages/edit_vehicle_page.dart';
-import 'package:shine_app/presentation/pages/add_service_page.dart';
-import 'package:shine_app/presentation/pages/vehicle_detail_page.dart';
 import 'package:shine_app/presentation/pages/wardrobe_page.dart';
 import 'package:shine_app/presentation/pages/add_dress_page.dart';
 import 'package:shine_app/presentation/pages/edit_dress_page.dart';
@@ -105,9 +100,7 @@ GoRouter getAppRouter(AuthProvider authProvider) {
       // Splash route - outside ShellRoute to hide bottom navigation
       GoRoute(
         path: '/splash',
-        pageBuilder: (context, state) => NoTransitionPage(
-          child: SplashPage(),
-        ),
+        pageBuilder: (context, state) => NoTransitionPage(child: SplashPage()),
       ),
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
@@ -169,55 +162,6 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                 (context, state) => NoTransitionPage(child: WatchlistPage()),
           ),
           GoRoute(
-            path: '/garage',
-            parentNavigatorKey: _shellNavigatorKey,
-            pageBuilder:
-                (context, state) => NoTransitionPage(child: GaragePage()),
-            routes: [
-              GoRoute(
-                path: 'add',
-                pageBuilder: (context, state) {
-                  return NoTransitionPage(child: AddVehiclePage());
-                },
-              ),
-              GoRoute(
-                path: ':vehicleId',
-                pageBuilder: (context, state) {
-                  final vehicleId = state.pathParameters['vehicleId'];
-                  if (vehicleId == null) {
-                    return NoTransitionPage(child: Text('Not Found'));
-                  }
-
-                  return NoTransitionPage(
-                    child: VehicleDetailPage(vehicleId: vehicleId),
-                  );
-                },
-                routes: [
-                  GoRoute(
-                    path: 'edit',
-                    pageBuilder: (context, state) {
-                      final vehicleId = state.pathParameters['vehicleId']!;
-                      return NoTransitionPage(
-                        child: EditVehiclePage(vehicleId: vehicleId),
-                      );
-                    },
-                  ),
-                  GoRoute(
-                    path: 'add-service',
-                    pageBuilder: (context, state) {
-                      final vehicleId = int.parse(
-                        state.pathParameters['vehicleId']!,
-                      );
-                      return NoTransitionPage(
-                        child: AddServicePage(vehicleId: vehicleId),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-          GoRoute(
             path: '/wardrobe',
             parentNavigatorKey: _shellNavigatorKey,
             pageBuilder:
@@ -225,8 +169,8 @@ GoRouter getAppRouter(AuthProvider authProvider) {
             routes: [
               GoRoute(
                 path: 'add',
-                pageBuilder: (context, state) =>
-                    NoTransitionPage(child: AddDressPage()),
+                pageBuilder:
+                    (context, state) => NoTransitionPage(child: AddDressPage()),
               ),
               GoRoute(
                 path: ':dressId',
@@ -249,8 +193,9 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                   GoRoute(
                     path: 'add-booking',
                     pageBuilder: (context, state) {
-                      final dressId =
-                          int.parse(state.pathParameters['dressId']!);
+                      final dressId = int.parse(
+                        state.pathParameters['dressId']!,
+                      );
                       return NoTransitionPage(
                         child: AddBookingPage(dressId: dressId),
                       );
@@ -344,7 +289,8 @@ GoRouter getAppRouter(AuthProvider authProvider) {
             path: '/privacy',
             parentNavigatorKey: _shellNavigatorKey,
             pageBuilder:
-                (context, state) => NoTransitionPage(child: PrivacyPolicyPage()),
+                (context, state) =>
+                    NoTransitionPage(child: PrivacyPolicyPage()),
           ),
         ],
       ),

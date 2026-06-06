@@ -40,8 +40,8 @@ class PrivacyPolicyPage extends StatelessWidget {
                 const Text(
                   '• Account information (email, name, phone number)\n'
                   '• Location data (for local marketplace results)\n'
-                  '• Vehicle information (make, model, service history)\n'
-                  '• Photos (vehicle images you upload)',
+                  '• Dress information (brand, style, rental history)\n'
+                  '• Photos (dress images you upload)',
                 ),
                 const SizedBox(height: 24),
                 Text(
@@ -52,8 +52,8 @@ class PrivacyPolicyPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  '• Provide marketplace and garage management services\n'
-                  '• Send reminders for vehicle document renewals\n'
+                  '• Provide marketplace and wardrobe management services\n'
+                  '• Send reminders for upcoming rental returns\n'
                   '• Improve app functionality',
                 ),
                 const SizedBox(height: 24),

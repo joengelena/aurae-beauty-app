@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
-import 'package:shine_app/data/models/user_vehicle.dart';
 
 /// Formats a number with thousand separators
 ///
@@ -21,10 +20,6 @@ String formatDate(DateTime date) {
   final year = date.year.toString();
 
   return '$day-$month-$year';
-}
-
-String formatVehicleName(UserVehicle vehicle) {
-  return '${vehicle.year} ${vehicle.make} ${vehicle.model}';
 }
 
 String formatKilometers(int km) {

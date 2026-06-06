@@ -10,6 +10,29 @@ import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
+class _ColorDot extends StatelessWidget {
+  const _ColorDot(this.colorName);
+  final String colorName;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = dressColorMap[colorName] ?? themeTaupe;
+    final isLight = color.computeLuminance() > 0.85;
+    return Container(
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border:
+            isLight
+                ? Border.all(color: const Color(0xFFD0C8C0), width: 0.8)
+                : null,
+      ),
+    );
+  }
+}
+
 class ListingPreview extends StatelessWidget {
   final double width;
   final Listing listing;
@@ -116,10 +139,14 @@ class ListingPreview extends StatelessWidget {
             ),
             SizedBox(height: 6),
             Text(
-              '${listing.brand} — ${listing.style}',
+              listing.style,
               style: Theme.of(context).textTheme.headlineSmall,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              listing.brand,
+              style: TextStyle(fontSize: 12, color: themeTaupe),
             ),
             Row(
               children: [
@@ -136,17 +163,32 @@ class ListingPreview extends StatelessWidget {
             ),
             Row(
               children: [
-                Icon(Icons.straighten, size: 16),
+                Icon(Icons.straighten, size: 14, color: themeTaupe),
                 SizedBox(width: 4),
                 Text(
                   'Size ${listing.size}',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: TextStyle(fontSize: 12, color: themeTaupe),
                 ),
+                if (listing.color != null) ...[
+                  SizedBox(width: 10),
+                  _ColorDot(listing.color!),
+                  SizedBox(width: 4),
+                ],
               ],
             ),
-            Text(
-              '${formatPrice(listing.pricePerDay)}/day',
-              style: Theme.of(context).textTheme.bodyLarge,
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: '${formatPrice(listing.pricePerDay)}/day',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      color: themeText,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

@@ -232,7 +232,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     Expanded(
                       child: Text(
-                        'I agree to Motorix\'s Terms of Use and Privacy Policy',
+                        'I agree to Aurae\'s Terms of Use and Privacy Policy',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),

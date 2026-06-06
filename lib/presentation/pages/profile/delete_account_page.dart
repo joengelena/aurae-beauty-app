@@ -164,8 +164,8 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                         _buildWarningItem(
                           'Your profile and account information',
                         ),
-                        _buildWarningItem('All your vehicle listings'),
-                        _buildWarningItem('Your garage and vehicle records'),
+                        _buildWarningItem('All your dress listings'),
+                        _buildWarningItem('Your wardrobe and dress records'),
                         _buildWarningItem('Your watchlist'),
                         _buildWarningItem('All associated data'),
                         const SizedBox(height: 12),

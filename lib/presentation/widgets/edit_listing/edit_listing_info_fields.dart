@@ -111,7 +111,7 @@ class _EditListingInfoFieldsState extends State<EditListingInfoFields> {
           },
         ),
         DropdownFormField<EditListingProvider>(
-          labelText: 'Vehicle Condition',
+          labelText: 'Condition',
           fieldName: 'vehicleCondition',
           options: provider.getAttributeValues('vehicle_condition'),
           isRequired: true,

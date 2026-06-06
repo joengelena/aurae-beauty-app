@@ -17,133 +17,120 @@ class ContactSeller extends StatelessWidget {
     }
 
     return Container(
-      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: themePrimary.withValues(alpha: 0.8),
+            blurRadius: 16,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Profile and Contact Details
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Left side - Avatar and Name
-              Column(
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundImage:
-                        seller.profilePhotoUrl != null
-                            ? NetworkImage(seller.profilePhotoUrl!)
-                            : AssetImage('assets/imgs/default_profile.jpg'),
-                  ),
-                  SizedBox(height: 12),
-                  SizedBox(
-                    width: 100,
-                    child: Text(
-                      '${seller.firstName} ${seller.lastName}',
-                      style: Theme.of(context).textTheme.titleMedium,
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(width: 12),
-
-              // Right side - Contact Details
-              Expanded(
-                child: Column(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Avatar + name
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 26,
+                  backgroundImage: seller.profilePhotoUrl != null
+                      ? NetworkImage(seller.profilePhotoUrl!)
+                      : AssetImage('assets/imgs/default_profile.jpg'),
+                ),
+                SizedBox(width: 12),
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Phone Number
-                    InkWell(
-                      onTap: () {
-                        Clipboard.setData(
-                          ClipboardData(text: seller.phoneNumber),
-                        );
-                        FeedbackHelpers.showInfoSnackBar(
-                          context,
-                          'Phone number copied to clipboard',
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 12,
-                          horizontal: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.phone, size: 20, color: themeGreen),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                seller.phoneNumber,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                    Text(
+                      '${seller.firstName} ${seller.lastName}',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: themeText,
                       ),
                     ),
-                    SizedBox(height: 10),
-
-                    // Email
-                    InkWell(
-                      onTap: () {
-                        Clipboard.setData(ClipboardData(text: seller.email));
-                        FeedbackHelpers.showInfoSnackBar(
-                          context,
-                          'Email copied to clipboard',
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 12,
-                          horizontal: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.email, size: 20, color: Colors.blue),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                seller.email,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    Text(
+                      'Owner',
+                      style: TextStyle(fontSize: 12, color: themeTaupe),
                     ),
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
+
+            SizedBox(height: 14),
+            Divider(height: 1, color: Color(0xFFEEE8E4)),
+            SizedBox(height: 12),
+
+            // Phone
+            _ContactRow(
+              icon: Icons.phone_outlined,
+              label: seller.phoneNumber,
+              iconColor: themeSage,
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: seller.phoneNumber));
+                FeedbackHelpers.showInfoSnackBar(
+                  context,
+                  'Phone number copied to clipboard',
+                );
+              },
+            ),
+            SizedBox(height: 10),
+
+            // Email
+            _ContactRow(
+              icon: Icons.mail_outline,
+              label: seller.email,
+              iconColor: themeTaupe,
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: seller.email));
+                FeedbackHelpers.showInfoSnackBar(
+                  context,
+                  'Email copied to clipboard',
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ContactRow extends StatelessWidget {
+  const _ContactRow({
+    required this.icon,
+    required this.label,
+    required this.iconColor,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color iconColor;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: iconColor),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 13, color: themeText),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
+          Icon(Icons.copy_outlined, size: 14, color: themeTaupe),
         ],
       ),
     );

@@ -60,7 +60,7 @@ class _SplashPageState extends State<SplashPage> {
     if (!mounted) return;
 
     // Let GoRouter's redirect logic handle navigation based on auth state
-    // If signed in -> will redirect to /garage
+    // If signed in -> will redirect to /listings
     // If not signed in -> will redirect to /profile/signin
     context.go('/listings');
   }

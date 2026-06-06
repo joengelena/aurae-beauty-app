@@ -4,8 +4,7 @@ import 'package:shine_app/logic/post_listing_provider.dart';
 import 'package:shine_app/presentation/widgets/common/loading_button.dart';
 import 'package:shine_app/presentation/widgets/post_listing/listing_info_fields.dart';
 import 'package:shine_app/presentation/widgets/post_listing/select_multiple_images.dart';
-import 'package:shine_app/presentation/widgets/post_listing/vehicle_info_fields.dart';
-import 'package:shine_app/presentation/widgets/post_listing/vehicle_info_optional_fields.dart';
+import 'package:shine_app/presentation/widgets/post_listing/dress_info_fields.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:provider/provider.dart';
 
@@ -141,8 +140,7 @@ class _PostListingFormState extends State<PostListingForm> {
               spacing: 32,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                VehicleInfoFields(),
-                VehicleInfoOptionalFields(),
+                DressInfoFields(),
                 ListingInfoFields(),
                 SelectMultipleImages(),
                 SizedBox(height: 20),

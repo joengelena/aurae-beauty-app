@@ -7,6 +7,29 @@ import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
+class _ColorDot extends StatelessWidget {
+  const _ColorDot(this.colorName);
+  final String colorName;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = dressColorMap[colorName] ?? themeTaupe;
+    final isLight = color.computeLuminance() > 0.85;
+    return Container(
+      width: 12,
+      height: 12,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border:
+            isLight
+                ? Border.all(color: const Color(0xFFD0C8C0), width: 0.8)
+                : null,
+      ),
+    );
+  }
+}
+
 class ListingTile extends StatelessWidget {
   static const double _imageWidth = 140.0;
   static const double _borderRadius = 18.0;
@@ -73,7 +96,10 @@ class ListingTile extends StatelessWidget {
                   // Right side content
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 4,
+                      ),
                       child: Column(
                         spacing: 4,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,7 +113,7 @@ class ListingTile extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '${listing.brand} — ${listing.style}',
+                            listing.style,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
@@ -95,6 +121,10 @@ class ListingTile extends StatelessWidget {
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            listing.brand,
+                            style: TextStyle(fontSize: 11, color: themeTaupe),
                           ),
                           Row(
                             children: [
@@ -108,7 +138,6 @@ class ListingTile extends StatelessWidget {
                                 'Size ${listing.size}',
                                 style: TextStyle(
                                   fontSize: 11,
-                                  fontWeight: FontWeight.w400,
                                   color: themeTaupe,
                                 ),
                               ),
@@ -124,7 +153,6 @@ class ListingTile extends StatelessWidget {
                                   listing.condition,
                                   style: TextStyle(
                                     fontSize: 11,
-                                    fontWeight: FontWeight.w400,
                                     color: themeTaupe,
                                   ),
                                   overflow: TextOverflow.ellipsis,
@@ -132,16 +160,30 @@ class ListingTile extends StatelessWidget {
                               ),
                             ],
                           ),
+                          if (listing.color != null)
+                            Row(
+                              children: [
+                                _ColorDot(listing.color!),
+                                const SizedBox(width: 6),
+                              ],
+                            ),
                           const SizedBox(height: 2),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                '${formatPrice(listing.pricePerDay)}/day',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15,
-                                  color: themeText,
+                              RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          '${formatPrice(listing.pricePerDay)}/day',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15,
+                                        color: themeText,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               Row(
@@ -180,7 +222,8 @@ class ListingTile extends StatelessWidget {
                       vertical: 5,
                     ),
                     decoration: BoxDecoration(
-                      color: listing.status == 'rented' ? themeTaupe : themeRose,
+                      color:
+                          listing.status == 'rented' ? themeTaupe : themeRose,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(

@@ -15,6 +15,45 @@ class ListingDetailPage extends StatefulWidget {
   State<ListingDetailPage> createState() => _ListingDetailPageState();
 }
 
+class _SpecChip extends StatelessWidget {
+  const _SpecChip({required this.icon, required this.label, this.primary = false});
+
+  final IconData icon;
+  final String label;
+  final bool primary;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: primary
+            ? themeAccent.withValues(alpha: 0.3)
+            : themePrimary.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: primary ? themeAccent : themePrimary,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: themeText),
+          SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: primary ? FontWeight.w600 : FontWeight.w500,
+              color: themeText,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _ListingDetailPageState extends State<ListingDetailPage> {
   @override
   void initState() {
@@ -52,42 +91,6 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
     if (provider.listing == null || listing == null) {
       return Center(child: Text('Not Found'));
     }
-
-    // Key specs for grid display
-    final keySpecs = [
-      {
-        'icon': Icons.straighten,
-        'label': 'Size',
-        'value': listing.size,
-      },
-      {
-        'icon': Icons.check_circle_outline,
-        'label': 'Condition',
-        'value': listing.condition,
-      },
-      if (listing.dressType != null)
-        {
-          'icon': Icons.checkroom,
-          'label': 'Type',
-          'value': listing.dressType!,
-        },
-      if (listing.color != null)
-        {
-          'icon': Icons.palette_outlined,
-          'label': 'Color',
-          'value': listing.color!,
-        },
-    ];
-
-    // Dress details
-    final dressDetails = {
-      'Brand': listing.brand,
-      'Style': listing.style,
-      'Size': listing.size,
-      'Condition': listing.condition,
-      if (listing.dressType != null) 'Dress Type': listing.dressType,
-      if (listing.color != null) 'Color': listing.color,
-    };
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -127,129 +130,68 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                 ),
               ),
 
-              // Rental price
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Rental price',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  Text(
-                    '${formatPrice(listing.pricePerDay)}/day',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-
-              // Key Specs Grid
-              GridView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  mainAxisExtent: 60,
-                ),
-                itemCount: keySpecs.length,
-                itemBuilder: (context, index) {
-                  final spec = keySpecs[index];
-                  return Container(
-                    padding: EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          spec['icon'] as IconData,
-                          size: 20,
-                          color: Colors.black54,
-                        ),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                spec['label'] as String,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                              Text(
-                                spec['value'] as String,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-
-              // Dress Details Section
+              // Rental price — typography only, no box
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  'Dress Details',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  spacing: 8,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
                   children: [
-                    for (var entry in dressDetails.entries)
-                      if (entry.value != null)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              entry.key,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            Text(
-                              '${entry.value}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
+                    Text(
+                      formatPrice(listing.pricePerDay),
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: themeText,
+                      ),
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      '/ day',
+                      style: TextStyle(fontSize: 14, color: themeTaupe),
+                    ),
                   ],
                 ),
               ),
+
+              // Spec chips — size and condition are primary
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _SpecChip(icon: Icons.straighten, label: listing.size, primary: true),
+                    _SpecChip(icon: Icons.check_circle_outline, label: listing.condition, primary: true),
+                    if (listing.color != null)
+                      _SpecChip(icon: Icons.palette_outlined, label: listing.color!),
+                    if (listing.dressType != null)
+                      _SpecChip(icon: Icons.checkroom, label: listing.dressType!),
+                  ],
+                ),
+              ),
+
+              // Compact dress details
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  [
+                    listing.brand,
+                    listing.style,
+                    if (listing.dressType != null) listing.dressType!,
+                    if (listing.color != null) listing.color!,
+                  ].join(' · '),
+                  style: TextStyle(fontSize: 12, color: themeTaupe),
+                ),
+              ),
+
+              // TODO: Availability calendar goes here
 
               // Description
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Descritpion',
+                  'Description',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ),
@@ -262,11 +204,11 @@ class _ListingDetailPageState extends State<ListingDetailPage> {
                 ),
               ),
 
-              // Seller's contact information
+              // Owner contact
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Seller Information',
+                  'Contact Owner',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
