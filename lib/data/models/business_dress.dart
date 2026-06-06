@@ -10,6 +10,7 @@ class BusinessDress {
   final DateTime? lastRentalDate;
   final String size;
   final int? purchasePrice;
+  final int? rentalPricePerDay;
   final String condition;
   final String? dressPhotoUrl;
   final String? notes;
@@ -30,6 +31,7 @@ class BusinessDress {
     this.lastRentalDate,
     required this.size,
     this.purchasePrice,
+    this.rentalPricePerDay,
     required this.condition,
     this.dressPhotoUrl,
     this.notes,
@@ -54,6 +56,7 @@ class BusinessDress {
           : null,
       size: json['size'] as String? ?? 'M',
       purchasePrice: json['purchasePrice'] as int?,
+      rentalPricePerDay: json['rentalPricePerDay'] as int?,
       condition: json['condition'] as String? ?? 'Excellent',
       dressPhotoUrl: json['dressPhotoUrl'] as String? ?? json['vehiclePhotoUrl'] as String?,
       notes: json['notes'] as String?,
@@ -80,6 +83,7 @@ class BusinessDress {
       'lastRentalDate': lastRentalDate?.toIso8601String(),
       'size': size,
       'purchasePrice': purchasePrice,
+      'rentalPricePerDay': rentalPricePerDay,
       'condition': condition,
       'dressPhotoUrl': dressPhotoUrl,
       'notes': notes,

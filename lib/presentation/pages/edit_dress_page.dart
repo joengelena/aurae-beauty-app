@@ -25,6 +25,7 @@ class _EditDressPageState extends State<EditDressPage> {
   final _internalNameController = TextEditingController();
   final _colorController = TextEditingController();
   final _purchaseYearController = TextEditingController();
+  final _rentalPriceController = TextEditingController();
   final _purchasePriceController = TextEditingController();
   final _notesController = TextEditingController();
   final _damageDescriptionController = TextEditingController();
@@ -64,6 +65,7 @@ class _EditDressPageState extends State<EditDressPage> {
     _colorController.text = _dress!.color ?? '';
     _purchaseYearController.text =
         _dress!.purchaseYear != null ? _dress!.purchaseYear.toString() : '';
+    _rentalPriceController.text = _dress!.rentalPricePerDay?.toString() ?? '';
     _purchasePriceController.text =
         _dress!.purchasePrice != null ? _dress!.purchasePrice.toString() : '';
     _notesController.text = _dress!.notes ?? '';
@@ -86,6 +88,7 @@ class _EditDressPageState extends State<EditDressPage> {
     _internalNameController.dispose();
     _colorController.dispose();
     _purchaseYearController.dispose();
+    _rentalPriceController.dispose();
     _purchasePriceController.dispose();
     _notesController.dispose();
     _damageDescriptionController.dispose();
@@ -131,6 +134,9 @@ class _EditDressPageState extends State<EditDressPage> {
     }
     if (_purchaseYearController.text.trim().isNotEmpty) {
       updates['purchaseYear'] = int.parse(_purchaseYearController.text.trim());
+    }
+    if (_rentalPriceController.text.trim().isNotEmpty) {
+      updates['rentalPricePerDay'] = int.parse(_rentalPriceController.text.trim());
     }
     if (_purchasePriceController.text.trim().isNotEmpty) {
       updates['purchasePrice'] = int.parse(_purchasePriceController.text.trim());
@@ -191,6 +197,17 @@ class _EditDressPageState extends State<EditDressPage> {
               const SizedBox(height: 20),
               _field(_brandController, 'Brand', required: true),
               _field(_styleController, 'Style', required: true),
+              _field(
+                _rentalPriceController,
+                'Rental Price per Day (cents)',
+                keyboardType: TextInputType.number,
+                required: true,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Enter a rental price';
+                  if (int.tryParse(v) == null) return 'Enter a whole number';
+                  return null;
+                },
+              ),
               _dropdown('Size', _size, _sizes, (v) => setState(() => _size = v!)),
               _field(_colorController, 'Color'),
               _field(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/data/models/listing.dart';
-import 'package:shine_app/data/services/listings_services.dart';
+import 'package:shine_app/data/services/dress_services.dart';
 import 'package:shine_app/utils/filter_utils.dart';
 
 class ListingsProvider extends ChangeNotifier {
@@ -80,14 +80,10 @@ class ListingsProvider extends ChangeNotifier {
       // Apply default location filter if user is signed in and has location
       final filters = _getFiltersWithDefault();
 
-      final res = await ListingsServices().getAllListings(
+      final res = await DressServices().getPublicDresses(
         allQueries: {
           'limit': limit,
           'pageNumber': currentPage + 1,
-          'searchString': searchController.text,
-          'sortBy': sortBy,
-          'status': 'active',
-          ...filters,
         },
       );
 
@@ -123,12 +119,10 @@ class ListingsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final res = await ListingsServices().getAllListings(
+      final res = await DressServices().getPublicDresses(
         allQueries: {
           'limit': 10,
           'pageNumber': 1,
-          'sortBy': 'uploadDateDesc',
-          'status': 'active',
         },
       );
 

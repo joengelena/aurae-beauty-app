@@ -21,6 +21,7 @@ class _AddDressPageState extends State<AddDressPage> {
   final _brandController = TextEditingController();
   final _styleController = TextEditingController();
   final _internalNameController = TextEditingController();
+  final _rentalPriceController = TextEditingController();
   final _purchaseYearController = TextEditingController();
   final _purchasePriceController = TextEditingController();
   final _notesController = TextEditingController();
@@ -44,6 +45,7 @@ class _AddDressPageState extends State<AddDressPage> {
     _brandController.dispose();
     _styleController.dispose();
     _internalNameController.dispose();
+    _rentalPriceController.dispose();
     _purchaseYearController.dispose();
     _purchasePriceController.dispose();
     _notesController.dispose();
@@ -90,6 +92,9 @@ class _AddDressPageState extends State<AddDressPage> {
     }
     if (_purchaseYearController.text.trim().isNotEmpty) {
       data['purchaseYear'] = int.parse(_purchaseYearController.text.trim());
+    }
+    if (_rentalPriceController.text.trim().isNotEmpty) {
+      data['rentalPricePerDay'] = int.parse(_rentalPriceController.text.trim());
     }
     if (_purchasePriceController.text.trim().isNotEmpty) {
       data['purchasePrice'] = int.parse(_purchasePriceController.text.trim());
@@ -149,6 +154,17 @@ class _AddDressPageState extends State<AddDressPage> {
               const SizedBox(height: 20),
               _field(_brandController, 'Brand', required: true),
               _field(_styleController, 'Style', required: true),
+              _field(
+                _rentalPriceController,
+                'Rental Price per Day (cents)',
+                keyboardType: TextInputType.number,
+                required: true,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Enter a rental price';
+                  if (int.tryParse(v) == null) return 'Enter a whole number';
+                  return null;
+                },
+              ),
               _dropdown('Size', _size, _sizes, (v) => setState(() => _size = v!)),
               _buildColorPicker(),
               _field(

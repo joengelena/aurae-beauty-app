@@ -6,6 +6,8 @@ import 'package:http_parser/http_parser.dart';
 import 'package:shine_app/data/api_client.dart';
 import 'package:shine_app/data/exceptions/app_exception.dart';
 import 'package:shine_app/data/models/business_dress.dart';
+import 'package:shine_app/data/models/listing.dart';
+import 'package:shine_app/data/models/pagination.dart';
 import 'package:shine_app/data/models/rental_booking.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/utils.dart';
@@ -266,6 +268,39 @@ class DressServices {
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
       throw NetworkException('Network error while adding booking', details: e.toString());
+    }
+  }
+
+  Future<PaginatedResponse<Listing>> getPublicDresses({
+    Map<String, dynamic>? allQueries,
+  }) async {
+    try {
+      final response = await apiClient.get(
+        '/dresses',
+        queryParameters: allQueries,
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        throw NetworkException(
+          extractErrorMessage(response.body),
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+
+      try {
+        final Map<String, dynamic> body =
+            json.decode(response.body) as Map<String, dynamic>;
+        return PaginatedResponse<Listing>.fromJson(
+          body,
+          (json) => Listing.fromJson(json),
+        );
+      } catch (e) {
+        throw DataParseException('Failed to parse dresses', details: e.toString());
+      }
+    } catch (e) {
+      if (e is NetworkException || e is DataParseException) rethrow;
+      throw NetworkException('Network error fetching dresses', details: e.toString());
     }
   }
 
