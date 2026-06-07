@@ -36,23 +36,15 @@ class RentalBooking {
   factory RentalBooking.fromJson(Map<String, dynamic> json) {
     return RentalBooking(
       id: json['id'] as int,
-      dressIdFk: json['dressIdFk'] as int? ?? json['vehicleIdFk'] as int,
-      bookingType: json['bookingType'] as String? ?? json['typeOfService'] as String? ?? 'rental',
-      bookingDate: json['bookingDate'] != null
-          ? DateTime.parse(json['bookingDate'] as String)
-          : DateTime.parse(json['serviceDate'] as String),
-      renterName: json['renterName'] as String? ?? json['serviceProviderName'] as String?,
+      dressIdFk: json['dressIdFk'] as int,
+      bookingType: json['bookingType'] as String? ?? 'rental',
+      bookingDate: DateTime.parse(json['bookingDate'] as String),
+      renterName: json['renterName'] as String?,
       renterEmail: json['renterEmail'] as String?,
       renterPhone: json['renterPhone'] as String?,
-      startDate: json['startDate'] != null
-          ? DateTime.parse(json['startDate'] as String)
-          : DateTime.parse(json['serviceDate'] as String),
-      endDate: json['endDate'] != null
-          ? DateTime.parse(json['endDate'] as String)
-          : DateTime.parse(json['serviceDate'] as String).add(Duration(days: 3)),
-      totalCost: json['totalCost'] != null
-          ? (json['totalCost'] as num).toDouble()
-          : (json['cost'] != null ? (json['cost'] as num).toDouble() : 0.0),
+      startDate: DateTime.parse(json['startDate'] as String),
+      endDate: DateTime.parse(json['endDate'] as String),
+      totalCost: json['totalCost'] != null ? (json['totalCost'] as num).toDouble() : 0.0,
       depositPaid: json['depositPaid'] != null ? (json['depositPaid'] as num).toDouble() : null,
       status: json['status'] as String? ?? 'pending',
       notes: json['notes'] as String?,
