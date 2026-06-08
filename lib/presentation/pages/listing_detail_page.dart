@@ -127,20 +127,22 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                     // Location + age
                     Row(
                       children: [
-                        Icon(
-                          Icons.location_on_outlined,
-                          size: 14,
-                          color: themeTaupe,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            listing.location,
-                            style: TextStyle(fontSize: 13, color: themeTaupe),
-                            overflow: TextOverflow.ellipsis,
+                        if (listing.location.isNotEmpty) ...[
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: 14,
+                            color: themeTaupe,
                           ),
-                        ),
-                        const SizedBox(width: 12),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              listing.location,
+                              style: TextStyle(fontSize: 13, color: themeTaupe),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                        ],
                         Text(
                           _formatListingAge(listing.uploadDate),
                           style: TextStyle(fontSize: 12, color: themeTaupe),

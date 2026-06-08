@@ -104,14 +104,15 @@ class ListingTile extends StatelessWidget {
                         spacing: 4,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            listing.location,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: themeTaupe,
-                              fontWeight: FontWeight.w500,
+                          if (listing.location.isNotEmpty)
+                            Text(
+                              listing.location,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: themeTaupe,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
                           Text(
                             listing.style,
                             style: TextStyle(

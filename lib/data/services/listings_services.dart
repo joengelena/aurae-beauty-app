@@ -16,7 +16,7 @@ class ListingsServices {
   Future<Listing> getListing(int listingId) async {
     try {
       http.Response response = await apiClient.get(
-        '/listings/$listingId',
+        '/dresses/$listingId',
         cacheKey: CacheKeys.listing(listingId),
         cacheDuration: CacheDurations.medium,
       );
