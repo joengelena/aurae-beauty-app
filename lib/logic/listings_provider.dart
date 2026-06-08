@@ -89,7 +89,8 @@ class ListingsProvider extends ChangeNotifier {
 
       final fetchedListings = res.data;
 
-      listings.addAll(fetchedListings);
+      final existingIds = listings.map((l) => l.id).toSet();
+      listings.addAll(fetchedListings.where((l) => !existingIds.contains(l.id)));
       totalPages = res.totalPages;
       currentPage = res.pageNumber;
       totalListings = res.totalRows;
