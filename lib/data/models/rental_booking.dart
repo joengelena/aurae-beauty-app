@@ -3,9 +3,10 @@ class RentalBooking {
   final int dressIdFk;
   final String bookingType;
   final DateTime bookingDate;
-  final String? renterName;
+  final String renterName;
   final String? renterEmail;
   final String? renterPhone;
+  final String? renterInstagram;
   final DateTime startDate;
   final DateTime endDate;
   final double totalCost;
@@ -20,9 +21,10 @@ class RentalBooking {
     required this.dressIdFk,
     required this.bookingType,
     required this.bookingDate,
-    this.renterName,
+    required this.renterName,
     this.renterEmail,
     this.renterPhone,
+    this.renterInstagram,
     required this.startDate,
     required this.endDate,
     required this.totalCost,
@@ -39,9 +41,10 @@ class RentalBooking {
       dressIdFk: json['dressIdFk'] as int,
       bookingType: json['bookingType'] as String? ?? 'rental',
       bookingDate: DateTime.parse(json['bookingDate'] as String),
-      renterName: json['renterName'] as String?,
+      renterName: json['renterName'] as String? ?? '',
       renterEmail: json['renterEmail'] as String?,
       renterPhone: json['renterPhone'] as String?,
+      renterInstagram: json['renterInstagram'] as String?,
       startDate: DateTime.parse(json['startDate'] as String),
       endDate: DateTime.parse(json['endDate'] as String),
       totalCost: json['totalCost'] != null ? (json['totalCost'] as num).toDouble() : 0.0,
@@ -62,6 +65,7 @@ class RentalBooking {
       'renterName': renterName,
       'renterEmail': renterEmail,
       'renterPhone': renterPhone,
+      'renterInstagram': renterInstagram,
       'startDate': startDate.toIso8601String(),
       'endDate': endDate.toIso8601String(),
       'totalCost': totalCost,

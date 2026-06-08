@@ -671,11 +671,11 @@ class _DressDetailPageState extends State<DressDetailPage>
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    booking.renterName ?? booking.bookingType,
+                    booking.renterName.isNotEmpty ? booking.renterName : booking.bookingType,
                     style: TextStyle(
                       fontSize: 12,
                       color: themeTaupe,
-                      fontStyle: booking.renterName == null
+                      fontStyle: booking.renterName.isEmpty
                           ? FontStyle.italic
                           : FontStyle.normal,
                     ),

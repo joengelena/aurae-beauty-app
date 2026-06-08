@@ -22,6 +22,7 @@ class _AddBookingPageState extends State<AddBookingPage> {
   final _renterNameController = TextEditingController();
   final _renterEmailController = TextEditingController();
   final _renterPhoneController = TextEditingController();
+  final _renterInstagramController = TextEditingController();
   final _totalCostController = TextEditingController();
   final _depositPaidController = TextEditingController();
   final _notesController = TextEditingController();
@@ -40,6 +41,7 @@ class _AddBookingPageState extends State<AddBookingPage> {
     _renterNameController.dispose();
     _renterEmailController.dispose();
     _renterPhoneController.dispose();
+    _renterInstagramController.dispose();
     _totalCostController.dispose();
     _depositPaidController.dispose();
     _notesController.dispose();
@@ -90,15 +92,16 @@ class _AddBookingPageState extends State<AddBookingPage> {
       'endDate': _endDate!.toIso8601String().substring(0, 10),
       'totalCost': double.tryParse(_totalCostController.text.trim()) ?? 0.0,
       'status': _status,
+      'renterName': _renterNameController.text.trim(),
     };
-    if (_renterNameController.text.trim().isNotEmpty) {
-      data['renterName'] = _renterNameController.text.trim();
-    }
     if (_renterEmailController.text.trim().isNotEmpty) {
       data['renterEmail'] = _renterEmailController.text.trim();
     }
     if (_renterPhoneController.text.trim().isNotEmpty) {
       data['renterPhone'] = _renterPhoneController.text.trim();
+    }
+    if (_renterInstagramController.text.trim().isNotEmpty) {
+      data['renterInstagram'] = _renterInstagramController.text.trim();
     }
     if (_depositPaidController.text.trim().isNotEmpty) {
       data['depositPaid'] = double.parse(_depositPaidController.text.trim());
@@ -157,13 +160,15 @@ class _AddBookingPageState extends State<AddBookingPage> {
               _datePicker('Start Date *', _startDate, _pickStartDate),
               _datePicker('End Date *', _endDate, _pickEndDate),
               const SizedBox(height: 16),
-              Text('Renter (optional)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: themeText)),
+              Text('Renter', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: themeText)),
               const SizedBox(height: 8),
-              _field(_renterNameController, 'Renter Name'),
+              _field(_renterNameController, 'Renter Name', required: true),
               _field(_renterEmailController, 'Renter Email',
                   keyboardType: TextInputType.emailAddress),
               _field(_renterPhoneController, 'Renter Phone',
                   keyboardType: TextInputType.phone),
+              _field(_renterInstagramController, 'Instagram ID',
+                  keyboardType: TextInputType.text),
               const SizedBox(height: 16),
               Text('Payment', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: themeText)),
               const SizedBox(height: 8),
