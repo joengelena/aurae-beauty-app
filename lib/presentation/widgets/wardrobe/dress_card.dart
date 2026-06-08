@@ -55,9 +55,29 @@ class DressCard extends StatelessWidget {
                         : _photoPlaceholder(),
                   ),
                 ),
-                if (dress.damageDescription != null)
+                if (dress.listingType == 'sell')
                   Positioned(
                     top: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD4AF37),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text(
+                        'For Sale',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (dress.damageDescription != null)
+                  Positioned(
+                    top: dress.listingType == 'sell' ? 36 : 8,
                     left: 8,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -136,25 +156,22 @@ class DressCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
-                                color: themeText,
+                                color: dress.listingType == 'sell'
+                                    ? const Color(0xFFD4AF37)
+                                    : themeText,
                               ),
                             ),
-                            Text(
-                              '/day',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: themeTaupe,
+                            if (dress.listingType != 'sell')
+                              Text(
+                                '/day',
+                                style: TextStyle(fontSize: 11, color: themeTaupe),
                               ),
-                            ),
                           ],
                           const Spacer(),
-                          if ((dress.rentalCount ?? 0) > 0)
+                          if (dress.listingType == 'rent' && (dress.rentalCount ?? 0) > 0)
                             Text(
                               '${dress.rentalCount} rental${dress.rentalCount != 1 ? 's' : ''}',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: themeTaupe,
-                              ),
+                              style: TextStyle(fontSize: 11, color: themeTaupe),
                             ),
                         ],
                       ),

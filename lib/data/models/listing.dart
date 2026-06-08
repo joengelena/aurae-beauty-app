@@ -17,6 +17,7 @@ class Listing {
   final String size;
   final String? color;
   final String? dressType;
+  final String listingType;
   final bool? isInWatchlist;
 
   Listing({
@@ -36,6 +37,7 @@ class Listing {
     required this.size,
     this.color,
     this.dressType,
+    this.listingType = 'rent',
     this.isInWatchlist,
   });
 
@@ -57,6 +59,7 @@ class Listing {
       size: json['size'] as String,
       color: json['color'] as String?,
       dressType: json['dressType'] as String?,
+      listingType: json['listingType'] as String? ?? 'rent',
       isInWatchlist: json['isInWatchlist'] != null
           ? (json['isInWatchlist'] == 1 || json['isInWatchlist'] == true)
           : null,
@@ -83,6 +86,7 @@ class Listing {
     String? size,
     String? color,
     String? dressType,
+    String? listingType,
     bool? isInWatchlist,
   }) {
     return Listing(
@@ -102,6 +106,7 @@ class Listing {
       size: size ?? this.size,
       color: color ?? this.color,
       dressType: dressType ?? this.dressType,
+      listingType: listingType ?? this.listingType,
       isInWatchlist: isInWatchlist ?? this.isInWatchlist,
     );
   }

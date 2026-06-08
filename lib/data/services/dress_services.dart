@@ -61,13 +61,13 @@ class DressServices {
           '/user/dresses',
           fields,
           [multipartFile],
-          invalidateCacheKeys: [CacheKeys.dresses],
+          invalidateCacheKeys: [CacheKeys.dresses, '*/dresses*'],
         );
       } else {
         response = await apiClient.post(
           '/user/dresses',
           dressData,
-          invalidateCacheKeys: [CacheKeys.dresses],
+          invalidateCacheKeys: [CacheKeys.dresses, '*/dresses*'],
         );
       }
 
@@ -160,7 +160,7 @@ class DressServices {
           '/user/dresses/$dressId',
           fields,
           [multipartFile],
-          invalidateCacheKeys: [CacheKeys.dresses, CacheKeys.dress(dressId)],
+          invalidateCacheKeys: [CacheKeys.dresses, CacheKeys.dress(dressId), '*/dresses*'],
         );
       } else {
         final payload = Map<String, dynamic>.fromEntries(dressFields.entries);
@@ -168,7 +168,7 @@ class DressServices {
         response = await apiClient.patch(
           '/user/dresses/$dressId',
           payload,
-          invalidateCacheKeys: [CacheKeys.dresses, CacheKeys.dress(dressId)],
+          invalidateCacheKeys: [CacheKeys.dresses, CacheKeys.dress(dressId), '*/dresses*'],
         );
       }
 
@@ -196,7 +196,7 @@ class DressServices {
       http.Response response = await apiClient.delete(
         '/user/dresses/$dressId',
         {},
-        invalidateCacheKeys: [CacheKeys.dresses, CacheKeys.dress(dressId)],
+        invalidateCacheKeys: [CacheKeys.dresses, CacheKeys.dress(dressId), '*/dresses*'],
       );
 
       if (response.statusCode == HttpStatus.notFound) {

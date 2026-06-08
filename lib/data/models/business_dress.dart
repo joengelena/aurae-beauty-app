@@ -3,6 +3,8 @@ class BusinessDress {
   final String userIdFk;
   final String brand;
   final String style;
+  final String listingType;
+  final bool isPublic;
   final int? purchaseYear;
   final String? internalName;
   final String? color;
@@ -24,6 +26,8 @@ class BusinessDress {
     required this.userIdFk,
     required this.brand,
     required this.style,
+    this.listingType = 'rent',
+    this.isPublic = false,
     this.purchaseYear,
     this.internalName,
     this.color,
@@ -47,6 +51,8 @@ class BusinessDress {
       userIdFk: json['userIdFk'] as String,
       brand: json['brand'] as String? ?? json['make'] as String? ?? '',
       style: json['style'] as String? ?? json['model'] as String? ?? '',
+      listingType: json['listingType'] as String? ?? 'rent',
+      isPublic: json['isPublic'] as bool? ?? false,
       purchaseYear: json['purchaseYear'] as int? ?? json['year'] as int?,
       internalName: json['internalName'] as String? ?? json['nickname'] as String?,
       color: json['color'] as String?,
@@ -76,6 +82,8 @@ class BusinessDress {
       'userIdFk': userIdFk,
       'brand': brand,
       'style': style,
+      'listingType': listingType,
+      'isPublic': isPublic,
       'purchaseYear': purchaseYear,
       'internalName': internalName,
       'color': color,

@@ -27,6 +27,8 @@ class _AddDressPageState extends State<AddDressPage> {
   final _notesController = TextEditingController();
   final _damageDescriptionController = TextEditingController();
 
+  String _listingType = 'rent';
+  bool _isPublic = false;
   String _size = 'M';
   String _condition = 'Excellent';
   String? _selectedColor;
@@ -96,6 +98,8 @@ class _AddDressPageState extends State<AddDressPage> {
     final data = <String, dynamic>{
       'brand': _brandController.text.trim(),
       'style': _styleController.text.trim(),
+      'listingType': _listingType,
+      'isPublic': _isPublic,
       'size': _size,
       'condition': _condition,
       'color': _selectedColor!,
@@ -170,15 +174,19 @@ class _AddDressPageState extends State<AddDressPage> {
             children: [
               _buildImagePicker(),
               const SizedBox(height: 20),
+              _buildListingTypeToggle(),
+              const SizedBox(height: 12),
+              _buildVisibilityToggle(),
+              const SizedBox(height: 16),
               _field(_brandController, 'Brand', required: true),
               _field(_styleController, 'Style', required: true),
               _field(
                 _rentalPriceController,
-                'Price per Day',
+                _listingType == 'sell' ? 'Selling Price' : 'Price per Day',
                 keyboardType: TextInputType.number,
                 required: true,
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Enter a rental price';
+                  if (v == null || v.isEmpty) return _listingType == 'sell' ? 'Enter a selling price' : 'Enter a rental price';
                   if (int.tryParse(v) == null) return 'Enter a whole number';
                   return null;
                 },
@@ -248,6 +256,104 @@ class _AddDressPageState extends State<AddDressPage> {
               _buildDamageSection(),
               const SizedBox(height: 16),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildListingTypeToggle() {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5EFED),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(4),
+      child: Row(
+        children: [
+          _toggleOption('rent', 'For Rent'),
+          _toggleOption('sell', 'For Sale'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVisibilityToggle() {
+    return GestureDetector(
+      onTap: () => setState(() => _isPublic = !_isPublic),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: _isPublic ? const Color(0xFFEAD9D5) : const Color(0xFFF5EFED),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: _isPublic ? const Color(0xFFD4A89A) : const Color(0xFFDDD4CF),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              _isPublic ? Icons.public : Icons.lock_outline,
+              size: 20,
+              color: _isPublic ? const Color(0xFF8B4A3C) : themeTaupe,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _isPublic ? 'Visible on Browse' : 'Private (Wardrobe only)',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: _isPublic ? const Color(0xFF8B4A3C) : themeText,
+                    ),
+                  ),
+                  Text(
+                    _isPublic
+                        ? 'Anyone can browse and book this dress'
+                        : 'Only visible in your wardrobe',
+                    style: TextStyle(fontSize: 11, color: themeTaupe),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              value: _isPublic,
+              onChanged: (v) => setState(() => _isPublic = v),
+              activeColor: const Color(0xFF8B4A3C),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _toggleOption(String value, String label) {
+    final selected = _listingType == value;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _listingType = value),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeInOut,
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: selected ? Colors.white : Colors.transparent,
+            borderRadius: BorderRadius.circular(9),
+            boxShadow: selected
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.07), blurRadius: 4, offset: const Offset(0, 1))]
+                : null,
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+              color: selected ? themeText : themeTaupe,
+            ),
           ),
         ),
       ),
