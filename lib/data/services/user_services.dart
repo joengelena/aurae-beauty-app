@@ -461,6 +461,7 @@ class UserServices {
     String phoneNumber,
     String location,
     String userId, {
+    String? instagram,
     Uint8List? imageBytes,
     String? imageMimeType,
   }) async {
@@ -473,6 +474,7 @@ class UserServices {
           'lastName': lastName,
           'phoneNumber': phoneNumber,
           'location': location,
+          if (instagram != null) 'instagram': instagram,
         };
 
         final multipartFile = _createImageMultipartFile(
@@ -493,6 +495,7 @@ class UserServices {
             'lastName': lastName,
             'phoneNumber': phoneNumber,
             'location': location,
+            if (instagram != null) 'instagram': instagram,
           },
           invalidateCacheKeys: [CacheKeys.userDetails(userId)],
         );

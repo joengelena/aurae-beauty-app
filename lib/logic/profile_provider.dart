@@ -83,8 +83,9 @@ class ProfileProvider extends ChangeNotifier {
     String firstName,
     String lastName,
     String phoneNumber,
-    String location,
-  ) async {
+    String location, {
+    String? instagram,
+  }) async {
     isLoading = true;
     updateErrorMessage = '';
     updateMessage = '';
@@ -99,6 +100,7 @@ class ProfileProvider extends ChangeNotifier {
         phoneNumber,
         location,
         userId,
+        instagram: instagram,
         imageBytes: _isPhotoChanged ? profilePhotoBytes : null,
         imageMimeType: _isPhotoChanged ? profilePhotoMimeType : null,
       );

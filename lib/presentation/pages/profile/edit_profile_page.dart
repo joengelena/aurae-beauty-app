@@ -20,6 +20,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final phoneNumberController = TextEditingController();
+  final instagramController = TextEditingController();
   bool isFormValid = false;
   bool hasChanges = false;
   List<String> locationOptions = [];
@@ -39,12 +40,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
         firstNameController.text = user.firstName;
         lastNameController.text = user.lastName;
         phoneNumberController.text = user.phoneNumber;
+        instagramController.text = user.instagram ?? '';
         selectedLocation = user.location;
 
         // Add listeners after initializing values
         firstNameController.addListener(_validateForm);
         lastNameController.addListener(_validateForm);
         phoneNumberController.addListener(_validateForm);
+        instagramController.addListener(_validateForm);
       }
 
       // Clear any previous update state
@@ -72,6 +75,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     firstNameController.dispose();
     lastNameController.dispose();
     phoneNumberController.dispose();
+    instagramController.dispose();
     super.dispose();
   }
 
@@ -92,6 +96,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         firstNameController.text != user.firstName ||
         lastNameController.text != user.lastName ||
         phoneNumberController.text != user.phoneNumber ||
+        instagramController.text != (user.instagram ?? '') ||
         selectedLocation != user.location ||
         profileProvider.isPhotoChanged;
 
@@ -198,6 +203,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     decoration: InputDecoration(labelText: 'Phone Number'),
                   ),
 
+                  TextFormField(
+                    controller: instagramController,
+                    decoration: InputDecoration(
+                      labelText: 'Instagram ID',
+                      hintText: 'username (without @)',
+                    ),
+                  ),
+
                   DropdownButtonFormField<String>(
                     value: selectedLocation,
                     decoration: InputDecoration(labelText: 'Location'),
@@ -234,6 +247,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   lastNameController.text.trim(),
                                   phoneNumberController.text.trim(),
                                   selectedLocation!,
+                                  instagram: instagramController.text.trim().isEmpty
+                                      ? null
+                                      : instagramController.text.trim(),
                                 );
                               }
                             },

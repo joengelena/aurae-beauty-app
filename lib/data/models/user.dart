@@ -6,6 +6,7 @@ class User {
   final String email;
   final String phoneNumber;
   final String location;
+  final String? instagram;
   final String? profilePhotoUrl;
 
   User({
@@ -14,6 +15,7 @@ class User {
     required this.email,
     required this.phoneNumber,
     required this.location,
+    this.instagram,
     this.profilePhotoUrl,
   });
 
@@ -26,6 +28,7 @@ class User {
       email: decodedJson['email'] as String,
       phoneNumber: decodedJson['phoneNumber'] as String,
       location: decodedJson['location'] as String,
+      instagram: decodedJson['instagram'] as String?,
       profilePhotoUrl: decodedJson['profilePhotoUrl'] as String?,
     );
   }
