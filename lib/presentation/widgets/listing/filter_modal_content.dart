@@ -3,6 +3,7 @@ import 'package:shine_app/logic/filtering_provider.dart';
 import 'package:shine_app/logic/listings_provider.dart';
 import 'package:shine_app/presentation/widgets/listing/range_filter.dart';
 import 'package:shine_app/utils/filter_utils.dart';
+import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 /// Modal content for the filter bottom sheet
@@ -38,10 +39,8 @@ class FilterModalContent extends StatelessWidget {
             flex: 3,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.grey.shade300,
-                ),
-                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: themePrimary),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -77,11 +76,12 @@ class FilterModalContent extends StatelessWidget {
     final listingAttributeOptions = filteringProvider.listingAttributeOptions;
     final selectedEqualFilters = filteringProvider.selectedEqualFilters;
 
-    // Define the desired filter order
+    // Define the desired filter order (dress-relevant filters first)
     final orderedFilterKeys = [
       'location',
       'vehicle_condition',
       'make',
+      'body_type',
     ];
 
     // Create a map for quick lookup of filter options
@@ -119,22 +119,10 @@ class FilterModalContent extends StatelessWidget {
 
                   // Range filters section
                   RangeFilter(
-                    label: 'Year',
-                    fromKey: 'yearFrom',
-                    toKey: 'yearTo',
-                    provider: filteringProvider,
-                  ),
-                  RangeFilter(
                     label: 'Price',
                     fromKey: 'priceFrom',
                     toKey: 'priceTo',
                     prefixText: '\$',
-                    provider: filteringProvider,
-                  ),
-                  RangeFilter(
-                    label: 'Kilometers',
-                    fromKey: 'kilometersFrom',
-                    toKey: 'kilometersTo',
                     provider: filteringProvider,
                   ),
 

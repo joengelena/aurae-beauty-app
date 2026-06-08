@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shine_app/utils/theme.dart';
 
-/// A reusable badge widget for displaying active filters with a remove button
+/// A reusable chip widget for displaying active filters with a remove button
 class FilterBadge extends StatelessWidget {
   final String displayText;
   final VoidCallback onRemove;
@@ -13,23 +14,30 @@ class FilterBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton(
-      onPressed: onRemove,
-      style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(
-          Theme.of(context).colorScheme.secondary,
+    return GestureDetector(
+      onTap: onRemove,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: themeAccent.withValues(alpha: 0.18),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: themeAccent, width: 0.8),
         ),
-        padding: const WidgetStatePropertyAll(
-          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              displayText,
+              style: TextStyle(
+                color: themeText,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Icon(Icons.close, size: 14, color: themeTaupe),
+          ],
         ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(displayText),
-          const SizedBox(width: 8),
-          const Icon(Icons.close, size: 16),
-        ],
       ),
     );
   }

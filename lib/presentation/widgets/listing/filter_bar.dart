@@ -4,6 +4,7 @@ import 'package:shine_app/logic/listings_provider.dart';
 import 'package:shine_app/presentation/widgets/listing/filter_badge.dart';
 import 'package:shine_app/presentation/widgets/listing/filter_modal_content.dart';
 import 'package:shine_app/utils/filter_utils.dart';
+import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 /// Displays a horizontal scrollable bar with filter badges
@@ -144,24 +145,18 @@ class FilterBar extends StatelessWidget {
           // Filters button
           OutlinedButton.icon(
             onPressed: () => _showFiltersBottomSheet(context),
-            icon: Icon(
-              Icons.tune,
-              color: Theme.of(context).primaryColor,
-              size: 20,
-            ),
+            icon: Icon(Icons.tune, color: themeText, size: 18),
             label: Text(
               'Filters',
-              style: TextStyle(
-                color: Theme.of(context).primaryColor,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: themeText, fontSize: 13),
             ),
             style: OutlinedButton.styleFrom(
-              side: BorderSide(color: Theme.of(context).primaryColor),
+              side: BorderSide(color: const Color(0xFFDDD4CF), width: 1),
               shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8)),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
+              backgroundColor: Colors.white,
             ),
           ),
           // Equal filter badges

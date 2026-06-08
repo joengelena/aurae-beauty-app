@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/exceptions/app_exception.dart';
 import 'package:shine_app/logic/dress_detail_provider.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
+import 'package:shine_app/utils/theme.dart';
+import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class AddBookingPage extends StatefulWidget {
@@ -150,12 +152,12 @@ class _AddBookingPageState extends State<AddBookingPage> {
               _dropdown('Status', _status, _statuses,
                   (v) => setState(() => _status = v!)),
               const SizedBox(height: 16),
-              const Text('Dates', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+              Text('Dates', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: themeText)),
               const SizedBox(height: 8),
               _datePicker('Start Date *', _startDate, _pickStartDate),
               _datePicker('End Date *', _endDate, _pickEndDate),
               const SizedBox(height: 16),
-              const Text('Renter (optional)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+              Text('Renter (optional)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: themeText)),
               const SizedBox(height: 8),
               _field(_renterNameController, 'Renter Name'),
               _field(_renterEmailController, 'Renter Email',
@@ -163,7 +165,7 @@ class _AddBookingPageState extends State<AddBookingPage> {
               _field(_renterPhoneController, 'Renter Phone',
                   keyboardType: TextInputType.phone),
               const SizedBox(height: 16),
-              const Text('Payment', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+              Text('Payment', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: themeText)),
               const SizedBox(height: 8),
               _field(
                 _totalCostController,
@@ -241,8 +243,8 @@ class _AddBookingPageState extends State<AddBookingPage> {
         child: InputDecorator(
           decoration: InputDecoration(labelText: label),
           child: Text(
-            date != null ? date.toIso8601String().substring(0, 10) : 'Select date',
-            style: TextStyle(color: date != null ? Colors.black87 : Colors.grey),
+            date != null ? formatDate(date) : 'Select date',
+            style: TextStyle(color: date != null ? themeText : themeTaupe),
           ),
         ),
       ),

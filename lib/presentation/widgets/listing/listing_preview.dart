@@ -24,10 +24,9 @@ class _ColorDot extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
-        border:
-            isLight
-                ? Border.all(color: const Color(0xFFD0C8C0), width: 0.8)
-                : null,
+        border: isLight
+            ? Border.all(color: const Color(0xFFD0C8C0), width: 0.8)
+            : null,
       ),
     );
   }
@@ -45,42 +44,81 @@ class ListingPreview extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // Push current route onto stack for back button
         final currentRoute = GoRouterState.of(context).uri.path;
         context.read<BackButtonProvider>().pushRoute(currentRoute);
-
         context.go('/listings/${listing.id}');
       },
-      child: SizedBox(
+      child: Container(
         width: width,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Image with overlay buttons
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: SizedBox(
-                    width: width,
-                    child: AspectRatio(
-                      aspectRatio: AppConstants.listingImageAspectRatio,
-                      child: Image.network(
-                        listing.previewImgUrl,
-                        fit: BoxFit.cover,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: AppConstants.listingImageAspectRatio,
+                    child: listing.previewImgUrl.isNotEmpty
+                        ? Image.network(
+                            listing.previewImgUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => _imagePlaceholder(),
+                          )
+                        : _imagePlaceholder(),
+                  ),
+                ),
+                // Status badge (rented/sold)
+                if (listing.status == 'sold' || listing.status == 'rented')
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: listing.status == 'rented'
+                            ? themeTaupe
+                            : themeRose,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        listing.status == 'rented' ? 'Rented' : 'Sold',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
-                ),
+                // Bookmark button
                 Positioned(
-                  top: 8,
-                  right: 8,
+                  top: 6,
+                  right: 6,
                   child: GestureDetector(
                     onTap: () async {
                       final watchlistProvider =
                           context.read<WatchlistProvider>();
                       final listingsProvider = context.read<ListingsProvider>();
 
-                      // Optimistically update UI
                       listingsProvider.toggleWatchlistStatus(
                         listing.id,
                         !isInWatchlist,
@@ -94,7 +132,7 @@ class ListingPreview extends StatelessWidget {
                           if (context.mounted) {
                             FeedbackHelpers.showSuccessSnackBar(
                               context,
-                              'Removed from watchlist',
+                              'Removed from favorites',
                             );
                           }
                         } else {
@@ -102,85 +140,101 @@ class ListingPreview extends StatelessWidget {
                           if (context.mounted) {
                             FeedbackHelpers.showSuccessSnackBar(
                               context,
-                              'Added to watchlist',
+                              'Saved to favorites',
                             );
                           }
                         }
                       } catch (e) {
-                        // Revert on error
                         listingsProvider.toggleWatchlistStatus(
                           listing.id,
                           isInWatchlist,
                         );
-
                         if (context.mounted) {
                           FeedbackHelpers.showErrorSnackBar(
                             context,
-                            'Failed to update watchlist',
+                            'Could not update favorites',
                           );
                         }
                       }
                     },
                     child: Container(
-                      padding: EdgeInsets.all(6),
+                      padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.7),
+                        color: Colors.white.withValues(alpha: 0.88),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        isInWatchlist ? Icons.bookmark : Icons.bookmark_border,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 24,
+                        isInWatchlist
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: isInWatchlist ? themeRose : themeTaupe,
+                        size: 18,
                       ),
                     ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 6),
-            Text(
-              listing.style,
-              style: Theme.of(context).textTheme.headlineSmall,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              listing.brand,
-              style: TextStyle(fontSize: 12, color: themeTaupe),
-            ),
-            Row(
-              children: [
-                Icon(Icons.location_on, size: 16),
-                SizedBox(width: 4),
-                Flexible(
-                  child: Text(
-                    listing.location,
-                    style: Theme.of(context).textTheme.bodyMedium,
+
+            // Text content
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    listing.style,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      color: themeText,
+                      height: 1.3,
+                    ),
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Icon(Icons.straighten, size: 14, color: themeTaupe),
-                SizedBox(width: 4),
-                Text(
-                  'Size ${listing.size}',
-                  style: TextStyle(fontSize: 12, color: themeTaupe),
-                ),
-                if (listing.color != null) ...[
-                  SizedBox(width: 10),
-                  _ColorDot(listing.color!),
-                  SizedBox(width: 4),
-                ],
-              ],
-            ),
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: '${formatPrice(listing.pricePerDay)}/day',
+
+                  const SizedBox(height: 2),
+
+                  Text(
+                    listing.brand,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: themeTaupe,
+                      height: 1.3,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  Row(
+                    children: [
+                      Text(
+                        'Size ${listing.size}',
+                        style: TextStyle(fontSize: 11, color: themeTaupe),
+                      ),
+                      if (listing.color != null) ...[
+                        const SizedBox(width: 8),
+                        _ColorDot(listing.color!),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            listing.color!,
+                            style: TextStyle(fontSize: 11, color: themeTaupe),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Text(
+                    '${formatPrice(listing.pricePerDay)}/day',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
@@ -192,6 +246,15 @@ class ListingPreview extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _imagePlaceholder() {
+    return Container(
+      color: const Color(0xFFF5EFED),
+      child: Center(
+        child: Icon(Icons.checkroom_outlined, color: themeTaupe, size: 32),
       ),
     );
   }

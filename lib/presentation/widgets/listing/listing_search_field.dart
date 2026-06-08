@@ -50,7 +50,7 @@ class _ListingSearchFieldState extends State<ListingSearchField> {
       onSubmitted: (_) => _handleSearch(),
       style: const TextStyle(fontSize: 14),
       decoration: InputDecoration(
-        hintText: "What's your next ride?",
+        hintText: 'Search styles, brands, or sizes',
         prefixIcon: const Icon(Icons.search, size: 20),
         suffixIcon: Padding(
           padding: const EdgeInsets.only(right: 8, top: 4, bottom: 4),
@@ -70,7 +70,7 @@ class _ListingSearchFieldState extends State<ListingSearchField> {
           ),
         ),
         filled: true,
-        fillColor: Colors.grey.shade200,
+        fillColor: const Color(0xFFF0E9E6),
         contentPadding: const EdgeInsets.symmetric(vertical: 0),
         isDense: true,
         border: OutlineInputBorder(

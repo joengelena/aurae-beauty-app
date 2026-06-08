@@ -15,22 +15,41 @@ class WardrobeErrorState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: themeRed),
-            const SizedBox(height: 16),
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: themeRose.withValues(alpha: 0.10),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.error_outline, size: 32, color: themeRose),
+            ),
+            const SizedBox(height: 20),
             Text(
-              errorMessage,
+              'Unable to load wardrobe',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Something went wrong. Please try again.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: themeTaupe,
+                height: 1.5,
+              ),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              icon: const Icon(Icons.refresh, size: 18),
+              label: const Text('Try again'),
             ),
           ],
         ),

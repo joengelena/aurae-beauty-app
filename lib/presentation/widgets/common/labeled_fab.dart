@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shine_app/utils/theme.dart';
 
 /// A reusable floating action button with an icon and label text
 ///
@@ -23,9 +24,10 @@ class LabeledFab extends StatelessWidget {
       bottom: 16,
       child: FloatingActionButton.extended(
         onPressed: onPressed,
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        backgroundColor: themeAccent,
+        foregroundColor: themeText,
         icon: Icon(icon),
-        label: Text(label),
+        label: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
     );
   }

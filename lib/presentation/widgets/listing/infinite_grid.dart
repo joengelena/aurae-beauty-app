@@ -1,8 +1,104 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/logic/filtering_provider.dart';
 import 'package:shine_app/logic/listings_provider.dart';
+import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:shine_app/presentation/widgets/listing/listing_preview.dart';
+
+class _SkeletonCard extends StatelessWidget {
+  final double width;
+  final Animation<double> shimmer;
+
+  const _SkeletonCard({required this.width, required this.shimmer});
+
+  Widget _shimmerLine({required double height, double radius = 4, double endFraction = 1.0}) {
+    return Row(
+      children: [
+        Expanded(
+          flex: (endFraction * 100).round(),
+          child: AnimatedBuilder(
+            animation: shimmer,
+            builder: (context, _) {
+              return Container(
+                height: height,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(radius),
+                  color: Color.lerp(
+                    const Color(0xFFEFE9E6),
+                    const Color(0xFFE0D5D0),
+                    shimmer.value,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        if (endFraction < 1.0)
+          Spacer(flex: ((1.0 - endFraction) * 100).round()),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+            child: AnimatedBuilder(
+              animation: shimmer,
+              builder: (context, _) {
+                return AspectRatio(
+                  aspectRatio: AppConstants.listingImageAspectRatio,
+                  child: Container(
+                    color: Color.lerp(
+                      const Color(0xFFEFE9E6),
+                      const Color(0xFFE0D5D0),
+                      shimmer.value,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _shimmerLine(height: 13, endFraction: 0.75),
+                const SizedBox(height: 6),
+                _shimmerLine(height: 11, endFraction: 0.55),
+                const SizedBox(height: 8),
+                _shimmerLine(height: 11, endFraction: 0.45),
+                const SizedBox(height: 8),
+                _shimmerLine(height: 14, endFraction: 0.5),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class InfiniteGrid extends StatefulWidget {
   const InfiniteGrid({super.key});
@@ -11,22 +107,33 @@ class InfiniteGrid extends StatefulWidget {
   State<InfiniteGrid> createState() => _InfiniteGridState();
 }
 
-class _InfiniteGridState extends State<InfiniteGrid> {
+class _InfiniteGridState extends State<InfiniteGrid>
+    with TickerProviderStateMixin {
   static const _scrollThreshold = 200.0;
   static const _largeScreenWidth = 1000.0;
   static const _mediumScreenWidth = 600.0;
-  static const _itemSpacing = 6.0;
+  static const _itemSpacing = 10.0;
   static const _itemRunSpacing = 16.0;
-  static const _gridPadding = EdgeInsets.symmetric(horizontal: 8, vertical: 8);
+  static const _gridPadding = EdgeInsets.symmetric(horizontal: 12, vertical: 12);
   static const _loadingPadding = EdgeInsets.all(16);
   static const _initTimeout = Duration(seconds: 5);
 
   final ScrollController _scrollController = ScrollController();
+  late final AnimationController _shimmerController;
+  late final Animation<double> _shimmerAnimation;
   bool _hasInitialized = false;
 
   @override
   void initState() {
     super.initState();
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+    _shimmerAnimation = CurvedAnimation(
+      parent: _shimmerController,
+      curve: Curves.easeInOut,
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeListings();
     });
@@ -35,6 +142,7 @@ class _InfiniteGridState extends State<InfiniteGrid> {
 
   @override
   void dispose() {
+    _shimmerController.dispose();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
@@ -70,15 +178,12 @@ class _InfiniteGridState extends State<InfiniteGrid> {
 
       if (!mounted) return;
 
-      // Only initialize filters if they haven't been set yet
-      // This preserves default filters (like location) that were set before page load
       if (listingsProvider.equalFilters.isEmpty) {
         listingsProvider.equalFilters = Map.from(
           filteringProvider.selectedEqualFilters,
         );
       }
 
-      // Fetch listings
       await listingsProvider.getNewListings();
     } catch (e) {
       if (mounted) {
@@ -106,6 +211,68 @@ class _InfiniteGridState extends State<InfiniteGrid> {
     return (screenWidth - totalSpacing) / crossAxisCount;
   }
 
+  Widget _buildSkeletonGrid(int crossAxisCount, double itemWidth) {
+    return ListView(
+      padding: _gridPadding,
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        Wrap(
+          spacing: _itemSpacing,
+          runSpacing: _itemRunSpacing,
+          children: List.generate(
+            crossAxisCount * 3,
+            (_) => _SkeletonCard(width: itemWidth, shimmer: _shimmerAnimation),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: themeAccent.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.checkroom_outlined,
+                size: 30,
+                color: themeAccent,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'No dresses found',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: themeText,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Try adjusting your filters or search terms',
+              style: TextStyle(
+                fontSize: 14,
+                color: themeTaupe,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ListingsProvider>();
@@ -113,14 +280,14 @@ class _InfiniteGridState extends State<InfiniteGrid> {
     final crossAxisCount = _getCrossAxisCount(screenWidth);
     final itemWidth = _calculateItemWidth(screenWidth, crossAxisCount);
 
-    // Handle empty state
-    if (provider.listings.isEmpty && !provider.isLoading) {
-      return Center(
-        child: Text(
-          'No listings found',
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-      );
+    // Skeleton grid during initial load
+    if (provider.listings.isEmpty && provider.isLoading) {
+      return _buildSkeletonGrid(crossAxisCount, itemWidth);
+    }
+
+    // Empty state
+    if (provider.listings.isEmpty) {
+      return _buildEmptyState();
     }
 
     return ListView(
@@ -144,34 +311,41 @@ class _InfiniteGridState extends State<InfiniteGrid> {
             padding: _loadingPadding,
             child: Center(child: CircularProgressIndicator()),
           ),
-        // End of listings indicator
         if (!provider.canLoadMore &&
             !provider.isLoading &&
             provider.listings.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
             child: Column(
               children: [
-                Icon(
-                  Icons.check_circle_outline,
-                  size: 48,
-                  color: Colors.grey.shade400,
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: themeAccent.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.checkroom_outlined,
+                    size: 20,
+                    color: themeAccent,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  "You've reached the end",
+                  'All dresses shown',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade700,
+                    color: themeText,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Showing all ${provider.totalListings} listing${provider.totalListings == 1 ? '' : 's'}',
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  '${provider.totalListings} dress${provider.totalListings == 1 ? '' : 'es'} available',
+                  style: TextStyle(fontSize: 13, color: themeTaupe),
                 ),
-                SizedBox(height: 64),
+                const SizedBox(height: 64),
               ],
             ),
           ),

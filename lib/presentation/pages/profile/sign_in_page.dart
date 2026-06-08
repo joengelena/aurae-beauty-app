@@ -99,9 +99,9 @@ class _SignInPageState extends State<SignInPage> {
                       Container(
                         padding: const EdgeInsets.all(12.0),
                         decoration: BoxDecoration(
-                          color: Colors.red.shade50,
+                          color: themeRose.withValues(alpha: 0.06),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red.shade200),
+                          border: Border.all(color: themeRose.withValues(alpha: 0.25)),
                         ),
                         child: Row(
                           children: [
@@ -188,9 +188,11 @@ class _SignInPageState extends State<SignInPage> {
                     onPressed: () => context.go('/profile/forgot-password'),
                     child: Text(
                       'Forgot Password?',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodySmall?.copyWith(color: Colors.blue[700]),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: themeText,
+                        decoration: TextDecoration.underline,
+                        decorationColor: themeText,
+                      ),
                     ),
                   ),
                 ),
@@ -205,19 +207,13 @@ class _SignInPageState extends State<SignInPage> {
                       vertical: 14,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    foregroundColor: _isFormValid ? Colors.white : Colors.grey,
+                    foregroundColor: _isFormValid ? themeText : themeTaupe,
                     side: BorderSide(
-                      color:
-                          _isFormValid
-                              ? Theme.of(context).colorScheme.secondary
-                              : Colors.grey,
+                      color: _isFormValid ? themeAccent : const Color(0xFFDDD4CF),
                     ),
-                    backgroundColor:
-                        _isFormValid
-                            ? Theme.of(context).colorScheme.secondary
-                            : Colors.transparent,
+                    backgroundColor: _isFormValid ? themeAccent : Colors.transparent,
                   ),
                   child:
                       authProvider.isLoading
@@ -245,8 +241,10 @@ class _SignInPageState extends State<SignInPage> {
                       child: Text(
                         'Sign up',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.blue[700],
+                          color: themeText,
                           fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.underline,
+                          decorationColor: themeText,
                         ),
                       ),
                     ),

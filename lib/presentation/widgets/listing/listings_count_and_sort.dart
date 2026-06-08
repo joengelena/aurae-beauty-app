@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/logic/listings_provider.dart';
+import 'package:shine_app/utils/theme.dart';
 
 class ListingsCountAndSort extends StatelessWidget {
   final ListingsProvider listingsProvider;
@@ -19,17 +20,18 @@ class ListingsCountAndSort extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            "${listingsProvider.totalListings} listings",
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
+            "${listingsProvider.totalListings} dress${listingsProvider.totalListings == 1 ? '' : 'es'}",
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
               fontSize: 12,
+              color: themeTaupe,
             ),
           ),
           DropdownButton<String>(
             value: listingsProvider.sortBy,
             underline: const SizedBox(),
             isDense: true,
-            style: const TextStyle(fontSize: 12, color: Colors.black),
+            style: TextStyle(fontSize: 12, color: themeText, fontFamily: 'Poppins'),
             items: listingsProvider.sortByOptions.entries
                 .map((entry) => DropdownMenuItem(
                       value: entry.value,

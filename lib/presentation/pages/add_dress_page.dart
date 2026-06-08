@@ -37,7 +37,20 @@ class _AddDressPageState extends State<AddDressPage> {
   final List<Uint8List> _damagePhotoBytes = [];
   bool _isSubmitting = false;
 
-  static const _sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '6', '8', '10', '12', '14', '16'];
+  static const _sizes = [
+    'XS',
+    'S',
+    'M',
+    'L',
+    'XL',
+    'XXL',
+    '6',
+    '8',
+    '10',
+    '12',
+    '14',
+    '16',
+  ];
   static const _conditions = ['Excellent', 'Good', 'Fair', 'Poor'];
 
   @override
@@ -113,13 +126,17 @@ class _AddDressPageState extends State<AddDressPage> {
         imageMimeType: _imageMimeType,
       );
       if (mounted) {
-        FeedbackHelpers.showSuccessSnackBar(context, 'Dress added successfully');
+        FeedbackHelpers.showSuccessSnackBar(
+          context,
+          'Dress added successfully',
+        );
         context.go('/wardrobe');
       }
     } on AppException catch (e) {
       if (mounted) FeedbackHelpers.showErrorSnackBar(context, e.message);
     } catch (e) {
-      if (mounted) FeedbackHelpers.showErrorSnackBar(context, 'Failed to add dress.');
+      if (mounted)
+        FeedbackHelpers.showErrorSnackBar(context, 'Failed to add dress.');
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -133,13 +150,14 @@ class _AddDressPageState extends State<AddDressPage> {
         actions: [
           TextButton(
             onPressed: _isSubmitting ? null : _submit,
-            child: _isSubmitting
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Save'),
+            child:
+                _isSubmitting
+                    ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                    : const Text('Save'),
           ),
         ],
       ),
@@ -156,7 +174,7 @@ class _AddDressPageState extends State<AddDressPage> {
               _field(_styleController, 'Style', required: true),
               _field(
                 _rentalPriceController,
-                'Rental Price per Day (cents)',
+                'Price per Day',
                 keyboardType: TextInputType.number,
                 required: true,
                 validator: (v) {
@@ -165,7 +183,12 @@ class _AddDressPageState extends State<AddDressPage> {
                   return null;
                 },
               ),
-              _dropdown('Size', _size, _sizes, (v) => setState(() => _size = v!)),
+              _dropdown(
+                'Size',
+                _size,
+                _sizes,
+                (v) => setState(() => _size = v!),
+              ),
               _buildColorPicker(),
               _field(
                 _purchaseYearController,
@@ -174,13 +197,24 @@ class _AddDressPageState extends State<AddDressPage> {
                 validator: (v) {
                   if (v == null || v.isEmpty) return null;
                   final year = int.tryParse(v);
-                  if (year == null || year < 1900 || year > 2100) return 'Enter a valid year';
+                  if (year == null || year < 1900 || year > 2100)
+                    return 'Enter a valid year';
                   return null;
                 },
               ),
-              _field(_internalNameController, 'Internal Name (optional identifier)'),
+              _field(
+                _internalNameController,
+                'Internal Name (optional identifier)',
+              ),
               const SizedBox(height: 4),
-              const Text('Condition', style: TextStyle(fontWeight: FontWeight.w500)),
+              Text(
+                'Condition',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: themeText,
+                ),
+              ),
               const SizedBox(height: 4),
               _dropdown(
                 'Condition',
@@ -190,11 +224,18 @@ class _AddDressPageState extends State<AddDressPage> {
                 showLabel: false,
               ),
               const SizedBox(height: 16),
-              const Text('Optional', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+              Text(
+                'Optional',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  color: themeText,
+                ),
+              ),
               const SizedBox(height: 8),
               _field(
                 _purchasePriceController,
-                'Purchase Price (cents)',
+                'Purchase Price',
                 keyboardType: TextInputType.number,
                 validator: (v) {
                   if (v == null || v.isEmpty) return null;
@@ -218,17 +259,21 @@ class _AddDressPageState extends State<AddDressPage> {
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
         tilePadding: EdgeInsets.zero,
-        title: const Text(
+        title: Text(
           'Damage Report',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: themeText),
         ),
-        subtitle: const Text(
+        subtitle: Text(
           'Optional — document any existing damage',
-          style: TextStyle(fontSize: 12),
+          style: TextStyle(fontSize: 12, color: themeTaupe),
         ),
         children: [
           const SizedBox(height: 4),
-          _field(_damageDescriptionController, 'Describe the damage', maxLines: 4),
+          _field(
+            _damageDescriptionController,
+            'Describe the damage',
+            maxLines: 4,
+          ),
           const SizedBox(height: 4),
           _buildDamagePhotosPicker(),
           const SizedBox(height: 8),
@@ -241,7 +286,10 @@ class _AddDressPageState extends State<AddDressPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Damage photos', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+        Text(
+          'Damage photos',
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: themeText),
+        ),
         const SizedBox(height: 8),
         SizedBox(
           height: 96,
@@ -259,11 +307,14 @@ class _AddDressPageState extends State<AddDressPage> {
                     height: 96,
                     margin: const EdgeInsets.only(right: 8),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: const Color(0xFFF5EFED),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(color: const Color(0xFFDDD4CF)),
                     ),
-                    child: const Icon(Icons.add_photo_alternate_outlined, color: Colors.grey),
+                    child: Icon(
+                      Icons.add_photo_alternate_outlined,
+                      color: themeTaupe,
+                    ),
                   ),
                 ),
             ],
@@ -324,49 +375,73 @@ class _AddDressPageState extends State<AddDressPage> {
           Wrap(
             spacing: 10,
             runSpacing: 10,
-            children: dressColorMap.entries.map((entry) {
-              final selected = _selectedColor == entry.key;
-              final isLight = entry.value.computeLuminance() > 0.85;
-              return GestureDetector(
-                onTap: () => setState(() {
-                  _selectedColor = entry.key;
-                  _colorError = false;
-                }),
-                child: Tooltip(
-                  message: entry.key,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 150),
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(
-                      color: entry.value,
-                      shape: BoxShape.circle,
-                      border: selected
-                          ? Border.all(color: themeText, width: 2.5)
-                          : isLight
-                              ? Border.all(color: const Color(0xFFD0C8C0), width: 0.8)
-                              : null,
-                      boxShadow: selected
-                          ? [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 2))]
-                          : null,
+            children:
+                dressColorMap.entries.map((entry) {
+                  final selected = _selectedColor == entry.key;
+                  final isLight = entry.value.computeLuminance() > 0.85;
+                  return GestureDetector(
+                    onTap:
+                        () => setState(() {
+                          _selectedColor = entry.key;
+                          _colorError = false;
+                        }),
+                    child: Tooltip(
+                      message: entry.key,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 150),
+                        width: 34,
+                        height: 34,
+                        decoration: BoxDecoration(
+                          color: entry.value,
+                          shape: BoxShape.circle,
+                          border:
+                              selected
+                                  ? Border.all(color: themeText, width: 2.5)
+                                  : isLight
+                                  ? Border.all(
+                                    color: const Color(0xFFD0C8C0),
+                                    width: 0.8,
+                                  )
+                                  : null,
+                          boxShadow:
+                              selected
+                                  ? [
+                                    BoxShadow(
+                                      color: Colors.black26,
+                                      blurRadius: 6,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ]
+                                  : null,
+                        ),
+                        child:
+                            selected
+                                ? Icon(
+                                  Icons.check,
+                                  size: 16,
+                                  color: isLight ? themeText : Colors.white,
+                                )
+                                : null,
+                      ),
                     ),
-                    child: selected
-                        ? Icon(Icons.check, size: 16, color: isLight ? themeText : Colors.white)
-                        : null,
-                  ),
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
           ),
           if (_selectedColor != null)
             Padding(
               padding: const EdgeInsets.only(top: 6),
-              child: Text(_selectedColor!, style: TextStyle(fontSize: 12, color: themeTaupe)),
+              child: Text(
+                _selectedColor!,
+                style: TextStyle(fontSize: 12, color: themeTaupe),
+              ),
             ),
           if (_colorError)
             Padding(
               padding: const EdgeInsets.only(top: 4),
-              child: Text('Please select a color', style: TextStyle(fontSize: 12, color: themeRose)),
+              child: Text(
+                'Please select a color',
+                style: TextStyle(fontSize: 12, color: themeRose),
+              ),
             ),
         ],
       ),
@@ -380,23 +455,31 @@ class _AddDressPageState extends State<AddDressPage> {
         width: double.infinity,
         height: 200,
         decoration: BoxDecoration(
-          color: Colors.grey.shade100,
+          color: const Color(0xFFF5EFED),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade300),
+          border: Border.all(color: const Color(0xFFDDD4CF)),
         ),
-        child: _imageBytes != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.memory(_imageBytes!, fit: BoxFit.cover),
-              )
-            : const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.add_photo_alternate_outlined, size: 40, color: Colors.grey),
-                  SizedBox(height: 8),
-                  Text('Add photo', style: TextStyle(color: Colors.grey)),
-                ],
-              ),
+        child:
+            _imageBytes != null
+                ? ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.memory(_imageBytes!, fit: BoxFit.cover),
+                )
+                : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.add_photo_alternate_outlined,
+                      size: 40,
+                      color: themeTaupe,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Add photo',
+                      style: TextStyle(color: themeTaupe, fontSize: 14),
+                    ),
+                  ],
+                ),
       ),
     );
   }
@@ -416,9 +499,13 @@ class _AddDressPageState extends State<AddDressPage> {
         decoration: InputDecoration(labelText: label),
         keyboardType: keyboardType,
         maxLines: maxLines,
-        validator: validator ??
+        validator:
+            validator ??
             (required
-                ? (v) => (v == null || v.trim().isEmpty) ? '$label is required' : null
+                ? (v) =>
+                    (v == null || v.trim().isEmpty)
+                        ? '$label is required'
+                        : null
                 : null),
       ),
     );
@@ -436,10 +523,12 @@ class _AddDressPageState extends State<AddDressPage> {
       child: DropdownButtonFormField<String>(
         value: value,
         decoration: InputDecoration(labelText: showLabel ? label : null),
-        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+        items:
+            items
+                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                .toList(),
         onChanged: onChanged,
       ),
     );
   }
-
 }

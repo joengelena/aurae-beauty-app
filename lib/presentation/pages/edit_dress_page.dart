@@ -6,6 +6,7 @@ import 'package:shine_app/data/exceptions/app_exception.dart';
 import 'package:shine_app/data/models/business_dress.dart';
 import 'package:shine_app/logic/wardrobe_provider.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
+import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class EditDressPage extends StatefulWidget {
@@ -39,7 +40,20 @@ class _EditDressPageState extends State<EditDressPage> {
   bool _isSubmitting = false;
   BusinessDress? _dress;
 
-  static const _sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '6', '8', '10', '12', '14', '16'];
+  static const _sizes = [
+    'XS',
+    'S',
+    'M',
+    'L',
+    'XL',
+    'XXL',
+    '6',
+    '8',
+    '10',
+    '12',
+    '14',
+    '16',
+  ];
   static const _conditions = ['Excellent', 'Good', 'Fair', 'Poor'];
 
   @override
@@ -136,10 +150,14 @@ class _EditDressPageState extends State<EditDressPage> {
       updates['purchaseYear'] = int.parse(_purchaseYearController.text.trim());
     }
     if (_rentalPriceController.text.trim().isNotEmpty) {
-      updates['rentalPricePerDay'] = int.parse(_rentalPriceController.text.trim());
+      updates['rentalPricePerDay'] = int.parse(
+        _rentalPriceController.text.trim(),
+      );
     }
     if (_purchasePriceController.text.trim().isNotEmpty) {
-      updates['purchasePrice'] = int.parse(_purchasePriceController.text.trim());
+      updates['purchasePrice'] = int.parse(
+        _purchasePriceController.text.trim(),
+      );
     }
     if (_notesController.text.trim().isNotEmpty) {
       updates['notes'] = _notesController.text.trim();
@@ -156,13 +174,17 @@ class _EditDressPageState extends State<EditDressPage> {
         imageMimeType: _imageMimeType,
       );
       if (mounted) {
-        FeedbackHelpers.showSuccessSnackBar(context, 'Dress updated successfully');
+        FeedbackHelpers.showSuccessSnackBar(
+          context,
+          'Dress updated successfully',
+        );
         context.go('/wardrobe');
       }
     } on AppException catch (e) {
       if (mounted) FeedbackHelpers.showErrorSnackBar(context, e.message);
     } catch (e) {
-      if (mounted) FeedbackHelpers.showErrorSnackBar(context, 'Failed to update dress.');
+      if (mounted)
+        FeedbackHelpers.showErrorSnackBar(context, 'Failed to update dress.');
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -176,13 +198,14 @@ class _EditDressPageState extends State<EditDressPage> {
         actions: [
           TextButton(
             onPressed: _isSubmitting ? null : _submit,
-            child: _isSubmitting
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Save'),
+            child:
+                _isSubmitting
+                    ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                    : const Text('Save'),
           ),
         ],
       ),
@@ -199,7 +222,7 @@ class _EditDressPageState extends State<EditDressPage> {
               _field(_styleController, 'Style', required: true),
               _field(
                 _rentalPriceController,
-                'Rental Price per Day (cents)',
+                'Price per Day',
                 keyboardType: TextInputType.number,
                 required: true,
                 validator: (v) {
@@ -208,7 +231,12 @@ class _EditDressPageState extends State<EditDressPage> {
                   return null;
                 },
               ),
-              _dropdown('Size', _size, _sizes, (v) => setState(() => _size = v!)),
+              _dropdown(
+                'Size',
+                _size,
+                _sizes,
+                (v) => setState(() => _size = v!),
+              ),
               _field(_colorController, 'Color'),
               _field(
                 _purchaseYearController,
@@ -217,19 +245,28 @@ class _EditDressPageState extends State<EditDressPage> {
                 validator: (v) {
                   if (v == null || v.isEmpty) return null;
                   final year = int.tryParse(v);
-                  if (year == null || year < 1900 || year > 2100) return 'Enter a valid year';
+                  if (year == null || year < 1900 || year > 2100)
+                    return 'Enter a valid year';
                   return null;
                 },
               ),
               _field(_internalNameController, 'Internal Name'),
               const SizedBox(height: 4),
-              _dropdown('Condition', _condition, _conditions, (v) => setState(() => _condition = v!)),
+              _dropdown(
+                'Condition',
+                _condition,
+                _conditions,
+                (v) => setState(() => _condition = v!),
+              ),
               const SizedBox(height: 16),
-              const Text('Optional', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+              Text(
+                'Optional',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: themeText),
+              ),
               const SizedBox(height: 8),
               _field(
                 _purchasePriceController,
-                'Purchase Price (cents)',
+                'Purchase Price',
                 keyboardType: TextInputType.number,
                 validator: (v) {
                   if (v == null || v.isEmpty) return null;
@@ -253,19 +290,24 @@ class _EditDressPageState extends State<EditDressPage> {
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
         tilePadding: EdgeInsets.zero,
-        initiallyExpanded: _dress?.damageDescription != null &&
+        initiallyExpanded:
+            _dress?.damageDescription != null &&
             _dress!.damageDescription!.isNotEmpty,
-        title: const Text(
+        title: Text(
           'Damage Report',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: themeText),
         ),
-        subtitle: const Text(
+        subtitle: Text(
           'Optional — document any existing damage',
-          style: TextStyle(fontSize: 12),
+          style: TextStyle(fontSize: 12, color: themeTaupe),
         ),
         children: [
           const SizedBox(height: 4),
-          _field(_damageDescriptionController, 'Describe the damage', maxLines: 4),
+          _field(
+            _damageDescriptionController,
+            'Describe the damage',
+            maxLines: 4,
+          ),
           const SizedBox(height: 4),
           _buildDamagePhotosPicker(),
           const SizedBox(height: 8),
@@ -279,7 +321,10 @@ class _EditDressPageState extends State<EditDressPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Damage photos', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+        Text(
+          'Damage photos',
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: themeText),
+        ),
         const SizedBox(height: 8),
         SizedBox(
           height: 96,
@@ -291,14 +336,23 @@ class _EditDressPageState extends State<EditDressPage> {
                   width: 96,
                   height: 96,
                   margin: const EdgeInsets.only(right: 8),
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.network(url, fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          color: Colors.grey.shade200,
-                          child: const Icon(Icons.broken_image_outlined, color: Colors.grey),
-                        )),
+                    child: Image.network(
+                      url,
+                      fit: BoxFit.cover,
+                      errorBuilder:
+                          (_, __, ___) => Container(
+                            color: const Color(0xFFF5EFED),
+                            child: Icon(
+                              Icons.broken_image_outlined,
+                              color: themeTaupe,
+                            ),
+                          ),
+                    ),
                   ),
                 ),
               ),
@@ -313,11 +367,14 @@ class _EditDressPageState extends State<EditDressPage> {
                     height: 96,
                     margin: const EdgeInsets.only(right: 8),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: const Color(0xFFF5EFED),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(color: const Color(0xFFDDD4CF)),
                     ),
-                    child: const Icon(Icons.add_photo_alternate_outlined, color: Colors.grey),
+                    child: Icon(
+                      Icons.add_photo_alternate_outlined,
+                      color: themeTaupe,
+                    ),
                   ),
                 ),
             ],
@@ -367,17 +424,21 @@ class _EditDressPageState extends State<EditDressPage> {
         width: double.infinity,
         height: 200,
         decoration: BoxDecoration(
-          color: Colors.grey.shade100,
+          color: const Color(0xFFF5EFED),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade300),
+          border: Border.all(color: const Color(0xFFDDD4CF)),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: _imageBytes != null
-              ? Image.memory(_imageBytes!, fit: BoxFit.cover)
-              : existingUrl != null
-                  ? Image.network(existingUrl, fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _photoPlaceholder())
+          child:
+              _imageBytes != null
+                  ? Image.memory(_imageBytes!, fit: BoxFit.cover)
+                  : existingUrl != null
+                  ? Image.network(
+                    existingUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _photoPlaceholder(),
+                  )
                   : _photoPlaceholder(),
         ),
       ),
@@ -385,12 +446,12 @@ class _EditDressPageState extends State<EditDressPage> {
   }
 
   Widget _photoPlaceholder() {
-    return const Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.add_photo_alternate_outlined, size: 40, color: Colors.grey),
-        SizedBox(height: 8),
-        Text('Tap to change photo', style: TextStyle(color: Colors.grey)),
+        Icon(Icons.add_photo_alternate_outlined, size: 40, color: themeTaupe),
+        const SizedBox(height: 8),
+        Text('Tap to change photo', style: TextStyle(color: themeTaupe, fontSize: 14)),
       ],
     );
   }
@@ -410,9 +471,13 @@ class _EditDressPageState extends State<EditDressPage> {
         decoration: InputDecoration(labelText: label),
         keyboardType: keyboardType,
         maxLines: maxLines,
-        validator: validator ??
+        validator:
+            validator ??
             (required
-                ? (v) => (v == null || v.trim().isEmpty) ? '$label is required' : null
+                ? (v) =>
+                    (v == null || v.trim().isEmpty)
+                        ? '$label is required'
+                        : null
                 : null),
       ),
     );
@@ -429,10 +494,12 @@ class _EditDressPageState extends State<EditDressPage> {
       child: DropdownButtonFormField<String>(
         value: value,
         decoration: InputDecoration(labelText: label),
-        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+        items:
+            items
+                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                .toList(),
         onChanged: onChanged,
       ),
     );
   }
-
 }

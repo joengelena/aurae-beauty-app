@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/theme.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class ImageCarousel extends StatefulWidget {
@@ -7,17 +8,17 @@ class ImageCarousel extends StatefulWidget {
   const ImageCarousel({super.key, required this.imageUrls});
 
   @override
-  State<ImageCarousel> createState() => _ImageCarousel();
+  State<ImageCarousel> createState() => _ImageCarouselState();
 }
 
-class _ImageCarousel extends State<ImageCarousel> {
+class _ImageCarouselState extends State<ImageCarousel> {
   final PageController _controller = PageController();
   bool _hovering = false;
 
   void _nextPage() {
     if (_controller.page! < widget.imageUrls.length - 1) {
       _controller.nextPage(
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
@@ -26,7 +27,7 @@ class _ImageCarousel extends State<ImageCarousel> {
   void _prevPage() {
     if (_controller.page! > 0) {
       _controller.previousPage(
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
@@ -34,6 +35,18 @@ class _ImageCarousel extends State<ImageCarousel> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.imageUrls.isEmpty) {
+      return AspectRatio(
+        aspectRatio: AppConstants.listingImageAspectRatio,
+        child: Container(
+          color: const Color(0xFFF5EFED),
+          child: Center(
+            child: Icon(Icons.checkroom_outlined, color: themeTaupe, size: 48),
+          ),
+        ),
+      );
+    }
+
     return MouseRegion(
       onEnter: (_) => setState(() => _hovering = true),
       onExit: (_) => setState(() => _hovering = false),
@@ -49,9 +62,35 @@ class _ImageCarousel extends State<ImageCarousel> {
                   itemCount: widget.imageUrls.length,
                   itemBuilder: (context, index) {
                     return Image.network(
-                      widget.imageUrls[index],
+                      widget.imageUrls[index] as String,
                       fit: BoxFit.cover,
                       width: double.infinity,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          color: const Color(0xFFF5EFED),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                              color: themeAccent,
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        );
+                      },
+                      errorBuilder: (_, __, ___) => Container(
+                        color: const Color(0xFFF5EFED),
+                        child: Center(
+                          child: Icon(
+                            Icons.checkroom_outlined,
+                            color: themeTaupe,
+                            size: 48,
+                          ),
+                        ),
+                      ),
                     );
                   },
                 ),
@@ -72,15 +111,18 @@ class _ImageCarousel extends State<ImageCarousel> {
                 ),
             ],
           ),
-          SmoothPageIndicator(
-            controller: _controller,
-            count: widget.imageUrls.length,
-            effect: WormEffect(
-              dotHeight: 10,
-              dotWidth: 10,
-              activeDotColor: Colors.black,
+          if (widget.imageUrls.length > 1)
+            SmoothPageIndicator(
+              controller: _controller,
+              count: widget.imageUrls.length,
+              effect: WormEffect(
+                dotHeight: 7,
+                dotWidth: 7,
+                activeDotColor: themeAccent,
+                dotColor: themePrimary,
+                spacing: 6,
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -88,13 +130,13 @@ class _ImageCarousel extends State<ImageCarousel> {
 
   Widget _navButton(IconData icon, VoidCallback onPressed) {
     return Material(
-      color: Color.fromARGB(148, 0, 0, 0),
-      shape: CircleBorder(),
+      color: const Color.fromARGB(148, 0, 0, 0),
+      shape: const CircleBorder(),
       child: InkWell(
-        customBorder: CircleBorder(),
+        customBorder: const CircleBorder(),
         onTap: onPressed,
         child: Padding(
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           child: Icon(icon, color: Colors.white),
         ),
       ),

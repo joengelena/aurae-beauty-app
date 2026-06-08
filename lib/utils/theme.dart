@@ -59,33 +59,33 @@ final ThemeData appTheme = ThemeData(
     headlineLarge: TextStyle(
       fontSize: 28,
       fontWeight: FontWeight.bold,
-      color: Colors.black87,
+      color: themeText,
       letterSpacing: 0.5,
       height: 1.2,
     ),
     headlineMedium: TextStyle(
       fontSize: 22,
       fontWeight: FontWeight.bold,
-      color: Colors.black87,
+      color: themeText,
       letterSpacing: 0.3,
       height: 1.3,
     ),
     headlineSmall: TextStyle(
       fontSize: 18,
       fontWeight: FontWeight.w600,
-      color: Colors.black87,
+      color: themeText,
       letterSpacing: 0.2,
       height: 1.3,
     ),
     bodyLarge: TextStyle(
       fontSize: 16,
-      color: Colors.black87,
+      color: themeText,
       fontWeight: FontWeight.w400,
       height: 1.5,
     ),
     bodyMedium: TextStyle(
       fontSize: 14,
-      color: Colors.black87,
+      color: themeText,
       height: 1.5,
     ),
     bodySmall: TextStyle(
@@ -138,7 +138,7 @@ final ThemeData appTheme = ThemeData(
     unselectedItemColor: themeTaupe,
     elevation: 0,
   ),
-  dividerColor: Colors.grey.shade300,
+  dividerColor: const Color(0xFFE0D5D0),
   inputDecorationTheme: InputDecorationTheme(
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(16),

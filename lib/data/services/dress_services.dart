@@ -277,6 +277,8 @@ class DressServices {
     try {
       final response = await apiClient.get(
         '/dresses',
+        cacheKey: CacheKeys.buildCacheKey('/dresses', queryParameters: allQueries),
+        cacheDuration: CacheDurations.short,
         queryParameters: allQueries,
       );
 

@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/models/business_dress.dart';
 import 'package:shine_app/logic/back_button_provider.dart';
 import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/theme.dart';
+import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class DressCard extends StatelessWidget {
@@ -19,111 +21,251 @@ class DressCard extends StatelessWidget {
         context.read<BackButtonProvider>().pushRoute(currentRoute);
         context.go('/wardrobe/${dress.id}');
       },
-      child: Card(
-        margin: EdgeInsets.zero,
-        elevation: AppConstants.cardShadowElevation,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: AspectRatio(
-                  aspectRatio: AppConstants.listingImageAspectRatio,
-                  child: dress.dressPhotoUrl != null
-                      ? Image.network(
-                          dress.dressPhotoUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => _photoPlaceholder(),
-                        )
-                      : _photoPlaceholder(),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image with optional damage indicator
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: AppConstants.listingImageAspectRatio,
+                    child: dress.dressPhotoUrl != null
+                        ? Image.network(
+                            dress.dressPhotoUrl!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => _photoPlaceholder(),
+                          )
+                        : _photoPlaceholder(),
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                if (dress.damageDescription != null)
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: themeRose.withValues(alpha: 0.88),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.warning_amber_outlined,
+                            size: 11,
+                            color: Colors.white,
+                          ),
+                          SizedBox(width: 3),
+                          Text(
+                            'Damage noted',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+
+            // Content area — right padding is 2 to give the action button room
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 10, 2, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Name + action menu in one row
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: _buildName()),
+                      actionButton,
+                    ],
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  // Size, color, condition chips
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Wrap(
+                      spacing: 4,
+                      runSpacing: 4,
                       children: [
-                        Expanded(child: _buildTitle(context)),
-                        actionButton,
+                        _chip(dress.size),
+                        if (dress.color != null) _chip(dress.color!),
+                        _conditionChip(dress.condition),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        _chip(context, dress.size),
-                        if (dress.color != null) ...[
-                          const SizedBox(width: 6),
-                          _chip(context, dress.color!),
+                  ),
+
+                  if (dress.rentalPricePerDay != null ||
+                      (dress.rentalCount ?? 0) > 0) ...[
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: Row(
+                        children: [
+                          if (dress.rentalPricePerDay != null) ...[
+                            Text(
+                              formatPrice(dress.rentalPricePerDay!),
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: themeText,
+                              ),
+                            ),
+                            Text(
+                              '/day',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: themeTaupe,
+                              ),
+                            ),
+                          ],
+                          const Spacer(),
+                          if ((dress.rentalCount ?? 0) > 0)
+                            Text(
+                              '${dress.rentalCount} rental${dress.rentalCount != 1 ? 's' : ''}',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: themeTaupe,
+                              ),
+                            ),
                         ],
-                      ],
+                      ),
                     ),
                   ],
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildTitle(BuildContext context) {
-    final subtitle = '${dress.brand} · ${dress.style}';
+  Widget _buildName() {
     if (dress.internalName != null) {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             dress.internalName!,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: themeText,
+              height: 1.3,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              subtitle,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey.shade600,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
+          const SizedBox(height: 2),
+          Text(
+            '${dress.brand} · ${dress.style}',
+            style: TextStyle(fontSize: 11, color: themeTaupe, height: 1.3),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       );
     }
-    return Text(
-      subtitle,
-      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-        fontWeight: FontWeight.bold,
-      ),
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          dress.brand,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: themeText,
+            height: 1.3,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 2),
+        Text(
+          dress.style,
+          style: TextStyle(fontSize: 11, color: themeTaupe, height: 1.3),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 
-  Widget _chip(BuildContext context, String label) {
+  Widget _chip(String label) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: const Color(0xFFF5EFED),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(label, style: Theme.of(context).textTheme.bodySmall),
+      child: Text(
+        label,
+        style: TextStyle(fontSize: 11, color: themeTaupe),
+      ),
+    );
+  }
+
+  Widget _conditionChip(String condition) {
+    final lower = condition.toLowerCase();
+    final Color bg;
+    final Color text;
+    if (lower == 'poor' || lower == 'damaged') {
+      bg = themeRose.withValues(alpha: 0.10);
+      text = themeRose;
+    } else if (lower == 'fair') {
+      bg = themePeach.withValues(alpha: 0.12);
+      text = themePeach;
+    } else {
+      bg = const Color(0xFFF5EFED);
+      text = themeTaupe;
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        condition,
+        style: TextStyle(fontSize: 11, color: text),
+      ),
     );
   }
 
   Widget _photoPlaceholder() {
     return Container(
-      color: Colors.grey.shade100,
-      child: const Center(
-        child: Icon(Icons.checkroom_outlined, color: Colors.grey, size: 40),
+      color: const Color(0xFFF5EFED),
+      child: Center(
+        child: Icon(Icons.checkroom_outlined, color: themeTaupe, size: 40),
       ),
     );
   }
