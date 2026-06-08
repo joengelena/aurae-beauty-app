@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/logic/listing_detail_provider.dart';
-import 'package:shine_app/presentation/widgets/listing/contact_seller.dart';
 import 'package:shine_app/presentation/widgets/listing/image_carousel.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/theme.dart';
@@ -240,17 +239,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                     const Divider(color: Color(0xFFEEE8E4)),
                     const SizedBox(height: 20),
 
-                    // Contact to book
-                    Text(
-                      'Contact to book',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: themeText,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    const ContactSeller(),
+                    _buildOwnerRow(provider),
                   ],
                 ),
               ),
@@ -258,6 +247,41 @@ class _ListingDetailPageState extends State<ListingDetailPage>
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildOwnerRow(ListingDetailProvider provider) {
+    final owner = provider.listingOwner;
+    if (owner == null) return const SizedBox.shrink();
+
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 22,
+          backgroundImage: owner.profilePhotoUrl != null
+              ? NetworkImage(owner.profilePhotoUrl!)
+              : const AssetImage('assets/imgs/default_profile.jpg') as ImageProvider,
+        ),
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${owner.firstName} ${owner.lastName}',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: themeText,
+              ),
+            ),
+            if (owner.instagram != null)
+              Text(
+                '@${owner.instagram}',
+                style: TextStyle(fontSize: 12, color: themeTaupe),
+              ),
+          ],
+        ),
+      ],
     );
   }
 
