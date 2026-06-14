@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/logic/auth_provider.dart';
 import 'package:shine_app/logic/watchlist_provider.dart';
+import 'package:shine_app/presentation/widgets/common/app_empty_state.dart';
 import 'package:shine_app/presentation/widgets/sign_in_to_access.dart';
 import 'package:shine_app/presentation/widgets/listing/listing_tile.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
@@ -52,29 +53,13 @@ class _WatchlistPageState extends State<WatchlistPage> {
     }
 
     if (watchlistProvider.watchlist.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.bookmark_border, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
-              'Your watchlist is empty',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Start adding listings to keep track of them',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            SizedBox(height: 24),
-            FilledButton(
-              onPressed: () {
-                context.go('/listings');
-              },
-              child: Text('Explore listings'),
-            ),
-          ],
+      return AppEmptyState(
+        icon: Icons.favorite_border,
+        title: 'No favourites yet',
+        body: 'Save dresses you love to find them here.',
+        action: ElevatedButton(
+          onPressed: () => context.go('/listings'),
+          child: const Text('Explore dresses'),
         ),
       );
     }
@@ -114,7 +99,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
                       }
                     }
                   },
-                  icon: const Icon(Icons.bookmark),
+                  icon: const Icon(Icons.favorite),
                   color: Theme.of(context).colorScheme.primary,
                 ),
               );
