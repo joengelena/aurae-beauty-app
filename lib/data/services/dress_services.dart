@@ -306,6 +306,33 @@ class DressServices {
     }
   }
 
+  Future<List<RentalBooking>> getAllUserBookings() async {
+    try {
+      final response = await apiClient.get(
+        '/user/dress-bookings',
+        cacheKey: CacheKeys.userBookings,
+        cacheDuration: CacheDurations.short,
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw AppException(errorMessage, details: response.body);
+      }
+
+      try {
+        final data = json.decode(response.body) as List<dynamic>;
+        return data
+            .map((b) => RentalBooking.fromJson(b as Map<String, dynamic>))
+            .toList();
+      } catch (e) {
+        throw DataParseException('Invalid response format', details: e.toString());
+      }
+    } catch (e) {
+      if (e is AppException || e is DataParseException) rethrow;
+      throw NetworkException('Network error fetching user bookings', details: e.toString());
+    }
+  }
+
   Future<void> deleteBooking(int bookingId, int dressId) async {
     try {
       http.Response response = await apiClient.delete(

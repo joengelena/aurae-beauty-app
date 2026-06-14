@@ -15,6 +15,7 @@ import 'package:shine_app/logic/listing_form_data_provider.dart';
 import 'package:shine_app/logic/watchlist_provider.dart';
 import 'package:shine_app/logic/wardrobe_provider.dart';
 import 'package:shine_app/logic/dress_detail_provider.dart';
+import 'package:shine_app/logic/week_schedule_provider.dart';
 import 'package:shine_app/data/cache_manager.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -117,6 +118,13 @@ void main() async {
           update: (context, authProvider, listingDetailProvider) {
             listingDetailProvider!.updateAuthStatus(authProvider.isSignedIn);
             return listingDetailProvider;
+          },
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, WeekScheduleProvider>(
+          create: (_) => WeekScheduleProvider(),
+          update: (context, authProvider, weekScheduleProvider) {
+            weekScheduleProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return weekScheduleProvider;
           },
         ),
       ],
