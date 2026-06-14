@@ -1,6 +1,7 @@
 class BusinessDress {
   final int id;
   final String userIdFk;
+  final String? name;
   final String brand;
   final String style;
   final String listingType;
@@ -24,6 +25,7 @@ class BusinessDress {
   BusinessDress({
     required this.id,
     required this.userIdFk,
+    this.name,
     required this.brand,
     required this.style,
     this.listingType = 'rent',
@@ -49,6 +51,7 @@ class BusinessDress {
     return BusinessDress(
       id: json['id'] as int,
       userIdFk: json['userIdFk'] as String,
+      name: json['name'] as String?,
       brand: json['brand'] as String? ?? json['make'] as String? ?? '',
       style: json['style'] as String? ?? json['model'] as String? ?? '',
       listingType: json['listingType'] as String? ?? 'rent',
@@ -80,6 +83,7 @@ class BusinessDress {
     return {
       'id': id,
       'userIdFk': userIdFk,
+      'name': name,
       'brand': brand,
       'style': style,
       'listingType': listingType,

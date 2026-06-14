@@ -21,6 +21,7 @@ class EditDressPage extends StatefulWidget {
 class _EditDressPageState extends State<EditDressPage> {
   final _formKey = GlobalKey<FormState>();
 
+  final _nameController = TextEditingController();
   final _brandController = TextEditingController();
   final _styleController = TextEditingController();
   final _internalNameController = TextEditingController();
@@ -75,6 +76,7 @@ class _EditDressPageState extends State<EditDressPage> {
       return;
     }
 
+    _nameController.text = _dress!.name ?? '';
     _brandController.text = _dress!.brand;
     _styleController.text = _dress!.style;
     _internalNameController.text = _dress!.internalName ?? '';
@@ -101,6 +103,7 @@ class _EditDressPageState extends State<EditDressPage> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _brandController.dispose();
     _styleController.dispose();
     _internalNameController.dispose();
@@ -146,6 +149,9 @@ class _EditDressPageState extends State<EditDressPage> {
       'size': _size,
       'condition': _condition,
     };
+    if (_nameController.text.trim().isNotEmpty) {
+      updates['name'] = _nameController.text.trim();
+    }
     if (_internalNameController.text.trim().isNotEmpty) {
       updates['internalName'] = _internalNameController.text.trim();
     }
@@ -228,6 +234,7 @@ class _EditDressPageState extends State<EditDressPage> {
               const SizedBox(height: 12),
               _buildVisibilityToggle(),
               const SizedBox(height: 16),
+              _field(_nameController, 'Listing Name (shown publicly)'),
               _field(_brandController, 'Brand', required: true),
               _field(_styleController, 'Style', required: true),
               _field(

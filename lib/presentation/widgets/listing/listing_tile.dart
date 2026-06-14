@@ -114,7 +114,7 @@ class ListingTile extends StatelessWidget {
                               ),
                             ),
                           Text(
-                            listing.style,
+                            listing.name ?? listing.style,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,

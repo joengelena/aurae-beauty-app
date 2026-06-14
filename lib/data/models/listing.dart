@@ -12,6 +12,7 @@ class Listing {
   final int pricePerDay;
   final DateTime uploadDate;
   final String description;
+  final String? name;
   final String brand;
   final String style;
   final String size;
@@ -32,6 +33,7 @@ class Listing {
     required this.pricePerDay,
     required this.uploadDate,
     required this.description,
+    this.name,
     required this.brand,
     required this.style,
     required this.size,
@@ -54,6 +56,7 @@ class Listing {
       pricePerDay: json['pricePerDay'] as int? ?? json['rentalPricePerDay'] as int? ?? 0,
       uploadDate: DateTime.parse(json['uploadDate'] as String? ?? json['createdAt'] as String),
       description: json['description'] as String? ?? json['notes'] as String? ?? '',
+      name: json['name'] as String?,
       brand: json['brand'] as String,
       style: json['style'] as String,
       size: json['size'] as String,
@@ -81,6 +84,7 @@ class Listing {
     int? pricePerDay,
     DateTime? uploadDate,
     String? description,
+    String? name,
     String? brand,
     String? style,
     String? size,
@@ -101,6 +105,7 @@ class Listing {
       pricePerDay: pricePerDay ?? this.pricePerDay,
       uploadDate: uploadDate ?? this.uploadDate,
       description: description ?? this.description,
+      name: name ?? this.name,
       brand: brand ?? this.brand,
       style: style ?? this.style,
       size: size ?? this.size,

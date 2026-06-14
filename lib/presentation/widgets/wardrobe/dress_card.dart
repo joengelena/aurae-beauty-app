@@ -187,48 +187,43 @@ class DressCard extends StatelessWidget {
   }
 
   Widget _buildName() {
-    if (dress.internalName != null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            dress.internalName!,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: themeText,
-              height: 1.3,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 2),
-          Text(
-            '${dress.brand} · ${dress.style}',
-            style: TextStyle(fontSize: 11, color: themeTaupe, height: 1.3),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      );
-    }
+    final publicName = dress.name?.isNotEmpty == true ? dress.name! : null;
+    final primaryLabel = publicName ?? dress.brand;
+    final hasInternal = dress.internalName?.isNotEmpty == true;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          dress.brand,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: themeText,
-            height: 1.3,
-          ),
+        RichText(
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: primaryLabel,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: themeText,
+                  height: 1.3,
+                ),
+              ),
+              if (hasInternal)
+                TextSpan(
+                  text: ' (${dress.internalName})',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: themeTaupe,
+                    height: 1.3,
+                  ),
+                ),
+            ],
+          ),
         ),
         const SizedBox(height: 2),
         Text(
-          dress.style,
+          '${dress.brand} · ${dress.style}',
           style: TextStyle(fontSize: 11, color: themeTaupe, height: 1.3),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
