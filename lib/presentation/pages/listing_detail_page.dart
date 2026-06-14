@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/logic/listing_detail_provider.dart';
+import 'package:shine_app/presentation/widgets/common/price_action_bar.dart';
 import 'package:shine_app/presentation/widgets/listing/image_carousel.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/theme.dart';
-import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class ListingDetailPage extends StatefulWidget {
@@ -108,145 +108,145 @@ class _ListingDetailPageState extends State<ListingDetailPage>
 
   Widget _buildContent(ListingDetailProvider provider) {
     final listing = provider.listing!;
+    final isForBuy = listing.listingType == 'buy';
 
-    return SingleChildScrollView(
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: AppConstants.contentMaxWidth),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ImageCarousel(imageUrls: listing.imageUrls),
-
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 20, 16, 48),
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: AppConstants.contentMaxWidth),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Location + age
-                    Row(
-                      children: [
-                        if (listing.location.isNotEmpty) ...[
-                          Icon(
-                            Icons.location_on_outlined,
-                            size: 14,
-                            color: themeTaupe,
+                    ImageCarousel(imageUrls: listing.imageUrls),
+
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Location + age
+                          Row(
+                            children: [
+                              if (listing.location.isNotEmpty) ...[
+                                Icon(
+                                  Icons.location_on_outlined,
+                                  size: 14,
+                                  color: themeTaupe,
+                                ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    listing.location,
+                                    style: TextStyle(fontSize: 13, color: themeTaupe),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                              ],
+                              Text(
+                                _formatListingAge(listing.uploadDate),
+                                style: TextStyle(fontSize: 12, color: themeTaupe),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              listing.location,
-                              style: TextStyle(fontSize: 13, color: themeTaupe),
-                              overflow: TextOverflow.ellipsis,
+
+                          const SizedBox(height: 12),
+
+                          // Brand · style
+                          Text(
+                            '${listing.brand} · ${listing.style}',
+                            style: Theme.of(context).textTheme.headlineMedium,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Spec chips
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              _SpecChip(
+                                icon: Icons.straighten,
+                                label: listing.size,
+                                primary: true,
+                              ),
+                              _SpecChip(
+                                icon: Icons.check_circle_outline,
+                                label: listing.condition,
+                                primary: true,
+                              ),
+                              if (listing.color != null)
+                                _SpecChip(
+                                  icon: Icons.palette_outlined,
+                                  label: listing.color!,
+                                ),
+                              if (listing.dressType != null)
+                                _SpecChip(
+                                  icon: Icons.checkroom,
+                                  label: listing.dressType!,
+                                ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 28),
+                          const Divider(color: Color(0xFFEEE8E4)),
+                          const SizedBox(height: 20),
+
+                          // About this dress
+                          Text(
+                            'About this dress',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: themeText,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(height: 12),
+                          Text(
+                            listing.description,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: themeText,
+                              height: 1.6,
+                            ),
+                          ),
+
+                          const SizedBox(height: 28),
+                          const Divider(color: Color(0xFFEEE8E4)),
+                          const SizedBox(height: 20),
+
+                          _buildOwnerRow(provider),
                         ],
-                        Text(
-                          _formatListingAge(listing.uploadDate),
-                          style: TextStyle(fontSize: 12, color: themeTaupe),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Brand · style
-                    Text(
-                      '${listing.brand} · ${listing.style}',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    // Price
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        Text(
-                          formatPrice(listing.pricePerDay),
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: themeText,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          '/ day',
-                          style: TextStyle(fontSize: 14, color: themeTaupe),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Spec chips
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        _SpecChip(
-                          icon: Icons.straighten,
-                          label: listing.size,
-                          primary: true,
-                        ),
-                        _SpecChip(
-                          icon: Icons.check_circle_outline,
-                          label: listing.condition,
-                          primary: true,
-                        ),
-                        if (listing.color != null)
-                          _SpecChip(
-                            icon: Icons.palette_outlined,
-                            label: listing.color!,
-                          ),
-                        if (listing.dressType != null)
-                          _SpecChip(
-                            icon: Icons.checkroom,
-                            label: listing.dressType!,
-                          ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 28),
-                    const Divider(color: Color(0xFFEEE8E4)),
-                    const SizedBox(height: 20),
-
-                    // About this dress
-                    Text(
-                      'About this dress',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: themeText,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      listing.description,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: themeText,
-                        height: 1.6,
-                      ),
-                    ),
-
-                    const SizedBox(height: 28),
-                    const Divider(color: Color(0xFFEEE8E4)),
-                    const SizedBox(height: 20),
-
-                    _buildOwnerRow(provider),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
-      ),
+        PriceActionBar(
+          price: listing.pricePerDay,
+          priceLabel: isForBuy ? 'to purchase' : 'per day',
+          buttonLabel: isForBuy ? 'Purchase' : 'Select Dates',
+          buttonIcon: isForBuy
+              ? Icons.shopping_bag_outlined
+              : Icons.calendar_today_outlined,
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Booking coming soon'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 

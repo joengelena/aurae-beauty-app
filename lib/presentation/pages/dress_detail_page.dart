@@ -4,6 +4,7 @@ import 'package:shine_app/data/models/business_dress.dart';
 import 'package:shine_app/data/models/rental_booking.dart';
 import 'package:shine_app/logic/back_button_provider.dart';
 import 'package:shine_app/logic/dress_detail_provider.dart';
+import 'package:shine_app/presentation/widgets/common/price_action_bar.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/booking_calendar.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/dress_action_menu.dart';
 import 'package:shine_app/utils/constants.dart';
@@ -82,147 +83,149 @@ class _DressDetailPageState extends State<DressDetailPage>
         .toList()
       ..sort((a, b) => b.startDate.compareTo(a.startDate));
 
-    return RefreshIndicator(
-      onRefresh: () => provider.loadDress(dress.id),
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: AppConstants.contentMaxWidth),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildPhotoHeader(dress),
-
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 48),
+    return Column(
+      children: [
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: () => provider.loadDress(dress.id),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: AppConstants.contentMaxWidth),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Title + action menu
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(child: _buildTitle(dress)),
-                          DressActionMenu(dress: dress, redirectAfterDelete: true),
-                        ],
-                      ),
+                      _buildPhotoHeader(dress),
 
-                      const SizedBox(height: 10),
-
-                      // Attribute chips
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
-                        children: [
-                          _attrChip('Size ${dress.size}'),
-                          if (dress.color != null) _attrChip(dress.color!),
-                          _conditionChip(dress.condition),
-                          if (dress.purchaseYear != null)
-                            _attrChip('${dress.purchaseYear}'),
-                        ],
-                      ),
-
-                      if (dress.rentalPricePerDay != null) ...[
-                        const SizedBox(height: 10),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          textBaseline: TextBaseline.alphabetic,
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              formatPrice(dress.rentalPricePerDay!),
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: themeText,
-                              ),
+                            // Title + action menu
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(child: _buildTitle(dress)),
+                                DressActionMenu(dress: dress, redirectAfterDelete: true),
+                              ],
                             ),
-                            const SizedBox(width: 5),
-                            Text(
-                              '/ day',
-                              style: TextStyle(fontSize: 13, color: themeTaupe),
+
+                            const SizedBox(height: 10),
+
+                            // Attribute chips
+                            Wrap(
+                              spacing: 6,
+                              runSpacing: 6,
+                              children: [
+                                _attrChip('Size ${dress.size}'),
+                                if (dress.color != null) _attrChip(dress.color!),
+                                _conditionChip(dress.condition),
+                                if (dress.purchaseYear != null)
+                                  _attrChip('${dress.purchaseYear}'),
+                              ],
                             ),
+
+                            const SizedBox(height: 16),
+
+                            // Current status
+                            _buildStatusPill(allBookings, now),
+
+                            // Damage notice
+                            if (dress.damageDescription != null) ...[
+                              const SizedBox(height: 10),
+                              _buildDamageNotice(dress.damageDescription!),
+                            ],
+
+                            // Notes
+                            if (dress.notes != null && dress.notes!.isNotEmpty) ...[
+                              const SizedBox(height: 10),
+                              _buildNotesSection(dress.notes!),
+                            ],
+
+                            const SizedBox(height: 28),
+
+                            // iOS-style uppercase section header
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'RENTAL BOOKINGS',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: themeTaupe,
+                                    letterSpacing: 0.9,
+                                  ),
+                                ),
+                                const Spacer(),
+                                if ((dress.rentalCount ?? 0) > 0) ...[
+                                  Text(
+                                    '${dress.rentalCount} total',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: themeTaupe,
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                ],
+                                _addBookingButton(dress.id),
+                              ],
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            _buildAvailabilityCalendar(allBookings),
+
+                            const SizedBox(height: 16),
+
+                            _buildBookingsBody(provider, dress.id, upcoming, past),
                           ],
                         ),
-                      ],
-
-                      const SizedBox(height: 16),
-
-                      // Current status
-                      _buildStatusPill(allBookings, now),
-
-                      // Damage notice
-                      if (dress.damageDescription != null) ...[
-                        const SizedBox(height: 10),
-                        _buildDamageNotice(dress.damageDescription!),
-                      ],
-
-                      // Notes
-                      if (dress.notes != null && dress.notes!.isNotEmpty) ...[
-                        const SizedBox(height: 10),
-                        _buildNotesSection(dress.notes!),
-                      ],
-
-                      const SizedBox(height: 24),
-                      const Divider(color: Color(0xFFEEE8E4)),
-                      const SizedBox(height: 16),
-
-                      // Bookings heading
-                      Row(
-                        children: [
-                          Text(
-                            'Rental bookings',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: themeText,
-                            ),
-                          ),
-                          const Spacer(),
-                          if ((dress.rentalCount ?? 0) > 0)
-                            Text(
-                              '${dress.rentalCount} total',
-                              style: TextStyle(fontSize: 12, color: themeTaupe),
-                            ),
-                          const SizedBox(width: 8),
-                          _addBookingButton(dress.id),
-                        ],
                       ),
-
-                      const SizedBox(height: 16),
-
-                      _buildAvailabilityCalendar(allBookings),
-
-                      const SizedBox(height: 16),
-
-                      _buildBookingsBody(provider, dress.id, upcoming, past),
                     ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
+        _buildStickyBar(dress),
+      ],
+    );
+  }
+
+  // ─── Sticky bottom bar ───────────────────────────────────────────────────────
+
+  Widget _buildStickyBar(BusinessDress dress) {
+    final isForBuy = dress.listingType == 'buy';
+    final price = isForBuy ? dress.purchasePrice : dress.rentalPricePerDay;
+    if (price == null) return const SizedBox.shrink();
+
+    return PriceActionBar(
+      price: price,
+      priceLabel: isForBuy ? 'to purchase' : 'per day',
+      buttonLabel: isForBuy ? 'Purchase' : 'Select Dates',
+      buttonIcon: isForBuy
+          ? Icons.shopping_bag_outlined
+          : Icons.calendar_today_outlined,
+      onTap: () => _handleAddBooking(context, dress.id),
     );
   }
 
   Widget _buildPhotoHeader(BusinessDress dress) {
+    final Widget photo;
     if (dress.dressPhotoUrl == null) {
-      return AspectRatio(
-        aspectRatio: AppConstants.listingImageAspectRatio,
-        child: Container(
-          color: const Color(0xFFF5EFED),
-          child: Center(
-            child: Icon(Icons.checkroom_outlined, color: themeTaupe, size: 48),
-          ),
+      photo = Container(
+        color: const Color(0xFFF5EFED),
+        child: Center(
+          child: Icon(Icons.checkroom_outlined, color: themeTaupe, size: 48),
         ),
       );
-    }
-
-    return AspectRatio(
-      aspectRatio: AppConstants.listingImageAspectRatio,
-      child: Image.network(
+    } else {
+      photo = Image.network(
         dress.dressPhotoUrl!,
         fit: BoxFit.cover,
         width: double.infinity,
@@ -236,6 +239,32 @@ class _DressDetailPageState extends State<DressDetailPage>
             child: Icon(Icons.checkroom_outlined, color: themeTaupe, size: 48),
           ),
         ),
+      );
+    }
+
+    return AspectRatio(
+      aspectRatio: AppConstants.listingImageAspectRatio,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          photo,
+          Positioned(
+            bottom: 0, left: 0, right: 0,
+            child: Container(
+              height: 80,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    themeBackground.withValues(alpha: 0),
+                    themeBackground.withValues(alpha: 0.9),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -248,16 +277,17 @@ class _DressDetailPageState extends State<DressDetailPage>
           Text(
             dress.internalName!,
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 26,
               fontWeight: FontWeight.w700,
               color: themeText,
-              height: 1.2,
+              height: 1.15,
+              letterSpacing: 0.15,
             ),
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 4),
           Text(
             '${dress.brand} · ${dress.style}',
-            style: TextStyle(fontSize: 13, color: themeTaupe),
+            style: TextStyle(fontSize: 13, color: themeTaupe, letterSpacing: 0.1),
           ),
         ],
       );
@@ -268,16 +298,17 @@ class _DressDetailPageState extends State<DressDetailPage>
         Text(
           dress.brand,
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 26,
             fontWeight: FontWeight.w700,
             color: themeText,
-            height: 1.2,
+            height: 1.15,
+            letterSpacing: 0.15,
           ),
         ),
-        const SizedBox(height: 3),
+        const SizedBox(height: 4),
         Text(
           dress.style,
-          style: TextStyle(fontSize: 13, color: themeTaupe),
+          style: TextStyle(fontSize: 13, color: themeTaupe, letterSpacing: 0.1),
         ),
       ],
     );
@@ -354,10 +385,10 @@ class _DressDetailPageState extends State<DressDetailPage>
     required Color fg,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(99),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -394,10 +425,10 @@ class _DressDetailPageState extends State<DressDetailPage>
   Widget _buildDamageNotice(String description) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: themeRose.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
+        color: themeRose.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -436,10 +467,10 @@ class _DressDetailPageState extends State<DressDetailPage>
   Widget _buildNotesSection(String notes) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color(0xFFFAF6F4),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -467,15 +498,19 @@ class _DressDetailPageState extends State<DressDetailPage>
       onTap: () => _handleAddBooking(context, dressId),
       behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
-          color: themeAccent.withValues(alpha: 0.20),
-          borderRadius: BorderRadius.circular(10),
+          color: themeAccent.withValues(alpha: 0.22),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: themeAccent.withValues(alpha: 0.5),
+            width: 0.5,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.add, size: 14, color: themeText),
+            Icon(Icons.add, size: 13, color: themeText),
             const SizedBox(width: 4),
             Text(
               'Add booking',
@@ -494,10 +529,17 @@ class _DressDetailPageState extends State<DressDetailPage>
   Widget _buildAvailabilityCalendar(List<RentalBooking> bookings) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAF6F4),
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: BookingCalendar(bookings: bookings),
     );
@@ -540,11 +582,12 @@ class _DressDetailPageState extends State<DressDetailPage>
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: Text(
-                'Past rentals',
+                'PAST RENTALS',
                 style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
                   color: themeTaupe,
+                  letterSpacing: 0.8,
                 ),
               ),
             ),
@@ -562,10 +605,17 @@ class _DressDetailPageState extends State<DressDetailPage>
   Widget _buildBookingsEmptyState(int dressId) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAF6F4),
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -601,10 +651,14 @@ class _DressDetailPageState extends State<DressDetailPage>
           GestureDetector(
             onTap: () => _handleAddBooking(context, dressId),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
-                color: themeAccent.withValues(alpha: 0.20),
-                borderRadius: BorderRadius.circular(8),
+                color: themeAccent.withValues(alpha: 0.22),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: themeAccent.withValues(alpha: 0.5),
+                  width: 0.5,
+                ),
               ),
               child: Text(
                 'Add first booking',
@@ -627,20 +681,20 @@ class _DressDetailPageState extends State<DressDetailPage>
     final days = booking.endDate.difference(booking.startDate).inDays + 1;
 
     return Opacity(
-      opacity: faded ? 0.65 : 1.0,
+      opacity: faded ? 0.6 : 1.0,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 6,
-              offset: const Offset(0, 1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
-        padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -651,9 +705,10 @@ class _DressDetailPageState extends State<DressDetailPage>
                   child: Text(
                     dateRange,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: themeText,
+                      letterSpacing: 0.05,
                     ),
                   ),
                 ),
@@ -786,17 +841,18 @@ class _DressDetailPageState extends State<DressDetailPage>
       _ => status,
     };
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         label,
         style: TextStyle(
           fontSize: 11,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
           color: fg,
+          letterSpacing: 0.1,
         ),
       ),
     );
@@ -991,16 +1047,16 @@ class _DressDetailPageState extends State<DressDetailPage>
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

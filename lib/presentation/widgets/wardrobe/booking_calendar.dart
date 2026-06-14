@@ -128,9 +128,10 @@ class _BookingCalendarState extends State<BookingCalendar> {
             '${_monthNames[_month.month - 1]} ${_month.year}',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
               color: themeText,
+              letterSpacing: 0.1,
             ),
           ),
         ),
@@ -160,8 +161,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 10,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
               color: themeTaupe,
+              letterSpacing: 0.5,
             ),
           ),
         );
@@ -183,7 +185,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
             final idx = row * 7 + col;
             final dayNum = idx - leadingCells + 1;
             if (dayNum < 1 || dayNum > daysInMonth) {
-              return const Expanded(child: SizedBox(height: 34));
+              return const Expanded(child: SizedBox(height: 36));
             }
             return Expanded(
               child: _buildCell(DateTime(_month.year, _month.month, dayNum)),
@@ -235,7 +237,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
     final ringColor = status == _DayStatus.none ? themeAccent : themeText;
 
     return Container(
-      height: 34,
+      height: 36,
       decoration: status != _DayStatus.none
           ? BoxDecoration(color: fill, borderRadius: radius)
           : null,
