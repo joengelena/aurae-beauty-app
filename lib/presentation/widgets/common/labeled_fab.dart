@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/utils/theme.dart';
 
-/// A reusable floating action button with an icon and label text
-///
-/// Displays an extended FAB with a plus icon and custom label.
-/// Positioned at the bottom-right of the screen.
-class LabeledFab extends StatelessWidget {
+class LabeledFab extends StatefulWidget {
   final String label;
   final VoidCallback onPressed;
   final IconData icon;
@@ -18,16 +14,91 @@ class LabeledFab extends StatelessWidget {
   });
 
   @override
+  State<LabeledFab> createState() => _LabeledFabState();
+}
+
+class _LabeledFabState extends State<LabeledFab> {
+  bool _pressed = false;
+
+  void _onTapDown(TapDownDetails _) => setState(() => _pressed = true);
+  void _onTapUp(TapUpDetails _) => setState(() => _pressed = false);
+  void _onTapCancel() => setState(() => _pressed = false);
+
+  @override
   Widget build(BuildContext context) {
     return Positioned(
-      right: 16,
-      bottom: 16,
-      child: FloatingActionButton.extended(
-        onPressed: onPressed,
-        backgroundColor: themeAccent,
-        foregroundColor: themeText,
-        icon: Icon(icon),
-        label: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+      right: 20,
+      bottom: 28,
+      child: Semantics(
+        button: true,
+        label: widget.label,
+        child: GestureDetector(
+          onTap: widget.onPressed,
+          onTapDown: _onTapDown,
+          onTapUp: _onTapUp,
+          onTapCancel: _onTapCancel,
+          child: AnimatedScale(
+            scale: _pressed ? 0.96 : 1.0,
+            duration: const Duration(milliseconds: 130),
+            curve: Curves.easeOut,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              curve: Curves.easeOut,
+              height: 52,
+              padding: const EdgeInsets.symmetric(horizontal: 22),
+              decoration: BoxDecoration(
+                color: themeAccent,
+                borderRadius: BorderRadius.circular(26),
+                boxShadow: _pressed
+                    ? [
+                        BoxShadow(
+                          color: themeAccent.withValues(alpha: 0.18),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 2,
+                          offset: const Offset(0, 1),
+                        ),
+                      ]
+                    : [
+                        BoxShadow(
+                          color: themeAccent.withValues(alpha: 0.38),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6),
+                          spreadRadius: 0,
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.06),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ExcludeSemantics(
+                    child: Icon(widget.icon, size: 18, color: themeText),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    widget.label,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      letterSpacing: 0.4,
+                      color: themeText,
+                      height: 1,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
