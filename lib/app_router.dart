@@ -22,6 +22,7 @@ import 'package:shine_app/presentation/pages/add_dress_page.dart';
 import 'package:shine_app/presentation/pages/edit_dress_page.dart';
 import 'package:shine_app/presentation/pages/dress_detail_page.dart';
 import 'package:shine_app/presentation/pages/add_booking_page.dart';
+import 'package:shine_app/presentation/pages/owner_profile_page.dart';
 import 'package:shine_app/presentation/pages/privacy_policy_page.dart';
 import 'package:shine_app/presentation/widgets/scaffold/app_scaffold.dart';
 import 'package:provider/provider.dart';
@@ -70,7 +71,9 @@ GoRouter getAppRouter(AuthProvider authProvider) {
       }
 
       final isAuthPage = _authPages.contains(path);
-      final isPublicPage = _publicPages.contains(path);
+      final isPublicPage = _publicPages.contains(path) ||
+          path.startsWith('/listings/') ||
+          path.startsWith('/owner/');
 
       // If auth hasn't been initialized yet:
       // - If auth check is in progress (refresh scenario): stay on current page
@@ -284,6 +287,14 @@ GoRouter getAppRouter(AuthProvider authProvider) {
                 },
               ),
             ],
+          ),
+          GoRoute(
+            path: '/owner/:userId',
+            parentNavigatorKey: _shellNavigatorKey,
+            pageBuilder: (context, state) {
+              final userId = state.pathParameters['userId']!;
+              return NoTransitionPage(child: OwnerProfilePage(userId: userId));
+            },
           ),
           GoRoute(
             path: '/privacy',
