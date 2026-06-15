@@ -91,15 +91,20 @@ class ListingPreview extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD4AF37),
-                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.white.withValues(alpha: 0.92),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: const Color(0xFFD0C8C0),
+                          width: 0.75,
+                        ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'For Sale',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: themeText,
                           fontSize: 10,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
                         ),
                       ),
                     ),
@@ -261,9 +266,7 @@ class ListingPreview extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
-                          color: listing.listingType == 'sell'
-                              ? const Color(0xFFD4AF37)
-                              : themeText,
+                          color: themeText,
                         ),
                       ),
                       if (listing.listingType != 'sell')

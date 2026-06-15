@@ -200,15 +200,17 @@ class _DressDetailPageState extends State<DressDetailPage>
   // ─── Sticky bottom bar ───────────────────────────────────────────────────────
 
   Widget _buildStickyBar(BusinessDress dress) {
-    final isForBuy = dress.listingType == 'buy';
-    final price = isForBuy ? dress.purchasePrice : dress.rentalPricePerDay;
+    final isForSale = dress.listingType == 'sell';
+    final price = isForSale
+        ? (dress.purchasePrice ?? dress.rentalPricePerDay)
+        : dress.rentalPricePerDay;
     if (price == null) return const SizedBox.shrink();
 
     return PriceActionBar(
       price: price,
-      priceLabel: isForBuy ? 'to purchase' : 'per day',
-      buttonLabel: isForBuy ? 'Purchase' : 'Select Dates',
-      buttonIcon: isForBuy
+      priceLabel: isForSale ? 'purchase price' : 'per day',
+      buttonLabel: isForSale ? 'Purchase' : 'Select Dates',
+      buttonIcon: isForSale
           ? Icons.shopping_bag_outlined
           : Icons.calendar_today_outlined,
       onTap: () => _handleAddBooking(context, dress.id),
@@ -270,44 +272,33 @@ class _DressDetailPageState extends State<DressDetailPage>
   }
 
   Widget _buildTitle(BusinessDress dress) {
-    if (dress.internalName != null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            dress.internalName!,
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.w700,
-              color: themeText,
-              height: 1.15,
-              letterSpacing: 0.15,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '${dress.brand} · ${dress.style}',
-            style: TextStyle(fontSize: 13, color: themeTaupe, letterSpacing: 0.1),
-          ),
-        ],
-      );
-    }
+    final publicName = dress.name?.isNotEmpty == true ? dress.name! : null;
+    final primaryLabel = publicName ?? dress.brand;
+    final hasInternal = dress.internalName?.isNotEmpty == true;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          dress.brand,
-          style: TextStyle(
+          primaryLabel,
+          style: const TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.w700,
-            color: themeText,
+            color: Color(0xFF3A2E2A),
             height: 1.15,
             letterSpacing: 0.15,
           ),
         ),
+        if (hasInternal) ...[
+          const SizedBox(height: 2),
+          Text(
+            '(${dress.internalName})',
+            style: TextStyle(fontSize: 13, color: themeTaupe, letterSpacing: 0.1),
+          ),
+        ],
         const SizedBox(height: 4),
         Text(
-          dress.style,
+          '${dress.brand} · ${dress.style}',
           style: TextStyle(fontSize: 13, color: themeTaupe, letterSpacing: 0.1),
         ),
       ],

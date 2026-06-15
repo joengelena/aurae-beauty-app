@@ -62,15 +62,20 @@ class DressCard extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD4AF37),
-                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.white.withValues(alpha: 0.92),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: const Color(0xFFD0C8C0),
+                          width: 0.75,
+                        ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'For Sale',
                         style: TextStyle(
                           fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          color: themeText,
+                          letterSpacing: 0.2,
                         ),
                       ),
                     ),
@@ -156,9 +161,7 @@ class DressCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
-                                color: dress.listingType == 'sell'
-                                    ? const Color(0xFFD4AF37)
-                                    : themeText,
+                                color: themeText,
                               ),
                             ),
                             if (dress.listingType != 'sell')

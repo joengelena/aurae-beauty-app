@@ -16,7 +16,7 @@ class PriceActionBar extends StatelessWidget {
   final String priceLabel;
   final String buttonLabel;
   final IconData buttonIcon;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
