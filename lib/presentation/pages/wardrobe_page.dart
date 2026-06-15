@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:shine_app/logic/auth_provider.dart';
 import 'package:shine_app/logic/back_button_provider.dart';
 import 'package:shine_app/logic/wardrobe_provider.dart';
+import 'package:shine_app/logic/week_schedule_provider.dart';
 import 'package:shine_app/presentation/widgets/common/labeled_fab.dart';
+import 'package:shine_app/presentation/widgets/profile/week_schedule_widget.dart';
 import 'package:shine_app/presentation/widgets/sign_in_to_access.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/dress_action_menu.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/dress_card.dart';
@@ -40,6 +42,7 @@ class _WardrobePageState extends State<WardrobePage>
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<WardrobeProvider>().fetchDresses();
+      context.read<WeekScheduleProvider>().load();
     });
   }
 
@@ -110,7 +113,12 @@ class _WardrobePageState extends State<WardrobePage>
             final itemWidth = _calculateItemWidth(availableWidth, crossAxisCount);
 
             return RefreshIndicator(
-              onRefresh: provider.fetchDresses,
+              onRefresh: () async {
+                await Future.wait([
+                  provider.fetchDresses(),
+                  context.read<WeekScheduleProvider>().load(),
+                ]);
+              },
               child: ListView(
                 padding: EdgeInsets.fromLTRB(
                   AppConstants.spacingLarge,
@@ -153,6 +161,10 @@ class _WardrobePageState extends State<WardrobePage>
                       );
                     }).toList(),
                   ),
+                  const SizedBox(height: AppConstants.spacingLarge),
+                  Divider(color: themePrimary, thickness: 1),
+                  const SizedBox(height: AppConstants.spacingMedium),
+                  const WeekScheduleWidget(),
                 ],
               ),
             );

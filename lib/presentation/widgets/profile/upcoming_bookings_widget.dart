@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:shine_app/logic/week_schedule_provider.dart';
+import 'package:shine_app/data/models/upcoming_booking.dart';
+import 'package:shine_app/logic/upcoming_bookings_provider.dart';
 import 'package:shine_app/utils/theme.dart';
 
-class WeekScheduleWidget extends StatelessWidget {
-  const WeekScheduleWidget({super.key});
+class UpcomingBookingsWidget extends StatelessWidget {
+  const UpcomingBookingsWidget({super.key});
 
   static const _dayAbbrev = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   static const _monthAbbrev = [
@@ -15,7 +16,7 @@ class WeekScheduleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<WeekScheduleProvider>();
+    final provider = context.watch<UpcomingBookingsProvider>();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -44,7 +45,7 @@ class WeekScheduleWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, WeekScheduleProvider provider) {
+  Widget _buildHeader(BuildContext context, UpcomingBookingsProvider provider) {
     final start = provider.weekStart;
     final end = provider.weekEnd;
     final rangeLabel = '${start.day} ${_monthAbbrev[start.month - 1]}'
@@ -53,7 +54,7 @@ class WeekScheduleWidget extends StatelessWidget {
     return Row(
       children: [
         Text(
-          'My Schedule',
+          'Upcoming Bookings',
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const Spacer(),
@@ -65,7 +66,7 @@ class WeekScheduleWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildDayList(BuildContext context, WeekScheduleProvider provider) {
+  Widget _buildDayList(BuildContext context, UpcomingBookingsProvider provider) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final days = provider.weekDays;
@@ -84,7 +85,7 @@ class WeekScheduleWidget extends StatelessWidget {
     BuildContext context,
     DateTime day,
     bool isToday,
-    List<BookingWithDress> bookings,
+    List<UpcomingBooking> bookings,
     bool showDivider,
   ) {
     return Column(
@@ -108,9 +109,7 @@ class WeekScheduleWidget extends StatelessWidget {
                     : Wrap(
                         spacing: 6,
                         runSpacing: 6,
-                        children: bookings
-                            .map((b) => _buildBookingChip(context, b))
-                            .toList(),
+                        children: bookings.map((b) => _buildBookingChip(context, b)).toList(),
                       ),
               ),
             ],
@@ -151,36 +150,36 @@ class WeekScheduleWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildBookingChip(BuildContext context, BookingWithDress b) {
+  Widget _buildBookingChip(BuildContext context, UpcomingBooking booking) {
     final Color bgColor;
     final Color textColor;
     final String statusLabel;
 
-    switch (b.booking.status) {
+    switch (booking.status) {
       case 'active':
         bgColor = themePeach.withValues(alpha: 0.22);
         textColor = themeText;
-        statusLabel = 'Out';
+        statusLabel = 'Active';
       case 'confirmed':
       case 'pending':
         bgColor = themeAccent.withValues(alpha: 0.30);
         textColor = themeText;
-        statusLabel = 'Booked';
+        statusLabel = 'Confirmed';
       default:
         bgColor = themePrimary.withValues(alpha: 0.55);
         textColor = themeTaupe;
-        statusLabel = b.booking.status;
+        statusLabel = booking.status;
     }
 
-    final dressName = [b.dress.brand, b.dress.style]
+    final dressName = [booking.dressBrand, booking.dressStyle]
         .where((s) => s.isNotEmpty)
         .join(' ');
-    final label = (b.dress.internalName?.isNotEmpty == true)
-        ? b.dress.internalName!
-        : (dressName.isNotEmpty ? dressName : 'Dress #${b.dress.id}');
+    final label = (booking.dressInternalName?.isNotEmpty == true)
+        ? booking.dressInternalName!
+        : (dressName.isNotEmpty ? dressName : 'Dress #${booking.dressIdFk}');
 
     return GestureDetector(
-      onTap: () => _showBookingModal(context, b, label),
+      onTap: () => context.push('/listings/${booking.dressIdFk}'),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
@@ -215,110 +214,4 @@ class WeekScheduleWidget extends StatelessWidget {
       ),
     );
   }
-
-  void _showBookingModal(BuildContext context, BookingWithDress b, String dressLabel) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (sheetContext) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: themePrimary,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                dressLabel,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: themeText,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${_fmtDate(b.booking.startDate)} – ${_fmtDate(b.booking.endDate)}',
-                style: TextStyle(fontSize: 13, color: themeTaupe),
-              ),
-              const SizedBox(height: 16),
-              Divider(color: themePrimary, thickness: 1),
-              const SizedBox(height: 16),
-              Text(
-                'Renter',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: themeTaupe,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(height: 10),
-              _infoRow(Icons.person_outline, b.booking.renterName),
-              if (b.booking.renterEmail != null)
-                _infoRow(Icons.email_outlined, b.booking.renterEmail!),
-              if (b.booking.renterPhone != null)
-                _infoRow(Icons.phone_outlined, b.booking.renterPhone!),
-              if (b.booking.renterInstagram != null)
-                _infoRow(Icons.alternate_email, b.booking.renterInstagram!),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () {
-                    Navigator.pop(sheetContext);
-                    context.push('/wardrobe/${b.dress.id}');
-                  },
-                  style: FilledButton.styleFrom(
-                    backgroundColor: themeText,
-                    foregroundColor: themeBackground,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text('View my dress'),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _infoRow(IconData icon, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: themeTaupe),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(fontSize: 14, color: themeText),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _fmtDate(DateTime d) =>
-      '${d.day} ${_monthAbbrev[d.month - 1]}';
 }
