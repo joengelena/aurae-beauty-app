@@ -8,7 +8,9 @@ import 'package:shine_app/data/exceptions/app_exception.dart';
 import 'package:shine_app/data/models/business_dress.dart';
 import 'package:shine_app/data/models/listing.dart';
 import 'package:shine_app/data/models/pagination.dart';
+import 'package:shine_app/data/models/booked_range.dart';
 import 'package:shine_app/data/models/rental_booking.dart';
+import 'package:shine_app/data/models/upcoming_booking.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/utils.dart';
 
@@ -245,6 +247,32 @@ class DressServices {
     }
   }
 
+  Future<List<BookedRange>> getPublicDressBookings(int dressId) async {
+    try {
+      final response = await apiClient.get(
+        '/dresses/$dressId/bookings',
+        cacheKey: 'public_bookings_$dressId',
+        cacheDuration: CacheDurations.short,
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        throw AppException(extractErrorMessage(response.body));
+      }
+
+      try {
+        final data = json.decode(response.body) as List<dynamic>;
+        return data
+            .map((b) => BookedRange.fromJson(b as Map<String, dynamic>))
+            .toList();
+      } catch (e) {
+        throw DataParseException('Invalid response format', details: e.toString());
+      }
+    } catch (e) {
+      if (e is AppException || e is DataParseException) rethrow;
+      throw NetworkException('Network error fetching availability', details: e.toString());
+    }
+  }
+
   Future<Map<String, dynamic>> addBooking(Map<String, dynamic> bookingData) async {
     try {
       final dressId = bookingData['dressIdFk'];
@@ -268,6 +296,39 @@ class DressServices {
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
       throw NetworkException('Network error while adding booking', details: e.toString());
+    }
+  }
+
+  Future<Map<String, dynamic>> selfBook({
+    required int dressId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    try {
+      final response = await apiClient.post(
+        '/dresses/$dressId/book',
+        {
+          'startDate': startDate.toIso8601String().split('T')[0],
+          'endDate': endDate.toIso8601String().split('T')[0],
+        },
+        invalidateCacheKeys: ['public_bookings_$dressId'],
+      );
+
+      if (response.statusCode == HttpStatus.conflict) {
+        throw AppException(extractErrorMessage(response.body), details: response.body);
+      }
+      if (response.statusCode != HttpStatus.created) {
+        throw AppException(extractErrorMessage(response.body), details: response.body);
+      }
+
+      try {
+        return json.decode(response.body) as Map<String, dynamic>;
+      } catch (e) {
+        throw DataParseException('Invalid response format', details: e.toString());
+      }
+    } catch (e) {
+      if (e is AppException || e is DataParseException) rethrow;
+      throw NetworkException('Network error while creating booking', details: e.toString());
     }
   }
 
@@ -330,6 +391,33 @@ class DressServices {
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
       throw NetworkException('Network error fetching user bookings', details: e.toString());
+    }
+  }
+
+  Future<List<UpcomingBooking>> getMyBookings() async {
+    try {
+      final response = await apiClient.get(
+        '/user/my-bookings',
+        cacheKey: CacheKeys.myBookings,
+        cacheDuration: CacheDurations.short,
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw AppException(errorMessage, details: response.body);
+      }
+
+      try {
+        final data = json.decode(response.body) as List<dynamic>;
+        return data
+            .map((b) => UpcomingBooking.fromJson(b as Map<String, dynamic>))
+            .toList();
+      } catch (e) {
+        throw DataParseException('Invalid response format', details: e.toString());
+      }
+    } catch (e) {
+      if (e is AppException || e is DataParseException) rethrow;
+      throw NetworkException('Network error fetching my bookings', details: e.toString());
     }
   }
 

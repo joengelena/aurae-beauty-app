@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shine_app/data/models/booked_range.dart';
+import 'package:shine_app/data/services/dress_services.dart';
 import 'package:shine_app/logic/listing_detail_provider.dart';
 import 'package:shine_app/presentation/widgets/common/price_action_bar.dart';
+import 'package:shine_app/presentation/widgets/listing/availability_calendar.dart';
 import 'package:shine_app/presentation/widgets/listing/image_carousel.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/theme.dart';
+import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class ListingDetailPage extends StatefulWidget {
@@ -108,7 +113,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
 
   Widget _buildContent(ListingDetailProvider provider) {
     final listing = provider.listing!;
-    final isForBuy = listing.listingType == 'buy';
+    final isForBuy = listing.listingType == 'sell';
 
     return Column(
       children: [
@@ -220,6 +225,12 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                           const Divider(color: Color(0xFFEEE8E4)),
                           const SizedBox(height: 20),
 
+                          _buildAvailabilityCalendar(provider),
+
+                          const SizedBox(height: 28),
+                          const Divider(color: Color(0xFFEEE8E4)),
+                          const SizedBox(height: 20),
+
                           _buildOwnerRow(provider),
                         ],
                       ),
@@ -230,21 +241,58 @@ class _ListingDetailPageState extends State<ListingDetailPage>
             ),
           ),
         ),
-        PriceActionBar(
-          price: listing.pricePerDay,
-          priceLabel: isForBuy ? 'to purchase' : 'per day',
-          buttonLabel: isForBuy ? 'Purchase' : 'Select Dates',
-          buttonIcon: isForBuy
-              ? Icons.shopping_bag_outlined
-              : Icons.calendar_today_outlined,
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Booking coming soon'),
-                duration: Duration(seconds: 2),
+        if (provider.isOwnListing)
+          PriceActionBar(
+            price: listing.pricePerDay,
+            priceLabel: isForBuy ? 'to purchase' : 'per day',
+            buttonLabel: 'Manage Dress',
+            buttonIcon: Icons.checkroom_outlined,
+            onTap: () => context.go('/wardrobe/${listing.id}'),
+          )
+        else
+          PriceActionBar(
+            price: listing.pricePerDay,
+            priceLabel: isForBuy ? 'to purchase' : 'per day',
+            buttonLabel: isForBuy ? 'Purchase' : 'Select Dates',
+            buttonIcon: isForBuy
+                ? Icons.shopping_bag_outlined
+                : Icons.calendar_today_outlined,
+            onTap: isForBuy
+                ? null
+                : () => _openDateSelector(context, provider),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildAvailabilityCalendar(ListingDetailProvider provider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Availability',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: themeText,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
               ),
-            );
-          },
+            ],
+          ),
+          child: AvailabilityCalendar(bookedRanges: provider.bookings),
         ),
       ],
     );
@@ -254,34 +302,59 @@ class _ListingDetailPageState extends State<ListingDetailPage>
     final owner = provider.listingOwner;
     if (owner == null) return const SizedBox.shrink();
 
-    return Row(
-      children: [
-        CircleAvatar(
-          radius: 22,
-          backgroundImage: owner.profilePhotoUrl != null
-              ? NetworkImage(owner.profilePhotoUrl!)
-              : const AssetImage('assets/imgs/default_profile.jpg') as ImageProvider,
-        ),
-        const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${owner.firstName} ${owner.lastName}',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: themeText,
-              ),
+    final ownerId = provider.listing?.userIdFk;
+
+    return GestureDetector(
+      onTap: ownerId != null ? () => context.push('/owner/$ownerId') : null,
+      behavior: HitTestBehavior.opaque,
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 22,
+            backgroundImage: owner.profilePhotoUrl != null
+                ? NetworkImage(owner.profilePhotoUrl!)
+                : const AssetImage('assets/imgs/default_profile.jpg') as ImageProvider,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${owner.firstName} ${owner.lastName}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: themeText,
+                  ),
+                ),
+                if (owner.instagram != null)
+                  Text(
+                    '@${owner.instagram}',
+                    style: TextStyle(fontSize: 12, color: themeTaupe),
+                  ),
+              ],
             ),
-            if (owner.instagram != null)
-              Text(
-                '@${owner.instagram}',
-                style: TextStyle(fontSize: 12, color: themeTaupe),
-              ),
-          ],
-        ),
-      ],
+          ),
+          Icon(Icons.chevron_right, size: 18, color: themeTaupe),
+        ],
+      ),
+    );
+  }
+
+  void _openDateSelector(BuildContext context, ListingDetailProvider provider) {
+    final listing = provider.listing!;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _DateSelectionSheet(
+        dressId: listing.id,
+        bookedRanges: provider.bookings,
+        pricePerDay: listing.pricePerDay,
+        dressTitle: listing.name ?? '${listing.brand} ${listing.style}',
+        onBooked: () => provider.getListing(listing.id),
+      ),
     );
   }
 
@@ -572,6 +645,315 @@ class _ListingDetailPageState extends State<ListingDetailPage>
         color: color,
         borderRadius: BorderRadius.circular(20),
       ),
+    );
+  }
+}
+
+// ─── Date selection bottom sheet ─────────────────────────────────────────────
+
+class _DateSelectionSheet extends StatefulWidget {
+  final int dressId;
+  final List<BookedRange> bookedRanges;
+  final int pricePerDay;
+  final String dressTitle;
+  final VoidCallback? onBooked;
+
+  const _DateSelectionSheet({
+    required this.dressId,
+    required this.bookedRanges,
+    required this.pricePerDay,
+    required this.dressTitle,
+    this.onBooked,
+  });
+
+  @override
+  State<_DateSelectionSheet> createState() => _DateSelectionSheetState();
+}
+
+class _DateSelectionSheetState extends State<_DateSelectionSheet> {
+  DateTime? _start;
+  DateTime? _end;
+  bool _isSubmitting = false;
+
+  void _onDayTapped(DateTime day) {
+    setState(() {
+      if (_start == null) {
+        // First tap: set start
+        _start = day;
+        _end = null;
+      } else if (_end == null) {
+        final tapped = DateTime(day.year, day.month, day.day);
+        final s = DateTime(_start!.year, _start!.month, _start!.day);
+
+        if (tapped == s) {
+          // Tap same day: clear
+          _start = null;
+        } else if (tapped.isBefore(s)) {
+          // Tapped before start: make it the new start
+          _start = day;
+        } else {
+          // Check no unavailable days fall within the proposed range
+          final hasConflict = widget.bookedRanges.any((r) {
+            if (!r.isUnavailable) return false;
+            final rs = DateTime(r.startDate.year, r.startDate.month, r.startDate.day);
+            final re = DateTime(r.endDate.year, r.endDate.month, r.endDate.day);
+            // Conflict if any booked day overlaps [start+1 .. tapped]
+            return rs.isBefore(tapped) && re.isAfter(s);
+          });
+
+          if (hasConflict) {
+            // Can't book across an unavailable range — restart selection
+            _start = day;
+            _end = null;
+          } else {
+            _end = day;
+          }
+        }
+      } else {
+        // Third tap: restart selection
+        _start = day;
+        _end = null;
+      }
+    });
+  }
+
+  int get _nights {
+    if (_start == null || _end == null) return 0;
+    return _end!.difference(_start!).inDays + 1;
+  }
+
+  int get _totalPrice => _nights * widget.pricePerDay;
+
+  String _formatShort(DateTime d) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return '${d.day} ${months[d.month - 1]}';
+  }
+
+  Future<void> _submitBooking() async {
+    if (_start == null || _end == null) return;
+    setState(() => _isSubmitting = true);
+    try {
+      await DressServices().selfBook(
+        dressId: widget.dressId,
+        startDate: _start!,
+        endDate: _end!,
+      );
+      if (!mounted) return;
+      Navigator.pop(context);
+      widget.onBooked?.call();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Booking request sent!'),
+          backgroundColor: themeText,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      final msg = e.toString().replaceFirst('Exception: ', '');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(msg.isNotEmpty ? msg : 'Could not create booking. Try again.'),
+          backgroundColor: themeRose,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        ),
+      );
+      setState(() => _isSubmitting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasSelection = _start != null && _end != null;
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.85,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (_, scrollController) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFFFFF8F6),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            children: [
+              // Handle
+              Padding(
+                padding: const EdgeInsets.only(top: 12, bottom: 4),
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDDD4CF),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+
+              // Header
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Select dates',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: themeText,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            hasSelection
+                                ? '${_formatShort(_start!)} – ${_formatShort(_end!)} · $_nights ${_nights == 1 ? 'day' : 'days'}'
+                                : _start != null
+                                    ? 'Now pick an end date'
+                                    : 'Tap a date to start',
+                            style: TextStyle(fontSize: 13, color: themeTaupe),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (_start != null)
+                      GestureDetector(
+                        onTap: () => setState(() { _start = null; _end = null; }),
+                        child: Text(
+                          'Clear',
+                          style: TextStyle(fontSize: 13, color: themeAccent, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              // Calendar
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: AvailabilityCalendar(
+                      bookedRanges: widget.bookedRanges,
+                      selectionStart: _start,
+                      selectionEnd: _end,
+                      onDayTapped: _onDayTapped,
+                    ),
+                  ),
+                ),
+              ),
+
+              // Booking summary + confirm button
+              AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOut,
+                child: hasSelection
+                    ? Container(
+                        padding: EdgeInsets.fromLTRB(
+                          20, 16, 20, MediaQuery.of(context).padding.bottom + 16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.06),
+                              blurRadius: 12,
+                              offset: const Offset(0, -3),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    formatPrice(_totalPrice),
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700,
+                                      color: themeText,
+                                    ),
+                                  ),
+                                  Text(
+                                    '$_nights ${_nights == 1 ? 'day' : 'days'} · ${formatPrice(widget.pricePerDay)}/day',
+                                    style: TextStyle(fontSize: 12, color: themeTaupe),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: _isSubmitting ? null : _submitBooking,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                                decoration: BoxDecoration(
+                                  color: _isSubmitting
+                                      ? themeAccent.withValues(alpha: 0.6)
+                                      : themeAccent,
+                                  borderRadius: BorderRadius.circular(26),
+                                  boxShadow: _isSubmitting
+                                      ? []
+                                      : [
+                                          BoxShadow(
+                                            color: themeAccent.withValues(alpha: 0.38),
+                                            blurRadius: 14,
+                                            offset: const Offset(0, 5),
+                                          ),
+                                        ],
+                                ),
+                                child: _isSubmitting
+                                    ? SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: themeText,
+                                        ),
+                                      )
+                                    : Text(
+                                        'Confirm booking',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: themeText,
+                                          letterSpacing: 0.3,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
