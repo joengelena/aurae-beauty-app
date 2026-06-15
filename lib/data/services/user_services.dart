@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:shine_app/data/api_client.dart';
 import 'package:shine_app/data/exceptions/app_exception.dart';
+import 'package:shine_app/data/models/business_settings.dart';
 import 'package:shine_app/data/models/user.dart';
 import 'package:shine_app/env_constants.dart';
 import 'package:shine_app/utils/constants.dart';
@@ -372,6 +373,56 @@ class UserServices {
         'Network error during account deletion',
         details: e.toString(),
       );
+    }
+  }
+
+  Future<BusinessSettings> getBusinessSettings() async {
+    try {
+      final response = await apiClient.get(
+        '/user/settings',
+        cacheKey: CacheKeys.businessSettings,
+        cacheDuration: CacheDurations.long,
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NetworkException(errorMessage, statusCode: response.statusCode, details: response.body);
+      }
+
+      try {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        return BusinessSettings.fromJson(data);
+      } catch (e) {
+        throw DataParseException('Invalid settings response format', details: e.toString());
+      }
+    } catch (e) {
+      if (e is NetworkException || e is DataParseException) rethrow;
+      throw NetworkException('Network error loading settings', details: e.toString());
+    }
+  }
+
+  Future<BusinessSettings> updateBusinessSettings(BusinessSettings settings) async {
+    try {
+      final response = await apiClient.patch(
+        '/user/settings',
+        settings.toJson(),
+        invalidateCacheKeys: [CacheKeys.businessSettings],
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw NetworkException(errorMessage, statusCode: response.statusCode, details: response.body);
+      }
+
+      try {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        return BusinessSettings.fromJson(data);
+      } catch (e) {
+        throw DataParseException('Invalid settings response format', details: e.toString());
+      }
+    } catch (e) {
+      if (e is NetworkException || e is DataParseException) rethrow;
+      throw NetworkException('Network error saving settings', details: e.toString());
     }
   }
 

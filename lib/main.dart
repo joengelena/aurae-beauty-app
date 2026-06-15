@@ -18,6 +18,7 @@ import 'package:shine_app/logic/dress_detail_provider.dart';
 import 'package:shine_app/logic/owner_profile_provider.dart';
 import 'package:shine_app/logic/upcoming_bookings_provider.dart';
 import 'package:shine_app/logic/week_schedule_provider.dart';
+import 'package:shine_app/logic/business_settings_provider.dart';
 import 'package:shine_app/data/cache_manager.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -138,6 +139,9 @@ void main() async {
             upcomingBookingsProvider!.updateAuthStatus(authProvider.isSignedIn);
             return upcomingBookingsProvider;
           },
+        ),
+        ChangeNotifierProvider<BusinessSettingsProvider>(
+          create: (_) => BusinessSettingsProvider(),
         ),
       ],
       child: MyApp(),

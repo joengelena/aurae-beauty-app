@@ -23,6 +23,7 @@ import 'package:shine_app/presentation/pages/edit_dress_page.dart';
 import 'package:shine_app/presentation/pages/dress_detail_page.dart';
 import 'package:shine_app/presentation/pages/add_booking_page.dart';
 import 'package:shine_app/presentation/pages/owner_profile_page.dart';
+import 'package:shine_app/presentation/pages/business_settings_page.dart';
 import 'package:shine_app/presentation/pages/privacy_policy_page.dart';
 import 'package:shine_app/presentation/widgets/scaffold/app_scaffold.dart';
 import 'package:provider/provider.dart';
@@ -295,6 +296,12 @@ GoRouter getAppRouter(AuthProvider authProvider) {
               final userId = state.pathParameters['userId']!;
               return NoTransitionPage(child: OwnerProfilePage(userId: userId));
             },
+          ),
+          GoRoute(
+            path: '/settings',
+            parentNavigatorKey: _shellNavigatorKey,
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: BusinessSettingsPage()),
           ),
           GoRoute(
             path: '/privacy',

@@ -6,6 +6,7 @@ import 'package:shine_app/logic/listings_provider.dart';
 import 'package:shine_app/presentation/widgets/listing/listing_search_field.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
+import 'package:shine_app/logic/business_settings_provider.dart';
 
 class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? currentRoute;
@@ -52,7 +53,9 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
     final authProvider = context.watch<AuthProvider>();
     final showBack = !_mainRoutes.contains(currentRoute);
     final isProfilePage = currentRoute == '/profile';
+    final isWardrobePage = currentRoute == '/wardrobe';
     final isListingsPage = currentRoute == '/listings';
+    final showSettingsIcon = (isProfilePage || isWardrobePage) && authProvider.isSignedIn;
 
     void onBack() {
       final backButtonProvider = context.read<BackButtonProvider>();
@@ -92,6 +95,15 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
           centerTitle: !isListingsPage,
           scrolledUnderElevation: 0,
           actions: [
+            if (showSettingsIcon)
+              IconButton(
+                icon: const Icon(Icons.tune_rounded),
+                tooltip: 'Business settings',
+                onPressed: () {
+                  context.read<BusinessSettingsProvider>().load();
+                  context.push('/settings');
+                },
+              ),
             if (isProfilePage)
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert),

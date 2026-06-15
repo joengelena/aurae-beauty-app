@@ -72,4 +72,5 @@ class CacheKeys {
   static String dressBookings(int dressId) => '/user/dresses/$dressId/bookings';
   static const String userBookings = '/user/dress-bookings';
   static const String myBookings = '/user/my-bookings';
+  static const String businessSettings = '/user/settings';
 }
