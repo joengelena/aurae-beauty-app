@@ -175,6 +175,29 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                             spacing: 8,
                             runSpacing: 8,
                             children: [
+                              if (isForBuy)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: themeText,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.sell_outlined, size: 14, color: Color(0xFFFFF8F6)),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        'For Sale',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFFFFF8F6),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               _SpecChip(
                                 icon: Icons.straighten,
                                 label: listing.size,

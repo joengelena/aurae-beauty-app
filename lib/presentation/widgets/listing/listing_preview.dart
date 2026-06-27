@@ -261,6 +261,11 @@ class ListingPreview extends StatelessWidget {
 
                   Row(
                     children: [
+                      if (listing.listingType != 'sell')
+                        Text(
+                          'From ',
+                          style: TextStyle(fontSize: 11, color: themeTaupe),
+                        ),
                       Text(
                         formatPrice(listing.pricePerDay),
                         style: TextStyle(

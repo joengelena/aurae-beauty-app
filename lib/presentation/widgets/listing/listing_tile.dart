@@ -172,19 +172,13 @@ class ListingTile extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text:
-                                          '${formatPrice(listing.pricePerDay)}/day',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 15,
-                                        color: themeText,
-                                      ),
-                                    ),
-                                  ],
+                              Text(
+                                listing.listingType == 'sell'
+                                    ? formatPrice(listing.pricePerDay)
+                                    : 'From ${formatPrice(listing.pricePerDay)}/day',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
                                 ),
                               ),
                               Row(

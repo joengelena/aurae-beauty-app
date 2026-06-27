@@ -119,6 +119,7 @@ class _DressDetailPageState extends State<DressDetailPage>
                               spacing: 6,
                               runSpacing: 6,
                               children: [
+                                if (dress.listingType == 'sell') _forSaleChip(),
                                 _attrChip('Size ${dress.size}'),
                                 if (dress.color != null) _attrChip(dress.color!),
                                 _conditionChip(dress.condition),
@@ -209,6 +210,7 @@ class _DressDetailPageState extends State<DressDetailPage>
     return PriceActionBar(
       price: price,
       priceLabel: isForSale ? 'purchase price' : 'per day',
+      pricePrefix: isForSale ? null : 'From ',
       buttonLabel: isForSale ? 'Purchase' : 'Select Dates',
       buttonIcon: isForSale
           ? Icons.shopping_bag_outlined
@@ -845,6 +847,20 @@ class _DressDetailPageState extends State<DressDetailPage>
           color: fg,
           letterSpacing: 0.1,
         ),
+      ),
+    );
+  }
+
+  Widget _forSaleChip() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: themeText,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Text(
+        'For Sale',
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFFFFF8F6)),
       ),
     );
   }

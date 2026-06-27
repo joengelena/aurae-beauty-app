@@ -156,6 +156,11 @@ class DressCard extends StatelessWidget {
                       child: Row(
                         children: [
                           if (dress.rentalPricePerDay != null) ...[
+                            if (dress.listingType != 'sell')
+                              Text(
+                                'From ',
+                                style: TextStyle(fontSize: 11, color: themeTaupe),
+                              ),
                             Text(
                               formatPrice(dress.rentalPricePerDay!),
                               style: TextStyle(

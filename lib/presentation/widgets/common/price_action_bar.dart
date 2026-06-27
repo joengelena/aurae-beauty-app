@@ -10,10 +10,12 @@ class PriceActionBar extends StatelessWidget {
     required this.buttonLabel,
     required this.buttonIcon,
     required this.onTap,
+    this.pricePrefix,
   });
 
   final int price;
   final String priceLabel;
+  final String? pricePrefix;
   final String buttonLabel;
   final IconData buttonIcon;
   final VoidCallback? onTap;
@@ -38,7 +40,7 @@ class PriceActionBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  formatPrice(price),
+                  '${pricePrefix ?? ''}${formatPrice(price)}',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
