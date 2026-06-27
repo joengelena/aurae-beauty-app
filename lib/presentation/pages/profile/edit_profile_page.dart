@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shine_app/data/models/listing_attribute.dart';
-import 'package:shine_app/data/services/listings_services.dart';
 import 'package:shine_app/logic/profile_provider.dart';
 import 'package:shine_app/presentation/widgets/common/select_single_image.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
@@ -55,19 +53,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
   }
 
-  Future<void> _loadLocationOptions() async {
-    try {
-      final attributes = await ListingsServices().getListingAttributes();
-      final locationAttribute = attributes.firstWhere(
-        (attr) => attr.name == 'location',
-        orElse: () => ListingAttribute(name: 'location', attributeValues: []),
-      );
-      setState(() {
-        locationOptions = locationAttribute.attributeValues;
-      });
-    } catch (e) {
-      debugPrint('⚠️ Failed to load location options: $e');
-    }
+  void _loadLocationOptions() {
+    setState(() {
+      locationOptions = const [
+        'Auckland', 'Wellington', 'Christchurch', 'Hamilton', 'Tauranga',
+        'Napier-Hastings', 'Dunedin', 'Palmerston North', 'Nelson', 'Rotorua',
+        'New Plymouth', 'Whangarei', 'Invercargill', 'Whanganui', 'Gisborne',
+      ];
+    });
   }
 
   @override
@@ -235,7 +228,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                   SizedBox(height: 16),
 
-                  FilledButton(
+                  ElevatedButton(
                     onPressed:
                         profileProvider.isLoading || !isFormValid || !hasChanges
                             ? null
@@ -253,22 +246,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 );
                               }
                             },
-                    style: FilledButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 14,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      backgroundColor:
-                          (isFormValid && hasChanges)
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey,
-                    ),
                     child:
                         profileProvider.isLoading
-                            ? SizedBox(
+                            ? const SizedBox(
                               height: 20,
                               width: 20,
                               child: CircularProgressIndicator(
@@ -278,26 +258,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 ),
                               ),
                             )
-                            : Text('Save Changes'),
+                            : const Text('Save changes'),
                   ),
 
-                  OutlinedButton(
+                  TextButton(
                     onPressed:
-                        profileProvider.isLoading
-                            ? null
-                            : () {
-                              context.go('/profile');
-                            },
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 14,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: Text('Cancel'),
+                        profileProvider.isLoading ? null : () => context.go('/profile'),
+                    child: const Text('Cancel'),
                   ),
                 ],
               ),

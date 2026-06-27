@@ -76,18 +76,18 @@ class UserProfile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 12,
           children: [
-            FilledButton.icon(
+            ElevatedButton.icon(
               onPressed: () {
                 context.go('/profile/edit');
               },
-              icon: const Icon(Icons.edit),
+              icon: const Icon(Icons.edit, size: 16),
               label: const Text('Edit profile'),
             ),
             OutlinedButton.icon(
               onPressed: () {
                 context.go('/profile/change-password');
               },
-              icon: const Icon(Icons.lock_outline),
+              icon: const Icon(Icons.lock_outline, size: 16),
               label: const Text('Change password'),
             ),
           ],

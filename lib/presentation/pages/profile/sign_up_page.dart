@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shine_app/data/models/listing_attribute.dart';
-import 'package:shine_app/data/services/listings_services.dart';
 import 'package:shine_app/logic/auth_provider.dart';
 import 'package:shine_app/presentation/widgets/common/password_field.dart';
 import 'package:shine_app/utils/theme.dart';
@@ -41,19 +39,14 @@ class _SignUpPageState extends State<SignUpPage> {
     _loadLocationOptions();
   }
 
-  Future<void> _loadLocationOptions() async {
-    try {
-      final attributes = await ListingsServices().getListingAttributes();
-      final locationAttribute = attributes.firstWhere(
-        (attr) => attr.name == 'location',
-        orElse: () => ListingAttribute(name: 'location', attributeValues: []),
-      );
-      setState(() {
-        locationOptions = locationAttribute.attributeValues;
-      });
-    } catch (e) {
-      debugPrint('⚠️ Failed to load location options: $e');
-    }
+  void _loadLocationOptions() {
+    setState(() {
+      locationOptions = const [
+        'Auckland', 'Wellington', 'Christchurch', 'Hamilton', 'Tauranga',
+        'Napier-Hastings', 'Dunedin', 'Palmerston North', 'Nelson', 'Rotorua',
+        'New Plymouth', 'Whangarei', 'Invercargill', 'Whanganui', 'Gisborne',
+      ];
+    });
   }
 
   @override
@@ -251,7 +244,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
 
-                OutlinedButton(
+                ElevatedButton(
                   onPressed:
                       authProvider.isLoading
                           ? null
@@ -273,35 +266,19 @@ class _SignUpPageState extends State<SignUpPage> {
                               });
                             }
                           },
-                  style: OutlinedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    foregroundColor: isFormValid ? Colors.white : Colors.grey,
-                    side: BorderSide(
-                      color:
-                          isFormValid
-                              ? Theme.of(context).colorScheme.secondary
-                              : Colors.grey,
-                    ),
-                    backgroundColor:
-                        isFormValid
-                            ? Theme.of(context).colorScheme.secondary
-                            : Colors.transparent,
-                  ),
                   child:
                       authProvider.isLoading
-                          ? SizedBox(
-                            height: 20, // Adjust to match text height
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                Theme.of(context).colorScheme.onPrimary,
+                                Colors.white,
                               ),
                             ),
                           )
-                          : Text('Sign up'),
+                          : const Text('Sign up'),
                 ),
 
                 Row(
@@ -312,13 +289,14 @@ class _SignUpPageState extends State<SignUpPage> {
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     GestureDetector(
-                      onTap: () {
-                        context.go('/profile/signin');
-                      },
+                      onTap: () => context.go('/profile/signin'),
                       child: Text(
                         'Sign in',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.blue[700],
+                          color: themeText,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.underline,
+                          decorationColor: themeText,
                         ),
                       ),
                     ),

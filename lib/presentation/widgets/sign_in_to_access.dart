@@ -19,30 +19,20 @@ class SignInToAccess extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () {
-              context.go('/profile/signin');
-            },
-            style: ElevatedButton.styleFrom(
-              minimumSize: Size(200, 50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
+          SizedBox(
+            width: 220,
+            child: ElevatedButton(
+              onPressed: () => context.go('/profile/signin'),
+              child: const Text('Sign in'),
             ),
-            child: Text('Sign In'),
           ),
-          SizedBox(height: 16),
-          OutlinedButton(
-            onPressed: () {
-              context.go('/profile/signup');
-            },
-            style: OutlinedButton.styleFrom(
-              minimumSize: Size(200, 50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: 220,
+            child: OutlinedButton(
+              onPressed: () => context.go('/profile/signup'),
+              child: const Text('Create an account'),
             ),
-            child: Text('Create an account'),
           ),
         ],
       ),

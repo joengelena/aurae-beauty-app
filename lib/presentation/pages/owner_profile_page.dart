@@ -336,23 +336,9 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            GestureDetector(
-              onTap: () => context.read<OwnerProfileProvider>().load(widget.userId),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                decoration: BoxDecoration(
-                  color: themeText,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Text(
-                  'Try again',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFFFFF8F6),
-                  ),
-                ),
-              ),
+            ElevatedButton(
+              onPressed: () => context.read<OwnerProfileProvider>().load(widget.userId),
+              child: const Text('Try again'),
             ),
           ],
         ),

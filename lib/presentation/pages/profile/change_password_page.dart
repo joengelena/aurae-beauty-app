@@ -159,7 +159,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     },
                   ),
 
-                  OutlinedButton(
+                  ElevatedButton(
                     onPressed:
                         (authProvider.isLoading || !isFormValid)
                             ? null
@@ -170,51 +170,24 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                 );
                               }
                             },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 14,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      foregroundColor: isFormValid ? Colors.white : Colors.grey,
-                      side: BorderSide(
-                        color:
-                            isFormValid
-                                ? Theme.of(context).colorScheme.secondary
-                                : Colors.grey,
-                      ),
-                      backgroundColor:
-                          isFormValid
-                              ? Theme.of(context).colorScheme.secondary
-                              : Colors.transparent,
-                    ),
                     child:
                         authProvider.isLoading
-                            ? SizedBox(
-                              width: 50,
+                            ? const SizedBox(
+                              width: 20,
                               height: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 valueColor: AlwaysStoppedAnimation<Color>(
-                                  Theme.of(context).colorScheme.onPrimary,
+                                  Colors.white,
                                 ),
                               ),
                             )
-                            : const Text('Change Password'),
+                            : const Text('Change password'),
                   ),
 
                   TextButton(
-                    onPressed: () {
-                      context.go('/profile');
-                    },
-                    child: Text(
-                      'Cancel',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodySmall?.copyWith(color: Colors.blue[700]),
-                    ),
+                    onPressed: () => context.go('/profile'),
+                    child: const Text('Cancel'),
                   ),
                 ],
               ),

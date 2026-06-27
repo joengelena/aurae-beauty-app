@@ -98,12 +98,62 @@ final ThemeData appTheme = ThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: themeAccent,
       foregroundColor: themeText,
+      disabledBackgroundColor: Color(0xFFDDD4CF),
+      disabledForegroundColor: Color(0xFFA89E99),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
       padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
       elevation: 1,
       shadowColor: Colors.black.withOpacity(0.1),
+      textStyle: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.5,
+      ),
+    ),
+  ),
+  filledButtonTheme: FilledButtonThemeData(
+    style: FilledButton.styleFrom(
+      backgroundColor: themeAccent,
+      foregroundColor: themeText,
+      disabledBackgroundColor: Color(0xFFDDD4CF),
+      disabledForegroundColor: Color(0xFFA89E99),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+      elevation: 1,
+      shadowColor: Colors.black.withOpacity(0.1),
+      textStyle: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.5,
+      ),
+    ),
+  ),
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: OutlinedButton.styleFrom(
+      foregroundColor: themeText,
+      side: BorderSide(color: Color(0xFFEADFD8), width: 1.5),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+      textStyle: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.5,
+      ),
+    ),
+  ),
+  textButtonTheme: TextButtonThemeData(
+    style: TextButton.styleFrom(
+      foregroundColor: themeAccent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
       textStyle: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w600,

@@ -240,17 +240,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                     children: [
                       OutlinedButton(
                         onPressed:
-                            isLoading
-                                ? null
-                                : () {
-                                  context.go('/profile');
-                                },
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 32,
-                            vertical: 14,
-                          ),
-                        ),
+                            isLoading ? null : () => context.go('/profile'),
                         child: const Text('Cancel'),
                       ),
                       FilledButton(
@@ -259,11 +249,9 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                                 ? null
                                 : _handleDeleteAccount,
                         style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 32,
-                            vertical: 14,
-                          ),
                           backgroundColor: themeRed,
+                          foregroundColor: Colors.white,
+                          disabledBackgroundColor: themeRed.withValues(alpha: 0.4),
                         ),
                         child:
                             isLoading
@@ -277,7 +265,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                                     ),
                                   ),
                                 )
-                                : const Text('Delete Account'),
+                                : const Text('Delete account'),
                       ),
                     ],
                   ),

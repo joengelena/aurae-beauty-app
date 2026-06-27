@@ -196,25 +196,11 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                 ),
-                OutlinedButton(
+                ElevatedButton(
                   onPressed:
                       authProvider.isLoading || !_isFormValid
                           ? null
                           : _handleSignIn,
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 14,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    foregroundColor: _isFormValid ? themeText : themeTaupe,
-                    side: BorderSide(
-                      color: _isFormValid ? themeAccent : const Color(0xFFDDD4CF),
-                    ),
-                    backgroundColor: _isFormValid ? themeAccent : Colors.transparent,
-                  ),
                   child:
                       authProvider.isLoading
                           ? const SizedBox(

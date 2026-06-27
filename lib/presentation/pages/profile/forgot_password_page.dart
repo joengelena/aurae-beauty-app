@@ -133,7 +133,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                   ),
 
-                  OutlinedButton(
+                  ElevatedButton(
                     onPressed:
                         authProvider.isLoading
                             ? null
@@ -144,39 +144,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 );
                               }
                             },
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 14,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      foregroundColor: isFormValid ? Colors.white : Colors.grey,
-                      side: BorderSide(
-                        color:
-                            isFormValid
-                                ? Theme.of(context).colorScheme.secondary
-                                : Colors.grey,
-                      ),
-                      backgroundColor:
-                          isFormValid
-                              ? Theme.of(context).colorScheme.secondary
-                              : Colors.transparent,
-                    ),
                     child:
                         authProvider.isLoading
-                            ? SizedBox(
-                              width: 50,
+                            ? const SizedBox(
+                              width: 20,
                               height: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 valueColor: AlwaysStoppedAnimation<Color>(
-                                  Theme.of(context).colorScheme.onPrimary,
+                                  Colors.white,
                                 ),
                               ),
                             )
-                            : Text('Send email'),
+                            : const Text('Send email'),
                   ),
                 ],
               ),

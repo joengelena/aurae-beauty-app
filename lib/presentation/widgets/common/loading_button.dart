@@ -23,7 +23,7 @@ class LoadingButton extends StatelessWidget {
       );
     }
 
-    return FilledButton(
+    return ElevatedButton(
       onPressed: isLoading ? null : onPressed,
       child: _buildContent(context),
     );
