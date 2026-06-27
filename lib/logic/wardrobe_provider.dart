@@ -43,14 +43,14 @@ class WardrobeProvider extends ChangeNotifier {
 
   Future<void> addDress(
     Map<String, dynamic> dressData, {
-    Uint8List? imageBytes,
-    String? imageMimeType,
+    List<Uint8List> photoBytes = const [],
+    List<String?> photoMimeTypes = const [],
   }) async {
     try {
       await _dressServices.addDress(
         dressData,
-        imageBytes: imageBytes,
-        imageMimeType: imageMimeType,
+        photoBytes: photoBytes,
+        photoMimeTypes: photoMimeTypes,
       );
       await fetchDresses();
     } on AppException {
@@ -63,15 +63,17 @@ class WardrobeProvider extends ChangeNotifier {
   Future<void> updateDress(
     int dressId,
     Map<String, Object> updates, {
-    Uint8List? imageBytes,
-    String? imageMimeType,
+    List<Uint8List> newPhotoBytes = const [],
+    List<String?> newPhotoMimeTypes = const [],
+    List<String> keepPhotoUrls = const [],
   }) async {
     try {
       await _dressServices.updateDress(
         dressId,
         updates,
-        imageBytes: imageBytes,
-        imageMimeType: imageMimeType,
+        newPhotoBytes: newPhotoBytes,
+        newPhotoMimeTypes: newPhotoMimeTypes,
+        keepPhotoUrls: keepPhotoUrls,
       );
       await fetchDresses();
     } on AppException {

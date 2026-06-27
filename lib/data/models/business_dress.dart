@@ -15,7 +15,7 @@ class BusinessDress {
   final int? purchasePrice;
   final int? rentalPricePerDay;
   final String condition;
-  final String? dressPhotoUrl;
+  final List<String> dressPhotoUrls;
   final String? notes;
   final String? damageDescription;
   final List<String> damagePhotoUrls;
@@ -39,13 +39,16 @@ class BusinessDress {
     this.purchasePrice,
     this.rentalPricePerDay,
     required this.condition,
-    this.dressPhotoUrl,
+    this.dressPhotoUrls = const [],
     this.notes,
     this.damageDescription,
     this.damagePhotoUrls = const [],
     required this.createdAt,
     required this.updatedAt,
   });
+
+  String? get dressPhotoUrl =>
+      dressPhotoUrls.isNotEmpty ? dressPhotoUrls.first : null;
 
   factory BusinessDress.fromJson(Map<String, dynamic> json) {
     return BusinessDress(
@@ -67,7 +70,10 @@ class BusinessDress {
       purchasePrice: json['purchasePrice'] as int?,
       rentalPricePerDay: json['rentalPricePerDay'] as int?,
       condition: json['condition'] as String? ?? 'Excellent',
-      dressPhotoUrl: json['dressPhotoUrl'] as String? ?? json['vehiclePhotoUrl'] as String?,
+      dressPhotoUrls: (json['dressPhotoUrls'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
       notes: json['notes'] as String?,
       damageDescription: json['damageDescription'] as String?,
       damagePhotoUrls: (json['damagePhotoUrls'] as List<dynamic>?)
@@ -97,7 +103,7 @@ class BusinessDress {
       'purchasePrice': purchasePrice,
       'rentalPricePerDay': rentalPricePerDay,
       'condition': condition,
-      'dressPhotoUrl': dressPhotoUrl,
+      'dressPhotoUrls': dressPhotoUrls,
       'notes': notes,
       'damageDescription': damageDescription,
       'damagePhotoUrls': damagePhotoUrls,

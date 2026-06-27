@@ -35,8 +35,8 @@ class _AddDressPageState extends State<AddDressPage> {
   String? _selectedColor;
   bool _colorError = false;
 
-  Uint8List? _imageBytes;
-  String? _imageMimeType;
+  final List<Uint8List> _photoBytes = [];
+  final List<String?> _photoMimeTypes = [];
   final List<Uint8List> _damagePhotoBytes = [];
   bool _isSubmitting = false;
 
@@ -70,15 +70,23 @@ class _AddDressPageState extends State<AddDressPage> {
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _addPhoto() async {
+    if (_photoBytes.length >= 10) return;
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.gallery);
     if (picked == null) return;
     final bytes = await picked.readAsBytes();
     final mimeType = 'image/${picked.name.split('.').last.toLowerCase()}';
     setState(() {
-      _imageBytes = bytes;
-      _imageMimeType = mimeType;
+      _photoBytes.add(bytes);
+      _photoMimeTypes.add(mimeType);
+    });
+  }
+
+  void _removePhoto(int index) {
+    setState(() {
+      _photoBytes.removeAt(index);
+      _photoMimeTypes.removeAt(index);
     });
   }
 
@@ -95,6 +103,10 @@ class _AddDressPageState extends State<AddDressPage> {
     final formValid = _formKey.currentState!.validate();
     if (_selectedColor == null) setState(() => _colorError = true);
     if (!formValid || _selectedColor == null) return;
+    if (_photoBytes.isEmpty) {
+      FeedbackHelpers.showErrorSnackBar(context, 'Please add at least one photo.');
+      return;
+    }
     setState(() => _isSubmitting = true);
 
     final data = <String, dynamic>{
@@ -131,8 +143,8 @@ class _AddDressPageState extends State<AddDressPage> {
     try {
       await context.read<WardrobeProvider>().addDress(
         data,
-        imageBytes: _imageBytes,
-        imageMimeType: _imageMimeType,
+        photoBytes: _photoBytes,
+        photoMimeTypes: _photoMimeTypes,
       );
       if (mounted) {
         FeedbackHelpers.showSuccessSnackBar(
@@ -561,38 +573,97 @@ class _AddDressPageState extends State<AddDressPage> {
   }
 
   Widget _buildImagePicker() {
-    return GestureDetector(
-      onTap: _pickImage,
-      child: Container(
-        width: double.infinity,
-        height: 200,
-        decoration: BoxDecoration(
-          color: const Color(0xFFF5EFED),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFDDD4CF)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Photos',
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: themeText),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              '${_photoBytes.length}/10',
+              style: TextStyle(fontSize: 12, color: themeTaupe),
+            ),
+          ],
         ),
-        child:
-            _imageBytes != null
-                ? ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.memory(_imageBytes!, fit: BoxFit.cover),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 120,
+          child: _photoBytes.isEmpty
+              ? GestureDetector(
+                  onTap: _addPhoto,
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5EFED),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFDDD4CF)),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add_photo_alternate_outlined, size: 32, color: themeTaupe),
+                        const SizedBox(height: 6),
+                        Text('Add photos (min 1)', style: TextStyle(color: themeTaupe, fontSize: 13)),
+                      ],
+                    ),
+                  ),
                 )
-                : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              : ListView(
+                  scrollDirection: Axis.horizontal,
                   children: [
-                    Icon(
-                      Icons.add_photo_alternate_outlined,
-                      size: 40,
-                      color: themeTaupe,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Add photo',
-                      style: TextStyle(color: themeTaupe, fontSize: 14),
-                    ),
+                    ..._photoBytes.asMap().entries.map((e) => _photoThumbnail(e.key, e.value)),
+                    if (_photoBytes.length < 10)
+                      GestureDetector(
+                        onTap: _addPhoto,
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          margin: const EdgeInsets.only(right: 8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF5EFED),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFFDDD4CF)),
+                          ),
+                          child: Icon(Icons.add_photo_alternate_outlined, color: themeTaupe),
+                        ),
+                      ),
                   ],
                 ),
-      ),
+        ),
+      ],
+    );
+  }
+
+  Widget _photoThumbnail(int index, Uint8List bytes) {
+    return Stack(
+      children: [
+        Container(
+          width: 120,
+          height: 120,
+          margin: const EdgeInsets.only(right: 8),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.memory(bytes, fit: BoxFit.cover),
+          ),
+        ),
+        Positioned(
+          top: 4,
+          right: 12,
+          child: GestureDetector(
+            onTap: () => _removePhoto(index),
+            child: Container(
+              decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+              padding: const EdgeInsets.all(3),
+              child: const Icon(Icons.close, size: 14, color: Colors.white),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

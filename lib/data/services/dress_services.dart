@@ -36,7 +36,7 @@ class DressServices {
     );
 
     return http.MultipartFile.fromBytes(
-      'image',
+      'images',
       imageBytes,
       filename: 'dress_image.$extension',
       contentType: contentType,
@@ -45,24 +45,30 @@ class DressServices {
 
   Future<Map<String, dynamic>> addDress(
     Map<String, dynamic> dressData, {
-    Uint8List? imageBytes,
-    String? imageMimeType,
+    List<Uint8List> photoBytes = const [],
+    List<String?> photoMimeTypes = const [],
   }) async {
     try {
       http.Response response;
 
-      if (imageBytes != null) {
+      if (photoBytes.isNotEmpty) {
         final fields = <String, String>{};
         dressData.forEach((key, value) {
           fields[key] = value.toString();
         });
 
-        final multipartFile = _createImageMultipartFile(imageBytes, imageMimeType);
+        final multipartFiles = List.generate(
+          photoBytes.length,
+          (i) => _createImageMultipartFile(
+            photoBytes[i],
+            i < photoMimeTypes.length ? photoMimeTypes[i] : null,
+          ),
+        );
 
         response = await apiClient.postMultipart(
           '/user/dresses',
           fields,
-          [multipartFile],
+          multipartFiles,
           invalidateCacheKeys: [CacheKeys.dresses, '*/dresses*'],
         );
       } else {
@@ -144,35 +150,33 @@ class DressServices {
   Future<void> updateDress(
     int dressId,
     Map<String, Object> dressFields, {
-    Uint8List? imageBytes,
-    String? imageMimeType,
+    List<Uint8List> newPhotoBytes = const [],
+    List<String?> newPhotoMimeTypes = const [],
+    List<String> keepPhotoUrls = const [],
   }) async {
     try {
       http.Response response;
 
-      if (imageBytes != null) {
-        final fields = <String, String>{};
-        dressFields.forEach((key, value) {
-          fields[key] = value.toString();
-        });
+      final fields = <String, String>{};
+      dressFields.forEach((key, value) {
+        fields[key] = value.toString();
+      });
+      fields['keepPhotoUrls'] = json.encode(keepPhotoUrls);
 
-        final multipartFile = _createImageMultipartFile(imageBytes, imageMimeType);
+      final multipartFiles = List.generate(
+        newPhotoBytes.length,
+        (i) => _createImageMultipartFile(
+          newPhotoBytes[i],
+          i < newPhotoMimeTypes.length ? newPhotoMimeTypes[i] : null,
+        ),
+      );
 
-        response = await apiClient.patchMultipart(
-          '/user/dresses/$dressId',
-          fields,
-          [multipartFile],
-          invalidateCacheKeys: [CacheKeys.dresses, CacheKeys.dress(dressId), '*/dresses*'],
-        );
-      } else {
-        final payload = Map<String, dynamic>.fromEntries(dressFields.entries);
-
-        response = await apiClient.patch(
-          '/user/dresses/$dressId',
-          payload,
-          invalidateCacheKeys: [CacheKeys.dresses, CacheKeys.dress(dressId), '*/dresses*'],
-        );
-      }
+      response = await apiClient.patchMultipart(
+        '/user/dresses/$dressId',
+        fields,
+        multipartFiles,
+        invalidateCacheKeys: [CacheKeys.dresses, CacheKeys.dress(dressId), '*/dresses*'],
+      );
 
       if (response.statusCode == HttpStatus.notFound) {
         throw NotFoundException(extractErrorMessage(response.body));

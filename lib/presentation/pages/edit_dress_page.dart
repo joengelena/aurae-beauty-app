@@ -37,8 +37,9 @@ class _EditDressPageState extends State<EditDressPage> {
   String _size = 'M';
   String _condition = 'Excellent';
 
-  Uint8List? _imageBytes;
-  String? _imageMimeType;
+  List<String> _existingPhotoUrls = [];
+  final List<Uint8List> _newPhotoBytes = [];
+  final List<String?> _newPhotoMimeTypes = [];
   final List<Uint8List> _damagePhotoBytes = [];
   bool _isSubmitting = false;
   BusinessDress? _dress;
@@ -97,6 +98,7 @@ class _EditDressPageState extends State<EditDressPage> {
     }
     _listingType = _dress!.listingType;
     _isPublic = _dress!.isPublic;
+    _existingPhotoUrls = List.from(_dress!.dressPhotoUrls);
 
     setState(() {});
   }
@@ -125,15 +127,29 @@ class _EditDressPageState extends State<EditDressPage> {
     setState(() => _damagePhotoBytes.add(bytes));
   }
 
-  Future<void> _pickImage() async {
+  int get _totalPhotoCount => _existingPhotoUrls.length + _newPhotoBytes.length;
+
+  Future<void> _addPhoto() async {
+    if (_totalPhotoCount >= 10) return;
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.gallery);
     if (picked == null) return;
     final bytes = await picked.readAsBytes();
     final mimeType = 'image/${picked.name.split('.').last.toLowerCase()}';
     setState(() {
-      _imageBytes = bytes;
-      _imageMimeType = mimeType;
+      _newPhotoBytes.add(bytes);
+      _newPhotoMimeTypes.add(mimeType);
+    });
+  }
+
+  void _removeExistingPhoto(int index) {
+    setState(() => _existingPhotoUrls.removeAt(index));
+  }
+
+  void _removeNewPhoto(int index) {
+    setState(() {
+      _newPhotoBytes.removeAt(index);
+      _newPhotoMimeTypes.removeAt(index);
     });
   }
 
@@ -182,8 +198,9 @@ class _EditDressPageState extends State<EditDressPage> {
       await context.read<WardrobeProvider>().updateDress(
         int.parse(widget.dressId),
         updates,
-        imageBytes: _imageBytes,
-        imageMimeType: _imageMimeType,
+        newPhotoBytes: _newPhotoBytes,
+        newPhotoMimeTypes: _newPhotoMimeTypes,
+        keepPhotoUrls: _existingPhotoUrls,
       );
       if (mounted) {
         FeedbackHelpers.showSuccessSnackBar(
@@ -532,41 +549,137 @@ class _EditDressPageState extends State<EditDressPage> {
   }
 
   Widget _buildImagePicker() {
-    final existingUrl = _dress?.dressPhotoUrl;
-    return GestureDetector(
-      onTap: _pickImage,
-      child: Container(
-        width: double.infinity,
-        height: 200,
-        decoration: BoxDecoration(
-          color: const Color(0xFFF5EFED),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFDDD4CF)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Photos',
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: themeText),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              '$_totalPhotoCount/10',
+              style: TextStyle(fontSize: 12, color: themeTaupe),
+            ),
+          ],
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child:
-              _imageBytes != null
-                  ? Image.memory(_imageBytes!, fit: BoxFit.cover)
-                  : existingUrl != null
-                  ? Image.network(
-                    existingUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _photoPlaceholder(),
-                  )
-                  : _photoPlaceholder(),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 120,
+          child: (_existingPhotoUrls.isEmpty && _newPhotoBytes.isEmpty)
+              ? GestureDetector(
+                  onTap: _addPhoto,
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5EFED),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFDDD4CF)),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add_photo_alternate_outlined, size: 32, color: themeTaupe),
+                        const SizedBox(height: 6),
+                        Text('Add photos', style: TextStyle(color: themeTaupe, fontSize: 13)),
+                      ],
+                    ),
+                  ),
+                )
+              : ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    ..._existingPhotoUrls.asMap().entries.map(
+                      (e) => _existingPhotoThumbnail(e.key, e.value),
+                    ),
+                    ..._newPhotoBytes.asMap().entries.map(
+                      (e) => _newPhotoThumbnail(e.key, e.value),
+                    ),
+                    if (_totalPhotoCount < 10)
+                      GestureDetector(
+                        onTap: _addPhoto,
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          margin: const EdgeInsets.only(right: 8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF5EFED),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFFDDD4CF)),
+                          ),
+                          child: Icon(Icons.add_photo_alternate_outlined, color: themeTaupe),
+                        ),
+                      ),
+                  ],
+                ),
         ),
-      ),
+      ],
     );
   }
 
-  Widget _photoPlaceholder() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+  Widget _existingPhotoThumbnail(int index, String url) {
+    return Stack(
       children: [
-        Icon(Icons.add_photo_alternate_outlined, size: 40, color: themeTaupe),
-        const SizedBox(height: 8),
-        Text('Tap to change photo', style: TextStyle(color: themeTaupe, fontSize: 14)),
+        Container(
+          width: 120,
+          height: 120,
+          margin: const EdgeInsets.only(right: 8),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              url,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: const Color(0xFFF5EFED),
+                child: Icon(Icons.broken_image_outlined, color: themeTaupe),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 4,
+          right: 12,
+          child: GestureDetector(
+            onTap: () => _removeExistingPhoto(index),
+            child: Container(
+              decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+              padding: const EdgeInsets.all(3),
+              child: const Icon(Icons.close, size: 14, color: Colors.white),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _newPhotoThumbnail(int index, Uint8List bytes) {
+    return Stack(
+      children: [
+        Container(
+          width: 120,
+          height: 120,
+          margin: const EdgeInsets.only(right: 8),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.memory(bytes, fit: BoxFit.cover),
+          ),
+        ),
+        Positioned(
+          top: 4,
+          right: 12,
+          child: GestureDetector(
+            onTap: () => _removeNewPhoto(index),
+            child: Container(
+              decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+              padding: const EdgeInsets.all(3),
+              child: const Icon(Icons.close, size: 14, color: Colors.white),
+            ),
+          ),
+        ),
       ],
     );
   }
