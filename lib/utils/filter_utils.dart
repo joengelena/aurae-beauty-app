@@ -6,29 +6,31 @@ class FilterUtils {
   /// Maps internal filter keys to API parameter names
   /// This ensures consistent naming between the app and API
   static const Map<String, String> filterKeyToApiParam = {
-    'make': 'make',
+    'brand': 'brand',
+    'style': 'style',
+    'size': 'size',
+    'color': 'color',
+    'condition': 'condition',
+    'dress_type': 'dressType',
     'location': 'location',
-    'vehicle_condition': 'vehicleCondition',
-    'fuel_type': 'fuelType',
-    'body_type': 'bodyType',
-    'drive_type': 'driveType',
-    'transmission': 'transmission',
+    'startDate': 'startDate',
+    'endDate': 'endDate',
   };
 
   /// Converts filter map to API query parameters
   /// Handles both equal filters and range filters
-  /// Excludes 'None' values and empty strings, maps keys to API parameter names
+  /// Excludes 'Any' values and empty strings, maps keys to API parameter names
   ///
   /// Example:
   /// ```dart
-  /// {'make': 'Toyota', 'location': 'None', 'fuel_type': 'Petrol', 'priceFrom': '10000'}
-  /// // Returns: {'make': 'Toyota', 'fuelType': 'Petrol', 'priceFrom': '10000'}
+  /// {'brand': 'Zimmermann', 'location': 'Any', 'condition': 'Excellent', 'priceFrom': '100'}
+  /// // Returns: {'brand': 'Zimmermann', 'condition': 'Excellent', 'priceFrom': '100'}
   /// ```
   static Map<String, String> toApiQueryParams(Map<String, String> filters) {
     final result = <String, String>{};
 
     filters.forEach((key, value) {
-      if (value.isEmpty || value == 'None') return;
+      if (value.isEmpty || value == 'Any') return;
 
       // Check if it's a range filter
       if (rangeFilterKeyToApiParam.containsKey(key)) {
@@ -45,23 +47,20 @@ class FilterUtils {
 
   /// User-friendly display names for filter keys
   static const Map<String, String> filterDisplayNames = {
-    'make': 'Brand',
+    'brand': 'Brand',
+    'style': 'Style',
+    'size': 'Size',
+    'color': 'Color',
+    'condition': 'Condition',
+    'dress_type': 'Dress Type',
     'location': 'Location',
-    'vehicle_condition': 'Condition',
-    'fuel_type': 'Fabric',
-    'body_type': 'Dress Style',
-    'drive_type': 'Fit Type',
-    'transmission': 'Fit',
     'price': 'Price',
-    'year': 'Year',
   };
 
   /// Maps range filter keys to API parameter names
   static const Map<String, String> rangeFilterKeyToApiParam = {
     'priceFrom': 'priceFrom',
     'priceTo': 'priceTo',
-    'yearFrom': 'yearFrom',
-    'yearTo': 'yearTo',
   };
 
   /// Formats a range filter for display as a badge
@@ -84,9 +83,6 @@ class FilterUtils {
       case 'price':
         label = 'Price';
         prefix = '\$';
-        break;
-      case 'year':
-        label = 'Year';
         break;
     }
 
