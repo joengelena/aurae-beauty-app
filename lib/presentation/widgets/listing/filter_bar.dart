@@ -8,15 +8,18 @@ import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 /// Displays a horizontal scrollable bar with filter badges
-/// Shows active filters and allows users to remove or add filters
 class FilterBar extends StatelessWidget {
   const FilterBar({super.key});
+
+  static const _shortMonths = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
 
   void _showFiltersBottomSheet(BuildContext context) {
     final filteringProvider = context.read<FilteringProvider>();
     final listingsProvider = context.read<ListingsProvider>();
 
-    // Sync pending filters with applied filters when opening the sheet
     _syncFiltersWithAppliedState(filteringProvider, listingsProvider);
 
     showModalBottomSheet(
@@ -28,21 +31,20 @@ class FilterBar extends StatelessWidget {
       ),
       builder: (BuildContext modalContext) {
         return SizedBox(
-          height: MediaQuery.of(modalContext).size.height * 0.6,
+          height: MediaQuery.of(modalContext).size.height * 0.88,
           child: const FilterModalContent(),
         );
       },
     );
   }
 
-  /// Syncs pending filter state with currently applied filters
   void _syncFiltersWithAppliedState(
     FilteringProvider filteringProvider,
     ListingsProvider listingsProvider,
   ) {
     for (var key in filteringProvider.selectedEqualFilters.keys) {
       filteringProvider.selectedEqualFilters[key] =
-          listingsProvider.equalFilters[key] ?? 'None';
+          listingsProvider.equalFilters[key] ?? 'Any';
     }
 
     for (var key in filteringProvider.selectedRangeFilters.keys) {
@@ -52,13 +54,51 @@ class FilterBar extends StatelessWidget {
 
     listingsProvider.equalFilters.forEach((key, value) {
       if (!filteringProvider.selectedEqualFilters.containsKey(key) &&
-          !filteringProvider.selectedRangeFilters.containsKey(key)) {
+          !filteringProvider.selectedRangeFilters.containsKey(key) &&
+          key != 'startDate' &&
+          key != 'endDate') {
         filteringProvider.selectedEqualFilters[key] = value;
       }
     });
+
+    // Sync date range from applied filters back into provider
+    final startStr = listingsProvider.equalFilters['startDate'];
+    final endStr = listingsProvider.equalFilters['endDate'];
+    if (startStr != null && endStr != null) {
+      filteringProvider.updateDateRange(DateTimeRange(
+        start: DateTime.parse(startStr),
+        end: DateTime.parse(endStr),
+      ));
+    } else {
+      filteringProvider.clearDateRange();
+    }
   }
 
-  /// Creates a badge for an equal filter (e.g., "Toyota", "Dubai")
+  Widget _buildDateRangeBadge(
+    BuildContext context,
+    String startDateStr,
+    String endDateStr,
+  ) {
+    final filteringProvider = context.read<FilteringProvider>();
+    final listingsProvider = context.read<ListingsProvider>();
+
+    final start = DateTime.parse(startDateStr);
+    final end = DateTime.parse(endDateStr);
+    final label =
+        '${start.day} ${_shortMonths[start.month - 1]} – ${end.day} ${_shortMonths[end.month - 1]}';
+
+    return FilterBadge(
+      displayText: label,
+      onRemove: () {
+        filteringProvider.clearDateRange();
+        final updated = Map<String, String>.from(listingsProvider.equalFilters)
+          ..remove('startDate')
+          ..remove('endDate');
+        listingsProvider.applyFilters(updated);
+      },
+    );
+  }
+
   Widget _buildEqualFilterBadge(
     BuildContext context,
     String filterKey,
@@ -70,13 +110,12 @@ class FilterBar extends StatelessWidget {
     return FilterBadge(
       displayText: filterValue,
       onRemove: () {
-        filteringProvider.updateEqualFilter(filterKey, 'None');
+        filteringProvider.updateEqualFilter(filterKey, 'Any');
         listingsProvider.applyFilters(filteringProvider.selectedEqualFilters);
       },
     );
   }
 
-  /// Creates a badge for a range filter (e.g., "Price: $1000 - $5000")
   Widget _buildRangeFilterBadge(
     BuildContext context,
     String baseKey,
@@ -106,7 +145,6 @@ class FilterBar extends StatelessWidget {
     );
   }
 
-  /// Separates applied filters into equal and range filter categories
   ({
     List<MapEntry<String, String>> equalFilters,
     Map<String, Map<String, String>> rangeFilters,
@@ -116,9 +154,10 @@ class FilterBar extends StatelessWidget {
     final rangeFilters = <String, Map<String, String>>{};
 
     for (var entry in appliedFilters.entries) {
-      if (entry.value == 'None' || entry.value.isEmpty) continue;
+      if (entry.value == 'Any' || entry.value.isEmpty) continue;
+      // Date range handled separately as a combined badge
+      if (entry.key == 'startDate' || entry.key == 'endDate') continue;
 
-      // Check if it's a range filter (ends with From or To)
       if (entry.key.endsWith('From') || entry.key.endsWith('To')) {
         final baseKey = entry.key.replaceAll(RegExp(r'(From|To)$'), '');
         rangeFilters.putIfAbsent(baseKey, () => {});
@@ -136,6 +175,10 @@ class FilterBar extends StatelessWidget {
     final appliedFilters = context.watch<ListingsProvider>().equalFilters;
     final categorizedFilters = _categorizeAppliedFilters(appliedFilters);
 
+    final startDate = appliedFilters['startDate'];
+    final endDate = appliedFilters['endDate'];
+    final hasDateFilter = startDate != null && endDate != null;
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -151,7 +194,7 @@ class FilterBar extends StatelessWidget {
               style: TextStyle(color: themeText, fontSize: 13),
             ),
             style: OutlinedButton.styleFrom(
-              side: BorderSide(color: const Color(0xFFDDD4CF), width: 1),
+              side: BorderSide(color: themePrimary, width: 1),
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
@@ -159,6 +202,9 @@ class FilterBar extends StatelessWidget {
               backgroundColor: Colors.white,
             ),
           ),
+          // Date range badge (always first when active)
+          if (hasDateFilter)
+            _buildDateRangeBadge(context, startDate, endDate),
           // Equal filter badges
           ...categorizedFilters.equalFilters.map(
             (entry) => _buildEqualFilterBadge(context, entry.key, entry.value),

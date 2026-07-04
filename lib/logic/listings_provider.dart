@@ -46,7 +46,7 @@ class ListingsProvider extends ChangeNotifier {
       final hasNoLocationFilter =
           !equalFilters.containsKey('location') ||
           equalFilters['location'] == null ||
-          equalFilters['location'] == 'None';
+          equalFilters['location'] == 'Any';
 
       if (hasNoLocationFilter) {
         equalFilters['location'] = _userLocation!;
@@ -77,13 +77,13 @@ class ListingsProvider extends ChangeNotifier {
 
   Future<void> fetchListings() async {
     try {
-      // Apply default location filter if user is signed in and has location
       final filters = _getFiltersWithDefault();
 
       final res = await DressServices().getPublicDresses(
         allQueries: {
           'limit': limit,
           'pageNumber': currentPage + 1,
+          ...filters,
         },
       );
 

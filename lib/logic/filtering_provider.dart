@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show ChangeNotifier, DateTimeRange, debugPrint;
 import 'package:shine_app/data/models/listing_attribute.dart';
 import 'package:shine_app/data/services/listings_services.dart';
 
@@ -13,19 +13,20 @@ class FilteringProvider extends ChangeNotifier {
     'priceFrom': '',
     'priceTo': '',
   };
+  DateTimeRange? selectedDateRange;
 
   Future<void> _loadAttributes() async {
     try {
       final listingAttributeOptionsWithoutNone =
           await ListingsServices().getListingAttributes();
 
-      // Add 'None' option to each attribute for clearing filters
+      // Add 'Any' option to each attribute for clearing filters
       for (var attributeWithoutNone in listingAttributeOptionsWithoutNone) {
-        attributeWithoutNone.attributeValues.insert(0, 'None');
+        attributeWithoutNone.attributeValues.insert(0, 'Any');
       }
       listingAttributeOptions = listingAttributeOptionsWithoutNone;
 
-      // Initialize all filters to 'None' (no filter applied)
+      // Initialize all filters to 'Any' (no filter applied)
       selectedEqualFilters = {
         for (var attribute in listingAttributeOptions)
           attribute.name: attribute.attributeValues.first,
@@ -63,6 +64,16 @@ class FilteringProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateDateRange(DateTimeRange? range) {
+    selectedDateRange = range;
+    notifyListeners();
+  }
+
+  void clearDateRange() {
+    selectedDateRange = null;
+    notifyListeners();
+  }
+
   Map<String, String> getAllFilters() {
     final allFilters = Map<String, String>.from(selectedEqualFilters);
 
@@ -73,6 +84,15 @@ class FilteringProvider extends ChangeNotifier {
       }
     });
 
+    // Add date range as ISO date strings
+    if (selectedDateRange != null) {
+      allFilters['startDate'] = _isoDate(selectedDateRange!.start);
+      allFilters['endDate'] = _isoDate(selectedDateRange!.end);
+    }
+
     return allFilters;
   }
+
+  String _isoDate(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 }

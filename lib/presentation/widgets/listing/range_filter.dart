@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shine_app/logic/filtering_provider.dart';
+import 'package:shine_app/utils/theme.dart';
 
 class RangeFilter extends StatefulWidget {
   final String label;
@@ -55,7 +56,11 @@ class _RangeFilterState extends State<RangeFilter> {
         children: [
           Text(
             widget.label,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: themeText,
+            ),
           ),
           const SizedBox(height: 8),
           Row(
@@ -101,12 +106,13 @@ class _RangeFilterState extends State<RangeFilter> {
               ? [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))]
               : [FilteringTextInputFormatter.digitsOnly],
       decoration: InputDecoration(
-        labelText: labelText,
-        border: const OutlineInputBorder(),
+        hintText: labelText,
+        hintStyle: TextStyle(color: themeTaupe, fontSize: 13),
         prefixText: widget.prefixText,
+        prefixStyle: TextStyle(color: themeText, fontSize: 14),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 12,
+          horizontal: 16,
+          vertical: 14,
         ),
       ),
       onChanged: (value) {

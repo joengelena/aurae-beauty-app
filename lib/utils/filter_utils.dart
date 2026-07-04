@@ -1,5 +1,3 @@
-import 'package:shine_app/utils/utils.dart';
-
 /// Utility class for filter-related operations
 /// Centralizes filter key mapping to avoid duplication across providers
 class FilterUtils {
