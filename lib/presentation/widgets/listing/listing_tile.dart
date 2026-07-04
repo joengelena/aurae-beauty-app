@@ -54,11 +54,11 @@ class ListingTile extends StatelessWidget {
         child: Card(
           margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
           elevation: 0.5,
-          shadowColor: Colors.black.withOpacity(0.08),
+          shadowColor: Colors.black.withValues(alpha:0.08),
           color: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(_borderRadius),
-            side: BorderSide(color: themePrimary.withOpacity(0.3), width: 0.5),
+            side: BorderSide(color: themePrimary.withValues(alpha:0.3), width: 0.5),
           ),
           child: Stack(
             children: [

@@ -221,6 +221,11 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                             ],
                           ),
 
+                          if (provider.listingOwner?.deliveryOption != null) ...[
+                            const SizedBox(height: 12),
+                            _buildDeliveryChip(provider.listingOwner!.deliveryOption!),
+                          ],
+
                           const SizedBox(height: 28),
                           const Divider(color: Color(0xFFEEE8E4)),
                           const SizedBox(height: 20),
@@ -285,6 +290,37 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                 : () => _openDateSelector(context, provider),
           ),
       ],
+    );
+  }
+
+  Widget _buildDeliveryChip(String deliveryOption) {
+    final (IconData icon, String label) = switch (deliveryOption) {
+      'postal' => (Icons.local_shipping_outlined, 'Postal only'),
+      'both' => (Icons.swap_horiz, 'Pickup & postal'),
+      _ => (Icons.storefront_outlined, 'Pickup only'),
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: themePrimary.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: themeTaupe),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: themeTaupe,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -891,87 +927,87 @@ class _DateSelectionSheetState extends State<_DateSelectionSheet> {
               ),
 
               // Booking summary + confirm button
-              AnimatedSize(
-                duration: const Duration(milliseconds: 220),
-                curve: Curves.easeOut,
-                child: hasSelection
-                    ? Container(
-                        padding: EdgeInsets.fromLTRB(
-                          20, 16, 20, MediaQuery.of(context).padding.bottom + 16),
+              Container(
+                padding: EdgeInsets.fromLTRB(
+                  20, 16, 20, MediaQuery.of(context).padding.bottom + 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 12,
+                      offset: const Offset(0, -3),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            hasSelection ? formatPrice(_totalPrice) : '–',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: hasSelection ? themeText : themeTaupe,
+                            ),
+                          ),
+                          Text(
+                            hasSelection
+                                ? '$_nights ${_nights == 1 ? 'day' : 'days'} · ${formatPrice(widget.pricePerDay)}/day'
+                                : '${formatPrice(widget.pricePerDay)}/day',
+                            style: TextStyle(fontSize: 12, color: themeTaupe),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: (hasSelection && !_isSubmitting) ? _submitBooking : null,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.06),
-                              blurRadius: 12,
-                              offset: const Offset(0, -3),
-                            ),
-                          ],
+                          color: hasSelection
+                              ? (_isSubmitting
+                                  ? themeAccent.withValues(alpha: 0.6)
+                                  : themeAccent)
+                              : themeAccent.withValues(alpha: 0.35),
+                          borderRadius: BorderRadius.circular(26),
+                          boxShadow: (hasSelection && !_isSubmitting)
+                              ? [
+                                  BoxShadow(
+                                    color: themeAccent.withValues(alpha: 0.38),
+                                    blurRadius: 14,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ]
+                              : [],
                         ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    formatPrice(_totalPrice),
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w700,
-                                      color: themeText,
-                                    ),
-                                  ),
-                                  Text(
-                                    '$_nights ${_nights == 1 ? 'day' : 'days'} · ${formatPrice(widget.pricePerDay)}/day',
-                                    style: TextStyle(fontSize: 12, color: themeTaupe),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: _isSubmitting ? null : _submitBooking,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                                decoration: BoxDecoration(
-                                  color: _isSubmitting
-                                      ? themeAccent.withValues(alpha: 0.6)
-                                      : themeAccent,
-                                  borderRadius: BorderRadius.circular(26),
-                                  boxShadow: _isSubmitting
-                                      ? []
-                                      : [
-                                          BoxShadow(
-                                            color: themeAccent.withValues(alpha: 0.38),
-                                            blurRadius: 14,
-                                            offset: const Offset(0, 5),
-                                          ),
-                                        ],
+                        child: _isSubmitting
+                            ? SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: themeText,
                                 ),
-                                child: _isSubmitting
-                                    ? SizedBox(
-                                        width: 18,
-                                        height: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: themeText,
-                                        ),
-                                      )
-                                    : Text(
-                                        'Confirm booking',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: themeText,
-                                          letterSpacing: 0.3,
-                                        ),
-                                      ),
+                              )
+                            : Text(
+                                'Confirm booking',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: hasSelection
+                                      ? themeText
+                                      : themeText.withValues(alpha: 0.4),
+                                  letterSpacing: 0.3,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : const SizedBox.shrink(),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

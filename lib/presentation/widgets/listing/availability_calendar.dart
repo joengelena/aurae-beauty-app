@@ -11,6 +11,7 @@ class AvailabilityCalendar extends StatefulWidget {
   final DateTime? selectionStart;
   final DateTime? selectionEnd;
   final void Function(DateTime day)? onDayTapped;
+  final bool showLegend;
 
   const AvailabilityCalendar({
     super.key,
@@ -18,6 +19,7 @@ class AvailabilityCalendar extends StatefulWidget {
     this.selectionStart,
     this.selectionEnd,
     this.onDayTapped,
+    this.showLegend = true,
   });
 
   @override
@@ -137,8 +139,10 @@ class _AvailabilityCalendarState extends State<AvailabilityCalendar> {
         _buildDayLabels(),
         const SizedBox(height: 3),
         _buildGrid(),
-        const SizedBox(height: 12),
-        _buildLegend(),
+        if (widget.showLegend) ...[
+          const SizedBox(height: 12),
+          _buildLegend(),
+        ],
       ],
     );
   }
@@ -314,7 +318,7 @@ class _AvailabilityCalendarState extends State<AvailabilityCalendar> {
           ? themeTaupe.withValues(alpha: 0.4)
           : themeText;
 
-      cell = Container(
+      cell = SizedBox(
         height: 36,
         child: Center(
           child: Container(
