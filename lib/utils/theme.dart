@@ -105,7 +105,7 @@ final ThemeData appTheme = ThemeData(
       ),
       padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
       elevation: 1,
-      shadowColor: Colors.black.withOpacity(0.1),
+      shadowColor: Colors.black.withValues(alpha:0.1),
       textStyle: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w600,
@@ -124,7 +124,7 @@ final ThemeData appTheme = ThemeData(
       ),
       padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
       elevation: 1,
-      shadowColor: Colors.black.withOpacity(0.1),
+      shadowColor: Colors.black.withValues(alpha:0.1),
       textStyle: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w600,
@@ -167,13 +167,13 @@ final ThemeData appTheme = ThemeData(
       borderRadius: BorderRadius.circular(16),
     ),
     color: Colors.white,
-    shadowColor: Colors.black.withOpacity(0.05),
+    shadowColor: Colors.black.withValues(alpha:0.05),
   ),
   appBarTheme: AppBarTheme(
     backgroundColor: themeBackground,
     foregroundColor: themeText,
     elevation: 0,
-    shadowColor: Colors.black.withOpacity(0.05),
+    shadowColor: Colors.black.withValues(alpha:0.05),
     titleTextStyle: TextStyle(
       fontSize: 20,
       fontWeight: FontWeight.w600,
