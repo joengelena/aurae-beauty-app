@@ -367,8 +367,9 @@ class UserServices {
     } catch (e) {
       if (e is UnauthenticatedException ||
           e is AuthException ||
-          e is NetworkException)
+          e is NetworkException) {
         rethrow;
+      }
       throw NetworkException(
         'Network error during account deletion',
         details: e.toString(),

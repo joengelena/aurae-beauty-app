@@ -18,5 +18,5 @@ class BookedRange {
   }
 
   bool get isUnavailable =>
-      status == 'confirmed' || status == 'pending' || status == 'active';
+      status == 'confirmed' || status == 'pending' || status == 'active' || status == 'blocked';
 }

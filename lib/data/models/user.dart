@@ -8,6 +8,7 @@ class User {
   final String location;
   final String? instagram;
   final String? profilePhotoUrl;
+  final String? deliveryOption;
 
   User({
     required this.firstName,
@@ -17,6 +18,7 @@ class User {
     required this.location,
     this.instagram,
     this.profilePhotoUrl,
+    this.deliveryOption,
   });
 
   factory User.fromJsonString(String jsonString) {
@@ -30,6 +32,7 @@ class User {
       location: decodedJson['location'] as String,
       instagram: decodedJson['instagram'] as String?,
       profilePhotoUrl: decodedJson['profilePhotoUrl'] as String?,
+      deliveryOption: decodedJson['deliveryOption'] as String?,
     );
   }
 }

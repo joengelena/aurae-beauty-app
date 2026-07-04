@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:shine_app/data/api_client.dart';
@@ -153,6 +154,7 @@ class DressServices {
     List<Uint8List> newPhotoBytes = const [],
     List<String?> newPhotoMimeTypes = const [],
     List<String> keepPhotoUrls = const [],
+    List<DateTimeRange>? blockedDateRanges,
   }) async {
     try {
       http.Response response;
@@ -162,6 +164,16 @@ class DressServices {
         fields[key] = value.toString();
       });
       fields['keepPhotoUrls'] = json.encode(keepPhotoUrls);
+      if (blockedDateRanges != null) {
+        fields['blockedDateRanges'] = json.encode(
+          blockedDateRanges
+              .map((r) => {
+                    'startDate': r.start.toIso8601String().substring(0, 10),
+                    'endDate': r.end.toIso8601String().substring(0, 10),
+                  })
+              .toList(),
+        );
+      }
 
       final multipartFiles = List.generate(
         newPhotoBytes.length,

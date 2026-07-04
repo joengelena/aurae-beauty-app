@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class BusinessDress {
   final int id;
   final String userIdFk;
@@ -16,6 +18,7 @@ class BusinessDress {
   final int? rentalPricePerDay;
   final String condition;
   final List<String> dressPhotoUrls;
+  final List<DateTimeRange> blockedDateRanges;
   final String? notes;
   final String? damageDescription;
   final List<String> damagePhotoUrls;
@@ -40,6 +43,7 @@ class BusinessDress {
     this.rentalPricePerDay,
     required this.condition,
     this.dressPhotoUrls = const [],
+    this.blockedDateRanges = const [],
     this.notes,
     this.damageDescription,
     this.damagePhotoUrls = const [],
@@ -72,6 +76,13 @@ class BusinessDress {
       condition: json['condition'] as String? ?? 'Excellent',
       dressPhotoUrls: (json['dressPhotoUrls'] as List<dynamic>?)
               ?.map((e) => e as String)
+              .toList() ??
+          [],
+      blockedDateRanges: (json['blockedDateRanges'] as List<dynamic>?)
+              ?.map((e) => DateTimeRange(
+                    start: DateTime.parse(e['startDate'] as String),
+                    end: DateTime.parse(e['endDate'] as String),
+                  ))
               .toList() ??
           [],
       notes: json['notes'] as String?,

@@ -66,6 +66,7 @@ class WardrobeProvider extends ChangeNotifier {
     List<Uint8List> newPhotoBytes = const [],
     List<String?> newPhotoMimeTypes = const [],
     List<String> keepPhotoUrls = const [],
+    List<DateTimeRange>? blockedDateRanges,
   }) async {
     try {
       await _dressServices.updateDress(
@@ -74,6 +75,7 @@ class WardrobeProvider extends ChangeNotifier {
         newPhotoBytes: newPhotoBytes,
         newPhotoMimeTypes: newPhotoMimeTypes,
         keepPhotoUrls: keepPhotoUrls,
+        blockedDateRanges: blockedDateRanges,
       );
       await fetchDresses();
     } on AppException {
