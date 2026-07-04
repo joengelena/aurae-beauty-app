@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/exceptions/app_exception.dart';
+import 'package:shine_app/data/models/booked_range.dart';
 import 'package:shine_app/logic/dress_detail_provider.dart';
+import 'package:shine_app/presentation/widgets/common/calendar_date_range_picker.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:shine_app/utils/theme.dart';
-import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class AddBookingPage extends StatefulWidget {
@@ -32,6 +33,7 @@ class _AddBookingPageState extends State<AddBookingPage> {
   DateTime? _startDate;
   DateTime? _endDate;
   bool _isSubmitting = false;
+  bool _dateError = false;
 
   static const _bookingTypes = ['rental', 'event', 'photoshoot', 'other'];
   static const _statuses = ['pending', 'confirmed', 'active', 'returned'];
@@ -48,39 +50,9 @@ class _AddBookingPageState extends State<AddBookingPage> {
     super.dispose();
   }
 
-  Future<void> _pickStartDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _startDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) {
-      setState(() {
-        _startDate = picked;
-        if (_endDate != null && _endDate!.isBefore(picked)) {
-          _endDate = picked;
-        }
-      });
-    }
-  }
-
-  Future<void> _pickEndDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _endDate ?? _startDate ?? DateTime.now(),
-      firstDate: _startDate ?? DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) setState(() => _endDate = picked);
-  }
-
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
-    if (_startDate == null || _endDate == null) {
-      FeedbackHelpers.showErrorSnackBar(context, 'Please select start and end dates.');
-      return;
-    }
+    if (_startDate == null || _endDate == null) setState(() => _dateError = true);
+    if (!_formKey.currentState!.validate() || _startDate == null || _endDate == null) return;
 
     setState(() => _isSubmitting = true);
 
@@ -128,74 +100,142 @@ class _AddBookingPageState extends State<AddBookingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Booking'),
-        actions: [
-          TextButton(
-            onPressed: _isSubmitting ? null : _submit,
-            child: _isSubmitting
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Save'),
-          ),
-        ],
-      ),
       body: Form(
         key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _dropdown('Booking Type', _bookingType, _bookingTypes,
-                  (v) => setState(() => _bookingType = v!)),
-              _dropdown('Status', _status, _statuses,
-                  (v) => setState(() => _status = v!)),
-              const SizedBox(height: 16),
-              Text('Dates', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: themeText)),
-              const SizedBox(height: 8),
-              _datePicker('Start Date *', _startDate, _pickStartDate),
-              _datePicker('End Date *', _endDate, _pickEndDate),
-              const SizedBox(height: 16),
-              Text('Renter', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: themeText)),
-              const SizedBox(height: 8),
-              _field(_renterNameController, 'Renter Name', required: true),
-              _field(_renterEmailController, 'Renter Email',
-                  keyboardType: TextInputType.emailAddress),
-              _field(_renterPhoneController, 'Renter Phone',
-                  keyboardType: TextInputType.phone),
-              _field(_renterInstagramController, 'Instagram ID',
-                  keyboardType: TextInputType.text),
-              const SizedBox(height: 16),
-              Text('Payment', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: themeText)),
-              const SizedBox(height: 8),
-              _field(
-                _totalCostController,
-                'Total Cost',
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                validator: (v) {
-                  if (v == null || v.isEmpty) return null;
-                  if (double.tryParse(v) == null) return 'Enter a valid amount';
-                  return null;
-                },
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _sectionLabel('Booking details'),
+                    _dropdown('Booking type', _bookingType, _bookingTypes,
+                        (v) => setState(() => _bookingType = v!)),
+                    _dropdown('Status', _status, _statuses,
+                        (v) => setState(() => _status = v!)),
+                    const SizedBox(height: 20),
+                    _sectionLabel('Dates'),
+                    _buildDatePicker(context),
+                    if (_dateError)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6, bottom: 4),
+                        child: Text(
+                          'Please select both start and end dates',
+                          style: TextStyle(fontSize: 12, color: themeRose),
+                        ),
+                      ),
+                    const SizedBox(height: 20),
+                    _sectionLabel('Renter'),
+                    _field(_renterNameController, 'Renter name', required: true),
+                    _field(_renterEmailController, 'Email',
+                        keyboardType: TextInputType.emailAddress),
+                    _field(_renterPhoneController, 'Phone',
+                        keyboardType: TextInputType.phone),
+                    _field(_renterInstagramController, 'Instagram ID'),
+                    const SizedBox(height: 20),
+                    _sectionLabel('Payment'),
+                    _field(
+                      _totalCostController,
+                      'Total cost',
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return null;
+                        if (double.tryParse(v) == null) return 'Enter a valid amount';
+                        return null;
+                      },
+                    ),
+                    _field(
+                      _depositPaidController,
+                      'Deposit paid',
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return null;
+                        if (double.tryParse(v) == null) return 'Enter a valid amount';
+                        return null;
+                      },
+                    ),
+                    _field(_notesController, 'Notes', maxLines: 3),
+                    const SizedBox(height: 8),
+                  ],
+                ),
               ),
-              _field(
-                _depositPaidController,
-                'Deposit Paid',
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                validator: (v) {
-                  if (v == null || v.isEmpty) return null;
-                  if (double.tryParse(v) == null) return 'Enter a valid amount';
-                  return null;
-                },
-              ),
-              _field(_notesController, 'Notes', maxLines: 3),
-            ],
-          ),
+            ),
+            _buildSaveBar(context),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _sectionLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: themeTaupe,
+          letterSpacing: 0.8,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDatePicker(BuildContext context) {
+    final bookings = context.read<DressDetailProvider>().bookings;
+    final bookedRanges = bookings
+        .where((b) => b.status != 'cancelled')
+        .map((b) => BookedRange(
+              startDate: b.startDate,
+              endDate: b.endDate,
+              status: b.status,
+            ))
+        .toList();
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: CalendarDateRangePicker(
+        initialStart: _startDate,
+        initialEnd: _endDate,
+        bookedRanges: bookedRanges,
+        placeholder: 'Select dates',
+        hasError: _dateError,
+        onChanged: (start, end) {
+          setState(() {
+            _startDate = start;
+            _endDate = end;
+            if (_startDate != null && _endDate != null) _dateError = false;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildSaveBar(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        16, 12, 16,
+        MediaQuery.of(context).padding.bottom + 12,
+      ),
+      decoration: BoxDecoration(
+        color: themeBackground,
+        border: Border(
+          top: BorderSide(color: themePrimary.withValues(alpha: 0.6), width: 1),
+        ),
+      ),
+      child: FilledButton(
+        onPressed: _isSubmitting ? null : _submit,
+        style: FilledButton.styleFrom(minimumSize: const Size(double.infinity, 52)),
+        child: _isSubmitting
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              )
+            : const Text('Save booking'),
       ),
     );
   }
@@ -236,22 +276,6 @@ class _AddBookingPageState extends State<AddBookingPage> {
         decoration: InputDecoration(labelText: label),
         items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
         onChanged: onChanged,
-      ),
-    );
-  }
-
-  Widget _datePicker(String label, DateTime? date, VoidCallback onTap) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: onTap,
-        child: InputDecorator(
-          decoration: InputDecoration(labelText: label),
-          child: Text(
-            date != null ? formatDate(date) : 'Select date',
-            style: TextStyle(color: date != null ? themeText : themeTaupe),
-          ),
-        ),
       ),
     );
   }
