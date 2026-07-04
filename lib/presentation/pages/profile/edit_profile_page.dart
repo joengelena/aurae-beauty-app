@@ -125,152 +125,153 @@ class _EditProfilePageState extends State<EditProfilePage> {
       });
     }
 
-    return Center(
-      child: SingleChildScrollView(
-        child: Center(
-          child: SizedBox(
-            width: 300,
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 24,
-                children: [
-                  Center(
-                    child: Text(
-                      'Edit Profile',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                  ),
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Center(
+              child: SizedBox(
+                width: 300,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 24,
+                    children: [
+                      const SizedBox(height: 8),
 
-                  if (profileProvider.updateErrorMessage.isNotEmpty &&
-                      !profileProvider.isLoading)
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(
-                        profileProvider.updateErrorMessage,
-                        style: TextStyle(color: themeRed, fontSize: 14),
-                        textAlign: TextAlign.center,
+                      if (profileProvider.updateErrorMessage.isNotEmpty &&
+                          !profileProvider.isLoading)
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(
+                            profileProvider.updateErrorMessage,
+                            style: TextStyle(color: themeRed, fontSize: 14),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+
+                      SelectSingleImage(
+                        imageBytes: profileProvider.profilePhotoBytes,
+                        imageUrl: user.profilePhotoUrl,
+                        onImageSelected: (bytes, mimeType) {
+                          profileProvider.setProfilePhoto(bytes, mimeType);
+                          _validateForm();
+                        },
+                        onImageDeleted: () {
+                          profileProvider.removeProfilePhoto();
+                          _validateForm();
+                        },
+                        aspectRatio: 1.0,
                       ),
-                    ),
 
-                  SelectSingleImage(
-                    imageBytes: profileProvider.profilePhotoBytes,
-                    imageUrl: user.profilePhotoUrl,
-                    onImageSelected: (bytes, mimeType) {
-                      profileProvider.setProfilePhoto(bytes, mimeType);
-                      _validateForm();
-                    },
-                    onImageDeleted: () {
-                      profileProvider.removeProfilePhoto();
-                      _validateForm();
-                    },
-                    aspectRatio: 1.0,
+                      TextFormField(
+                        controller: firstNameController,
+                        validator: (val) {
+                          if (val == null || val.isEmpty) return 'Required';
+                          return null;
+                        },
+                        decoration: InputDecoration(labelText: 'First Name'),
+                      ),
+
+                      TextFormField(
+                        controller: lastNameController,
+                        validator: (val) {
+                          if (val == null || val.isEmpty) return 'Required';
+                          return null;
+                        },
+                        decoration: InputDecoration(labelText: 'Last Name'),
+                      ),
+
+                      TextFormField(
+                        controller: phoneNumberController,
+                        validator: (val) {
+                          if (val == null || val.isEmpty) return 'Required';
+                          return null;
+                        },
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(labelText: 'Phone Number'),
+                      ),
+
+                      TextFormField(
+                        controller: instagramController,
+                        decoration: InputDecoration(
+                          labelText: 'Instagram ID',
+                          hintText: 'username (without @)',
+                        ),
+                      ),
+
+                      DropdownButtonFormField<String>(
+                        value: selectedLocation,
+                        decoration: InputDecoration(labelText: 'Location'),
+                        items:
+                            locationOptions.map((location) {
+                              return DropdownMenuItem<String>(
+                                value: location,
+                                child: Text(location),
+                              );
+                            }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedLocation = value;
+                            _validateForm();
+                          });
+                        },
+                        validator: (val) {
+                          if (val == null || val.isEmpty) return 'Required';
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 8),
+                    ],
                   ),
-
-                  TextFormField(
-                    controller: firstNameController,
-                    validator: (val) {
-                      if (val == null || val.isEmpty) return 'Required';
-                      return null;
-                    },
-                    decoration: InputDecoration(labelText: 'First Name'),
-                  ),
-
-                  TextFormField(
-                    controller: lastNameController,
-                    validator: (val) {
-                      if (val == null || val.isEmpty) return 'Required';
-                      return null;
-                    },
-                    decoration: InputDecoration(labelText: 'Last Name'),
-                  ),
-
-                  TextFormField(
-                    controller: phoneNumberController,
-                    validator: (val) {
-                      if (val == null || val.isEmpty) return 'Required';
-                      return null;
-                    },
-                    keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(labelText: 'Phone Number'),
-                  ),
-
-                  TextFormField(
-                    controller: instagramController,
-                    decoration: InputDecoration(
-                      labelText: 'Instagram ID',
-                      hintText: 'username (without @)',
-                    ),
-                  ),
-
-                  DropdownButtonFormField<String>(
-                    value: selectedLocation,
-                    decoration: InputDecoration(labelText: 'Location'),
-                    items:
-                        locationOptions.map((location) {
-                          return DropdownMenuItem<String>(
-                            value: location,
-                            child: Text(location),
-                          );
-                        }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedLocation = value;
-                        _validateForm();
-                      });
-                    },
-                    validator: (val) {
-                      if (val == null || val.isEmpty) return 'Required';
-                      return null;
-                    },
-                  ),
-
-                  SizedBox(height: 16),
-
-                  ElevatedButton(
-                    onPressed:
-                        profileProvider.isLoading || !isFormValid || !hasChanges
-                            ? null
-                            : () {
-                              if (_formKey.currentState!.validate() &&
-                                  selectedLocation != null) {
-                                profileProvider.updateUserProfile(
-                                  firstNameController.text.trim(),
-                                  lastNameController.text.trim(),
-                                  phoneNumberController.text.trim(),
-                                  selectedLocation!,
-                                  instagram: instagramController.text.trim().isEmpty
-                                      ? null
-                                      : instagramController.text.trim(),
-                                );
-                              }
-                            },
-                    child:
-                        profileProvider.isLoading
-                            ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
-                                ),
-                              ),
-                            )
-                            : const Text('Save changes'),
-                  ),
-
-                  TextButton(
-                    onPressed:
-                        profileProvider.isLoading ? null : () => context.go('/profile'),
-                    child: const Text('Cancel'),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
         ),
+        _buildSaveBar(context, profileProvider),
+      ],
+    );
+  }
+
+  Widget _buildSaveBar(BuildContext context, ProfileProvider profileProvider) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        16, 12, 16,
+        MediaQuery.of(context).padding.bottom + 12,
+      ),
+      decoration: BoxDecoration(
+        color: themeBackground,
+        border: Border(
+          top: BorderSide(color: themePrimary.withValues(alpha: 0.6), width: 1),
+        ),
+      ),
+      child: FilledButton(
+        onPressed: profileProvider.isLoading || !isFormValid || !hasChanges
+            ? null
+            : () {
+                if (_formKey.currentState!.validate() && selectedLocation != null) {
+                  profileProvider.updateUserProfile(
+                    firstNameController.text.trim(),
+                    lastNameController.text.trim(),
+                    phoneNumberController.text.trim(),
+                    selectedLocation!,
+                    instagram: instagramController.text.trim().isEmpty
+                        ? null
+                        : instagramController.text.trim(),
+                  );
+                }
+              },
+        style: FilledButton.styleFrom(minimumSize: const Size(double.infinity, 52)),
+        child: profileProvider.isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              )
+            : const Text('Save changes'),
       ),
     );
   }

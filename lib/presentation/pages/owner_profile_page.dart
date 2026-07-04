@@ -37,23 +37,7 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
   Widget build(BuildContext context) {
     final provider = context.watch<OwnerProfileProvider>();
 
-    return Scaffold(
-      backgroundColor: themeBackground,
-      appBar: AppBar(
-        backgroundColor: themeBackground,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        leading: GestureDetector(
-          onTap: () => context.pop(),
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Icon(Icons.arrow_back_ios_new, size: 18, color: themeText),
-          ),
-        ),
-      ),
-      body: _buildBody(provider),
-    );
+    return _buildBody(provider);
   }
 
   Widget _buildBody(OwnerProfileProvider provider) {

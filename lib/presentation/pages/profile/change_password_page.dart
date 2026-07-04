@@ -89,111 +89,114 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
 
-    return Center(
-      child: SingleChildScrollView(
-        child: Center(
-          child: SizedBox(
-            width: 300,
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 24,
-                children: [
-                  Text(
-                    'Change Password',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Center(
+              child: SizedBox(
+                width: 300,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 24,
+                    children: [
+                      const SizedBox(height: 8),
 
-                  Text(
-                    'Enter your new password below.',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-
-                  if (authProvider.changePasswordMessage.isNotEmpty &&
-                      !authProvider.isLoading &&
-                      !authProvider.changePasswordSuccess)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(
-                        authProvider.changePasswordMessage,
-                        style: TextStyle(color: themeRed, fontSize: 14),
+                      Text(
+                        'Enter your new password below.',
+                        style: Theme.of(context).textTheme.bodyMedium,
                         textAlign: TextAlign.center,
                       ),
-                    ),
 
-                  // New Password using reusable widget
-                  PasswordField(
-                    controller: newPasswordController,
-                    labelText: 'New Password',
-                    autofocus: true,
-                    textInputAction: TextInputAction.next,
-                    validator: (val) {
-                      if (val == null || val.isEmpty) return 'Required';
-                      if (val.length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
-                      return null;
-                    },
-                  ),
+                      if (authProvider.changePasswordMessage.isNotEmpty &&
+                          !authProvider.isLoading &&
+                          !authProvider.changePasswordSuccess)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(
+                            authProvider.changePasswordMessage,
+                            style: TextStyle(color: themeRed, fontSize: 14),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
 
-                  // Confirm Password using reusable widget
-                  PasswordField(
-                    controller: confirmPasswordController,
-                    labelText: 'Confirm Password',
-                    textInputAction: TextInputAction.done,
-                    validator: (val) {
-                      if (val == null || val.isEmpty) return 'Required';
-                      if (val != newPasswordController.text) {
-                        return 'Passwords do not match';
-                      }
-                      return null;
-                    },
-                    onFieldSubmitted: () {
-                      if (_formKey.currentState!.validate() && isFormValid) {
-                        context.read<AuthProvider>().changePassword(
-                          newPasswordController.text,
-                        );
-                      }
-                    },
-                  ),
+                      PasswordField(
+                        controller: newPasswordController,
+                        labelText: 'New Password',
+                        autofocus: true,
+                        textInputAction: TextInputAction.next,
+                        validator: (val) {
+                          if (val == null || val.isEmpty) return 'Required';
+                          if (val.length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+                          return null;
+                        },
+                      ),
 
-                  ElevatedButton(
-                    onPressed:
-                        (authProvider.isLoading || !isFormValid)
-                            ? null
-                            : () {
-                              if (_formKey.currentState!.validate()) {
-                                authProvider.changePassword(
-                                  newPasswordController.text,
-                                );
-                              }
-                            },
-                    child:
-                        authProvider.isLoading
-                            ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
-                                ),
-                              ),
-                            )
-                            : const Text('Change password'),
-                  ),
+                      PasswordField(
+                        controller: confirmPasswordController,
+                        labelText: 'Confirm Password',
+                        textInputAction: TextInputAction.done,
+                        validator: (val) {
+                          if (val == null || val.isEmpty) return 'Required';
+                          if (val != newPasswordController.text) {
+                            return 'Passwords do not match';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: () {
+                          if (_formKey.currentState!.validate() && isFormValid) {
+                            context.read<AuthProvider>().changePassword(
+                              newPasswordController.text,
+                            );
+                          }
+                        },
+                      ),
 
-                  TextButton(
-                    onPressed: () => context.go('/profile'),
-                    child: const Text('Cancel'),
+                      const SizedBox(height: 8),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
         ),
+        _buildSaveBar(context, authProvider),
+      ],
+    );
+  }
+
+  Widget _buildSaveBar(BuildContext context, AuthProvider authProvider) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        16, 12, 16,
+        MediaQuery.of(context).padding.bottom + 12,
+      ),
+      decoration: BoxDecoration(
+        color: themeBackground,
+        border: Border(
+          top: BorderSide(color: themePrimary.withValues(alpha: 0.6), width: 1),
+        ),
+      ),
+      child: FilledButton(
+        onPressed: (authProvider.isLoading || !isFormValid)
+            ? null
+            : () {
+                if (_formKey.currentState!.validate()) {
+                  authProvider.changePassword(newPasswordController.text);
+                }
+              },
+        style: FilledButton.styleFrom(minimumSize: const Size(double.infinity, 52)),
+        child: authProvider.isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              )
+            : const Text('Change password'),
       ),
     );
   }

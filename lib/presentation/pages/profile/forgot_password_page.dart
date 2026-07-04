@@ -120,8 +120,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     controller: emailController,
                     validator: (val) {
                       if (val == null || val.isEmpty) return 'Required';
-                      if (!emailRegex.hasMatch(val))
+                      if (!emailRegex.hasMatch(val)) {
                         return 'Enter a valid email';
+                      }
                       return null;
                     },
                     decoration: InputDecoration(

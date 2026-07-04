@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shine_app/data/exceptions/app_exception.dart';
+import 'package:shine_app/logic/filtering_provider.dart';
 import 'package:shine_app/logic/wardrobe_provider.dart';
+import 'package:shine_app/presentation/widgets/wardrobe/picker_form_field.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -19,8 +21,6 @@ class _AddDressPageState extends State<AddDressPage> {
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
-  final _brandController = TextEditingController();
-  final _styleController = TextEditingController();
   final _internalNameController = TextEditingController();
   final _rentalPriceController = TextEditingController();
   final _purchaseYearController = TextEditingController();
@@ -34,6 +34,9 @@ class _AddDressPageState extends State<AddDressPage> {
   String _condition = 'Excellent';
   String? _selectedColor;
   bool _colorError = false;
+  bool _photoError = false;
+  String _brandValue = '';
+  String _styleValue = '';
 
   final List<Uint8List> _photoBytes = [];
   final List<String?> _photoMimeTypes = [];
@@ -59,8 +62,6 @@ class _AddDressPageState extends State<AddDressPage> {
   @override
   void dispose() {
     _nameController.dispose();
-    _brandController.dispose();
-    _styleController.dispose();
     _internalNameController.dispose();
     _rentalPriceController.dispose();
     _purchaseYearController.dispose();
@@ -80,6 +81,7 @@ class _AddDressPageState extends State<AddDressPage> {
     setState(() {
       _photoBytes.add(bytes);
       _photoMimeTypes.add(mimeType);
+      _photoError = false;
     });
   }
 
@@ -102,16 +104,13 @@ class _AddDressPageState extends State<AddDressPage> {
   Future<void> _submit() async {
     final formValid = _formKey.currentState!.validate();
     if (_selectedColor == null) setState(() => _colorError = true);
-    if (!formValid || _selectedColor == null) return;
-    if (_photoBytes.isEmpty) {
-      FeedbackHelpers.showErrorSnackBar(context, 'Please add at least one photo.');
-      return;
-    }
+    if (_photoBytes.isEmpty) setState(() => _photoError = true);
+    if (!formValid || _selectedColor == null || _photoBytes.isEmpty) return;
     setState(() => _isSubmitting = true);
 
     final data = <String, dynamic>{
-      'brand': _brandController.text.trim(),
-      'style': _styleController.text.trim(),
+      'brand': _brandValue,
+      'style': _styleValue,
       'listingType': _listingType,
       'isPublic': _isPublic,
       'size': _size,
@@ -156,8 +155,9 @@ class _AddDressPageState extends State<AddDressPage> {
     } on AppException catch (e) {
       if (mounted) FeedbackHelpers.showErrorSnackBar(context, e.message);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         FeedbackHelpers.showErrorSnackBar(context, 'Failed to add dress.');
+      }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -166,116 +166,157 @@ class _AddDressPageState extends State<AddDressPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Dress'),
-        actions: [
-          TextButton(
-            onPressed: _isSubmitting ? null : _submit,
-            child:
-                _isSubmitting
-                    ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                    : const Text('Save'),
-          ),
-        ],
-      ),
       body: Form(
         key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildImagePicker(),
-              const SizedBox(height: 20),
-              _buildListingTypeToggle(),
-              const SizedBox(height: 12),
-              _buildVisibilityToggle(),
-              const SizedBox(height: 16),
-              _field(_nameController, 'Listing Name (shown publicly)'),
-              _field(_brandController, 'Brand', required: true),
-              _field(_styleController, 'Style', required: true),
-              _field(
-                _rentalPriceController,
-                _listingType == 'sell' ? 'Selling Price' : 'Price per Day',
-                keyboardType: TextInputType.number,
-                required: true,
-                validator: (v) {
-                  if (v == null || v.isEmpty) return _listingType == 'sell' ? 'Enter a selling price' : 'Enter a rental price';
-                  if (int.tryParse(v) == null) return 'Enter a whole number';
-                  return null;
-                },
-              ),
-              _dropdown(
-                'Size',
-                _size,
-                _sizes,
-                (v) => setState(() => _size = v!),
-              ),
-              _buildColorPicker(),
-              _field(
-                _purchaseYearController,
-                'Purchase Year',
-                keyboardType: TextInputType.number,
-                validator: (v) {
-                  if (v == null || v.isEmpty) return null;
-                  final year = int.tryParse(v);
-                  if (year == null || year < 1900 || year > 2100)
-                    return 'Enter a valid year';
-                  return null;
-                },
-              ),
-              _field(
-                _internalNameController,
-                'Internal Name (optional identifier)',
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Condition',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                  color: themeText,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Builder(
+                  builder: (context) {
+                    final attrs = context.watch<FilteringProvider>().listingAttributeOptions;
+                    List<String> attrOptions(String name) {
+                      final vals = attrs
+                          .where((a) => a.name == name)
+                          .expand((a) => a.attributeValues.where((v) => v != 'Any'))
+                          .toList();
+                      if (!vals.contains('Other')) vals.add('Other');
+                      return vals;
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildImagePicker(),
+                        const SizedBox(height: 20),
+                        _buildListingTypeToggle(),
+                        const SizedBox(height: 12),
+                        _buildVisibilityToggle(),
+                        const SizedBox(height: 20),
+                        _sectionLabel('Dress details'),
+                        PickerFormField(
+                          label: 'Brand',
+                          options: attrOptions('brand'),
+                          required: true,
+                          onChanged: (v) => _brandValue = v,
+                        ),
+                        PickerFormField(
+                          label: 'Style',
+                          options: attrOptions('style'),
+                          required: true,
+                          onChanged: (v) => _styleValue = v,
+                        ),
+                        PickerFormField(
+                          label: 'Size',
+                          options: _sizes,
+                          initialValue: _size,
+                          onChanged: (v) => _size = v,
+                        ),
+                        PickerFormField(
+                          label: 'Condition',
+                          options: _conditions,
+                          initialValue: _condition,
+                          onChanged: (v) => _condition = v,
+                        ),
+                        _buildColorPicker(),
+                        const SizedBox(height: 8),
+                        _sectionLabel('Pricing'),
+                        _field(
+                          _rentalPriceController,
+                          _listingType == 'sell' ? 'Selling price' : 'Price per day',
+                          keyboardType: TextInputType.number,
+                          required: true,
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return _listingType == 'sell' ? 'Enter a selling price' : 'Enter a rental price';
+                            if (int.tryParse(v) == null) return 'Enter a whole number';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 8),
+                        _sectionLabel('More details'),
+                        _field(_nameController, 'Listing name (shown publicly)'),
+                        _field(
+                          _purchaseYearController,
+                          'Purchase year',
+                          keyboardType: TextInputType.number,
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return null;
+                            final year = int.tryParse(v);
+                            if (year == null || year < 1900 || year > 2100) {
+                              return 'Enter a valid year';
+                            }
+                            return null;
+                          },
+                        ),
+                        _field(_internalNameController, 'Internal name (private)'),
+                        _field(
+                          _purchasePriceController,
+                          'Purchase price',
+                          keyboardType: TextInputType.number,
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return null;
+                            if (int.tryParse(v) == null) return 'Enter a whole number';
+                            return null;
+                          },
+                        ),
+                        _field(_notesController, 'Notes', maxLines: 4),
+                        const SizedBox(height: 8),
+                        _buildDamageSection(),
+                        const SizedBox(height: 8),
+                      ],
+                    );
+                  },
                 ),
               ),
-              const SizedBox(height: 4),
-              _dropdown(
-                'Condition',
-                _condition,
-                _conditions,
-                (v) => setState(() => _condition = v!),
-                showLabel: false,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Optional',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  color: themeText,
-                ),
-              ),
-              const SizedBox(height: 8),
-              _field(
-                _purchasePriceController,
-                'Purchase Price',
-                keyboardType: TextInputType.number,
-                validator: (v) {
-                  if (v == null || v.isEmpty) return null;
-                  if (int.tryParse(v) == null) return 'Enter a whole number';
-                  return null;
-                },
-              ),
-              _field(_notesController, 'Notes', maxLines: 4),
-              const SizedBox(height: 8),
-              _buildDamageSection(),
-              const SizedBox(height: 16),
-            ],
-          ),
+            ),
+            _buildSaveBar(context),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _sectionLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: themeTaupe,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSaveBar(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        16, 12, 16,
+        MediaQuery.of(context).padding.bottom + 12,
+      ),
+      decoration: BoxDecoration(
+        color: themeBackground,
+        border: Border(
+          top: BorderSide(color: themePrimary.withValues(alpha: 0.6), width: 1),
+        ),
+      ),
+      child: FilledButton(
+        onPressed: _isSubmitting ? null : _submit,
+        style: FilledButton.styleFrom(
+          minimumSize: const Size(double.infinity, 52),
+        ),
+        child: _isSubmitting
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: themeText,
+                ),
+              )
+            : const Text('Save dress'),
       ),
     );
   }
@@ -598,16 +639,18 @@ class _AddDressPageState extends State<AddDressPage> {
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF5EFED),
+                      color: _photoError ? themeRose.withValues(alpha: 0.06) : const Color(0xFFF5EFED),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFDDD4CF)),
+                      border: Border.all(
+                        color: _photoError ? themeRose : const Color(0xFFDDD4CF),
+                      ),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add_photo_alternate_outlined, size: 32, color: themeTaupe),
+                        Icon(Icons.add_photo_alternate_outlined, size: 32, color: _photoError ? themeRose : themeTaupe),
                         const SizedBox(height: 6),
-                        Text('Add photos (min 1)', style: TextStyle(color: themeTaupe, fontSize: 13)),
+                        Text('Add photos (min 1)', style: TextStyle(color: _photoError ? themeRose : themeTaupe, fontSize: 13)),
                       ],
                     ),
                   ),
@@ -634,6 +677,14 @@ class _AddDressPageState extends State<AddDressPage> {
                   ],
                 ),
         ),
+        if (_photoError)
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(
+              'Please add at least one photo',
+              style: TextStyle(fontSize: 12, color: themeRose),
+            ),
+          ),
       ],
     );
   }
@@ -694,24 +745,4 @@ class _AddDressPageState extends State<AddDressPage> {
     );
   }
 
-  Widget _dropdown(
-    String label,
-    String value,
-    List<String> items,
-    void Function(String?) onChanged, {
-    bool showLabel = true,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: DropdownButtonFormField<String>(
-        value: value,
-        decoration: InputDecoration(labelText: showLabel ? label : null),
-        items:
-            items
-                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                .toList(),
-        onChanged: onChanged,
-      ),
-    );
-  }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shine_app/logic/profile_provider.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -71,27 +70,6 @@ class UserProfile extends StatelessWidget {
         Text(user.phoneNumber, style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 4),
         Text(user.location, style: Theme.of(context).textTheme.bodyMedium),
-        const SizedBox(height: 24),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 12,
-          children: [
-            ElevatedButton.icon(
-              onPressed: () {
-                context.go('/profile/edit');
-              },
-              icon: const Icon(Icons.edit, size: 16),
-              label: const Text('Edit profile'),
-            ),
-            OutlinedButton.icon(
-              onPressed: () {
-                context.go('/profile/change-password');
-              },
-              icon: const Icon(Icons.lock_outline, size: 16),
-              label: const Text('Change password'),
-            ),
-          ],
-        ),
       ],
     );
   }

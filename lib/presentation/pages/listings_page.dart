@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shine_app/presentation/widgets/listing/infinite_grid.dart';
 import 'package:shine_app/presentation/widgets/listing/filters_and_sort_bar.dart';
 

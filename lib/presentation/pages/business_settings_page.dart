@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shine_app/logic/business_settings_provider.dart';
 import 'package:shine_app/utils/theme.dart';
@@ -21,32 +22,78 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: themeBackground,
-      appBar: AppBar(
-        title: const Text('Business Settings'),
-        backgroundColor: themeBackground,
-        foregroundColor: themeText,
-        scrolledUnderElevation: 0,
-      ),
-      body: Consumer<BusinessSettingsProvider>(
-        builder: (context, provider, _) {
-          if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return Consumer<BusinessSettingsProvider>(
+      builder: (context, provider, _) {
+        if (provider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
-            children: [
-              _buildSection(
-                label: 'Delivery Options',
-                description: 'Let renters know how they can receive dresses.',
-                child: _buildDeliverySelector(context, provider),
-              ),
-            ],
-          );
-        },
-      ),
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+          children: [
+            _buildSection(
+              label: 'Account',
+              description: 'Manage your profile and login credentials.',
+              child: _buildAccountOptions(context),
+            ),
+            _buildSection(
+              label: 'Delivery Options',
+              description: 'Let renters know how they can receive dresses.',
+              child: _buildDeliverySelector(context, provider),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildAccountOptions(BuildContext context) {
+    final items = [
+      (Icons.edit_outlined, 'Edit profile', '/profile/edit'),
+      (Icons.lock_outline, 'Change password', '/profile/change-password'),
+    ];
+
+    return Column(
+      children: items.map((item) {
+        final (icon, label, route) = item;
+        return GestureDetector(
+          onTap: () => context.push(route),
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFEADFD8)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5F0ED),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, size: 20, color: themeTaupe),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: themeText,
+                    ),
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: themeTaupe, size: 20),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 

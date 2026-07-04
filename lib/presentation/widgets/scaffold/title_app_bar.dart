@@ -21,6 +21,19 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
     '/profile/signin',
   ];
 
+  static String _titleForRoute(String? route) {
+    if (route == null || route.isEmpty) return 'Aurae';
+    if (route == '/wardrobe/add') return 'Add dress';
+    if (route.startsWith('/wardrobe/') && route.endsWith('/edit')) return 'Edit dress';
+    if (route.startsWith('/wardrobe/') && route.endsWith('/add-booking')) return 'Add booking';
+    if (route.startsWith('/settings')) return 'Settings';
+    if (route == '/profile/edit') return 'Edit profile';
+    if (route == '/profile/change-password') return 'Change password';
+    if (route.startsWith('/profile/')) return 'Account';
+    if (route.startsWith('/owner/')) return 'Owner profile';
+    return 'Aurae';
+  }
+
   const TitleAppBar({super.key, this.currentRoute});
 
   void _showSignOutDialog(BuildContext context, AuthProvider authProvider) {
@@ -91,7 +104,7 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
                       );
                     },
                   )
-                  : const Text('Aurae'),
+                  : Text(_titleForRoute(currentRoute)),
           centerTitle: !isListingsPage,
           scrolledUnderElevation: 0,
           actions: [
@@ -112,7 +125,7 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
                   if (value == 'Sign out') {
                     _showSignOutDialog(context, authProvider);
                   } else if (value == 'Delete account') {
-                    context.go('/profile/delete-account');
+                    context.push('/profile/delete-account');
                   }
                 },
                 itemBuilder:

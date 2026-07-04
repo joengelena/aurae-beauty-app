@@ -25,12 +25,13 @@ class _EditListingFormState extends State<EditListingForm> {
   }
 
   Future<void> _scrollToFirstError() async {
-    // Allow time for validation error states to be applied
-    await Future.delayed(Duration(milliseconds: 50));
-
     final formContext = _formKey.currentContext;
     if (formContext == null) return;
+    // Allow time for validation error states to be applied
+    await Future.delayed(Duration(milliseconds: 50));
+    if (!mounted) return;
 
+    // ignore: use_build_context_synchronously
     final firstErrorField = _findFirstErrorField(formContext);
     if (firstErrorField == null) return;
 
@@ -153,10 +154,12 @@ class _EditListingFormState extends State<EditListingForm> {
                           : () async {
                             if (_formKey.currentState!.validate()) {
                               final userId = await SecureStorage.read('userId');
+                              if (!mounted) return;
                               if (userId != null && userId.isNotEmpty) {
                                 provider.updateListing(userId);
                               } else {
                                 FeedbackHelpers.showErrorSnackBar(
+                                  // ignore: use_build_context_synchronously
                                   context,
                                   'Unable to verify user identity',
                                 );

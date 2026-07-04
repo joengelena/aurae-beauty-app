@@ -30,7 +30,7 @@ class AppNavigation extends StatelessWidget {
               data: Theme.of(context).copyWith(
                 navigationBarTheme: NavigationBarThemeData(
                   height: 64,
-                  indicatorColor: themeAccent.withOpacity(0.3),
+                  indicatorColor: themeAccent.withValues(alpha:0.3),
                   backgroundColor: themeBackground,
                   elevation: 0,
                   iconTheme: WidgetStateProperty.resolveWith((states) {

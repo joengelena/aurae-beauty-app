@@ -26,12 +26,13 @@ class _PostListingFormState extends State<PostListingForm> {
   }
 
   Future<void> _scrollToFirstError() async {
-    // Allow time for validation error states to be applied
-    await Future.delayed(Duration(milliseconds: 50));
-
     final formContext = _formKey.currentContext;
     if (formContext == null) return;
+    // Allow time for validation error states to be applied
+    await Future.delayed(Duration(milliseconds: 50));
+    if (!mounted) return;
 
+    // ignore: use_build_context_synchronously
     final firstErrorField = _findFirstErrorField(formContext);
     if (firstErrorField == null) return;
 
