@@ -1,13 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:shine_app/logic/listings_provider.dart';
 
 class ListingSearchField extends StatefulWidget {
   final ListingsProvider listingsProvider;
 
-  const ListingSearchField({
-    super.key,
-    required this.listingsProvider,
-  });
+  const ListingSearchField({super.key, required this.listingsProvider});
 
   @override
   State<ListingSearchField> createState() => _ListingSearchFieldState();
@@ -15,6 +14,7 @@ class ListingSearchField extends StatefulWidget {
 
 class _ListingSearchFieldState extends State<ListingSearchField> {
   bool _hasInput = false;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -25,20 +25,24 @@ class _ListingSearchFieldState extends State<ListingSearchField> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     widget.listingsProvider.searchController.removeListener(_onTextChanged);
     super.dispose();
   }
 
   void _onTextChanged() {
     final hasText = widget.listingsProvider.searchController.text.isNotEmpty;
-    if (hasText != _hasInput) {
-      setState(() {
-        _hasInput = hasText;
-      });
-    }
+    if (hasText != _hasInput) setState(() => _hasInput = hasText);
+
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      widget.listingsProvider.getNewListings();
+    });
   }
 
-  void _handleSearch() {
+  void _clearSearch() {
+    _debounce?.cancel();
+    widget.listingsProvider.searchController.clear();
     widget.listingsProvider.getNewListings();
   }
 
@@ -47,28 +51,21 @@ class _ListingSearchFieldState extends State<ListingSearchField> {
     return TextField(
       controller: widget.listingsProvider.searchController,
       textInputAction: TextInputAction.search,
-      onSubmitted: (_) => _handleSearch(),
+      onSubmitted: (_) {
+        _debounce?.cancel();
+        widget.listingsProvider.getNewListings();
+      },
       style: const TextStyle(fontSize: 14),
       decoration: InputDecoration(
-        hintText: 'Search styles, brands, or sizes',
+        hintText: 'Search by name or brand',
         prefixIcon: const Icon(Icons.search, size: 20),
-        suffixIcon: Padding(
-          padding: const EdgeInsets.only(right: 8, top: 4, bottom: 4),
-          child: FilledButton(
-            onPressed: _hasInput ? _handleSearch : null,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size(60, 28),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-            child: const Text(
-              'Search',
-              style: TextStyle(fontSize: 12),
-            ),
-          ),
-        ),
+        suffixIcon: _hasInput
+            ? IconButton(
+                icon: const Icon(Icons.close, size: 18),
+                onPressed: _clearSearch,
+                splashRadius: 16,
+              )
+            : null,
         filled: true,
         fillColor: const Color(0xFFF0E9E6),
         contentPadding: const EdgeInsets.symmetric(vertical: 0),

@@ -78,14 +78,15 @@ class ListingsProvider extends ChangeNotifier {
   Future<void> fetchListings() async {
     try {
       final filters = _getFiltersWithDefault();
+      final allQueries = <String, dynamic>{
+        'limit': limit,
+        'pageNumber': currentPage + 1,
+        ...filters,
+      };
+      final q = searchController.text.trim();
+      if (q.isNotEmpty) allQueries['q'] = q;
 
-      final res = await DressServices().getPublicDresses(
-        allQueries: {
-          'limit': limit,
-          'pageNumber': currentPage + 1,
-          ...filters,
-        },
-      );
+      final res = await DressServices().getPublicDresses(allQueries: allQueries);
 
       final fetchedListings = res.data;
 
