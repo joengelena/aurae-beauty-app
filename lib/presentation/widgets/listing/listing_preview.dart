@@ -4,6 +4,7 @@ import 'package:shine_app/data/models/listing.dart';
 import 'package:shine_app/logic/back_button_provider.dart';
 import 'package:shine_app/logic/watchlist_provider.dart';
 import 'package:shine_app/logic/listings_provider.dart';
+import 'package:shine_app/utils/auth_prompt.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:shine_app/utils/theme.dart';
@@ -44,6 +45,7 @@ class ListingPreview extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
+        if (!requireAuth(context, reason: 'Join to view dress details, check availability, and make a booking.')) return;
         final currentRoute = GoRouterState.of(context).uri.path;
         context.read<BackButtonProvider>().pushRoute(currentRoute);
         context.go('/listings/${listing.id}');
@@ -141,6 +143,7 @@ class ListingPreview extends StatelessWidget {
                   right: 6,
                   child: GestureDetector(
                     onTap: () async {
+                      if (!requireAuth(context, reason: 'Join to save and collect the dresses you love.')) return;
                       final watchlistProvider =
                           context.read<WatchlistProvider>();
                       final listingsProvider = context.read<ListingsProvider>();

@@ -3,6 +3,7 @@ import 'package:shine_app/logic/filtering_provider.dart';
 import 'package:shine_app/logic/listings_provider.dart';
 import 'package:shine_app/presentation/widgets/listing/filter_badge.dart';
 import 'package:shine_app/presentation/widgets/listing/filter_modal_content.dart';
+import 'package:shine_app/utils/auth_prompt.dart';
 import 'package:shine_app/utils/filter_utils.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -187,7 +188,10 @@ class FilterBar extends StatelessWidget {
         children: [
           // Filters button
           OutlinedButton.icon(
-            onPressed: () => _showFiltersBottomSheet(context),
+            onPressed: () {
+              if (!requireAuth(context, reason: 'Join to filter by size, colour, and availability.')) return;
+              _showFiltersBottomSheet(context);
+            },
             icon: Icon(Icons.tune, color: themeText, size: 18),
             label: Text(
               'Filters',
