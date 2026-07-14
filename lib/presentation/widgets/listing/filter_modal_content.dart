@@ -36,6 +36,7 @@ class _FilterModalContentState extends State<FilterModalContent> {
     String selectedValue,
     FilteringProvider provider,
   ) {
+    final validValue = options.contains(selectedValue) ? selectedValue : 'Any';
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -64,7 +65,7 @@ class _FilterModalContentState extends State<FilterModalContent> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: selectedValue,
+                  value: validValue,
                   isExpanded: true,
                   style: TextStyle(
                     fontSize: 13,
