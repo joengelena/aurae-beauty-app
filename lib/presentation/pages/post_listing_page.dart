@@ -15,7 +15,11 @@ class PostListingPage extends StatelessWidget {
     final authProvider = context.watch<AuthProvider>();
 
     if (!authProvider.isSignedIn) {
-      return SignInToAccess(message: 'Ready to post your listing?');
+      return const SignInToAccess(
+        icon: Icons.add_circle_outline,
+        title: 'Post a listing',
+        subtitle: 'Sign in to list your dresses for rent.',
+      );
     }
     if (postListingProvider.successfulPost) {
       return PostSuccess();

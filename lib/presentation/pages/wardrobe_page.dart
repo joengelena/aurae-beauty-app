@@ -63,7 +63,11 @@ class _WardrobePageState extends State<WardrobePage>
     final authProvider = context.watch<AuthProvider>();
 
     if (!authProvider.isSignedIn) {
-      return const SignInToAccess(message: 'Sign in to access your wardrobe.');
+      return const SignInToAccess(
+        icon: Icons.checkroom_outlined,
+        title: 'Your wardrobe',
+        subtitle: 'Sign in to manage your dresses, track rentals, and list items for others to borrow.',
+      );
     }
 
     final wardrobeProvider = context.watch<WardrobeProvider>();

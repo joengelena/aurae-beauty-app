@@ -60,7 +60,11 @@ class _EditListingPageState extends State<EditListingPage> {
     final listingDetailProvider = context.watch<ListingDetailProvider>();
 
     if (!authProvider.isSignedIn) {
-      return SignInToAccess(message: 'Sign in to edit your listing');
+      return const SignInToAccess(
+        icon: Icons.edit_outlined,
+        title: 'Sign in to continue',
+        subtitle: 'You need to be signed in to edit a listing.',
+      );
     }
 
     if (_isLoadingUserId || listingDetailProvider.isLoading) {

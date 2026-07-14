@@ -22,7 +22,11 @@ class _WatchlistPageState extends State<WatchlistPage> {
     final authProvider = context.watch<AuthProvider>();
 
     if (!authProvider.isSignedIn) {
-      return const SignInToAccess(message: 'Sign in to view your watchlist.');
+      return const SignInToAccess(
+        icon: Icons.favorite_border,
+        title: 'Your watchlist',
+        subtitle: 'Sign in to save dresses you love and revisit them anytime.',
+      );
     }
 
     final watchlistProvider = context.watch<WatchlistProvider>();
