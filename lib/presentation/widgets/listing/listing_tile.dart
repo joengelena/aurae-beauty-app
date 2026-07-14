@@ -75,18 +75,21 @@ class ListingTile extends StatelessWidget {
                       width: _imageWidth,
                       child: AspectRatio(
                         aspectRatio: AppConstants.listingImageAspectRatio,
-                        child: Image.network(
-                          listing.previewImgUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Colors.grey[300],
-                              child: const Icon(
-                                Icons.broken_image,
-                                color: Colors.grey,
-                              ),
-                            );
-                          },
+                        child: ColoredBox(
+                          color: const Color(0xFFF5EFED),
+                          child: Image.network(
+                            listing.previewImgUrl,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey[300],
+                                child: const Icon(
+                                  Icons.broken_image,
+                                  color: Colors.grey,
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),

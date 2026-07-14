@@ -231,7 +231,7 @@ class _DressDetailPageState extends State<DressDetailPage>
     } else {
       photo = Image.network(
         dress.dressPhotoUrl!,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         width: double.infinity,
         loadingBuilder: (context, child, progress) {
           if (progress == null) return child;

@@ -47,10 +47,13 @@ class DressCard extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: AppConstants.listingImageAspectRatio,
                     child: dress.dressPhotoUrl != null
-                        ? Image.network(
-                            dress.dressPhotoUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _photoPlaceholder(),
+                        ? ColoredBox(
+                            color: const Color(0xFFF5EFED),
+                            child: Image.network(
+                              dress.dressPhotoUrl!,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) => _photoPlaceholder(),
+                            ),
                           )
                         : _photoPlaceholder(),
                   ),

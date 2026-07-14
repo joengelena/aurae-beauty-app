@@ -77,10 +77,13 @@ class ListingPreview extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: AppConstants.listingImageAspectRatio,
                     child: listing.previewImgUrl.isNotEmpty
-                        ? Image.network(
-                            listing.previewImgUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _imagePlaceholder(),
+                        ? ColoredBox(
+                            color: const Color(0xFFF5EFED),
+                            child: Image.network(
+                              listing.previewImgUrl,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) => _imagePlaceholder(),
+                            ),
                           )
                         : _imagePlaceholder(),
                   ),
