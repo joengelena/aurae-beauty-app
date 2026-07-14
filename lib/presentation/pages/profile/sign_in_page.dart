@@ -59,16 +59,15 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
 
-    if (authProvider.signUpSuccess && authProvider.signUpMessage.isNotEmpty) {
-      final message = authProvider.signUpMessage;
+    if (authProvider.signUpSuccess) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         authProvider.clearSignUpState();
         AppDialog.showSuccess(
           context: context,
-          title: 'Account Created',
-          message: message,
-          buttonText: 'OK',
-          barrierDismissible: false,
+          title: 'You\'re all set',
+          message: 'Your account is ready. Sign in below to get started.',
+          buttonText: 'Got it',
+          barrierDismissible: true,
         );
       });
     }
