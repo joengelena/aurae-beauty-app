@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shine_app/logic/auth_provider.dart';
 import 'package:shine_app/logic/listing_detail_provider.dart';
+import 'package:shine_app/logic/profile_provider.dart';
+import 'package:shine_app/presentation/pages/onboarding_page.dart';
 import 'package:shine_app/presentation/pages/edit_listing_page.dart';
 import 'package:shine_app/presentation/pages/post_listing_page.dart';
 import 'package:shine_app/presentation/pages/profile/change_password_page.dart';
@@ -41,13 +43,13 @@ const _authPages = [
 ];
 
 // Public pages accessible to unauthenticated users
-const _publicPages = ['/listings', '/watchlist', '/privacy'];
+const _publicPages = ['/listings', '/watchlist', '/wardrobe', '/privacy'];
 
-GoRouter getAppRouter(AuthProvider authProvider) {
+GoRouter getAppRouter(AuthProvider authProvider, ProfileProvider profileProvider) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/splash',
-    refreshListenable: authProvider,
+    refreshListenable: Listenable.merge([authProvider, profileProvider]),
     errorBuilder: (context, state) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         context.go('/listings');
@@ -98,6 +100,18 @@ GoRouter getAppRouter(AuthProvider authProvider) {
         return '/listings';
       }
 
+      // Onboarding: show once until delivery option is set
+      final profileReady = isSignedIn &&
+          !profileProvider.isLoading &&
+          profileProvider.currentUser != null;
+      final needsOnboarding =
+          profileReady && profileProvider.currentUser!.deliveryOption == null;
+
+      if (needsOnboarding && path != '/onboarding') return '/onboarding';
+      if (path == '/onboarding' && !needsOnboarding) {
+        return isSignedIn ? '/listings' : '/profile/signin';
+      }
+
       return null;
     },
     routes: [
@@ -105,6 +119,12 @@ GoRouter getAppRouter(AuthProvider authProvider) {
       GoRoute(
         path: '/splash',
         pageBuilder: (context, state) => NoTransitionPage(child: SplashPage()),
+      ),
+      // Onboarding route - outside ShellRoute (no nav bar)
+      GoRoute(
+        path: '/onboarding',
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: OnboardingPage()),
       ),
       ShellRoute(
         navigatorKey: _shellNavigatorKey,

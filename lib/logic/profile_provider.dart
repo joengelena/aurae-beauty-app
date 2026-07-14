@@ -126,6 +126,27 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> uploadProfilePhotoOnly(
+    Uint8List imageBytes,
+    String mimeType,
+  ) async {
+    final user = currentUser;
+    if (user == null) return;
+    final userId = await SecureStorage.read('userId') ?? '';
+    await _userServices.updateUser(
+      user.firstName,
+      user.lastName,
+      user.phoneNumber,
+      user.location,
+      userId,
+      instagram: user.instagram,
+      imageBytes: imageBytes,
+      imageMimeType: mimeType,
+    );
+    currentUser = await _userServices.getUserWithId(userId);
+    notifyListeners();
+  }
+
   void clearUpdateState() {
     updateMessage = '';
     updateSuccess = false;

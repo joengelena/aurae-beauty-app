@@ -102,6 +102,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       await _userServices.signIn(email, password);
       isSignedIn = true;
+      isAuthInitialized = true;
     } catch (e) {
       if (e is AppException) {
         signInErrorMessage = e.message;
