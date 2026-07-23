@@ -2,10 +2,14 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:shine_app/data/exceptions/app_exception.dart';
 import 'package:shine_app/logic/filtering_provider.dart';
 import 'package:shine_app/logic/wardrobe_provider.dart';
+import 'package:shine_app/presentation/widgets/common/calendar_date_range_picker.dart';
+import 'package:shine_app/presentation/widgets/wardrobe/multi_chip_selector.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/picker_form_field.dart';
+import 'package:shine_app/presentation/widgets/wardrobe/size_system_toggle.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -29,35 +33,33 @@ class _AddDressPageState extends State<AddDressPage> {
   final _damageDescriptionController = TextEditingController();
 
   String _listingType = 'rent';
+  DateTime? _availableFrom;
   bool _isPublic = false;
-  String _size = 'M';
+  SizeSystem _sizeSystem = SizeSystem.letter;
+  List<String> _selectedSizes = [];
+  bool _sizeError = false;
   String _condition = 'Excellent';
   String? _selectedColor;
   bool _colorError = false;
   bool _photoError = false;
   String _brandValue = '';
   String _styleValue = '';
+  String _dressTypeValue = '';
+  String _fitNoteValue = '';
+  List<String> _recommendedSizes = [];
 
   final List<Uint8List> _photoBytes = [];
   final List<String?> _photoMimeTypes = [];
   final List<Uint8List> _damagePhotoBytes = [];
   bool _isSubmitting = false;
 
-  static const _sizes = [
-    'XS',
-    'S',
-    'M',
-    'L',
-    'XL',
-    'XXL',
-    '6',
-    '8',
-    '10',
-    '12',
-    '14',
-    '16',
-  ];
+  static const _letterSizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  static const _numberSizes = ['4', '6', '8', '10', '12', '14', '16'];
   static const _conditions = ['Excellent', 'Good', 'Fair', 'Poor'];
+  static const _fitNotes = ['Runs small', 'True to size', 'Runs large'];
+
+  List<String> get _sizeOptions =>
+      _sizeSystem == SizeSystem.letter ? _letterSizes : _numberSizes;
 
   @override
   void dispose() {
@@ -105,50 +107,68 @@ class _AddDressPageState extends State<AddDressPage> {
     final formValid = _formKey.currentState!.validate();
     if (_selectedColor == null) setState(() => _colorError = true);
     if (_photoBytes.isEmpty) setState(() => _photoError = true);
-    if (!formValid || _selectedColor == null || _photoBytes.isEmpty) return;
+    if (_selectedSizes.isEmpty) setState(() => _sizeError = true);
+    if (!formValid || _selectedColor == null || _photoBytes.isEmpty || _selectedSizes.isEmpty) {
+      return;
+    }
     setState(() => _isSubmitting = true);
 
-    final data = <String, dynamic>{
+    final baseData = <String, dynamic>{
       'brand': _brandValue,
       'style': _styleValue,
       'listingType': _listingType,
       'isPublic': _isPublic,
-      'size': _size,
       'condition': _condition,
       'color': _selectedColor!,
     };
     if (_nameController.text.trim().isNotEmpty) {
-      data['name'] = _nameController.text.trim();
+      baseData['name'] = _nameController.text.trim();
     }
     if (_internalNameController.text.trim().isNotEmpty) {
-      data['internalName'] = _internalNameController.text.trim();
+      baseData['internalName'] = _internalNameController.text.trim();
+    }
+    if (_dressTypeValue.isNotEmpty) {
+      baseData['dressType'] = _dressTypeValue;
+    }
+    if (_fitNoteValue.isNotEmpty) {
+      baseData['fitNote'] = _fitNoteValue;
+    }
+    if (_recommendedSizes.isNotEmpty) {
+      baseData['recommendedSizes'] = _recommendedSizes;
     }
     if (_purchaseYearController.text.trim().isNotEmpty) {
-      data['purchaseYear'] = int.parse(_purchaseYearController.text.trim());
+      baseData['purchaseYear'] = int.parse(_purchaseYearController.text.trim());
     }
     if (_rentalPriceController.text.trim().isNotEmpty) {
-      data['rentalPricePerDay'] = int.parse(_rentalPriceController.text.trim());
+      baseData['rentalPricePerDay'] = int.parse(_rentalPriceController.text.trim());
     }
     if (_purchasePriceController.text.trim().isNotEmpty) {
-      data['purchasePrice'] = int.parse(_purchasePriceController.text.trim());
+      baseData['purchasePrice'] = int.parse(_purchasePriceController.text.trim());
+    }
+    if (_listingType == 'sell' && _availableFrom != null) {
+      baseData['availableFrom'] = DateFormat('yyyy-MM-dd').format(_availableFrom!);
     }
     if (_notesController.text.trim().isNotEmpty) {
-      data['notes'] = _notesController.text.trim();
+      baseData['notes'] = _notesController.text.trim();
     }
     if (_damageDescriptionController.text.trim().isNotEmpty) {
-      data['damageDescription'] = _damageDescriptionController.text.trim();
+      baseData['damageDescription'] = _damageDescriptionController.text.trim();
     }
 
     try {
-      await context.read<WardrobeProvider>().addDress(
-        data,
-        photoBytes: _photoBytes,
-        photoMimeTypes: _photoMimeTypes,
-      );
+      for (final size in _selectedSizes) {
+        await context.read<WardrobeProvider>().addDress(
+          {...baseData, 'size': size},
+          photoBytes: _photoBytes,
+          photoMimeTypes: _photoMimeTypes,
+        );
+      }
       if (mounted) {
         FeedbackHelpers.showSuccessSnackBar(
           context,
-          'Dress added successfully',
+          _selectedSizes.length > 1
+              ? '${_selectedSizes.length} dresses added successfully'
+              : 'Dress added successfully',
         );
         context.go('/wardrobe');
       }
@@ -207,10 +227,48 @@ class _AddDressPageState extends State<AddDressPage> {
                           onChanged: (v) => _styleValue = v,
                         ),
                         PickerFormField(
-                          label: 'Size',
-                          options: _sizes,
-                          initialValue: _size,
-                          onChanged: (v) => _size = v,
+                          label: 'Dress type',
+                          options: attrOptions('dress_type'),
+                          onChanged: (v) => _dressTypeValue = v,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: SizeSystemToggle(
+                            value: _sizeSystem,
+                            onChanged: (v) => setState(() {
+                              _sizeSystem = v;
+                              _selectedSizes = [];
+                              _recommendedSizes = [];
+                            }),
+                          ),
+                        ),
+                        MultiChipSelector(
+                          key: ValueKey(_sizeSystem),
+                          label: 'Size (select all sizes you have for this design)',
+                          options: _sizeOptions,
+                          onChanged: (v) => setState(() {
+                            _selectedSizes = v;
+                            _sizeError = false;
+                          }),
+                        ),
+                        if (_sizeError)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Text(
+                              'Please select at least one size',
+                              style: TextStyle(fontSize: 12, color: themeRose),
+                            ),
+                          ),
+                        PickerFormField(
+                          label: 'Recommended fit',
+                          options: _fitNotes,
+                          onChanged: (v) => _fitNoteValue = v,
+                        ),
+                        MultiChipSelector(
+                          key: ValueKey('rec_$_sizeSystem'),
+                          label: 'Recommended sizes (optional)',
+                          options: _sizeOptions,
+                          onChanged: (v) => _recommendedSizes = v,
                         ),
                         PickerFormField(
                           label: 'Condition',
@@ -259,6 +317,7 @@ class _AddDressPageState extends State<AddDressPage> {
                             return null;
                           },
                         ),
+                        if (_listingType == 'sell') _buildAvailableFromPicker(),
                         _field(_notesController, 'Notes', maxLines: 4),
                         const SizedBox(height: 8),
                         _buildDamageSection(),
@@ -527,8 +586,8 @@ class _AddDressPageState extends State<AddDressPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          RichText(
-            text: TextSpan(
+          Text.rich(
+            TextSpan(
               style: const TextStyle(fontSize: 14, color: Color(0xFF3A2E2A)),
               children: [
                 const TextSpan(text: 'Color  '),
@@ -741,6 +800,20 @@ class _AddDressPageState extends State<AddDressPage> {
                         ? '$label is required'
                         : null
                 : null),
+      ),
+    );
+  }
+
+  Widget _buildAvailableFromPicker() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: CalendarDateRangePicker(
+        rangeMode: false,
+        popup: true,
+        initialStart: _availableFrom,
+        placeholder: 'Purchasable immediately',
+        labelFormat: DateFormat('MMM d, yyyy'),
+        onChanged: (date, _) => setState(() => _availableFrom = date),
       ),
     );
   }

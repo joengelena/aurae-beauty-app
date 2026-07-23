@@ -4,8 +4,8 @@ import 'package:shine_app/data/models/business_dress.dart';
 import 'package:shine_app/data/models/rental_booking.dart';
 import 'package:shine_app/logic/back_button_provider.dart';
 import 'package:shine_app/logic/dress_detail_provider.dart';
-import 'package:shine_app/presentation/widgets/common/price_action_bar.dart';
-import 'package:shine_app/presentation/widgets/wardrobe/booking_calendar.dart';
+import 'package:shine_app/presentation/widgets/listing/image_carousel.dart';
+import 'package:shine_app/presentation/widgets/wardrobe/booking_panel.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/dress_action_menu.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
@@ -68,6 +68,10 @@ class _DressDetailPageState extends State<DressDetailPage>
 
   // ─── Content ─────────────────────────────────────────────────────────────────
 
+  // Matches ListingsPage's sidebar breakpoint so layout shifts happen at a
+  // consistent width across the app.
+  static const double _sidebarBreakpoint = 1000;
+
   Widget _buildContent(DressDetailProvider provider) {
     final dress = provider.dress!;
     final now = DateTime.now();
@@ -83,193 +87,206 @@ class _DressDetailPageState extends State<DressDetailPage>
         .toList()
       ..sort((a, b) => b.startDate.compareTo(a.startDate));
 
-    return Column(
-      children: [
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: () => provider.loadDress(dress.id),
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: AppConstants.contentMaxWidth),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildPhotoHeader(dress),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth >= _sidebarBreakpoint) {
+          return _buildWideContent(provider, dress, allBookings, upcoming, past);
+        }
+        return _buildNarrowContent(provider, dress, allBookings, upcoming, past);
+      },
+    );
+  }
 
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Title + action menu
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(child: _buildTitle(dress)),
-                                DressActionMenu(dress: dress, redirectAfterDelete: true),
-                              ],
-                            ),
+  // Narrow / app layout: booking panel sits below the photo, in normal
+  // scroll flow, above the rest of the dress details.
+  Widget _buildNarrowContent(
+    DressDetailProvider provider,
+    BusinessDress dress,
+    List<RentalBooking> allBookings,
+    List<RentalBooking> upcoming,
+    List<RentalBooking> past,
+  ) {
+    return RefreshIndicator(
+      onRefresh: () => provider.loadDress(dress.id),
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: AppConstants.contentMaxWidth),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildPhotoHeader(dress),
 
-                            const SizedBox(height: 10),
-
-                            // Attribute chips
-                            Wrap(
-                              spacing: 6,
-                              runSpacing: 6,
-                              children: [
-                                if (dress.listingType == 'sell') _forSaleChip(),
-                                _attrChip('Size ${dress.size}'),
-                                if (dress.color != null) _attrChip(dress.color!),
-                                _conditionChip(dress.condition),
-                                if (dress.purchaseYear != null)
-                                  _attrChip('${dress.purchaseYear}'),
-                              ],
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            // Current status
-                            _buildStatusPill(allBookings, now),
-
-                            // Damage notice
-                            if (dress.damageDescription != null) ...[
-                              const SizedBox(height: 10),
-                              _buildDamageNotice(dress.damageDescription!),
-                            ],
-
-                            // Notes
-                            if (dress.notes != null && dress.notes!.isNotEmpty) ...[
-                              const SizedBox(height: 10),
-                              _buildNotesSection(dress.notes!),
-                            ],
-
-                            const SizedBox(height: 28),
-
-                            // iOS-style uppercase section header
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'RENTAL BOOKINGS',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: themeTaupe,
-                                    letterSpacing: 0.9,
-                                  ),
-                                ),
-                                const Spacer(),
-                                if ((dress.rentalCount ?? 0) > 0) ...[
-                                  Text(
-                                    '${dress.rentalCount} total',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: themeTaupe,
-                                      letterSpacing: 0.2,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                ],
-                                _addBookingButton(dress.id),
-                              ],
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            _buildAvailabilityCalendar(allBookings),
-
-                            const SizedBox(height: 16),
-
-                            _buildBookingsBody(provider, dress.id, upcoming, past),
-                          ],
-                        ),
-                      ),
-                    ],
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: BookingPanel(
+                    dress: dress,
+                    bookings: allBookings,
+                    onTap: () => _handleAddBooking(context, dress.id),
                   ),
                 ),
-              ),
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+                  child: _buildDetailsColumn(provider, dress, allBookings, upcoming, past),
+                ),
+              ],
             ),
           ),
         ),
-        _buildStickyBar(dress),
+      ),
+    );
+  }
+
+  // Wide / web layout: dress details scroll on the left, the booking panel
+  // stays pinned in a right-hand sidebar (it never enters the left scroll
+  // view, so it holds its position while the left column scrolls).
+  Widget _buildWideContent(
+    DressDetailProvider provider,
+    BusinessDress dress,
+    List<RentalBooking> allBookings,
+    List<RentalBooking> upcoming,
+    List<RentalBooking> past,
+  ) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1120),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () => provider.loadDress(dress.id),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: _buildPhotoHeader(dress),
+                        ),
+                        const SizedBox(height: 20),
+                        _buildDetailsColumn(provider, dress, allBookings, upcoming, past),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 28),
+              SizedBox(
+                width: 360,
+                child: SingleChildScrollView(
+                  child: BookingPanel(
+                    dress: dress,
+                    bookings: allBookings,
+                    onTap: () => _handleAddBooking(context, dress.id),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailsColumn(
+    DressDetailProvider provider,
+    BusinessDress dress,
+    List<RentalBooking> allBookings,
+    List<RentalBooking> upcoming,
+    List<RentalBooking> past,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Title + action menu
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: _buildTitle(dress)),
+            DressActionMenu(dress: dress, redirectAfterDelete: true),
+          ],
+        ),
+
+        const SizedBox(height: 10),
+
+        // Attribute chips
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: [
+            if (dress.listingType == 'sell') _forSaleChip(),
+            _attrChip('Size ${dress.size}'),
+            if (dress.color != null) _attrChip(dress.color!),
+            _conditionChip(dress.condition),
+            if (dress.purchaseYear != null)
+              _attrChip('${dress.purchaseYear}'),
+          ],
+        ),
+
+        const SizedBox(height: 16),
+
+        // Current status
+        _buildStatusPill(allBookings, DateTime.now()),
+
+        // Damage notice
+        if (dress.damageDescription != null) ...[
+          const SizedBox(height: 10),
+          _buildDamageNotice(dress.damageDescription!),
+        ],
+
+        // Notes
+        if (dress.notes != null && dress.notes!.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          _buildNotesSection(dress.notes!),
+        ],
+
+        const SizedBox(height: 28),
+
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Rental bookings',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: themeTaupe,
+                letterSpacing: 0.2,
+              ),
+            ),
+            const Spacer(),
+            if ((dress.rentalCount ?? 0) > 0) ...[
+              Text(
+                '${dress.rentalCount} total',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: themeTaupe,
+                  letterSpacing: 0.2,
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
+            _addBookingButton(dress.id),
+          ],
+        ),
+
+        const SizedBox(height: 16),
+
+        _buildBookingsBody(provider, dress.id, upcoming, past),
       ],
     );
   }
 
-  // ─── Sticky bottom bar ───────────────────────────────────────────────────────
-
-  Widget _buildStickyBar(BusinessDress dress) {
-    final isForSale = dress.listingType == 'sell';
-    final price = isForSale
-        ? (dress.purchasePrice ?? dress.rentalPricePerDay)
-        : dress.rentalPricePerDay;
-    if (price == null) return const SizedBox.shrink();
-
-    return PriceActionBar(
-      price: price,
-      priceLabel: isForSale ? 'purchase price' : 'per day',
-      pricePrefix: isForSale ? null : 'From ',
-      buttonLabel: isForSale ? 'Purchase' : 'Select Dates',
-      buttonIcon: isForSale
-          ? Icons.shopping_bag_outlined
-          : Icons.calendar_today_outlined,
-      onTap: () => _handleAddBooking(context, dress.id),
-    );
-  }
-
   Widget _buildPhotoHeader(BusinessDress dress) {
-    final Widget photo;
-    if (dress.dressPhotoUrl == null) {
-      photo = Container(
-        color: const Color(0xFFF5EFED),
-        child: Center(
-          child: Icon(Icons.checkroom_outlined, color: themeTaupe, size: 48),
-        ),
-      );
-    } else {
-      photo = Image.network(
-        dress.dressPhotoUrl!,
-        fit: BoxFit.contain,
-        width: double.infinity,
-        loadingBuilder: (context, child, progress) {
-          if (progress == null) return child;
-          return Container(color: const Color(0xFFF5EFED));
-        },
-        errorBuilder: (_, __, ___) => Container(
-          color: const Color(0xFFF5EFED),
-          child: Center(
-            child: Icon(Icons.checkroom_outlined, color: themeTaupe, size: 48),
-          ),
-        ),
-      );
-    }
-
-    return AspectRatio(
-      aspectRatio: AppConstants.listingImageAspectRatio,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          photo,
-          Positioned(
-            bottom: 0, left: 0, right: 0,
-            child: Container(
-              height: 80,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    themeBackground.withValues(alpha: 0),
-                    themeBackground.withValues(alpha: 0.9),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return ImageCarousel(
+      imageUrls: dress.dressPhotoUrls,
+      bottomFadeColor: themeBackground,
     );
   }
 
@@ -491,6 +508,8 @@ class _DressDetailPageState extends State<DressDetailPage>
       onTap: () => _handleAddBooking(context, dressId),
       behavior: HitTestBehavior.opaque,
       child: Container(
+        constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
+        alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
           color: themeAccent.withValues(alpha: 0.22),
@@ -516,25 +535,6 @@ class _DressDetailPageState extends State<DressDetailPage>
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildAvailabilityCalendar(List<RentalBooking> bookings) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: BookingCalendar(bookings: bookings),
     );
   }
 
@@ -575,12 +575,12 @@ class _DressDetailPageState extends State<DressDetailPage>
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: Text(
-                'PAST RENTALS',
+                'Past rentals',
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   color: themeTaupe,
-                  letterSpacing: 0.8,
+                  letterSpacing: 0.2,
                 ),
               ),
             ),
@@ -779,7 +779,9 @@ class _DressDetailPageState extends State<DressDetailPage>
               child: GestureDetector(
                 onTap: () => _handleDeleteBooking(context, booking, dressId),
                 behavior: HitTestBehavior.opaque,
-                child: Padding(
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
+                  alignment: Alignment.centerRight,
                   padding: const EdgeInsets.fromLTRB(12, 8, 0, 0),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,

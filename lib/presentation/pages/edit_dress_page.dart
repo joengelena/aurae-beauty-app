@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,8 +9,12 @@ import 'package:shine_app/data/models/booked_range.dart';
 import 'package:shine_app/data/models/business_dress.dart';
 import 'package:shine_app/logic/filtering_provider.dart';
 import 'package:shine_app/logic/wardrobe_provider.dart';
+import 'package:shine_app/presentation/widgets/common/calendar_date_range_picker.dart';
 import 'package:shine_app/presentation/widgets/listing/availability_calendar.dart';
+import 'package:shine_app/presentation/widgets/wardrobe/multi_chip_selector.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/picker_form_field.dart';
+import 'package:shine_app/presentation/widgets/wardrobe/size_radio_selector.dart';
+import 'package:shine_app/presentation/widgets/wardrobe/size_system_toggle.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -36,14 +41,22 @@ class _EditDressPageState extends State<EditDressPage> {
   final _damageDescriptionController = TextEditingController();
 
   String _listingType = 'rent';
+  DateTime? _availableFrom;
   bool _isPublic = false;
+  SizeSystem _sizeSystem = SizeSystem.letter;
   String _size = 'M';
+  bool _sizeError = false;
   String _condition = 'Excellent';
   String _brandValue = '';
   String _styleValue = '';
+  String _dressTypeValue = '';
+  String _fitNoteValue = '';
+  List<String> _recommendedSizes = [];
   // ValueKeys so PickerFormField re-initialises after async prefill
   String? _brandPrefill;
   String? _stylePrefill;
+  String? _dressTypePrefill;
+  String? _fitNotePrefill;
   String? _sizePrefill;
   String? _conditionPrefill;
 
@@ -60,21 +73,14 @@ class _EditDressPageState extends State<EditDressPage> {
   DateTime? _pendingStart;
   DateTime? _pendingEnd;
 
-  static const _sizes = [
-    'XS',
-    'S',
-    'M',
-    'L',
-    'XL',
-    'XXL',
-    '6',
-    '8',
-    '10',
-    '12',
-    '14',
-    '16',
-  ];
+  static const _letterSizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  static const _numberSizes = ['4', '6', '8', '10', '12', '14', '16'];
+  static const _sizes = [..._letterSizes, ..._numberSizes];
   static const _conditions = ['Excellent', 'Good', 'Fair', 'Poor'];
+  static const _fitNotes = ['Runs small', 'True to size', 'Runs large'];
+
+  List<String> get _sizeOptions =>
+      _sizeSystem == SizeSystem.letter ? _letterSizes : _numberSizes;
 
   @override
   void initState() {
@@ -98,6 +104,11 @@ class _EditDressPageState extends State<EditDressPage> {
     _brandPrefill = _dress!.brand;
     _styleValue = _dress!.style;
     _stylePrefill = _dress!.style;
+    _dressTypeValue = _dress!.dressType ?? '';
+    _dressTypePrefill = _dress!.dressType;
+    _fitNoteValue = _dress!.fitNote ?? '';
+    _fitNotePrefill = _dress!.fitNote;
+    _recommendedSizes = List.from(_dress!.recommendedSizes);
     _internalNameController.text = _dress!.internalName ?? '';
     _colorController.text = _dress!.color ?? '';
     _purchaseYearController.text =
@@ -111,12 +122,14 @@ class _EditDressPageState extends State<EditDressPage> {
     if (_sizes.contains(_dress!.size)) {
       _size = _dress!.size;
       _sizePrefill = _dress!.size;
+      _sizeSystem = _numberSizes.contains(_dress!.size) ? SizeSystem.number : SizeSystem.letter;
     }
     if (_conditions.contains(_dress!.condition)) {
       _condition = _dress!.condition;
       _conditionPrefill = _dress!.condition;
     }
     _listingType = _dress!.listingType;
+    _availableFrom = _dress!.availableFrom;
     _isPublic = _dress!.isPublic;
     _existingPhotoUrls = List.from(_dress!.dressPhotoUrls);
     _blockedDateRanges = List.from(_dress!.blockedDateRanges);
@@ -175,7 +188,10 @@ class _EditDressPageState extends State<EditDressPage> {
 
   Future<void> _submit() async {
     if (_totalPhotoCount == 0) setState(() => _photoError = true);
-    if (!_formKey.currentState!.validate() || _totalPhotoCount == 0) return;
+    if (_size.isEmpty) setState(() => _sizeError = true);
+    if (!_formKey.currentState!.validate() || _totalPhotoCount == 0 || _size.isEmpty) {
+      return;
+    }
     setState(() => _isSubmitting = true);
 
     final updates = <String, Object>{
@@ -195,6 +211,15 @@ class _EditDressPageState extends State<EditDressPage> {
     if (_colorController.text.trim().isNotEmpty) {
       updates['color'] = _colorController.text.trim();
     }
+    if (_dressTypeValue.isNotEmpty) {
+      updates['dressType'] = _dressTypeValue;
+    }
+    if (_fitNoteValue.isNotEmpty) {
+      updates['fitNote'] = _fitNoteValue;
+    }
+    if (_recommendedSizes.isNotEmpty) {
+      updates['recommendedSizes'] = _recommendedSizes;
+    }
     if (_purchaseYearController.text.trim().isNotEmpty) {
       updates['purchaseYear'] = int.parse(_purchaseYearController.text.trim());
     }
@@ -207,6 +232,9 @@ class _EditDressPageState extends State<EditDressPage> {
       updates['purchasePrice'] = int.parse(
         _purchasePriceController.text.trim(),
       );
+    }
+    if (_listingType == 'sell' && _availableFrom != null) {
+      updates['availableFrom'] = DateFormat('yyyy-MM-dd').format(_availableFrom!);
     }
     if (_notesController.text.trim().isNotEmpty) {
       updates['notes'] = _notesController.text.trim();
@@ -289,11 +317,55 @@ class _EditDressPageState extends State<EditDressPage> {
                     onChanged: (v) => _styleValue = v,
                   ),
                   PickerFormField(
-                    key: ValueKey(_sizePrefill),
+                    key: ValueKey(_dressTypePrefill),
+                    label: 'Dress type',
+                    options: attrOptions('dress_type'),
+                    initialValue: _dressTypePrefill,
+                    onChanged: (v) => _dressTypeValue = v,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: SizeSystemToggle(
+                      value: _sizeSystem,
+                      onChanged: (v) => setState(() {
+                        _sizeSystem = v;
+                        _size = '';
+                        _sizePrefill = null;
+                        _recommendedSizes = [];
+                      }),
+                    ),
+                  ),
+                  SizeRadioSelector(
+                    key: ValueKey('${_sizePrefill}_$_sizeSystem'),
                     label: 'Size',
-                    options: _sizes,
-                    initialValue: _sizePrefill ?? _size,
-                    onChanged: (v) => _size = v,
+                    options: _sizeOptions,
+                    initialValue: _sizePrefill,
+                    onChanged: (v) => setState(() {
+                      _size = v;
+                      _sizeError = false;
+                    }),
+                  ),
+                  if (_sizeError)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(
+                        'Please select a size',
+                        style: TextStyle(fontSize: 12, color: themeRose),
+                      ),
+                    ),
+                  PickerFormField(
+                    key: ValueKey(_fitNotePrefill),
+                    label: 'Recommended fit',
+                    options: _fitNotes,
+                    initialValue: _fitNotePrefill,
+                    onChanged: (v) => _fitNoteValue = v,
+                  ),
+                  MultiChipSelector(
+                    key: ValueKey('rec_$_sizeSystem'),
+                    label: 'Recommended sizes (optional)',
+                    options: _sizeOptions,
+                    initialValues: _recommendedSizes,
+                    onChanged: (v) => _recommendedSizes = v,
                   ),
                   PickerFormField(
                     key: ValueKey(_conditionPrefill),
@@ -343,6 +415,7 @@ class _EditDressPageState extends State<EditDressPage> {
                       return null;
                     },
                   ),
+                  if (_listingType == 'sell') _buildAvailableFromPicker(),
                   _field(_notesController, 'Notes', maxLines: 4),
                   const SizedBox(height: 8),
                   _buildDamageSection(),
@@ -551,10 +624,10 @@ class _EditDressPageState extends State<EditDressPage> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      url,
+                    child: CachedNetworkImage(
+                      imageUrl: url,
                       fit: BoxFit.cover,
-                      errorBuilder:
+                      errorWidget:
                           (_, __, ___) => Container(
                             color: const Color(0xFFF5EFED),
                             child: Icon(
@@ -717,10 +790,10 @@ class _EditDressPageState extends State<EditDressPage> {
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              url,
+            child: CachedNetworkImage(
+              imageUrl: url,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
+              errorWidget: (_, __, ___) => Container(
                 color: const Color(0xFFF5EFED),
                 child: Icon(Icons.broken_image_outlined, color: themeTaupe),
               ),
@@ -795,6 +868,20 @@ class _EditDressPageState extends State<EditDressPage> {
                         ? '$label is required'
                         : null
                 : null),
+      ),
+    );
+  }
+
+  Widget _buildAvailableFromPicker() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: CalendarDateRangePicker(
+        rangeMode: false,
+        popup: true,
+        initialStart: _availableFrom,
+        placeholder: 'Purchasable immediately',
+        labelFormat: DateFormat('MMM d, yyyy'),
+        onChanged: (date, _) => setState(() => _availableFrom = date),
       ),
     );
   }
