@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shine_app/logic/business_settings_provider.dart';
+import 'package:shine_app/utils/secure_storage.dart';
 import 'package:shine_app/utils/theme.dart';
 
 class BusinessSettingsPage extends StatefulWidget {
@@ -171,7 +172,8 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
   ) async {
     if (provider.isSaving || provider.settings.deliveryOption == value) return;
     final updated = provider.settings.copyWith(deliveryOption: value);
-    final ok = await provider.save(updated);
+    final userId = await SecureStorage.read('userId') ?? '';
+    final ok = await provider.save(updated, userId);
     if (!ok && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -76,11 +76,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   Future<void> _saveAndRedirect(String option) async {
     try {
+      final userId = await SecureStorage.read('userId') ?? '';
       await context.read<BusinessSettingsProvider>().save(
         BusinessSettings(deliveryOption: option),
+        userId,
       );
       if (!mounted) return;
-      final userId = await SecureStorage.read('userId') ?? '';
       await context.read<ProfileProvider>().fetchUserProfile(userId);
       // fetchUserProfile → notifyListeners → router sees deliveryOption != null → redirects to /listings
     } finally {
@@ -88,7 +89,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
     }
   }
 
-  Future<void> _skipAll() => _saveAndRedirect('pickup');
+  Future<void> _skipAll() async {
+    if (_isSaving) return;
+    setState(() => _isSaving = true);
+    await _saveAndRedirect('pickup');
+  }
 
   @override
   void dispose() {
@@ -157,15 +162,24 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 16),
           Center(
             child: GestureDetector(
-              onTap: _skipAll,
-              child: Text(
-                "I'm okay for now",
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: themeTaupe,
-                      decoration: TextDecoration.underline,
-                      decorationColor: themeTaupe,
+              onTap: _isSaving ? null : _skipAll,
+              child: _isSaving
+                  ? SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1.5,
+                        valueColor: AlwaysStoppedAnimation<Color>(themeTaupe),
+                      ),
+                    )
+                  : Text(
+                      "I'm okay for now",
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: themeTaupe,
+                            decoration: TextDecoration.underline,
+                            decorationColor: themeTaupe,
+                          ),
                     ),
-              ),
             ),
           ),
         ],

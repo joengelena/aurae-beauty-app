@@ -402,12 +402,22 @@ class UserServices {
     }
   }
 
-  Future<BusinessSettings> updateBusinessSettings(BusinessSettings settings) async {
+  Future<BusinessSettings> updateBusinessSettings(
+    BusinessSettings settings,
+    String userId,
+  ) async {
     try {
       final response = await apiClient.patch(
         '/user/settings',
         settings.toJson(),
-        invalidateCacheKeys: [CacheKeys.businessSettings],
+        // Business settings are joined onto the /users/:id response (e.g.
+        // deliveryOption), so a cached profile fetch must be invalidated too —
+        // otherwise callers that re-fetch the profile right after saving see
+        // the stale pre-save value.
+        invalidateCacheKeys: [
+          CacheKeys.businessSettings,
+          CacheKeys.userDetails(userId),
+        ],
       );
 
       if (response.statusCode != HttpStatus.ok) {

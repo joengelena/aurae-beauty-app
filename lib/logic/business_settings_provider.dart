@@ -34,13 +34,13 @@ class BusinessSettingsProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> save(BusinessSettings updated) async {
+  Future<bool> save(BusinessSettings updated, String userId) async {
     _isSaving = true;
     _errorMessage = '';
     notifyListeners();
 
     try {
-      _settings = await _userServices.updateBusinessSettings(updated);
+      _settings = await _userServices.updateBusinessSettings(updated, userId);
       return true;
     } on AppException catch (e) {
       _errorMessage = e.message;
