@@ -1,8 +1,8 @@
 /// App-wide constants
 class AppConstants {
-  /// Standard aspect ratio for listing images (4:3)
+  /// Standard aspect ratio for listing images (4:3 portrait)
   /// This ensures consistent image sizing across the app
-  static const double listingImageAspectRatio = 4 / 3;
+  static const double listingImageAspectRatio = 3 / 4;
   static const double cardShadowElevation = 1;
 
   /// Maximum width for content containers

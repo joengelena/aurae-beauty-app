@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/models/listing.dart';
@@ -79,10 +80,10 @@ class ListingPreview extends StatelessWidget {
                     child: listing.previewImgUrl.isNotEmpty
                         ? ColoredBox(
                             color: const Color(0xFFF5EFED),
-                            child: Image.network(
-                              listing.previewImgUrl,
+                            child: CachedNetworkImage(
+                              imageUrl: listing.previewImgUrl,
                               fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) => _imagePlaceholder(),
+                              errorWidget: (_, __, ___) => _imagePlaceholder(),
                             ),
                           )
                         : _imagePlaceholder(),
@@ -215,7 +216,7 @@ class ListingPreview extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    listing.style,
+                    listing.name ?? listing.style,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 13,

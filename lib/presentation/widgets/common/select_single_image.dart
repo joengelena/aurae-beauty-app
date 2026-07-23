@@ -1,8 +1,10 @@
 import 'dart:typed_data';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
+import 'package:shine_app/utils/theme.dart';
 
 class SelectSingleImage extends StatefulWidget {
   final Uint8List? imageBytes;
@@ -101,17 +103,17 @@ class _SelectSingleImageState extends State<SelectSingleImage> {
                       width: double.infinity,
                       fit: BoxFit.cover,
                     )
-                    : Image.network(
-                      widget.imageUrl!,
+                    : CachedNetworkImage(
+                      imageUrl: widget.imageUrl!,
                       width: double.infinity,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
+                      errorWidget: (context, url, error) {
                         return Container(
-                          color: Colors.grey[300],
-                          child: const Icon(
+                          color: const Color(0xFFF5EFED),
+                          child: Icon(
                             Icons.broken_image,
                             size: 48,
-                            color: Colors.grey,
+                            color: themeTaupe,
                           ),
                         );
                       },

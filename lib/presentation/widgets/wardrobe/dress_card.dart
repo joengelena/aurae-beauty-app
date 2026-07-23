@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/models/business_dress.dart';
@@ -49,10 +50,10 @@ class DressCard extends StatelessWidget {
                     child: dress.dressPhotoUrl != null
                         ? ColoredBox(
                             color: const Color(0xFFF5EFED),
-                            child: Image.network(
-                              dress.dressPhotoUrl!,
+                            child: CachedNetworkImage(
+                              imageUrl: dress.dressPhotoUrl!,
                               fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) => _photoPlaceholder(),
+                              errorWidget: (_, __, ___) => _photoPlaceholder(),
                             ),
                           )
                         : _photoPlaceholder(),
@@ -205,10 +206,10 @@ class DressCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        RichText(
+        Text.rich(
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          text: TextSpan(
+          TextSpan(
             children: [
               TextSpan(
                 text: primaryLabel,

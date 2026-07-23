@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/theme.dart';
@@ -5,7 +6,10 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class ImageCarousel extends StatefulWidget {
   final List<dynamic> imageUrls;
-  const ImageCarousel({super.key, required this.imageUrls});
+  /// Optional fade-to-color at the bottom edge of the photo, so it blends
+  /// into the page background below instead of ending with a hard edge.
+  final Color? bottomFadeColor;
+  const ImageCarousel({super.key, required this.imageUrls, this.bottomFadeColor});
 
   @override
   State<ImageCarousel> createState() => _ImageCarouselState();
@@ -61,29 +65,22 @@ class _ImageCarouselState extends State<ImageCarousel> {
                   controller: _controller,
                   itemCount: widget.imageUrls.length,
                   itemBuilder: (context, index) {
-                    return Image.network(
-                      widget.imageUrls[index] as String,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(
-                          color: const Color(0xFFF5EFED),
-                          child: Center(
+                    return ColoredBox(
+                      color: const Color(0xFFF5EFED),
+                      child: CachedNetworkImage(
+                        imageUrl: widget.imageUrls[index] as String,
+                        fit: BoxFit.contain,
+                        width: double.infinity,
+                        progressIndicatorBuilder: (context, url, progress) {
+                          return Center(
                             child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                  : null,
+                              value: progress.progress,
                               color: themeAccent,
                               strokeWidth: 2,
                             ),
-                          ),
-                        );
-                      },
-                      errorBuilder: (_, __, ___) => Container(
-                        color: const Color(0xFFF5EFED),
-                        child: Center(
+                          );
+                        },
+                        errorWidget: (_, __, ___) => Center(
                           child: Icon(
                             Icons.checkroom_outlined,
                             color: themeTaupe,
@@ -95,6 +92,23 @@ class _ImageCarouselState extends State<ImageCarousel> {
                   },
                 ),
               ),
+              if (widget.bottomFadeColor != null)
+                Positioned(
+                  bottom: 0, left: 0, right: 0,
+                  child: Container(
+                    height: 80,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          widget.bottomFadeColor!.withValues(alpha: 0),
+                          widget.bottomFadeColor!.withValues(alpha: 0.9),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               if (_hovering)
                 Positioned(
                   left: 10,

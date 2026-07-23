@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/models/listing.dart';
@@ -77,15 +78,15 @@ class ListingTile extends StatelessWidget {
                         aspectRatio: AppConstants.listingImageAspectRatio,
                         child: ColoredBox(
                           color: const Color(0xFFF5EFED),
-                          child: Image.network(
-                            listing.previewImgUrl,
+                          child: CachedNetworkImage(
+                            imageUrl: listing.previewImgUrl,
                             fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) {
+                            errorWidget: (context, url, error) {
                               return Container(
-                                color: Colors.grey[300],
-                                child: const Icon(
+                                color: const Color(0xFFF5EFED),
+                                child: Icon(
                                   Icons.broken_image,
-                                  color: Colors.grey,
+                                  color: themeTaupe,
                                 ),
                               );
                             },
@@ -225,12 +226,13 @@ class ListingTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      listing.status.toUpperCase(),
+                      listing.status[0].toUpperCase() +
+                          listing.status.substring(1),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
+                        letterSpacing: 0.2,
                       ),
                     ),
                   ),
