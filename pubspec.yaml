@@ -96,5 +96,5 @@ flutter_launcher_icons:
     android: true
     ios: true
     image_path: 'assets/imgs/shine_logo.png'
-    adaptive_icon_background: '#EC4899'
+    adaptive_icon_background: '#F4C6C3'
     adaptive_icon_foreground: 'assets/imgs/shine_logo.png'

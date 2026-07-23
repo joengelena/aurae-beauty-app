@@ -37,7 +37,7 @@ class AppNavigation extends StatelessWidget {
                     final isSelected = states.contains(WidgetState.selected);
                     return IconThemeData(
                       size: 26,
-                      color: isSelected ? themeAccent : themeTaupe,
+                      color: isSelected ? themeAccentInk : themeTaupe,
                     );
                   }),
                   labelTextStyle: WidgetStateProperty.resolveWith((states) {
@@ -45,7 +45,7 @@ class AppNavigation extends StatelessWidget {
                     return TextStyle(
                       fontSize: 12,
                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                      color: isSelected ? themeAccent : themeTaupe,
+                      color: isSelected ? themeAccentInk : themeTaupe,
                     );
                   }),
                 ),

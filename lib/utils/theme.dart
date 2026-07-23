@@ -3,16 +3,17 @@ import 'package:flutter/material.dart';
 // AURAE Color Palette - Minimal, soft, feminine, premium
 final themePrimary = Color(0xFFEADFD8);     // Primary: #EADFD8
 final themeAccent = Color(0xFFF4C6C3);      // Accent: #F4C6C3
+// First Blush darkened for use as text/icon color — #F4C6C3 on white is ~1.5:1
+// contrast (fails WCAG AA). Same hue family, ~4.9:1 against white/Petal White.
+final themeAccentInk = Color(0xFFAE5751);
 final themeBackground = Color(0xFFFFF8F6);  // Background: #FFF8F6
 final themeText = Color(0xFF3A2E2A);        // Text: #3A2E2A
 
-// Legacy/Additional colors
-final themePink = Color(0xFFEC4899);        // Primary accent (pink)
-final themeLavender = Color(0xFF9333EA);    // Secondary (lavender)
+// Semantic colors
+final themeLavender = Color(0xFF9333EA);    // Info (lavender) — used via themeBlue alias
 final themeRose = Color(0xFFF43F5E);        // Error/urgent (rose)
 final themeSage = Color(0xFF10B981);        // Success (sage green)
 final themePeach = Color(0xFFFB923C);       // Warning (soft peach)
-final themeCream = themeBackground;         // Background tint (cream)
 final themeTaupe = Color(0xFF78716C);       // Secondary text (taupe)
 
 // Dress color palette — maps color name strings to display colors
@@ -149,7 +150,7 @@ final ThemeData appTheme = ThemeData(
   ),
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
-      foregroundColor: themeAccent,
+      foregroundColor: themeAccentInk,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
@@ -184,7 +185,7 @@ final ThemeData appTheme = ThemeData(
   ),
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
     backgroundColor: themeBackground,
-    selectedItemColor: themeAccent,
+    selectedItemColor: themeAccentInk,
     unselectedItemColor: themeTaupe,
     elevation: 0,
   ),
