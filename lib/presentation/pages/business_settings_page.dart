@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shine_app/logic/business_settings_provider.dart';
+import 'package:shine_app/presentation/widgets/profile/settings_row.dart';
 import 'package:shine_app/utils/secure_storage.dart';
 import 'package:shine_app/utils/theme.dart';
 
@@ -57,42 +58,10 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
     return Column(
       children: items.map((item) {
         final (icon, label, route) = item;
-        return GestureDetector(
+        return SettingsRow(
+          icon: icon,
+          label: label,
           onTap: () => context.push(route),
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFEADFD8)),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF5F0ED),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, size: 20, color: themeTaupe),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: themeText,
-                    ),
-                  ),
-                ),
-                Icon(Icons.chevron_right, color: themeTaupe, size: 20),
-              ],
-            ),
-          ),
         );
       }).toList(),
     );
