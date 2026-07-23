@@ -13,8 +13,13 @@ class ListingDetailProvider extends ChangeNotifier {
   Listing? listing;
   User? listingOwner;
   List<BookedRange> bookings = [];
+  // Other active listings from the same owner/brand/style — the size
+  // choices a renter can pick between for "this dress". Always includes
+  // the currently loaded listing, even if it's the only one.
+  List<Listing> sizeVariants = [];
   String? currentUserId;
   bool isLoading = false;
+  bool isSwitchingSize = false;
   bool _isSignedIn = false;
 
   bool get isOwnListing =>
@@ -29,10 +34,12 @@ class ListingDetailProvider extends ChangeNotifier {
     _isSignedIn = isSignedIn;
   }
 
-  Future<void> getListing(int listingId) async {
+  Future<void> getListing(int listingId, {bool silent = false}) async {
     try {
-      isLoading = true;
-      notifyListeners();
+      if (!silent) {
+        isLoading = true;
+        notifyListeners();
+      }
 
       final listingFuture = ListingsServices().getListing(listingId);
       final bookingsFuture = DressServices().getPublicDressBookings(listingId);
@@ -54,13 +61,59 @@ class ListingDetailProvider extends ChangeNotifier {
       } catch (e) {
         bookings = [];
       }
+
+      await _loadSizeVariants();
     } catch (e) {
       listing = null;
       listingOwner = null;
       bookings = [];
+      sizeVariants = [];
       currentUserId = null;
     } finally {
-      isLoading = false;
+      if (!silent) isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _loadSizeVariants() async {
+    final current = listing;
+    if (current == null) {
+      sizeVariants = [];
+      return;
+    }
+    try {
+      final result = await ListingsServices().getAllListings(
+        allQueries: {
+          'userIdFk': current.userIdFk,
+          'brand': current.brand,
+          'style': current.style,
+          'status': 'active',
+          'limit': '20',
+        },
+      );
+      final variants = result.data.toList();
+      if (!variants.any((l) => l.id == current.id)) variants.add(current);
+      variants.sort((a, b) => a.size.compareTo(b.size));
+      sizeVariants = variants;
+    } catch (e) {
+      sizeVariants = [current];
+    }
+  }
+
+  // Switches the active listing to the size variant matching [size], without
+  // triggering the full-page loading skeleton.
+  Future<void> selectSize(String size) async {
+    final match = sizeVariants.where((l) => l.size == size);
+    if (match.isEmpty) return;
+    final target = match.first;
+    if (target.id == listing?.id) return;
+
+    isSwitchingSize = true;
+    notifyListeners();
+    try {
+      await getListing(target.id, silent: true);
+    } finally {
+      isSwitchingSize = false;
       notifyListeners();
     }
   }
@@ -69,8 +122,10 @@ class ListingDetailProvider extends ChangeNotifier {
     listing = null;
     listingOwner = null;
     bookings = [];
+    sizeVariants = [];
     currentUserId = null;
     isLoading = false;
+    isSwitchingSize = false;
     notifyListeners();
   }
 }

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/models/booked_range.dart';
-import 'package:shine_app/data/services/dress_services.dart';
+import 'package:shine_app/data/models/listing.dart';
+import 'package:shine_app/logic/cart_provider.dart';
 import 'package:shine_app/logic/listing_detail_provider.dart';
 import 'package:shine_app/presentation/widgets/common/price_action_bar.dart';
 import 'package:shine_app/presentation/widgets/listing/availability_calendar.dart';
+import 'package:shine_app/presentation/widgets/listing/booking_flow_cards.dart';
 import 'package:shine_app/presentation/widgets/listing/image_carousel.dart';
+import 'package:shine_app/presentation/widgets/wardrobe/purchase_availability_calendar.dart';
 import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/date_range_selection.dart';
+import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
@@ -64,6 +69,16 @@ class _ListingDetailPageState extends State<ListingDetailPage>
   late final Animation<double> _shimmerAnimation;
   bool _hasFiredLoad = false;
 
+  // Booking flow state, lifted here since Size / Delivery / Dates are now
+  // separate cards with a shared price/CTA bar at the bottom, rather than
+  // one stateful panel.
+  DateTime? _bookingStart;
+  DateTime? _bookingEnd;
+  String? _selectedDelivery;
+  bool _isAddingToCart = false;
+  int? _lastListingId;
+  String? _lastDeliveryOption;
+
   @override
   void initState() {
     super.initState();
@@ -111,8 +126,53 @@ class _ListingDetailPageState extends State<ListingDetailPage>
     return _buildContent(provider);
   }
 
+  // Matches ListingsPage's sidebar breakpoint so layout shifts happen at a
+  // consistent width across the app.
+  static const double _sidebarBreakpoint = 1000;
+
   Widget _buildContent(ListingDetailProvider provider) {
     final listing = provider.listing!;
+    _syncBookingState(provider, listing);
+
+    // The owner previewing their own public listing gets a simple "Manage
+    // Dress" shortcut back into the Wardrobe — not a real booking/purchase
+    // flow, so it keeps its original single-column layout.
+    if (provider.isOwnListing) {
+      return _buildOwnListingContent(provider, listing);
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth >= _sidebarBreakpoint) {
+          return _buildWideContent(provider, listing);
+        }
+        return _buildNarrowContent(provider, listing);
+      },
+    );
+  }
+
+  // Switching size points the page at a different physical dress, with its
+  // own availability — dates picked for the old one don't carry over. The
+  // delivery choice defaults to the owner's only option, or resets to
+  // unchosen if they offer both.
+  void _syncBookingState(ListingDetailProvider provider, Listing listing) {
+    if (_lastListingId != listing.id) {
+      _lastListingId = listing.id;
+      _bookingStart = null;
+      _bookingEnd = null;
+    }
+
+    final deliveryOption = provider.listingOwner?.deliveryOption;
+    if (_lastDeliveryOption != deliveryOption) {
+      _lastDeliveryOption = deliveryOption;
+      // Mirrors DeliveryChoiceCard's own default: no configured option
+      // falls back to 'pickup', not to an unchosen state.
+      final effectiveOption = deliveryOption ?? 'pickup';
+      _selectedDelivery = effectiveOption != 'both' ? effectiveOption : null;
+    }
+  }
+
+  Widget _buildOwnListingContent(ListingDetailProvider provider, Listing listing) {
     final isForBuy = listing.listingType == 'sell';
 
     return Column(
@@ -126,140 +186,23 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ImageCarousel(imageUrls: listing.imageUrls),
-
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Location + age
-                          Row(
-                            children: [
-                              if (listing.location.isNotEmpty) ...[
-                                Icon(
-                                  Icons.location_on_outlined,
-                                  size: 14,
-                                  color: themeTaupe,
-                                ),
-                                const SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    listing.location,
-                                    style: TextStyle(fontSize: 13, color: themeTaupe),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                              ],
-                              Text(
-                                _formatListingAge(listing.uploadDate),
-                                style: TextStyle(fontSize: 12, color: themeTaupe),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          // Brand · style
-                          Text(
-                            '${listing.brand} · ${listing.style}',
-                            style: Theme.of(context).textTheme.headlineMedium,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Spec chips
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              if (isForBuy)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: themeText,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.sell_outlined, size: 14, color: Color(0xFFFFF8F6)),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        'For Sale',
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w600,
-                                          color: Color(0xFFFFF8F6),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              _SpecChip(
-                                icon: Icons.straighten,
-                                label: listing.size,
-                                primary: true,
-                              ),
-                              _SpecChip(
-                                icon: Icons.check_circle_outline,
-                                label: listing.condition,
-                                primary: true,
-                              ),
-                              if (listing.color != null)
-                                _SpecChip(
-                                  icon: Icons.palette_outlined,
-                                  label: listing.color!,
-                                ),
-                              if (listing.dressType != null)
-                                _SpecChip(
-                                  icon: Icons.checkroom,
-                                  label: listing.dressType!,
-                                ),
-                            ],
-                          ),
-
-                          if (provider.listingOwner?.deliveryOption != null) ...[
-                            const SizedBox(height: 12),
-                            _buildDeliveryChip(provider.listingOwner!.deliveryOption!),
-                          ],
-
+                          _buildHeaderBlock(provider, listing),
+                          const SizedBox(height: 24),
+                          _buildAboutSection(listing),
                           const SizedBox(height: 28),
                           const Divider(color: Color(0xFFEEE8E4)),
                           const SizedBox(height: 20),
-
-                          // About this dress
-                          Text(
-                            'About this dress',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: themeText,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            listing.description,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: themeText,
-                              height: 1.6,
-                            ),
-                          ),
-
-                          const SizedBox(height: 28),
-                          const Divider(color: Color(0xFFEEE8E4)),
-                          const SizedBox(height: 20),
-
                           _buildAvailabilityCalendar(provider),
-
                           const SizedBox(height: 28),
                           const Divider(color: Color(0xFFEEE8E4)),
                           const SizedBox(height: 20),
-
                           _buildOwnerRow(provider),
+                          _buildDescriptionSection(listing),
                         ],
                       ),
                     ),
@@ -269,26 +212,330 @@ class _ListingDetailPageState extends State<ListingDetailPage>
             ),
           ),
         ),
-        if (provider.isOwnListing)
-          PriceActionBar(
-            price: listing.pricePerDay,
-            priceLabel: isForBuy ? 'to purchase' : 'per day',
-            buttonLabel: 'Manage Dress',
-            buttonIcon: Icons.checkroom_outlined,
-            onTap: () => context.go('/wardrobe/${listing.id}'),
-          )
-        else
-          PriceActionBar(
-            price: listing.pricePerDay,
-            priceLabel: isForBuy ? 'to purchase' : 'per day',
-            buttonLabel: isForBuy ? 'Purchase' : 'Select Dates',
-            buttonIcon: isForBuy
-                ? Icons.shopping_bag_outlined
-                : Icons.calendar_today_outlined,
-            onTap: isForBuy
-                ? null
-                : () => _openDateSelector(context, provider),
+        PriceActionBar(
+          price: listing.pricePerDay,
+          priceLabel: isForBuy ? 'to purchase' : 'per day',
+          buttonLabel: 'Manage Dress',
+          buttonIcon: Icons.checkroom_outlined,
+          onTap: () => context.go('/wardrobe/${listing.id}'),
+        ),
+      ],
+    );
+  }
+
+  // Narrow / app layout: dress identity reads first (name, specs), then the
+  // booking steps as their own cards, then the rest of the details. Price
+  // and the CTA live in a bar pinned to the bottom of the screen.
+  Widget _buildNarrowContent(ListingDetailProvider provider, Listing listing) {
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: AppConstants.contentMaxWidth),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ImageCarousel(imageUrls: listing.imageUrls),
+
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+                      child: _buildHeaderBlock(provider, listing),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+                      child: _buildBookingCards(provider, listing),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildAboutSection(listing),
+                          const SizedBox(height: 28),
+                          const Divider(color: Color(0xFFEEE8E4)),
+                          const SizedBox(height: 20),
+                          _buildOwnerRow(provider),
+                          _buildDescriptionSection(listing),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
+        ),
+        _buildPriceActionBar(provider, listing),
+      ],
+    );
+  }
+
+  // Wide / web layout: dress details scroll on the left. The right-hand
+  // sidebar holds the booking cards, with price + CTA pinned to the bottom
+  // of that sidebar so it's always visible while choosing size/delivery/
+  // dates, without following the left column's scroll.
+  Widget _buildWideContent(ListingDetailProvider provider, Listing listing) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1120),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: ImageCarousel(imageUrls: listing.imageUrls),
+                      ),
+                      const SizedBox(height: 20),
+                      _buildHeaderBlock(provider, listing),
+                      const SizedBox(height: 28),
+                      _buildAboutSection(listing),
+                      const SizedBox(height: 28),
+                      const Divider(color: Color(0xFFEEE8E4)),
+                      const SizedBox(height: 20),
+                      _buildOwnerRow(provider),
+                      _buildDescriptionSection(listing),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 28),
+              SizedBox(
+                width: 360,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: _buildBookingCards(provider, listing),
+                        ),
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: _buildPriceActionBar(provider, listing),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Size / Delivery / Dates as distinct steps, separated by spacing and a
+  // hairline divider rather than boxed cards — or a single Availability
+  // step for purchase listings, which have no size or delivery choice.
+  Widget _buildBookingCards(ListingDetailProvider provider, Listing listing) {
+    if (listing.listingType == 'sell') {
+      return BookingStepSection(
+        title: 'Availability',
+        child: PurchaseAvailabilityCalendar(availableFrom: listing.availableFrom),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizeChoiceCard(
+          listing: listing,
+          sizeVariants: provider.sizeVariants,
+          isSwitching: provider.isSwitchingSize,
+          onSizeSelected: (size) => provider.selectSize(size),
+        ),
+        const SizedBox(height: 24),
+        const Divider(color: Color(0xFFEEE8E4)),
+        const SizedBox(height: 24),
+        DeliveryChoiceCard(
+          ownerDeliveryOption: provider.listingOwner?.deliveryOption,
+          selected: _selectedDelivery,
+          onChanged: (option) => setState(() => _selectedDelivery = option),
+        ),
+        const SizedBox(height: 24),
+        const Divider(color: Color(0xFFEEE8E4)),
+        const SizedBox(height: 24),
+        BookingDatesCard(
+          pricePerDay: listing.pricePerDay,
+          bookings: provider.bookings,
+          start: _bookingStart,
+          end: _bookingEnd,
+          onDayTapped: (day) => _onDayTapped(day, provider.bookings),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPriceActionBar(ListingDetailProvider provider, Listing listing) {
+    final isForBuy = listing.listingType == 'sell';
+    final price = isForBuy
+        ? (listing.purchasePrice ?? listing.pricePerDay)
+        : listing.pricePerDay;
+    final hasSelection = _bookingStart != null && _bookingEnd != null;
+    final deliveryChosen = isForBuy || _selectedDelivery != null;
+    final enabled = !isForBuy && hasSelection && deliveryChosen;
+    final label = isForBuy
+        ? 'Purchase'
+        : (!deliveryChosen
+            ? 'Select delivery method'
+            : (hasSelection ? 'Add to Cart' : 'Select dates above'));
+
+    return PriceActionBar(
+      price: price,
+      priceLabel: isForBuy ? 'to purchase' : 'per day',
+      pricePrefix: isForBuy ? null : 'From ',
+      buttonLabel: label,
+      buttonIcon: isForBuy ? Icons.shopping_bag_outlined : Icons.add_shopping_cart_outlined,
+      enabled: enabled,
+      isLoading: _isAddingToCart,
+      onTap: (enabled && !isForBuy) ? () => _addToCart(context, provider) : null,
+    );
+  }
+
+  // Dress identity: location/age, name (the page's actual title), and spec
+  // chips. Reads first, before any booking mechanics.
+  Widget _buildHeaderBlock(ListingDetailProvider provider, Listing listing) {
+    final isForBuy = listing.listingType == 'sell';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Location + age
+        Row(
+          children: [
+            if (listing.location.isNotEmpty) ...[
+              Icon(
+                Icons.location_on_outlined,
+                size: 14,
+                color: themeTaupe,
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  listing.location,
+                  style: TextStyle(fontSize: 13, color: themeTaupe),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 12),
+            ],
+            Text(
+              _formatListingAge(listing.uploadDate),
+              style: TextStyle(fontSize: 12, color: themeTaupe),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 12),
+
+        // Public listing name, falling back to brand · style
+        Text(
+          listing.name ?? '${listing.brand} · ${listing.style}',
+          style: Theme.of(context).textTheme.headlineMedium,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+
+        const SizedBox(height: 16),
+
+        // Spec chips
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            if (isForBuy)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: themeText,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.sell_outlined, size: 14, color: Color(0xFFFFF8F6)),
+                    const SizedBox(width: 6),
+                    Text(
+                      'For Sale',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFFFF8F6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            _SpecChip(
+              icon: Icons.straighten,
+              label: listing.size,
+              primary: true,
+            ),
+            _SpecChip(
+              icon: Icons.check_circle_outline,
+              label: listing.condition,
+              primary: true,
+            ),
+            if (listing.dressType != null)
+              _SpecChip(
+                icon: Icons.checkroom,
+                label: listing.dressType!,
+              ),
+          ],
+        ),
+
+        // For rentals, delivery is an interactive choice in the booking
+        // cards instead of a static chip here.
+        if (isForBuy && provider.listingOwner?.deliveryOption != null) ...[
+          const SizedBox(height: 12),
+          _buildDeliveryChip(provider.listingOwner!.deliveryOption!),
+        ],
+      ],
+    );
+  }
+
+  // Recommended size, condition, and RRP — plain size is covered by the
+  // header spec chip (and the Size card, for rentals), so it isn't repeated
+  // here.
+  Widget _buildAboutSection(Listing listing) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'About this dress',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: themeText,
+          ),
+        ),
+        const SizedBox(height: 16),
+        _buildAboutRow(
+          'Recommended size',
+          _formatRecommendedSize(listing),
+        ),
+        _buildAboutRow(
+          'Condition',
+          listing.condition.isNotEmpty ? listing.condition : '-',
+        ),
+        _buildAboutRow(
+          'RRP',
+          listing.purchasePrice != null
+              ? formatPrice(listing.purchasePrice!)
+              : '-',
+        ),
       ],
     );
   }
@@ -318,6 +565,80 @@ class _ListingDetailPageState extends State<ListingDetailPage>
               fontWeight: FontWeight.w500,
               color: themeTaupe,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Owner picks a fit note + optional alternate sizes as simple selects when
+  // adding the dress; this turns that into one readable line instead of
+  // making renters read raw field names.
+  String _formatRecommendedSize(Listing listing) {
+    final fitNote = listing.fitNote;
+    final sizes = listing.recommendedSizes;
+
+    if (fitNote == null && sizes.isEmpty) return '-';
+    if (fitNote != null && sizes.isNotEmpty) {
+      return '$fitNote — try ${sizes.join(', ')}';
+    }
+    if (fitNote != null) return fitNote;
+    return 'Try ${sizes.join(', ')}';
+  }
+
+  Widget _buildAboutRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Text.rich(
+        TextSpan(
+          style: TextStyle(fontSize: 14, height: 1.5, color: themeText),
+          children: [
+            TextSpan(
+              text: '$label: ',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            TextSpan(text: value),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Description reads last on the page — after price/size/delivery/dates
+  // and the owner card — since it's the most detail-heavy, least
+  // decision-critical section.
+  Widget _buildDescriptionSection(Listing listing) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 28),
+        const Divider(color: Color(0xFFEEE8E4)),
+        const SizedBox(height: 20),
+        _buildGarmentFeatures(
+          listing.description.isNotEmpty ? listing.description : '-',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGarmentFeatures(String notes) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Garment Features',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: themeText,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            notes,
+            style: TextStyle(fontSize: 14, color: themeText, height: 1.6),
           ),
         ],
       ),
@@ -401,20 +722,55 @@ class _ListingDetailPageState extends State<ListingDetailPage>
     );
   }
 
-  void _openDateSelector(BuildContext context, ListingDetailProvider provider) {
-    final listing = provider.listing!;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _DateSelectionSheet(
-        dressId: listing.id,
-        bookedRanges: provider.bookings,
-        pricePerDay: listing.pricePerDay,
-        dressTitle: listing.name ?? '${listing.brand} ${listing.style}',
-        onBooked: () => provider.getListing(listing.id),
-      ),
+  void _onDayTapped(DateTime day, List<BookedRange> bookings) {
+    final (start, end) = DateRangeSelection.onDayTapped(
+      start: _bookingStart,
+      end: _bookingEnd,
+      day: day,
+      bookedRanges: bookings,
     );
+    setState(() {
+      _bookingStart = start;
+      _bookingEnd = end;
+    });
+  }
+
+  // Cart requires a signed-in user; anonymous visitors get sent to sign in
+  // instead of hitting the API and failing.
+  Future<void> _addToCart(
+    BuildContext context,
+    ListingDetailProvider provider,
+  ) async {
+    if (_bookingStart == null || _bookingEnd == null) return;
+
+    if (provider.currentUserId == null) {
+      context.go('/profile/signin');
+      return;
+    }
+
+    setState(() => _isAddingToCart = true);
+    try {
+      await context.read<CartProvider>().addItem(
+        dressId: provider.listing!.id,
+        startDate: _bookingStart!,
+        endDate: _bookingEnd!,
+      );
+      if (!mounted) return;
+      setState(() {
+        _bookingStart = null;
+        _bookingEnd = null;
+        _isAddingToCart = false;
+      });
+      FeedbackHelpers.showSuccessSnackBar(context, 'Added to cart');
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isAddingToCart = false);
+      final msg = e.toString().replaceFirst('Exception: ', '');
+      FeedbackHelpers.showErrorSnackBar(
+        context,
+        msg.isNotEmpty ? msg : 'Could not add to cart. Try again.',
+      );
+    }
   }
 
   Widget _buildNotFound() {
@@ -704,315 +1060,6 @@ class _ListingDetailPageState extends State<ListingDetailPage>
         color: color,
         borderRadius: BorderRadius.circular(20),
       ),
-    );
-  }
-}
-
-// ─── Date selection bottom sheet ─────────────────────────────────────────────
-
-class _DateSelectionSheet extends StatefulWidget {
-  final int dressId;
-  final List<BookedRange> bookedRanges;
-  final int pricePerDay;
-  final String dressTitle;
-  final VoidCallback? onBooked;
-
-  const _DateSelectionSheet({
-    required this.dressId,
-    required this.bookedRanges,
-    required this.pricePerDay,
-    required this.dressTitle,
-    this.onBooked,
-  });
-
-  @override
-  State<_DateSelectionSheet> createState() => _DateSelectionSheetState();
-}
-
-class _DateSelectionSheetState extends State<_DateSelectionSheet> {
-  DateTime? _start;
-  DateTime? _end;
-  bool _isSubmitting = false;
-
-  void _onDayTapped(DateTime day) {
-    setState(() {
-      if (_start == null) {
-        // First tap: set start
-        _start = day;
-        _end = null;
-      } else if (_end == null) {
-        final tapped = DateTime(day.year, day.month, day.day);
-        final s = DateTime(_start!.year, _start!.month, _start!.day);
-
-        if (tapped == s) {
-          // Tap same day: clear
-          _start = null;
-        } else if (tapped.isBefore(s)) {
-          // Tapped before start: make it the new start
-          _start = day;
-        } else {
-          // Check no unavailable days fall within the proposed range
-          final hasConflict = widget.bookedRanges.any((r) {
-            if (!r.isUnavailable) return false;
-            final rs = DateTime(r.startDate.year, r.startDate.month, r.startDate.day);
-            final re = DateTime(r.endDate.year, r.endDate.month, r.endDate.day);
-            // Conflict if any booked day overlaps [start+1 .. tapped]
-            return rs.isBefore(tapped) && re.isAfter(s);
-          });
-
-          if (hasConflict) {
-            // Can't book across an unavailable range — restart selection
-            _start = day;
-            _end = null;
-          } else {
-            _end = day;
-          }
-        }
-      } else {
-        // Third tap: restart selection
-        _start = day;
-        _end = null;
-      }
-    });
-  }
-
-  int get _nights {
-    if (_start == null || _end == null) return 0;
-    return _end!.difference(_start!).inDays + 1;
-  }
-
-  int get _totalPrice => _nights * widget.pricePerDay;
-
-  String _formatShort(DateTime d) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return '${d.day} ${months[d.month - 1]}';
-  }
-
-  Future<void> _submitBooking() async {
-    if (_start == null || _end == null) return;
-    setState(() => _isSubmitting = true);
-    try {
-      await DressServices().selfBook(
-        dressId: widget.dressId,
-        startDate: _start!,
-        endDate: _end!,
-      );
-      if (!mounted) return;
-      Navigator.pop(context);
-      widget.onBooked?.call();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Booking request sent!'),
-          backgroundColor: themeText,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      final msg = e.toString().replaceFirst('Exception: ', '');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(msg.isNotEmpty ? msg : 'Could not create booking. Try again.'),
-          backgroundColor: themeRose,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        ),
-      );
-      setState(() => _isSubmitting = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final hasSelection = _start != null && _end != null;
-
-    return DraggableScrollableSheet(
-      initialChildSize: 0.85,
-      minChildSize: 0.5,
-      maxChildSize: 0.95,
-      builder: (_, scrollController) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFFFFF8F6),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          child: Column(
-            children: [
-              // Handle
-              Padding(
-                padding: const EdgeInsets.only(top: 12, bottom: 4),
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFDDD4CF),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-
-              // Header
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Select dates',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: themeText,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            hasSelection
-                                ? '${_formatShort(_start!)} – ${_formatShort(_end!)} · $_nights ${_nights == 1 ? 'day' : 'days'}'
-                                : _start != null
-                                    ? 'Now pick an end date'
-                                    : 'Tap a date to start',
-                            style: TextStyle(fontSize: 13, color: themeTaupe),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (_start != null)
-                      GestureDetector(
-                        onTap: () => setState(() { _start = null; _end = null; }),
-                        child: Text(
-                          'Clear',
-                          style: TextStyle(fontSize: 13, color: themeAccent, fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              // Calendar
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: AvailabilityCalendar(
-                      bookedRanges: widget.bookedRanges,
-                      selectionStart: _start,
-                      selectionEnd: _end,
-                      onDayTapped: _onDayTapped,
-                    ),
-                  ),
-                ),
-              ),
-
-              // Booking summary + confirm button
-              Container(
-                padding: EdgeInsets.fromLTRB(
-                  20, 16, 20, MediaQuery.of(context).padding.bottom + 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.06),
-                      blurRadius: 12,
-                      offset: const Offset(0, -3),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            hasSelection ? formatPrice(_totalPrice) : '–',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: hasSelection ? themeText : themeTaupe,
-                            ),
-                          ),
-                          Text(
-                            hasSelection
-                                ? '$_nights ${_nights == 1 ? 'day' : 'days'} · ${formatPrice(widget.pricePerDay)}/day'
-                                : '${formatPrice(widget.pricePerDay)}/day',
-                            style: TextStyle(fontSize: 12, color: themeTaupe),
-                          ),
-                        ],
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: (hasSelection && !_isSubmitting) ? _submitBooking : null,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                        decoration: BoxDecoration(
-                          color: hasSelection
-                              ? (_isSubmitting
-                                  ? themeAccent.withValues(alpha: 0.6)
-                                  : themeAccent)
-                              : themeAccent.withValues(alpha: 0.35),
-                          borderRadius: BorderRadius.circular(26),
-                          boxShadow: (hasSelection && !_isSubmitting)
-                              ? [
-                                  BoxShadow(
-                                    color: themeAccent.withValues(alpha: 0.38),
-                                    blurRadius: 14,
-                                    offset: const Offset(0, 5),
-                                  ),
-                                ]
-                              : [],
-                        ),
-                        child: _isSubmitting
-                            ? SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: themeText,
-                                ),
-                              )
-                            : Text(
-                                'Confirm booking',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: hasSelection
-                                      ? themeText
-                                      : themeText.withValues(alpha: 0.4),
-                                  letterSpacing: 0.3,
-                                ),
-                              ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }
