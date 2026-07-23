@@ -81,6 +81,7 @@ class ListingsProvider extends ChangeNotifier {
       final allQueries = <String, dynamic>{
         'limit': limit,
         'pageNumber': currentPage + 1,
+        'sortBy': sortBy,
         ...filters,
       };
       final q = searchController.text.trim();

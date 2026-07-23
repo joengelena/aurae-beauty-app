@@ -18,6 +18,10 @@ class Listing {
   final String size;
   final String? color;
   final String? dressType;
+  final String? fitNote;
+  final List<String> recommendedSizes;
+  final int? purchasePrice;
+  final DateTime? availableFrom;
   final String listingType;
   final bool? isInWatchlist;
 
@@ -39,6 +43,10 @@ class Listing {
     required this.size,
     this.color,
     this.dressType,
+    this.fitNote,
+    this.recommendedSizes = const [],
+    this.purchasePrice,
+    this.availableFrom,
     this.listingType = 'rent',
     this.isInWatchlist,
   });
@@ -62,6 +70,15 @@ class Listing {
       size: json['size'] as String,
       color: json['color'] as String?,
       dressType: json['dressType'] as String?,
+      fitNote: json['fitNote'] as String?,
+      recommendedSizes: (json['recommendedSizes'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+      purchasePrice: json['purchasePrice'] as int?,
+      availableFrom: json['availableFrom'] != null
+          ? DateTime.parse(json['availableFrom'] as String)
+          : null,
       listingType: json['listingType'] as String? ?? 'rent',
       isInWatchlist: json['isInWatchlist'] != null
           ? (json['isInWatchlist'] == 1 || json['isInWatchlist'] == true)
@@ -90,6 +107,10 @@ class Listing {
     String? size,
     String? color,
     String? dressType,
+    String? fitNote,
+    List<String>? recommendedSizes,
+    int? purchasePrice,
+    DateTime? availableFrom,
     String? listingType,
     bool? isInWatchlist,
   }) {
@@ -111,6 +132,10 @@ class Listing {
       size: size ?? this.size,
       color: color ?? this.color,
       dressType: dressType ?? this.dressType,
+      fitNote: fitNote ?? this.fitNote,
+      recommendedSizes: recommendedSizes ?? this.recommendedSizes,
+      purchasePrice: purchasePrice ?? this.purchasePrice,
+      availableFrom: availableFrom ?? this.availableFrom,
       listingType: listingType ?? this.listingType,
       isInWatchlist: isInWatchlist ?? this.isInWatchlist,
     );

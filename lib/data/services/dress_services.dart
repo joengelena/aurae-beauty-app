@@ -55,7 +55,7 @@ class DressServices {
       if (photoBytes.isNotEmpty) {
         final fields = <String, String>{};
         dressData.forEach((key, value) {
-          fields[key] = value.toString();
+          fields[key] = value is List ? json.encode(value) : value.toString();
         });
 
         final multipartFiles = List.generate(
@@ -161,7 +161,7 @@ class DressServices {
 
       final fields = <String, String>{};
       dressFields.forEach((key, value) {
-        fields[key] = value.toString();
+        fields[key] = value is List ? json.encode(value) : value.toString();
       });
       fields['keepPhotoUrls'] = json.encode(keepPhotoUrls);
       if (blockedDateRanges != null) {

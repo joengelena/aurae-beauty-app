@@ -6,6 +6,7 @@ class BusinessDress {
   final String? name;
   final String brand;
   final String style;
+  final String? dressType;
   final String listingType;
   final bool isPublic;
   final int? purchaseYear;
@@ -14,8 +15,11 @@ class BusinessDress {
   final int? rentalCount;
   final DateTime? lastRentalDate;
   final String size;
+  final String? fitNote;
+  final List<String> recommendedSizes;
   final int? purchasePrice;
   final int? rentalPricePerDay;
+  final DateTime? availableFrom;
   final String condition;
   final List<String> dressPhotoUrls;
   final List<DateTimeRange> blockedDateRanges;
@@ -31,6 +35,7 @@ class BusinessDress {
     this.name,
     required this.brand,
     required this.style,
+    this.dressType,
     this.listingType = 'rent',
     this.isPublic = false,
     this.purchaseYear,
@@ -39,8 +44,11 @@ class BusinessDress {
     this.rentalCount,
     this.lastRentalDate,
     required this.size,
+    this.fitNote,
+    this.recommendedSizes = const [],
     this.purchasePrice,
     this.rentalPricePerDay,
+    this.availableFrom,
     required this.condition,
     this.dressPhotoUrls = const [],
     this.blockedDateRanges = const [],
@@ -61,6 +69,7 @@ class BusinessDress {
       name: json['name'] as String?,
       brand: json['brand'] as String? ?? json['make'] as String? ?? '',
       style: json['style'] as String? ?? json['model'] as String? ?? '',
+      dressType: json['dressType'] as String?,
       listingType: json['listingType'] as String? ?? 'rent',
       isPublic: json['isPublic'] as bool? ?? false,
       purchaseYear: json['purchaseYear'] as int? ?? json['year'] as int?,
@@ -71,8 +80,16 @@ class BusinessDress {
           ? DateTime.parse(json['lastRentalDate'] as String)
           : null,
       size: json['size'] as String? ?? 'M',
+      fitNote: json['fitNote'] as String?,
+      recommendedSizes: (json['recommendedSizes'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
       purchasePrice: json['purchasePrice'] as int?,
       rentalPricePerDay: json['rentalPricePerDay'] as int?,
+      availableFrom: json['availableFrom'] != null
+          ? DateTime.parse(json['availableFrom'] as String)
+          : null,
       condition: json['condition'] as String? ?? 'Excellent',
       dressPhotoUrls: (json['dressPhotoUrls'] as List<dynamic>?)
               ?.map((e) => e as String)
@@ -103,6 +120,7 @@ class BusinessDress {
       'name': name,
       'brand': brand,
       'style': style,
+      'dressType': dressType,
       'listingType': listingType,
       'isPublic': isPublic,
       'purchaseYear': purchaseYear,
@@ -111,8 +129,11 @@ class BusinessDress {
       'rentalCount': rentalCount,
       'lastRentalDate': lastRentalDate?.toIso8601String(),
       'size': size,
+      'fitNote': fitNote,
+      'recommendedSizes': recommendedSizes,
       'purchasePrice': purchasePrice,
       'rentalPricePerDay': rentalPricePerDay,
+      'availableFrom': availableFrom?.toIso8601String(),
       'condition': condition,
       'dressPhotoUrls': dressPhotoUrls,
       'notes': notes,
