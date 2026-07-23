@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/logic/filtering_provider.dart';
 import 'package:shine_app/logic/listings_provider.dart';
+import 'package:shine_app/presentation/widgets/common/app_empty_state.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -229,47 +230,10 @@ class _InfiniteGridState extends State<InfiniteGrid>
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: themeAccent.withValues(alpha: 0.15),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.checkroom_outlined,
-                size: 30,
-                color: themeAccent,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'No dresses found',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: themeText,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Try adjusting your filters or search terms',
-              style: TextStyle(
-                fontSize: 14,
-                color: themeTaupe,
-                height: 1.5,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
+    return const AppEmptyState(
+      icon: Icons.checkroom_outlined,
+      title: 'No dresses found',
+      body: 'Try adjusting your filters or search terms.',
     );
   }
 

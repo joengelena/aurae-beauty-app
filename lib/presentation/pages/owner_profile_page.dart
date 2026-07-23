@@ -1,8 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/models/listing.dart';
 import 'package:shine_app/data/models/user.dart';
 import 'package:shine_app/logic/owner_profile_provider.dart';
+import 'package:shine_app/presentation/widgets/common/app_empty_state.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/utils.dart';
@@ -185,26 +187,10 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
   Widget _buildEmptyState(User owner) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 32, 24, 64),
-      child: Center(
-        child: Column(
-          children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                color: themeAccent.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.checkroom_outlined, size: 36, color: themeAccent),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '${owner.firstName} has no public listings yet',
-              style: TextStyle(fontSize: 14, color: themeTaupe),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+      child: AppEmptyState(
+        icon: Icons.checkroom_outlined,
+        title: 'No public listings yet',
+        body: '${owner.firstName} hasn\'t published any dresses for rent.',
       ),
     );
   }
@@ -363,10 +349,10 @@ class _ListingCard extends StatelessWidget {
               child: AspectRatio(
                 aspectRatio: AppConstants.listingImageAspectRatio,
                 child: listing.previewImgUrl.isNotEmpty
-                    ? Image.network(
-                        listing.previewImgUrl,
+                    ? CachedNetworkImage(
+                        imageUrl: listing.previewImgUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _photoPlaceholder(),
+                        errorWidget: (_, __, ___) => _photoPlaceholder(),
                       )
                     : _photoPlaceholder(),
               ),
