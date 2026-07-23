@@ -226,9 +226,8 @@ class _AvailabilityCalendarState extends State<AvailabilityCalendar> {
             if (dayNum < 1 || dayNum > daysInMonth) {
               return const Expanded(child: SizedBox(height: 36));
             }
-            return Expanded(
-              child: _buildCell(DateTime(_month.year, _month.month, dayNum)),
-            );
+            // _buildCell already returns an Expanded-wrapped widget.
+            return _buildCell(DateTime(_month.year, _month.month, dayNum));
           }),
         );
       }),

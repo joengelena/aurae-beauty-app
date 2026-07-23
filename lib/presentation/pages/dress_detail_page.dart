@@ -671,7 +671,9 @@ class _DressDetailPageState extends State<DressDetailPage>
   Widget _bookingTile(RentalBooking booking, int dressId, {required bool faded}) {
     final dateRange =
         '${formatDate(booking.startDate)} – ${formatDate(booking.endDate)}';
-    final days = booking.endDate.difference(booking.startDate).inDays + 1;
+    // A rental is a whole day that goes overnight, so a stay from the 23rd
+    // to the 24th is one day, not two.
+    final days = booking.endDate.difference(booking.startDate).inDays;
 
     return Opacity(
       opacity: faded ? 0.6 : 1.0,
