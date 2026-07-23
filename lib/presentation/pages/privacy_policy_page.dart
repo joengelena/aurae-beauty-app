@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/theme.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
   const PrivacyPolicyPage({super.key});
@@ -27,7 +28,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                   'Last Updated: March 3, 2026',
                   style: Theme.of(
                     context,
-                  ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                  ).textTheme.bodyMedium?.copyWith(color: themeTaupe),
                 ),
                 const SizedBox(height: 24),
                 Text(

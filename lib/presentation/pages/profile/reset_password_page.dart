@@ -4,6 +4,7 @@ import 'package:shine_app/logic/auth_provider.dart';
 import 'package:shine_app/presentation/widgets/common/app_dialog.dart';
 import 'package:shine_app/presentation/widgets/common/password_field.dart';
 import 'package:shine_app/utils/secure_storage.dart';
+import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -315,12 +316,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   foregroundColor:
                       (hasValidToken && isFormValid)
                           ? Colors.white
-                          : Colors.grey,
+                          : themeTaupe,
                   side: BorderSide(
                     color:
                         (hasValidToken && isFormValid)
                             ? Theme.of(context).colorScheme.secondary
-                            : Colors.grey,
+                            : themeTaupe,
                   ),
                   backgroundColor:
                       (hasValidToken && isFormValid)
