@@ -13,6 +13,7 @@ import 'package:shine_app/logic/profile_provider.dart';
 import 'package:shine_app/logic/user_listings_provider.dart';
 import 'package:shine_app/logic/listing_form_data_provider.dart';
 import 'package:shine_app/logic/watchlist_provider.dart';
+import 'package:shine_app/logic/cart_provider.dart';
 import 'package:shine_app/logic/wardrobe_provider.dart';
 import 'package:shine_app/logic/dress_detail_provider.dart';
 import 'package:shine_app/logic/owner_profile_provider.dart';
@@ -64,6 +65,13 @@ void main() async {
           update: (context, authProvider, watchlistProvider) {
             watchlistProvider!.updateAuthStatus(authProvider.isSignedIn);
             return watchlistProvider;
+          },
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, CartProvider>(
+          create: (_) => CartProvider(),
+          update: (context, authProvider, cartProvider) {
+            cartProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return cartProvider;
           },
         ),
         ChangeNotifierProxyProvider<AuthProvider, WardrobeProvider>(

@@ -19,6 +19,7 @@ import 'package:shine_app/presentation/pages/profile/sign_in_page.dart';
 import 'package:shine_app/presentation/pages/profile/sign_up_page.dart';
 import 'package:shine_app/presentation/pages/splash_page.dart';
 import 'package:shine_app/presentation/pages/watchlist_page.dart';
+import 'package:shine_app/presentation/pages/cart_page.dart';
 import 'package:shine_app/presentation/pages/wardrobe_page.dart';
 import 'package:shine_app/presentation/pages/add_dress_page.dart';
 import 'package:shine_app/presentation/pages/edit_dress_page.dart';
@@ -184,6 +185,12 @@ GoRouter getAppRouter(AuthProvider authProvider, ProfileProvider profileProvider
             parentNavigatorKey: _shellNavigatorKey,
             pageBuilder:
                 (context, state) => NoTransitionPage(child: WatchlistPage()),
+          ),
+          GoRoute(
+            path: '/cart',
+            parentNavigatorKey: _shellNavigatorKey,
+            pageBuilder:
+                (context, state) => NoTransitionPage(child: CartPage()),
           ),
           GoRoute(
             path: '/wardrobe',

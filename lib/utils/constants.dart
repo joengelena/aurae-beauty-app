@@ -65,6 +65,7 @@ class CacheKeys {
   // User
   static String userDetails(String id) => '/users/$id';
   static const String userWatchlist = '/user/watchlist';
+  static const String userCart = '/user/cart';
 
   // Dresses
   static const String dresses = '/user/dresses';
