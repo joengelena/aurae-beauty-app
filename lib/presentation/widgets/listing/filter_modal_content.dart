@@ -19,12 +19,12 @@ class _FilterModalContentState extends State<FilterModalContent> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Text(
-        text.toUpperCase(),
+        text,
         style: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w700,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
           color: themeTaupe,
-          letterSpacing: 1.2,
+          letterSpacing: 0.2,
         ),
       ),
     );

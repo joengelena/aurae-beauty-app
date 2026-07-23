@@ -10,6 +10,7 @@ class RangeFilter extends StatefulWidget {
   final String? prefixText;
   final bool isDecimal;
   final FilteringProvider provider;
+  final VoidCallback? onSubmitted;
 
   const RangeFilter({
     super.key,
@@ -19,6 +20,7 @@ class RangeFilter extends StatefulWidget {
     required this.provider,
     this.prefixText,
     this.isDecimal = false,
+    this.onSubmitted,
   });
 
   @override
@@ -118,6 +120,7 @@ class _RangeFilterState extends State<RangeFilter> {
       onChanged: (value) {
         widget.provider.updateRangeFilter(filterKey, value);
       },
+      onSubmitted: (_) => widget.onSubmitted?.call(),
     );
   }
 }
