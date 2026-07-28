@@ -9,6 +9,7 @@ import 'package:shine_app/presentation/widgets/profile/week_schedule_widget.dart
 import 'package:shine_app/presentation/widgets/sign_in_to_access.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/dress_action_menu.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/dress_card.dart';
+import 'package:shine_app/presentation/widgets/wardrobe/wardrobe_dashboard_section.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/wardrobe_empty_state.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/wardrobe_error_state.dart';
 import 'package:shine_app/utils/constants.dart';
@@ -131,6 +132,11 @@ class _WardrobePageState extends State<WardrobePage>
                   AppConstants.spacingExtraLarge,
                 ),
                 children: [
+                  const WardrobeDashboardSection(),
+                  const SizedBox(height: AppConstants.spacingLarge),
+                  Divider(color: themePrimary, thickness: 1),
+                  const SizedBox(height: AppConstants.spacingLarge),
+
                   // Heading aligned with the card grid
                   Row(
                     children: [

@@ -11,6 +11,23 @@ class BookingWithDress {
   const BookingWithDress({required this.booking, required this.dress});
 }
 
+class DressRevenue {
+  final BusinessDress dress;
+  final double revenue;
+  final int rentalCount;
+
+  const DressRevenue({
+    required this.dress,
+    required this.revenue,
+    required this.rentalCount,
+  });
+}
+
+// Bookings in these statuses represent committed/realized income. Pending
+// bookings aren't confirmed yet and cancelled ones never happened, so both
+// are excluded from revenue.
+const _revenueCountedStatuses = {'confirmed', 'active', 'returned'};
+
 class WeekScheduleProvider extends ChangeNotifier {
   final DressServices _dressServices = DressServices();
 
@@ -36,6 +53,37 @@ class WeekScheduleProvider extends ChangeNotifier {
 
   List<DateTime> get weekDays =>
       List.generate(7, (i) => weekStart.add(Duration(days: i)));
+
+  double get totalRevenue => _bookings
+      .where((b) => _revenueCountedStatuses.contains(b.status))
+      .fold(0.0, (sum, b) => sum + b.totalCost);
+
+  List<DressRevenue> topDressesByRevenue({int limit = 5}) {
+    final revenueByDressId = <int, double>{};
+    for (final b in _bookings) {
+      if (!_revenueCountedStatuses.contains(b.status)) continue;
+      revenueByDressId.update(
+        b.dressIdFk,
+        (v) => v + b.totalCost,
+        ifAbsent: () => b.totalCost,
+      );
+    }
+
+    final ranked = revenueByDressId.entries.where((e) => e.value > 0).toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    return ranked.take(limit).map((e) {
+      final dress = _dresses.firstWhere(
+        (d) => d.id == e.key,
+        orElse: () => _placeholderDress(e.key),
+      );
+      return DressRevenue(
+        dress: dress,
+        revenue: e.value,
+        rentalCount: dress.rentalCount ?? 0,
+      );
+    }).toList();
+  }
 
   List<BookingWithDress> bookingsForDay(DateTime day) {
     final d = DateTime(day.year, day.month, day.day);
