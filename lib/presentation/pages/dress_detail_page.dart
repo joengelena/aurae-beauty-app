@@ -1,9 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/models/business_dress.dart';
+import 'package:shine_app/data/models/dress_damage_incident.dart';
 import 'package:shine_app/data/models/rental_booking.dart';
 import 'package:shine_app/logic/back_button_provider.dart';
 import 'package:shine_app/logic/dress_detail_provider.dart';
+import 'package:shine_app/presentation/widgets/common/action_menu_button.dart';
 import 'package:shine_app/presentation/widgets/listing/image_carousel.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/booking_panel.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/dress_action_menu.dart';
@@ -77,13 +80,19 @@ class _DressDetailPageState extends State<DressDetailPage>
     final now = DateTime.now();
     final allBookings = provider.bookings;
 
+    // Overdue actives (endDate passed but never marked returned) still need
+    // action, so they stay in the actionable "upcoming" group rather than
+    // fading into past rentals.
+    bool isOverdueActive(RentalBooking b) =>
+        b.status == 'active' && !b.endDate.isAfter(now);
+
     final upcoming = allBookings
-        .where((b) => b.endDate.isAfter(now))
+        .where((b) => b.endDate.isAfter(now) || isOverdueActive(b))
         .toList()
       ..sort((a, b) => a.startDate.compareTo(b.startDate));
 
     final past = allBookings
-        .where((b) => !b.endDate.isAfter(now))
+        .where((b) => !b.endDate.isAfter(now) && !isOverdueActive(b))
         .toList()
       ..sort((a, b) => b.startDate.compareTo(a.startDate));
 
@@ -234,17 +243,15 @@ class _DressDetailPageState extends State<DressDetailPage>
         // Current status
         _buildStatusPill(allBookings, DateTime.now()),
 
-        // Damage notice
-        if (dress.damageDescription != null) ...[
-          const SizedBox(height: 10),
-          _buildDamageNotice(dress.damageDescription!),
-        ],
-
         // Notes
         if (dress.notes != null && dress.notes!.isNotEmpty) ...[
           const SizedBox(height: 10),
           _buildNotesSection(dress.notes!),
         ],
+
+        const SizedBox(height: 28),
+
+        _buildDamageIncidentsSection(provider, dress.id),
 
         const SizedBox(height: 28),
 
@@ -432,44 +439,255 @@ class _DressDetailPageState extends State<DressDetailPage>
     );
   }
 
-  Widget _buildDamageNotice(String description) {
+  // ─── Damage history ──────────────────────────────────────────────────────────
+
+  Widget _buildDamageIncidentsSection(DressDetailProvider provider, int dressId) {
+    final incidents = provider.damageIncidents;
+    final unresolvedCount = incidents.where((i) => !i.resolved).length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Damage history',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: themeTaupe,
+                letterSpacing: 0.2,
+              ),
+            ),
+            const Spacer(),
+            if (unresolvedCount > 0) ...[
+              Text(
+                '$unresolvedCount unresolved',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: themeRose,
+                  letterSpacing: 0.2,
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
+            _addDamageIncidentButton(dressId),
+          ],
+        ),
+        const SizedBox(height: 16),
+        if (provider.isLoadingDamageIncidents)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Center(
+              child: CircularProgressIndicator(color: themeAccent, strokeWidth: 2),
+            ),
+          )
+        else if (incidents.isEmpty)
+          _buildDamageIncidentsEmptyState(dressId)
+        else
+          Column(
+            children: incidents
+                .map(
+                  (i) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: _damageIncidentTile(i, dressId),
+                  ),
+                )
+                .toList(),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildDamageIncidentsEmptyState(int dressId) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-        color: themeRose.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.warning_amber_outlined, size: 16, color: themeRose),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Center(
+        child: Text(
+          'No damage reported for this dress.',
+          style: TextStyle(fontSize: 13, color: themeTaupe),
+        ),
+      ),
+    );
+  }
+
+  Widget _addDamageIncidentButton(int dressId) {
+    return GestureDetector(
+      onTap: () => _handleAddDamageIncident(context, dressId),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          color: themeAccent.withValues(alpha: 0.22),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: themeAccent.withValues(alpha: 0.5),
+            width: 0.5,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.add, size: 13, color: themeText),
+            const SizedBox(width: 4),
+            Text(
+              'Add incident',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: themeText,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _damageIncidentTile(DressDamageIncident incident, int dressId) {
+    return GestureDetector(
+      onTap: () => _handleEditDamageIncident(context, dressId, incident.id),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.fromLTRB(16, 14, 12, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Text(
-                  'Damage noted',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: themeRose,
+                Expanded(
+                  child: Text(
+                    formatDate(incident.occurredAt),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: themeText,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  description,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: themeText,
-                    height: 1.4,
-                  ),
+                _resolvedChip(incident.resolved),
+                ActionMenuButton(
+                  sheetTitle: null,
+                  options: [
+                    MenuOption(
+                      icon: incident.resolved ? Icons.replay : Icons.check_circle_outline,
+                      title: incident.resolved ? 'Reopen' : 'Mark resolved',
+                      onTap: () => _handleToggleIncidentResolved(context, incident, dressId),
+                    ),
+                    MenuOption(
+                      icon: Icons.delete_outline,
+                      title: 'Delete',
+                      iconColor: themeRed,
+                      titleColor: themeRed,
+                      onTap: () => _handleDeleteDamageIncident(context, incident, dressId),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ),
-        ],
+            const SizedBox(height: 4),
+            Text(
+              incident.description,
+              style: TextStyle(fontSize: 13, color: themeText, height: 1.4),
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Icon(
+                  incident.isPublic ? Icons.public : Icons.lock_outline,
+                  size: 12,
+                  color: themeTaupe,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  incident.isPublic ? 'Visible on Browse' : 'Private',
+                  style: TextStyle(fontSize: 11, color: themeTaupe),
+                ),
+              ],
+            ),
+            if (incident.photoUrls.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 56,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: incident.photoUrls
+                      .map(
+                        (url) => Container(
+                          width: 56,
+                          height: 56,
+                          margin: const EdgeInsets.only(right: 6),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: CachedNetworkImage(
+                              imageUrl: url,
+                              fit: BoxFit.cover,
+                              errorWidget: (_, __, ___) => Container(
+                                color: const Color(0xFFF5EFED),
+                                child: Icon(
+                                  Icons.broken_image_outlined,
+                                  size: 16,
+                                  color: themeTaupe,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _resolvedChip(bool resolved) {
+    return Container(
+      margin: const EdgeInsets.only(left: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      decoration: BoxDecoration(
+        color: resolved ? themeSage.withValues(alpha: 0.12) : themeRose.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        resolved ? 'Resolved' : 'Unresolved',
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: resolved ? themeSage : themeRose,
+          letterSpacing: 0.1,
+        ),
       ),
     );
   }
@@ -773,38 +991,36 @@ class _DressDetailPageState extends State<DressDetailPage>
               ),
             ],
 
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
 
-            // Delete action
-            Align(
-              alignment: Alignment.centerRight,
-              child: GestureDetector(
-                onTap: () => _handleDeleteBooking(context, booking, dressId),
-                behavior: HitTestBehavior.opaque,
-                child: Container(
-                  constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.fromLTRB(12, 8, 0, 0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.delete_outline,
-                        size: 13,
-                        color: themeRose.withValues(alpha: 0.65),
+            // Status + delete actions
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (_nextStatus(booking.status) != null)
+                  _statusAdvanceButton(booking, dressId),
+                const SizedBox(width: 4),
+                ActionMenuButton(
+                  sheetTitle: null,
+                  options: [
+                    if (booking.status != 'cancelled' && booking.status != 'returned')
+                      MenuOption(
+                        icon: Icons.cancel_outlined,
+                        title: 'Cancel booking',
+                        iconColor: themeRose,
+                        titleColor: themeRose,
+                        onTap: () => _handleCancelBooking(context, booking, dressId),
                       ),
-                      const SizedBox(width: 3),
-                      Text(
-                        'Delete',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: themeRose.withValues(alpha: 0.65),
-                        ),
-                      ),
-                    ],
-                  ),
+                    MenuOption(
+                      icon: Icons.delete_outline,
+                      title: 'Delete',
+                      iconColor: themeRed,
+                      titleColor: themeRed,
+                      onTap: () => _handleDeleteBooking(context, booking, dressId),
+                    ),
+                  ],
                 ),
-              ),
+              ],
             ),
           ],
         ),
@@ -1208,5 +1424,146 @@ class _DressDetailPageState extends State<DressDetailPage>
     final currentRoute = GoRouterState.of(context).uri.path;
     context.read<BackButtonProvider>().pushRoute(currentRoute);
     context.go('/wardrobe/$dressId/add-booking');
+  }
+
+  void _handleAddDamageIncident(BuildContext context, int dressId) {
+    final currentRoute = GoRouterState.of(context).uri.path;
+    context.read<BackButtonProvider>().pushRoute(currentRoute);
+    context.go('/wardrobe/$dressId/add-damage-incident');
+  }
+
+  void _handleEditDamageIncident(BuildContext context, int dressId, int incidentId) {
+    final currentRoute = GoRouterState.of(context).uri.path;
+    context.read<BackButtonProvider>().pushRoute(currentRoute);
+    context.go('/wardrobe/$dressId/damage-incidents/$incidentId');
+  }
+
+  Future<void> _handleToggleIncidentResolved(
+    BuildContext context,
+    DressDamageIncident incident,
+    int dressId,
+  ) async {
+    try {
+      await context.read<DressDetailProvider>().updateDamageIncident(
+        dressId,
+        incident.id,
+        {'resolved': !incident.resolved},
+      );
+      if (context.mounted) {
+        FeedbackHelpers.showSuccessSnackBar(
+          context,
+          incident.resolved ? 'Marked as unresolved' : 'Marked as resolved',
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        FeedbackHelpers.showErrorSnackBar(context, 'Failed to update damage incident.');
+      }
+    }
+  }
+
+  Future<void> _handleDeleteDamageIncident(
+    BuildContext context,
+    DressDamageIncident incident,
+    int dressId,
+  ) async {
+    final confirmed = await FeedbackHelpers.showDeleteConfirmation(
+      context,
+      title: 'Delete Damage Report',
+      message: 'Delete this damage report? This cannot be undone.',
+    );
+    if (!confirmed || !context.mounted) return;
+
+    try {
+      await context.read<DressDetailProvider>().deleteDamageIncident(dressId, incident.id);
+      if (context.mounted) {
+        FeedbackHelpers.showSuccessSnackBar(context, 'Damage report deleted');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        FeedbackHelpers.showErrorSnackBar(context, 'Failed to delete damage report.');
+      }
+    }
+  }
+
+  // ─── Booking status lifecycle ───────────────────────────────────────────────
+  // pending → confirmed → active → returned. "Cancelled" is reachable from
+  // any non-terminal state via the overflow menu instead of this ladder.
+
+  String? _nextStatus(String status) => switch (status) {
+    'pending' => 'confirmed',
+    'confirmed' => 'active',
+    'active' => 'returned',
+    _ => null,
+  };
+
+  String _nextStatusLabel(String status) => switch (status) {
+    'pending' => 'Confirm',
+    'confirmed' => 'Mark out for rent',
+    'active' => 'Mark returned',
+    _ => '',
+  };
+
+  Widget _statusAdvanceButton(RentalBooking booking, int dressId) {
+    final next = _nextStatus(booking.status)!;
+    return GestureDetector(
+      onTap: () => _handleStatusChange(context, booking, dressId, next),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 32),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: themeSage.withValues(alpha: 0.16),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: themeSage.withValues(alpha: 0.4), width: 0.5),
+        ),
+        child: Text(
+          _nextStatusLabel(booking.status),
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: themeSage,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleStatusChange(
+    BuildContext context,
+    RentalBooking booking,
+    int dressId,
+    String newStatus,
+  ) async {
+    try {
+      await context.read<DressDetailProvider>().updateBookingStatus(
+        booking.id,
+        dressId,
+        newStatus,
+      );
+      if (context.mounted) {
+        FeedbackHelpers.showSuccessSnackBar(context, 'Booking updated');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        FeedbackHelpers.showErrorSnackBar(context, 'Failed to update booking.');
+      }
+    }
+  }
+
+  Future<void> _handleCancelBooking(
+    BuildContext context,
+    RentalBooking booking,
+    int dressId,
+  ) async {
+    final confirmed = await FeedbackHelpers.showConfirmation(
+      context,
+      title: 'Cancel Booking',
+      message: 'Cancel this booking? The renter will need to be notified separately.',
+      confirmButtonText: 'Cancel Booking',
+    );
+    if (!confirmed || !context.mounted) return;
+
+    await _handleStatusChange(context, booking, dressId, 'cancelled');
   }
 }

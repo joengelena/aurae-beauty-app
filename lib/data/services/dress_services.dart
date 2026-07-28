@@ -11,6 +11,7 @@ import 'package:shine_app/data/models/listing.dart';
 import 'package:shine_app/data/models/listing_attribute.dart';
 import 'package:shine_app/data/models/pagination.dart';
 import 'package:shine_app/data/models/booked_range.dart';
+import 'package:shine_app/data/models/dress_damage_incident.dart';
 import 'package:shine_app/data/models/rental_booking.dart';
 import 'package:shine_app/data/models/upcoming_booking.dart';
 import 'package:shine_app/utils/constants.dart';
@@ -290,6 +291,32 @@ class DressServices {
     }
   }
 
+  Future<List<DressDamageIncident>> getPublicDamageIncidents(int dressId) async {
+    try {
+      final response = await apiClient.get(
+        '/dresses/$dressId/damage-incidents',
+        cacheKey: 'public_damage_incidents_$dressId',
+        cacheDuration: CacheDurations.medium,
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        throw AppException(extractErrorMessage(response.body));
+      }
+
+      try {
+        final data = json.decode(response.body) as List<dynamic>;
+        return data
+            .map((i) => DressDamageIncident.fromJson(i as Map<String, dynamic>))
+            .toList();
+      } catch (e) {
+        throw DataParseException('Invalid response format', details: e.toString());
+      }
+    } catch (e) {
+      if (e is AppException || e is DataParseException) rethrow;
+      throw NetworkException('Network error fetching damage incidents', details: e.toString());
+    }
+  }
+
   Future<Map<String, dynamic>> addBooking(Map<String, dynamic> bookingData) async {
     try {
       final dressId = bookingData['dressIdFk'];
@@ -499,6 +526,186 @@ class DressServices {
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
       throw NetworkException('Network error fetching my bookings', details: e.toString());
+    }
+  }
+
+  Future<void> updateBooking(
+    int bookingId,
+    int dressId,
+    Map<String, dynamic> updates,
+  ) async {
+    try {
+      http.Response response = await apiClient.patch(
+        '/user/dress-bookings/$bookingId',
+        updates,
+        invalidateCacheKeys: [
+          CacheKeys.dressBookings(dressId),
+          CacheKeys.userBookings,
+          CacheKeys.myBookings,
+        ],
+      );
+
+      if (response.statusCode == HttpStatus.notFound) {
+        throw NotFoundException(extractErrorMessage(response.body));
+      }
+      if (response.statusCode == HttpStatus.forbidden) {
+        throw ForbiddenException(extractErrorMessage(response.body));
+      }
+      if (response.statusCode != HttpStatus.ok) {
+        throw NetworkException(
+          extractErrorMessage(response.body),
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+    } catch (e) {
+      if (e is NotFoundException || e is ForbiddenException || e is NetworkException) rethrow;
+      throw NetworkException('Network error updating booking', details: e.toString());
+    }
+  }
+
+  Future<List<DressDamageIncident>> getDamageIncidents(int dressId) async {
+    try {
+      final response = await apiClient.get(
+        '/user/dresses/$dressId/damage-incidents',
+        cacheKey: CacheKeys.dressDamageIncidents(dressId),
+        cacheDuration: CacheDurations.medium,
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        final errorMessage = extractErrorMessage(response.body);
+        throw AppException(errorMessage, details: response.body);
+      }
+
+      try {
+        final data = json.decode(response.body) as List<dynamic>;
+        return data
+            .map((i) => DressDamageIncident.fromJson(i as Map<String, dynamic>))
+            .toList();
+      } catch (e) {
+        throw DataParseException('Invalid response format', details: e.toString());
+      }
+    } catch (e) {
+      if (e is AppException || e is DataParseException) rethrow;
+      throw NetworkException('Network error fetching damage incidents', details: e.toString());
+    }
+  }
+
+  Future<void> addDamageIncident(
+    int dressId,
+    Map<String, dynamic> incidentData, {
+    List<Uint8List> photoBytes = const [],
+    List<String?> photoMimeTypes = const [],
+  }) async {
+    try {
+      http.Response response;
+
+      if (photoBytes.isNotEmpty) {
+        final fields = <String, String>{};
+        incidentData.forEach((key, value) => fields[key] = value.toString());
+
+        final multipartFiles = List.generate(
+          photoBytes.length,
+          (i) => _createImageMultipartFile(
+            photoBytes[i],
+            i < photoMimeTypes.length ? photoMimeTypes[i] : null,
+          ),
+        );
+
+        response = await apiClient.postMultipart(
+          '/user/dresses/$dressId/damage-incidents',
+          fields,
+          multipartFiles,
+          invalidateCacheKeys: [CacheKeys.dressDamageIncidents(dressId), CacheKeys.dress(dressId)],
+        );
+      } else {
+        response = await apiClient.post(
+          '/user/dresses/$dressId/damage-incidents',
+          incidentData,
+          invalidateCacheKeys: [CacheKeys.dressDamageIncidents(dressId), CacheKeys.dress(dressId)],
+        );
+      }
+
+      if (response.statusCode != HttpStatus.created) {
+        throw AppException(extractErrorMessage(response.body), details: response.body);
+      }
+    } catch (e) {
+      if (e is AppException || e is DataParseException) rethrow;
+      throw NetworkException('Network error while adding damage incident', details: e.toString());
+    }
+  }
+
+  Future<void> updateDamageIncident(
+    int dressId,
+    int incidentId,
+    Map<String, dynamic> updates, {
+    List<Uint8List> newPhotoBytes = const [],
+    List<String?> newPhotoMimeTypes = const [],
+    List<String> keepPhotoUrls = const [],
+  }) async {
+    try {
+      final fields = <String, String>{};
+      updates.forEach((key, value) => fields[key] = value.toString());
+      fields['keepPhotoUrls'] = json.encode(keepPhotoUrls);
+
+      final multipartFiles = List.generate(
+        newPhotoBytes.length,
+        (i) => _createImageMultipartFile(
+          newPhotoBytes[i],
+          i < newPhotoMimeTypes.length ? newPhotoMimeTypes[i] : null,
+        ),
+      );
+
+      final response = await apiClient.patchMultipart(
+        '/user/dresses/$dressId/damage-incidents/$incidentId',
+        fields,
+        multipartFiles,
+        invalidateCacheKeys: [CacheKeys.dressDamageIncidents(dressId), CacheKeys.dress(dressId)],
+      );
+
+      if (response.statusCode == HttpStatus.notFound) {
+        throw NotFoundException(extractErrorMessage(response.body));
+      }
+      if (response.statusCode == HttpStatus.forbidden) {
+        throw ForbiddenException(extractErrorMessage(response.body));
+      }
+      if (response.statusCode != HttpStatus.ok) {
+        throw NetworkException(
+          extractErrorMessage(response.body),
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+    } catch (e) {
+      if (e is NotFoundException || e is ForbiddenException || e is NetworkException) rethrow;
+      throw NetworkException('Network error updating damage incident', details: e.toString());
+    }
+  }
+
+  Future<void> deleteDamageIncident(int dressId, int incidentId) async {
+    try {
+      final response = await apiClient.delete(
+        '/user/dresses/$dressId/damage-incidents/$incidentId',
+        {},
+        invalidateCacheKeys: [CacheKeys.dressDamageIncidents(dressId), CacheKeys.dress(dressId)],
+      );
+
+      if (response.statusCode == HttpStatus.notFound) {
+        throw NotFoundException(extractErrorMessage(response.body));
+      }
+      if (response.statusCode == HttpStatus.forbidden) {
+        throw ForbiddenException(extractErrorMessage(response.body));
+      }
+      if (response.statusCode != HttpStatus.ok) {
+        throw NetworkException(
+          extractErrorMessage(response.body),
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+    } catch (e) {
+      if (e is NotFoundException || e is ForbiddenException || e is NetworkException) rethrow;
+      throw NetworkException('Network error deleting damage incident', details: e.toString());
     }
   }
 

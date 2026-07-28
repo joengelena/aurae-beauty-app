@@ -23,6 +23,7 @@ import 'package:shine_app/presentation/pages/add_dress_page.dart';
 import 'package:shine_app/presentation/pages/edit_dress_page.dart';
 import 'package:shine_app/presentation/pages/dress_detail_page.dart';
 import 'package:shine_app/presentation/pages/add_booking_page.dart';
+import 'package:shine_app/presentation/pages/add_damage_incident_page.dart';
 import 'package:shine_app/presentation/pages/owner_profile_page.dart';
 import 'package:shine_app/presentation/pages/business_settings_page.dart';
 import 'package:shine_app/presentation/pages/privacy_policy_page.dart';
@@ -206,6 +207,34 @@ GoRouter getAppRouter(AuthProvider authProvider, ProfileProvider profileProvider
                       );
                       return NoTransitionPage(
                         child: AddBookingPage(dressId: dressId),
+                      );
+                    },
+                  ),
+                  GoRoute(
+                    path: 'add-damage-incident',
+                    pageBuilder: (context, state) {
+                      final dressId = int.parse(
+                        state.pathParameters['dressId']!,
+                      );
+                      return NoTransitionPage(
+                        child: AddDamageIncidentPage(dressId: dressId),
+                      );
+                    },
+                  ),
+                  GoRoute(
+                    path: 'damage-incidents/:incidentId',
+                    pageBuilder: (context, state) {
+                      final dressId = int.parse(
+                        state.pathParameters['dressId']!,
+                      );
+                      final incidentId = int.parse(
+                        state.pathParameters['incidentId']!,
+                      );
+                      return NoTransitionPage(
+                        child: AddDamageIncidentPage(
+                          dressId: dressId,
+                          incidentId: incidentId,
+                        ),
                       );
                     },
                   ),

@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/models/booked_range.dart';
+import 'package:shine_app/data/models/dress_damage_incident.dart';
 import 'package:shine_app/data/models/listing.dart';
 import 'package:shine_app/logic/cart_provider.dart';
 import 'package:shine_app/logic/listing_detail_provider.dart';
@@ -78,6 +80,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
   bool _isAddingToCart = false;
   int? _lastListingId;
   String? _lastDeliveryOption;
+  bool _hasSyncedDelivery = false;
 
   @override
   void initState() {
@@ -163,7 +166,12 @@ class _ListingDetailPageState extends State<ListingDetailPage>
     }
 
     final deliveryOption = provider.listingOwner?.deliveryOption;
-    if (_lastDeliveryOption != deliveryOption) {
+    // Compare with a "has this run yet" flag rather than just the last
+    // value — an owner who never configured a delivery option produces
+    // `null` both before and after loading, so a plain value comparison
+    // would never fire and _selectedDelivery would stay unset forever.
+    if (!_hasSyncedDelivery || _lastDeliveryOption != deliveryOption) {
+      _hasSyncedDelivery = true;
       _lastDeliveryOption = deliveryOption;
       // Mirrors DeliveryChoiceCard's own default: no configured option
       // falls back to 'pickup', not to an unchosen state.
@@ -260,6 +268,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                           const SizedBox(height: 20),
                           _buildOwnerRow(provider),
                           _buildDescriptionSection(listing),
+                          _buildDamageHistorySection(provider),
                         ],
                       ),
                     ),
@@ -305,6 +314,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                       const SizedBox(height: 20),
                       _buildOwnerRow(provider),
                       _buildDescriptionSection(listing),
+                      _buildDamageHistorySection(provider),
                     ],
                   ),
                 ),
@@ -640,6 +650,132 @@ class _ListingDetailPageState extends State<ListingDetailPage>
             notes,
             style: TextStyle(fontSize: 14, color: themeText, height: 1.6),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDamageHistorySection(ListingDetailProvider provider) {
+    if (provider.damageIncidents.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 28),
+        const Divider(color: Color(0xFFEEE8E4)),
+        const SizedBox(height: 20),
+        Text(
+          'Damage history',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: themeText,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Disclosed by the owner so you know what to expect.',
+          style: TextStyle(fontSize: 12, color: themeTaupe),
+        ),
+        const SizedBox(height: 12),
+        ...provider.damageIncidents.map(
+          (i) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _damageHistoryCard(i),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _damageHistoryCard(DressDamageIncident incident) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  formatDate(incident.occurredAt),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: themeText,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                decoration: BoxDecoration(
+                  color: incident.resolved
+                      ? themeSage.withValues(alpha: 0.12)
+                      : themeRose.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  incident.resolved ? 'Resolved' : 'Unresolved',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: incident.resolved ? themeSage : themeRose,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            incident.description,
+            style: TextStyle(fontSize: 13, color: themeText, height: 1.4),
+          ),
+          if (incident.photoUrls.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 56,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: incident.photoUrls
+                    .map(
+                      (url) => Container(
+                        width: 56,
+                        height: 56,
+                        margin: const EdgeInsets.only(right: 6),
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: CachedNetworkImage(
+                            imageUrl: url,
+                            fit: BoxFit.cover,
+                            errorWidget: (_, __, ___) => Container(
+                              color: const Color(0xFFF5EFED),
+                              child: Icon(
+                                Icons.broken_image_outlined,
+                                size: 16,
+                                color: themeTaupe,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          ],
         ],
       ),
     );

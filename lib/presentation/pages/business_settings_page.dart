@@ -43,10 +43,91 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
               description: 'Let renters know how they can receive dresses.',
               child: _buildDeliverySelector(context, provider),
             ),
+            _buildSection(
+              label: 'Rental Settings',
+              description:
+                  'Days every dress stays unavailable after a rental ends, for cleaning. Applies to all your dresses.',
+              child: _buildCleaningBufferSelector(context, provider),
+            ),
           ],
         );
       },
     );
+  }
+
+  Widget _buildCleaningBufferSelector(
+    BuildContext context,
+    BusinessSettingsProvider provider,
+  ) {
+    final days = provider.settings.cleaningBufferDays;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFEADFD8)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              'Cleaning buffer',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: themeText,
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: (provider.isSaving || days <= 1)
+                ? null
+                : () => _updateCleaningBuffer(context, provider, days - 1),
+            icon: const Icon(Icons.remove_circle_outline),
+          ),
+          SizedBox(
+            width: 28,
+            child: Text(
+              '$days',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: themeText,
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: provider.isSaving
+                ? null
+                : () => _updateCleaningBuffer(context, provider, days + 1),
+            icon: const Icon(Icons.add_circle_outline),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _updateCleaningBuffer(
+    BuildContext context,
+    BusinessSettingsProvider provider,
+    int days,
+  ) async {
+    if (days < 1) return;
+    final updated = provider.settings.copyWith(cleaningBufferDays: days);
+    final userId = await SecureStorage.read('userId') ?? '';
+    final ok = await provider.save(updated, userId);
+    if (!ok && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(provider.errorMessage.isNotEmpty
+              ? provider.errorMessage
+              : 'Failed to save settings'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   Widget _buildAccountOptions(BuildContext context) {

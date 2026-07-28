@@ -8,6 +8,7 @@ class BusinessDress {
   final String style;
   final String? dressType;
   final String listingType;
+  final String status;
   final bool isPublic;
   final int? purchaseYear;
   final String? internalName;
@@ -24,8 +25,7 @@ class BusinessDress {
   final List<String> dressPhotoUrls;
   final List<DateTimeRange> blockedDateRanges;
   final String? notes;
-  final String? damageDescription;
-  final List<String> damagePhotoUrls;
+  final int unresolvedDamageCount;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -37,6 +37,7 @@ class BusinessDress {
     required this.style,
     this.dressType,
     this.listingType = 'rent',
+    this.status = 'active',
     this.isPublic = false,
     this.purchaseYear,
     this.internalName,
@@ -53,8 +54,7 @@ class BusinessDress {
     this.dressPhotoUrls = const [],
     this.blockedDateRanges = const [],
     this.notes,
-    this.damageDescription,
-    this.damagePhotoUrls = const [],
+    this.unresolvedDamageCount = 0,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -71,6 +71,7 @@ class BusinessDress {
       style: json['style'] as String? ?? json['model'] as String? ?? '',
       dressType: json['dressType'] as String?,
       listingType: json['listingType'] as String? ?? 'rent',
+      status: json['status'] as String? ?? 'active',
       isPublic: json['isPublic'] as bool? ?? false,
       purchaseYear: json['purchaseYear'] as int? ?? json['year'] as int?,
       internalName: json['internalName'] as String? ?? json['nickname'] as String?,
@@ -103,11 +104,7 @@ class BusinessDress {
               .toList() ??
           [],
       notes: json['notes'] as String?,
-      damageDescription: json['damageDescription'] as String?,
-      damagePhotoUrls: (json['damagePhotoUrls'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          [],
+      unresolvedDamageCount: json['unresolvedDamageCount'] as int? ?? 0,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
@@ -122,6 +119,7 @@ class BusinessDress {
       'style': style,
       'dressType': dressType,
       'listingType': listingType,
+      'status': status,
       'isPublic': isPublic,
       'purchaseYear': purchaseYear,
       'internalName': internalName,
@@ -137,8 +135,6 @@ class BusinessDress {
       'condition': condition,
       'dressPhotoUrls': dressPhotoUrls,
       'notes': notes,
-      'damageDescription': damageDescription,
-      'damagePhotoUrls': damagePhotoUrls,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };

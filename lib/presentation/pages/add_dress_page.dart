@@ -30,7 +30,6 @@ class _AddDressPageState extends State<AddDressPage> {
   final _purchaseYearController = TextEditingController();
   final _purchasePriceController = TextEditingController();
   final _notesController = TextEditingController();
-  final _damageDescriptionController = TextEditingController();
 
   String _listingType = 'rent';
   DateTime? _availableFrom;
@@ -50,7 +49,6 @@ class _AddDressPageState extends State<AddDressPage> {
 
   final List<Uint8List> _photoBytes = [];
   final List<String?> _photoMimeTypes = [];
-  final List<Uint8List> _damagePhotoBytes = [];
   bool _isSubmitting = false;
 
   static const _letterSizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
@@ -69,7 +67,6 @@ class _AddDressPageState extends State<AddDressPage> {
     _purchaseYearController.dispose();
     _purchasePriceController.dispose();
     _notesController.dispose();
-    _damageDescriptionController.dispose();
     super.dispose();
   }
 
@@ -92,15 +89,6 @@ class _AddDressPageState extends State<AddDressPage> {
       _photoBytes.removeAt(index);
       _photoMimeTypes.removeAt(index);
     });
-  }
-
-  Future<void> _pickDamagePhoto() async {
-    if (_damagePhotoBytes.length >= 5) return;
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery);
-    if (picked == null) return;
-    final bytes = await picked.readAsBytes();
-    setState(() => _damagePhotoBytes.add(bytes));
   }
 
   Future<void> _submit() async {
@@ -150,9 +138,6 @@ class _AddDressPageState extends State<AddDressPage> {
     }
     if (_notesController.text.trim().isNotEmpty) {
       baseData['notes'] = _notesController.text.trim();
-    }
-    if (_damageDescriptionController.text.trim().isNotEmpty) {
-      baseData['damageDescription'] = _damageDescriptionController.text.trim();
     }
 
     try {
@@ -320,8 +305,6 @@ class _AddDressPageState extends State<AddDressPage> {
                         if (_listingType == 'sell') _buildAvailableFromPicker(),
                         _field(_notesController, 'Notes', maxLines: 4),
                         const SizedBox(height: 8),
-                        _buildDamageSection(),
-                        const SizedBox(height: 8),
                       ],
                     );
                   },
@@ -475,108 +458,6 @@ class _AddDressPageState extends State<AddDressPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildDamageSection() {
-    return Theme(
-      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-      child: ExpansionTile(
-        tilePadding: EdgeInsets.zero,
-        title: Text(
-          'Damage Report',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: themeText),
-        ),
-        subtitle: Text(
-          'Optional — document any existing damage',
-          style: TextStyle(fontSize: 12, color: themeTaupe),
-        ),
-        children: [
-          const SizedBox(height: 4),
-          _field(
-            _damageDescriptionController,
-            'Describe the damage',
-            maxLines: 4,
-          ),
-          const SizedBox(height: 4),
-          _buildDamagePhotosPicker(),
-          const SizedBox(height: 8),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDamagePhotosPicker() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Damage photos',
-          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: themeText),
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          height: 96,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              ..._damagePhotoBytes.asMap().entries.map(
-                (e) => _damagePhotoThumbnail(e.key, e.value),
-              ),
-              if (_damagePhotoBytes.length < 5)
-                GestureDetector(
-                  onTap: _pickDamagePhoto,
-                  child: Container(
-                    width: 96,
-                    height: 96,
-                    margin: const EdgeInsets.only(right: 8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5EFED),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFFDDD4CF)),
-                    ),
-                    child: Icon(
-                      Icons.add_photo_alternate_outlined,
-                      color: themeTaupe,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _damagePhotoThumbnail(int index, Uint8List bytes) {
-    return Stack(
-      children: [
-        Container(
-          width: 96,
-          height: 96,
-          margin: const EdgeInsets.only(right: 8),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.memory(bytes, fit: BoxFit.cover),
-          ),
-        ),
-        Positioned(
-          top: 2,
-          right: 10,
-          child: GestureDetector(
-            onTap: () => setState(() => _damagePhotoBytes.removeAt(index)),
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.black54,
-                shape: BoxShape.circle,
-              ),
-              padding: const EdgeInsets.all(2),
-              child: const Icon(Icons.close, size: 14, color: Colors.white),
-            ),
-          ),
-        ),
-      ],
     );
   }
 

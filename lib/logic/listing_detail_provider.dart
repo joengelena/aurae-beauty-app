@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/data/models/booked_range.dart';
+import 'package:shine_app/data/models/dress_damage_incident.dart';
 import 'package:shine_app/data/models/listing.dart';
 import 'package:shine_app/data/models/user.dart';
 import 'package:shine_app/data/services/dress_services.dart';
@@ -12,6 +13,7 @@ class ListingDetailProvider extends ChangeNotifier {
   Listing? listing;
   User? listingOwner;
   List<BookedRange> bookings = [];
+  List<DressDamageIncident> damageIncidents = [];
   // Other active listings from the same owner/brand/style — the size
   // choices a renter can pick between for "this dress". Always includes
   // the currently loaded listing, even if it's the only one.
@@ -42,6 +44,7 @@ class ListingDetailProvider extends ChangeNotifier {
 
       final listingFuture = DressServices().getPublicDressById(listingId);
       final bookingsFuture = DressServices().getPublicDressBookings(listingId);
+      final damageIncidentsFuture = DressServices().getPublicDamageIncidents(listingId);
       final userIdFuture = SecureStorage.read('userId');
 
       listing = await listingFuture;
@@ -61,11 +64,18 @@ class ListingDetailProvider extends ChangeNotifier {
         bookings = [];
       }
 
+      try {
+        damageIncidents = await damageIncidentsFuture;
+      } catch (e) {
+        damageIncidents = [];
+      }
+
       await _loadSizeVariants();
     } catch (e) {
       listing = null;
       listingOwner = null;
       bookings = [];
+      damageIncidents = [];
       sizeVariants = [];
       currentUserId = null;
     } finally {
@@ -120,6 +130,7 @@ class ListingDetailProvider extends ChangeNotifier {
     listing = null;
     listingOwner = null;
     bookings = [];
+    damageIncidents = [];
     sizeVariants = [];
     currentUserId = null;
     isLoading = false;
