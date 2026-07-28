@@ -43,8 +43,8 @@ class PriceActionBar extends StatelessWidget {
           ),
         ),
         padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,14 +66,15 @@ class PriceActionBar extends StatelessWidget {
                 ),
               ],
             ),
-            const Spacer(),
+            const SizedBox(height: 12),
             Opacity(
               opacity: tapEnabled || isLoading ? 1 : 0.4,
               child: GestureDetector(
                 onTap: tapEnabled ? onTap : null,
                 behavior: HitTestBehavior.opaque,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: themeText,
                     borderRadius: BorderRadius.circular(16),

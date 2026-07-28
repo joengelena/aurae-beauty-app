@@ -3,7 +3,6 @@ import 'package:shine_app/data/models/booked_range.dart';
 import 'package:shine_app/data/models/listing.dart';
 import 'package:shine_app/presentation/widgets/listing/availability_calendar.dart';
 import 'package:shine_app/utils/theme.dart';
-import 'package:shine_app/utils/utils.dart';
 
 /// Shared section header for one step of the booking flow (Size, Delivery,
 /// Dates, or purchase Availability). Steps read as their own moment through
@@ -170,70 +169,26 @@ class DeliveryChoiceCard extends StatelessWidget {
 class BookingDatesCard extends StatelessWidget {
   const BookingDatesCard({
     super.key,
-    required this.pricePerDay,
     required this.bookings,
     required this.start,
     required this.end,
     this.onDayTapped,
   });
 
-  final int pricePerDay;
   final List<BookedRange> bookings;
   final DateTime? start;
   final DateTime? end;
   final ValueChanged<DateTime>? onDayTapped;
 
-  // A rental is a whole day that goes overnight, so a stay from the 23rd
-  // to the 24th is one night, not two.
-  int get _nights {
-    if (start == null || end == null) return 0;
-    return end!.difference(start!).inDays;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final hasSelection = start != null && end != null;
-
     return BookingStepSection(
       title: 'Dates',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AvailabilityCalendar(
-            bookedRanges: bookings,
-            selectionStart: start,
-            selectionEnd: end,
-            onDayTapped: onDayTapped,
-          ),
-          if (hasSelection) ...[
-            const SizedBox(height: 14),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              decoration: BoxDecoration(
-                color: themePrimary.withValues(alpha: 0.25),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Estimated price',
-                    style: TextStyle(fontSize: 13, color: themeTaupe),
-                  ),
-                  Text(
-                    '${formatPrice(_nights * pricePerDay)} · $_nights ${_nights == 1 ? 'day' : 'days'}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: themeText,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ],
+      child: AvailabilityCalendar(
+        bookedRanges: bookings,
+        selectionStart: start,
+        selectionEnd: end,
+        onDayTapped: onDayTapped,
       ),
     );
   }

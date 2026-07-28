@@ -27,7 +27,11 @@ class ListingDetailPage extends StatefulWidget {
 }
 
 class _SpecChip extends StatelessWidget {
-  const _SpecChip({required this.icon, required this.label, this.primary = false});
+  const _SpecChip({
+    required this.icon,
+    required this.label,
+    this.primary = false,
+  });
 
   final IconData icon;
   final String label;
@@ -35,9 +39,10 @@ class _SpecChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = primary
-        ? themeAccent.withValues(alpha: 0.18)
-        : themePrimary.withValues(alpha: 0.35);
+    final bg =
+        primary
+            ? themeAccent.withValues(alpha: 0.18)
+            : themePrimary.withValues(alpha: 0.35);
     final fg = primary ? themeText : themeTaupe;
 
     return Container(
@@ -180,7 +185,10 @@ class _ListingDetailPageState extends State<ListingDetailPage>
     }
   }
 
-  Widget _buildOwnListingContent(ListingDetailProvider provider, Listing listing) {
+  Widget _buildOwnListingContent(
+    ListingDetailProvider provider,
+    Listing listing,
+  ) {
     final isForBuy = listing.listingType == 'sell';
 
     return Column(
@@ -189,7 +197,9 @@ class _ListingDetailPageState extends State<ListingDetailPage>
           child: SingleChildScrollView(
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: AppConstants.contentMaxWidth),
+                constraints: const BoxConstraints(
+                  maxWidth: AppConstants.contentMaxWidth,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -241,7 +251,9 @@ class _ListingDetailPageState extends State<ListingDetailPage>
           child: SingleChildScrollView(
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: AppConstants.contentMaxWidth),
+                constraints: const BoxConstraints(
+                  maxWidth: AppConstants.contentMaxWidth,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -353,7 +365,9 @@ class _ListingDetailPageState extends State<ListingDetailPage>
     if (listing.listingType == 'sell') {
       return BookingStepSection(
         title: 'Availability',
-        child: PurchaseAvailabilityCalendar(availableFrom: listing.availableFrom),
+        child: PurchaseAvailabilityCalendar(
+          availableFrom: listing.availableFrom,
+        ),
       );
     }
 
@@ -378,7 +392,6 @@ class _ListingDetailPageState extends State<ListingDetailPage>
         const Divider(color: Color(0xFFEEE8E4)),
         const SizedBox(height: 24),
         BookingDatesCard(
-          pricePerDay: listing.pricePerDay,
           bookings: provider.bookings,
           start: _bookingStart,
           end: _bookingEnd,
@@ -390,27 +403,41 @@ class _ListingDetailPageState extends State<ListingDetailPage>
 
   Widget _buildPriceActionBar(ListingDetailProvider provider, Listing listing) {
     final isForBuy = listing.listingType == 'sell';
-    final price = isForBuy
-        ? (listing.purchasePrice ?? listing.pricePerDay)
-        : listing.pricePerDay;
     final hasSelection = _bookingStart != null && _bookingEnd != null;
+    // A rental is a whole day that goes overnight, so a stay from the 23rd
+    // to the 24th is one night, not two.
+    final nights = hasSelection ? _bookingEnd!.difference(_bookingStart!).inDays : 0;
+    final estimatedPrice = nights * listing.pricePerDay;
+    final showEstimate = !isForBuy && hasSelection && estimatedPrice > 0;
+    final price =
+        isForBuy
+            ? (listing.purchasePrice ?? listing.pricePerDay)
+            : (showEstimate ? estimatedPrice : listing.pricePerDay);
     final deliveryChosen = isForBuy || _selectedDelivery != null;
     final enabled = !isForBuy && hasSelection && deliveryChosen;
-    final label = isForBuy
-        ? 'Purchase'
-        : (!deliveryChosen
-            ? 'Select delivery method'
-            : (hasSelection ? 'Add to Cart' : 'Select dates above'));
+    final label =
+        isForBuy
+            ? 'Purchase'
+            : (!deliveryChosen
+                ? 'Select delivery method'
+                : (hasSelection ? 'Add to Cart' : 'Select dates first'));
 
     return PriceActionBar(
       price: price,
-      priceLabel: isForBuy ? 'to purchase' : 'per day',
-      pricePrefix: isForBuy ? null : 'From ',
+      priceLabel:
+          isForBuy
+              ? 'to purchase'
+              : (showEstimate ? 'for $nights ${nights == 1 ? 'day' : 'days'}' : 'per day'),
+      pricePrefix: isForBuy || showEstimate ? null : 'From ',
       buttonLabel: label,
-      buttonIcon: isForBuy ? Icons.shopping_bag_outlined : Icons.add_shopping_cart_outlined,
+      buttonIcon:
+          isForBuy
+              ? Icons.shopping_bag_outlined
+              : Icons.add_shopping_cart_outlined,
       enabled: enabled,
       isLoading: _isAddingToCart,
-      onTap: (enabled && !isForBuy) ? () => _addToCart(context, provider) : null,
+      onTap:
+          (enabled && !isForBuy) ? () => _addToCart(context, provider) : null,
     );
   }
 
@@ -426,11 +453,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
         Row(
           children: [
             if (listing.location.isNotEmpty) ...[
-              Icon(
-                Icons.location_on_outlined,
-                size: 14,
-                color: themeTaupe,
-              ),
+              Icon(Icons.location_on_outlined, size: 14, color: themeTaupe),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
@@ -467,7 +490,10 @@ class _ListingDetailPageState extends State<ListingDetailPage>
           children: [
             if (isForBuy)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: themeText,
                   borderRadius: BorderRadius.circular(20),
@@ -475,7 +501,11 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.sell_outlined, size: 14, color: Color(0xFFFFF8F6)),
+                    Icon(
+                      Icons.sell_outlined,
+                      size: 14,
+                      color: Color(0xFFFFF8F6),
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       'For Sale',
@@ -499,10 +529,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
               primary: true,
             ),
             if (listing.dressType != null)
-              _SpecChip(
-                icon: Icons.checkroom,
-                label: listing.dressType!,
-              ),
+              _SpecChip(icon: Icons.checkroom, label: listing.dressType!),
           ],
         ),
 
@@ -532,10 +559,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
           ),
         ),
         const SizedBox(height: 16),
-        _buildAboutRow(
-          'Recommended size',
-          _formatRecommendedSize(listing),
-        ),
+        _buildAboutRow('Recommended size', _formatRecommendedSize(listing)),
         _buildAboutRow(
           'Condition',
           listing.condition.isNotEmpty ? listing.condition : '-',
@@ -721,9 +745,10 @@ class _ListingDetailPageState extends State<ListingDetailPage>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                 decoration: BoxDecoration(
-                  color: incident.resolved
-                      ? themeSage.withValues(alpha: 0.12)
-                      : themeRose.withValues(alpha: 0.10),
+                  color:
+                      incident.resolved
+                          ? themeSage.withValues(alpha: 0.12)
+                          : themeRose.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -748,31 +773,35 @@ class _ListingDetailPageState extends State<ListingDetailPage>
               height: 56,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                children: incident.photoUrls
-                    .map(
-                      (url) => Container(
-                        width: 56,
-                        height: 56,
-                        margin: const EdgeInsets.only(right: 6),
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: CachedNetworkImage(
-                            imageUrl: url,
-                            fit: BoxFit.cover,
-                            errorWidget: (_, __, ___) => Container(
-                              color: const Color(0xFFF5EFED),
-                              child: Icon(
-                                Icons.broken_image_outlined,
-                                size: 16,
-                                color: themeTaupe,
+                children:
+                    incident.photoUrls
+                        .map(
+                          (url) => Container(
+                            width: 56,
+                            height: 56,
+                            margin: const EdgeInsets.only(right: 6),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: CachedNetworkImage(
+                                imageUrl: url,
+                                fit: BoxFit.cover,
+                                errorWidget:
+                                    (_, __, ___) => Container(
+                                      color: const Color(0xFFF5EFED),
+                                      child: Icon(
+                                        Icons.broken_image_outlined,
+                                        size: 16,
+                                        color: themeTaupe,
+                                      ),
+                                    ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    )
-                    .toList(),
+                        )
+                        .toList(),
               ),
             ),
           ],
@@ -827,9 +856,11 @@ class _ListingDetailPageState extends State<ListingDetailPage>
         children: [
           CircleAvatar(
             radius: 22,
-            backgroundImage: owner.profilePhotoUrl != null
-                ? NetworkImage(owner.profilePhotoUrl!)
-                : const AssetImage('assets/imgs/default_profile.jpg') as ImageProvider,
+            backgroundImage:
+                owner.profilePhotoUrl != null
+                    ? NetworkImage(owner.profilePhotoUrl!)
+                    : const AssetImage('assets/imgs/default_profile.jpg')
+                        as ImageProvider,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -932,19 +963,15 @@ class _ListingDetailPageState extends State<ListingDetailPage>
             const SizedBox(height: 24),
             Text(
               'Dress not found',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             Text(
               'This dress may no longer be available.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: themeTaupe,
-                fontSize: 14,
-                height: 1.5,
-              ),
+              style: TextStyle(color: themeTaupe, fontSize: 14, height: 1.5),
             ),
           ],
         ),
@@ -956,11 +983,12 @@ class _ListingDetailPageState extends State<ListingDetailPage>
     return AnimatedBuilder(
       animation: _shimmerAnimation,
       builder: (context, _) {
-        final shimmerColor = Color.lerp(
-          const Color(0xFFEFE9E6),
-          const Color(0xFFE0D5D0),
-          _shimmerAnimation.value,
-        )!;
+        final shimmerColor =
+            Color.lerp(
+              const Color(0xFFEFE9E6),
+              const Color(0xFFE0D5D0),
+              _shimmerAnimation.value,
+            )!;
 
         return SingleChildScrollView(
           child: Center(
@@ -1125,14 +1153,17 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                                   ),
                                   const SizedBox(width: 12),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Container(
                                         height: 14,
                                         width: 110,
                                         decoration: BoxDecoration(
                                           color: shimmerColor,
-                                          borderRadius: BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                         ),
                                       ),
                                       const SizedBox(height: 6),
@@ -1141,7 +1172,9 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                                         width: 50,
                                         decoration: BoxDecoration(
                                           color: shimmerColor,
-                                          borderRadius: BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                         ),
                                       ),
                                     ],
