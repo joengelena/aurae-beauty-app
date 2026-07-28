@@ -56,6 +56,27 @@ class RentalBooking {
     );
   }
 
+  RentalBooking copyWith({String? status}) {
+    return RentalBooking(
+      id: id,
+      dressIdFk: dressIdFk,
+      bookingType: bookingType,
+      bookingDate: bookingDate,
+      renterName: renterName,
+      renterEmail: renterEmail,
+      renterPhone: renterPhone,
+      renterInstagram: renterInstagram,
+      startDate: startDate,
+      endDate: endDate,
+      totalCost: totalCost,
+      depositPaid: depositPaid,
+      status: status ?? this.status,
+      notes: notes,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
