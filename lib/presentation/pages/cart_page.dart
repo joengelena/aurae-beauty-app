@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/models/cart_item.dart';
 import 'package:shine_app/logic/auth_provider.dart';
 import 'package:shine_app/logic/cart_provider.dart';
+import 'package:shine_app/presentation/widgets/common/app_dialog.dart';
 import 'package:shine_app/presentation/widgets/common/app_empty_state.dart';
 import 'package:shine_app/presentation/widgets/sign_in_to_access.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
@@ -24,7 +25,61 @@ class _CartPageState extends State<CartPage> {
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ];
 
+  bool _isCheckingOut = false;
+
   String _formatDate(DateTime d) => '${d.day} ${_months[d.month - 1]}';
+
+  Future<void> _handleCheckout(CartProvider cartProvider) async {
+    setState(() => _isCheckingOut = true);
+
+    try {
+      final result = await cartProvider.checkout();
+
+      if (!mounted) return;
+
+      if (result.bookingIds.isEmpty) {
+        FeedbackHelpers.showErrorSnackBar(
+          context,
+          'Those dates are no longer available. Please pick new dates.',
+        );
+        return;
+      }
+
+      final message = result.isFullSuccess
+          ? (result.bookingIds.length > 1
+              ? '${result.bookingIds.length} bookings confirmed.'
+              : 'Your booking is confirmed.')
+          : '${result.bookingIds.length} booking${result.bookingIds.length == 1 ? '' : 's'} confirmed. '
+              '${result.failedItemNames.join(', ')} ${result.failedItemNames.length == 1 ? 'is' : 'are'} '
+              'no longer available and stayed in your cart.';
+
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => AppDialog(
+          title: 'Booking confirmed',
+          message: message,
+          type: AppDialogType.success,
+          primaryButtonText: 'View my bookings',
+          onPrimaryButtonPressed: () {
+            Navigator.pop(dialogContext);
+            context.go('/profile');
+          },
+          secondaryButtonText: 'Keep browsing',
+          onSecondaryButtonPressed: () {
+            Navigator.pop(dialogContext);
+            context.go('/listings');
+          },
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        FeedbackHelpers.showErrorSnackBar(context, 'Checkout failed. Please try again.');
+      }
+    } finally {
+      if (mounted) setState(() => _isCheckingOut = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +173,11 @@ class _CartPageState extends State<CartPage> {
             ),
           ),
         ),
-        _CartSummaryBar(total: total),
+        _CartSummaryBar(
+          total: total,
+          isProcessing: _isCheckingOut,
+          onCheckout: () => _handleCheckout(cartProvider),
+        ),
       ],
     );
   }
@@ -229,8 +288,14 @@ class _CartItemTile extends StatelessWidget {
 
 class _CartSummaryBar extends StatelessWidget {
   final int total;
+  final bool isProcessing;
+  final VoidCallback onCheckout;
 
-  const _CartSummaryBar({required this.total});
+  const _CartSummaryBar({
+    required this.total,
+    required this.isProcessing,
+    required this.onCheckout,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -267,22 +332,35 @@ class _CartSummaryBar extends StatelessWidget {
               ],
             ),
           ),
-          // Checkout is a placeholder until payments are built.
-          Opacity(
-            opacity: 0.4,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              decoration: BoxDecoration(
-                color: themeText,
-                borderRadius: BorderRadius.circular(26),
-              ),
-              child: const Text(
-                'Checkout — coming soon',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFFFFF8F6),
+          // No payment integration yet — checkout confirms the booking
+          // directly (see CartProvider.checkout()).
+          GestureDetector(
+            onTap: isProcessing ? null : onCheckout,
+            child: Opacity(
+              opacity: isProcessing ? 0.6 : 1,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                decoration: BoxDecoration(
+                  color: themeText,
+                  borderRadius: BorderRadius.circular(26),
                 ),
+                child: isProcessing
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Color(0xFFFFF8F6),
+                        ),
+                      )
+                    : const Text(
+                        'Checkout',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFFFFF8F6),
+                        ),
+                      ),
               ),
             ),
           ),
