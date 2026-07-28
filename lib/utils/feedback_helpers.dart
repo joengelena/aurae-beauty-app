@@ -30,6 +30,32 @@ class FeedbackHelpers {
     return result ?? false;
   }
 
+  /// Shows a generic warning confirmation dialog with a custom primary button label
+  static Future<bool> showConfirmation(
+    BuildContext context, {
+    required String title,
+    required String message,
+    required String confirmButtonText,
+  }) async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AppDialog(
+          title: title,
+          message: message,
+          type: AppDialogType.warning,
+          primaryButtonText: confirmButtonText,
+          onPrimaryButtonPressed: () => Navigator.pop(dialogContext, true),
+          secondaryButtonText: 'Back',
+          onSecondaryButtonPressed: () => Navigator.pop(dialogContext, false),
+          barrierDismissible: false,
+        );
+      },
+    );
+    return result ?? false;
+  }
+
   /// Shows a success snackbar
   static void showSuccessSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
