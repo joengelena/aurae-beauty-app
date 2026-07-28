@@ -8,10 +8,7 @@ import 'package:shine_app/logic/back_button_provider.dart';
 import 'package:shine_app/logic/filtering_provider.dart';
 import 'package:shine_app/logic/listing_detail_provider.dart';
 import 'package:shine_app/logic/listings_provider.dart';
-import 'package:shine_app/logic/post_listing_provider.dart';
 import 'package:shine_app/logic/profile_provider.dart';
-import 'package:shine_app/logic/user_listings_provider.dart';
-import 'package:shine_app/logic/listing_form_data_provider.dart';
 import 'package:shine_app/logic/watchlist_provider.dart';
 import 'package:shine_app/logic/cart_provider.dart';
 import 'package:shine_app/logic/wardrobe_provider.dart';
@@ -48,13 +45,6 @@ void main() async {
           update: (context, authProvider, profileProvider) {
             profileProvider!.updateAuthStatus(authProvider.isSignedIn);
             return profileProvider;
-          },
-        ),
-        ChangeNotifierProxyProvider<AuthProvider, UserListingsProvider>(
-          create: (_) => UserListingsProvider(),
-          update: (context, authProvider, userListingsProvider) {
-            userListingsProvider!.updateAuthStatus(authProvider.isSignedIn);
-            return userListingsProvider;
           },
         ),
         ChangeNotifierProvider<FilteringProvider>(
@@ -101,28 +91,6 @@ void main() async {
             );
             return listingsProvider;
           },
-        ),
-        ChangeNotifierProxyProvider2<
-          AuthProvider,
-          ProfileProvider,
-          PostListingProvider
-        >(
-          create: (_) => PostListingProvider(),
-          update: (
-            context,
-            authProvider,
-            profileProvider,
-            postListingProvider,
-          ) {
-            postListingProvider!.updateAuthStatus(authProvider.isSignedIn);
-            postListingProvider.setDefaultLocation(
-              profileProvider.currentUser?.location,
-            );
-            return postListingProvider;
-          },
-        ),
-        Provider<ListingFormDataProvider>(
-          create: (context) => context.read<PostListingProvider>(),
         ),
         ChangeNotifierProxyProvider<AuthProvider, ListingDetailProvider>(
           create: (_) => ListingDetailProvider(),
