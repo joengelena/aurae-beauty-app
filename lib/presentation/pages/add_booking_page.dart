@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/exceptions/app_exception.dart';
 import 'package:shine_app/data/models/booked_range.dart';
+import 'package:shine_app/logic/business_settings_provider.dart';
 import 'package:shine_app/logic/dress_detail_provider.dart';
 import 'package:shine_app/presentation/widgets/common/calendar_date_range_picker.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
@@ -37,6 +38,14 @@ class _AddBookingPageState extends State<AddBookingPage> {
 
   static const _bookingTypes = ['rental', 'event', 'photoshoot', 'other'];
   static const _statuses = ['pending', 'confirmed', 'active', 'returned'];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<BusinessSettingsProvider>().load();
+    });
+  }
 
   @override
   void dispose() {
@@ -185,7 +194,10 @@ class _AddBookingPageState extends State<AddBookingPage> {
   }
 
   Widget _buildDatePicker(BuildContext context) {
-    final bookings = context.read<DressDetailProvider>().bookings;
+    final detailProvider = context.read<DressDetailProvider>();
+    final bookings = detailProvider.bookings;
+    final dress = detailProvider.dress;
+
     final bookedRanges = bookings
         .where((b) => b.status != 'cancelled')
         .map((b) => BookedRange(
@@ -194,6 +206,34 @@ class _AddBookingPageState extends State<AddBookingPage> {
               status: b.status,
             ))
         .toList();
+
+    // Manual owner blocks are always unavailable.
+    if (dress != null) {
+      bookedRanges.addAll(
+        dress.blockedDateRanges.map(
+          (r) => BookedRange(startDate: r.start, endDate: r.end, status: 'blocked'),
+        ),
+      );
+    }
+
+    // Cleaning buffer after each active/upcoming booking — mirrors the
+    // server-side conflict check so the picker doesn't offer dates that
+    // would be rejected on save. Buffer is a business-wide setting, not
+    // per-dress.
+    final bufferDays = context.watch<BusinessSettingsProvider>().settings.cleaningBufferDays;
+    if (bufferDays > 0) {
+      bookedRanges.addAll(
+        bookings
+            .where((b) => b.status != 'cancelled' && b.status != 'returned')
+            .map(
+              (b) => BookedRange(
+                startDate: b.endDate.add(const Duration(days: 1)),
+                endDate: b.endDate.add(Duration(days: bufferDays)),
+                status: 'blocked',
+              ),
+            ),
+      );
+    }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
