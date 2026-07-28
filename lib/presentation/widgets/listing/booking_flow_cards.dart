@@ -157,7 +157,7 @@ class DeliveryChoiceCard extends StatelessWidget {
             .map(
               (o) => choiceChip(
                 label: o == 'postal' ? 'Postal' : 'Pickup',
-                selected: selected == o,
+                selected: single ? true : selected == o,
                 onTap: single ? null : () => onChanged?.call(o),
               ),
             )
