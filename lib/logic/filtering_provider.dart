@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' show ChangeNotifier, DateTimeRange, debugPrint;
 import 'package:shine_app/data/models/listing_attribute.dart';
-import 'package:shine_app/data/services/listings_services.dart';
+import 'package:shine_app/data/services/dress_services.dart';
 
 class FilteringProvider extends ChangeNotifier {
   FilteringProvider() {
@@ -18,7 +18,7 @@ class FilteringProvider extends ChangeNotifier {
   Future<void> _loadAttributes() async {
     try {
       final listingAttributeOptionsWithoutNone =
-          await ListingsServices().getListingAttributes();
+          await DressServices().getDressAttributes();
 
       // Add 'Any' option to each attribute for clearing filters
       for (var attributeWithoutNone in listingAttributeOptionsWithoutNone) {

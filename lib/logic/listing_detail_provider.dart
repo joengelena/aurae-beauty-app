@@ -3,7 +3,6 @@ import 'package:shine_app/data/models/booked_range.dart';
 import 'package:shine_app/data/models/listing.dart';
 import 'package:shine_app/data/models/user.dart';
 import 'package:shine_app/data/services/dress_services.dart';
-import 'package:shine_app/data/services/listings_services.dart';
 import 'package:shine_app/data/services/user_services.dart';
 import 'package:shine_app/utils/secure_storage.dart';
 
@@ -41,7 +40,7 @@ class ListingDetailProvider extends ChangeNotifier {
         notifyListeners();
       }
 
-      final listingFuture = ListingsServices().getListing(listingId);
+      final listingFuture = DressServices().getPublicDressById(listingId);
       final bookingsFuture = DressServices().getPublicDressBookings(listingId);
       final userIdFuture = SecureStorage.read('userId');
 
@@ -82,12 +81,11 @@ class ListingDetailProvider extends ChangeNotifier {
       return;
     }
     try {
-      final result = await ListingsServices().getAllListings(
+      final result = await DressServices().getPublicDresses(
         allQueries: {
-          'userIdFk': current.userIdFk,
+          'userId': current.userIdFk,
           'brand': current.brand,
           'style': current.style,
-          'status': 'active',
           'limit': '20',
         },
       );

@@ -8,6 +8,7 @@ import 'package:shine_app/data/api_client.dart';
 import 'package:shine_app/data/exceptions/app_exception.dart';
 import 'package:shine_app/data/models/business_dress.dart';
 import 'package:shine_app/data/models/listing.dart';
+import 'package:shine_app/data/models/listing_attribute.dart';
 import 'package:shine_app/data/models/pagination.dart';
 import 'package:shine_app/data/models/booked_range.dart';
 import 'package:shine_app/data/models/rental_booking.dart';
@@ -380,6 +381,70 @@ class DressServices {
     } catch (e) {
       if (e is NetworkException || e is DataParseException) rethrow;
       throw NetworkException('Network error fetching dresses', details: e.toString());
+    }
+  }
+
+  Future<Listing> getPublicDressById(int dressId) async {
+    try {
+      final response = await apiClient.get(
+        '/dresses/$dressId',
+        cacheKey: CacheKeys.listing(dressId),
+        cacheDuration: CacheDurations.medium,
+      );
+
+      if (response.statusCode == HttpStatus.notFound) {
+        throw NotFoundException(extractErrorMessage(response.body));
+      }
+
+      if (response.statusCode != HttpStatus.ok) {
+        throw NetworkException(
+          extractErrorMessage(response.body),
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+
+      try {
+        return Listing.fromJsonString(response.body);
+      } catch (e) {
+        throw DataParseException('Failed to parse dress data', details: e.toString());
+      }
+    } catch (e) {
+      if (e is NotFoundException || e is NetworkException || e is DataParseException) rethrow;
+      throw NetworkException('Network error fetching dress', details: e.toString());
+    }
+  }
+
+  Future<List<ListingAttribute>> getDressAttributes() async {
+    try {
+      final response = await apiClient.get(
+        '/dresses/attributes',
+        cacheKey: CacheKeys.dressAttribute,
+        cacheDuration: CacheDurations.long,
+      );
+
+      if (response.statusCode != HttpStatus.ok) {
+        throw NetworkException(
+          extractErrorMessage(response.body),
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+
+      try {
+        final List<dynamic> body = json.decode(response.body) as List<dynamic>;
+
+        return body
+            .map(
+              (item) => ListingAttribute.fromJson(item as Map<String, dynamic>),
+            )
+            .toList();
+      } catch (e) {
+        throw DataParseException('Failed to parse dress attributes', details: e.toString());
+      }
+    } catch (e) {
+      if (e is NetworkException || e is DataParseException) rethrow;
+      throw NetworkException('Network error fetching dress attributes', details: e.toString());
     }
   }
 
