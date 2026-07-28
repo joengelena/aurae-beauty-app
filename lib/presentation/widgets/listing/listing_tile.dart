@@ -173,37 +173,14 @@ class ListingTile extends StatelessWidget {
                               ],
                             ),
                           const SizedBox(height: 2),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                listing.listingType == 'sell'
-                                    ? formatPrice(listing.pricePerDay)
-                                    : 'From ${formatPrice(listing.pricePerDay)}/day',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15,
-                                ),
-                              ),
-                              Row(
-                                spacing: 4,
-                                children: [
-                                  Icon(
-                                    Icons.remove_red_eye_outlined,
-                                    size: 14,
-                                    color: themeTaupe,
-                                  ),
-                                  Text(
-                                    listing.viewCount.toString(),
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: themeTaupe,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                ],
-                              ),
-                            ],
+                          Text(
+                            listing.listingType == 'sell'
+                                ? formatPrice(listing.pricePerDay)
+                                : 'From ${formatPrice(listing.pricePerDay)}/day',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
                           ),
                         ],
                       ),
