@@ -16,183 +16,226 @@ class DressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSold = dress.status == 'sold';
+
     return GestureDetector(
       onTap: () {
         final currentRoute = GoRouterState.of(context).uri.path;
         context.read<BackButtonProvider>().pushRoute(currentRoute);
         context.go('/wardrobe/${dress.id}');
       },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image with optional damage indicator
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
+      child: Opacity(
+        opacity: isSold ? 0.6 : 1.0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image with optional damage indicator
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                    child: AspectRatio(
+                      aspectRatio: AppConstants.listingImageAspectRatio,
+                      child:
+                          dress.dressPhotoUrl != null
+                              ? ColoredBox(
+                                color: const Color(0xFFF5EFED),
+                                child: CachedNetworkImage(
+                                  imageUrl: dress.dressPhotoUrl!,
+                                  fit: BoxFit.contain,
+                                  errorWidget:
+                                      (_, __, ___) => _photoPlaceholder(),
+                                ),
+                              )
+                              : _photoPlaceholder(),
+                    ),
                   ),
-                  child: AspectRatio(
-                    aspectRatio: AppConstants.listingImageAspectRatio,
-                    child: dress.dressPhotoUrl != null
-                        ? ColoredBox(
-                            color: const Color(0xFFF5EFED),
-                            child: CachedNetworkImage(
-                              imageUrl: dress.dressPhotoUrl!,
-                              fit: BoxFit.contain,
-                              errorWidget: (_, __, ___) => _photoPlaceholder(),
-                            ),
-                          )
-                        : _photoPlaceholder(),
-                  ),
-                ),
-                if (dress.listingType == 'sell')
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.92),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: const Color(0xFFD0C8C0),
-                          width: 0.75,
+                  if (isSold)
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: themeText.withValues(alpha: 0.88),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          'Sold',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            letterSpacing: 0.2,
+                          ),
                         ),
                       ),
-                      child: Text(
-                        'For Sale',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: themeText,
-                          letterSpacing: 0.2,
+                    )
+                  else if (dress.listingType == 'sell')
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.92),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: const Color(0xFFD0C8C0),
+                            width: 0.75,
+                          ),
+                        ),
+                        child: Text(
+                          'For Sale',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: themeText,
+                            letterSpacing: 0.2,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                if (dress.damageDescription != null)
-                  Positioned(
-                    top: dress.listingType == 'sell' ? 36 : 8,
-                    left: 8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 7,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: themeRose.withValues(alpha: 0.88),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.warning_amber_outlined,
-                            size: 11,
-                            color: Colors.white,
-                          ),
-                          SizedBox(width: 3),
-                          Text(
-                            'Damage noted',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
+                  if (dress.unresolvedDamageCount > 0)
+                    Positioned(
+                      top: (isSold || dress.listingType == 'sell') ? 36 : 8,
+                      left: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: themeRose.withValues(alpha: 0.88),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.warning_amber_outlined,
+                              size: 11,
                               color: Colors.white,
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-
-            // Content area — right padding is 2 to give the action button room
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 10, 2, 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Name + action menu in one row
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: _buildName()),
-                      actionButton,
-                    ],
-                  ),
-
-                  const SizedBox(height: 6),
-
-                  // Size, color, condition chips
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Wrap(
-                      spacing: 4,
-                      runSpacing: 4,
-                      children: [
-                        _chip(dress.size),
-                        if (dress.color != null) _chip(dress.color!),
-                        _conditionChip(dress.condition),
-                      ],
-                    ),
-                  ),
-
-                  if (dress.rentalPricePerDay != null ||
-                      (dress.rentalCount ?? 0) > 0) ...[
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: Row(
-                        children: [
-                          if (dress.rentalPricePerDay != null) ...[
-                            if (dress.listingType != 'sell')
-                              Text(
-                                'From ',
-                                style: TextStyle(fontSize: 11, color: themeTaupe),
-                              ),
+                            const SizedBox(width: 3),
                             Text(
-                              formatPrice(dress.rentalPricePerDay!),
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: themeText,
+                              dress.unresolvedDamageCount > 1
+                                  ? '${dress.unresolvedDamageCount} damage reports'
+                                  : 'Damage noted',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
                               ),
                             ),
-                            if (dress.listingType != 'sell')
-                              Text(
-                                '/day',
-                                style: TextStyle(fontSize: 11, color: themeTaupe),
-                              ),
                           ],
-                          const Spacer(),
-                          if (dress.listingType == 'rent' && (dress.rentalCount ?? 0) > 0)
-                            Text(
-                              '${dress.rentalCount} rental${dress.rentalCount != 1 ? 's' : ''}',
-                              style: TextStyle(fontSize: 11, color: themeTaupe),
-                            ),
-                        ],
+                        ),
                       ),
                     ),
-                  ],
                 ],
               ),
-            ),
-          ],
+
+              // Content area — right padding is 2 to give the action button room
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 10, 2, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Name + action menu in one row
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [Expanded(child: _buildName()), actionButton],
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    // Size, color, condition chips
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: [
+                          _chip(dress.size),
+                          if (dress.color != null) _chip(dress.color!),
+                          _conditionChip(dress.condition),
+                        ],
+                      ),
+                    ),
+
+                    if (dress.rentalPricePerDay != null ||
+                        (dress.rentalCount ?? 0) > 0) ...[
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: Row(
+                          children: [
+                            if (dress.rentalPricePerDay != null) ...[
+                              if (dress.listingType != 'sell')
+                                Text(
+                                  'From ',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: themeTaupe,
+                                  ),
+                                ),
+                              Text(
+                                formatPrice(dress.rentalPricePerDay!),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: themeText,
+                                ),
+                              ),
+                              if (dress.listingType != 'sell')
+                                Text(
+                                  '/day',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: themeTaupe,
+                                  ),
+                                ),
+                            ],
+                            const Spacer(),
+                            if (dress.listingType == 'rent' &&
+                                (dress.rentalCount ?? 0) > 0)
+                              Text(
+                                '${dress.rentalCount} rental${dress.rentalCount != 1 ? 's' : ''}',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: themeTaupe,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -251,10 +294,7 @@ class DressCard extends StatelessWidget {
         color: const Color(0xFFF5EFED),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(
-        label,
-        style: TextStyle(fontSize: 11, color: themeTaupe),
-      ),
+      child: Text(label, style: TextStyle(fontSize: 11, color: themeTaupe)),
     );
   }
 
@@ -278,10 +318,7 @@ class DressCard extends StatelessWidget {
         color: bg,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(
-        condition,
-        style: TextStyle(fontSize: 11, color: text),
-      ),
+      child: Text(condition, style: TextStyle(fontSize: 11, color: text)),
     );
   }
 

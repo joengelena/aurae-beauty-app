@@ -13,6 +13,10 @@ class WardrobeProvider extends ChangeNotifier {
   bool _isSignedIn = false;
 
   List<BusinessDress> get dresses => _dresses;
+  List<BusinessDress> get activeDresses =>
+      _dresses.where((d) => d.status != 'sold').toList();
+  List<BusinessDress> get soldDresses =>
+      _dresses.where((d) => d.status == 'sold').toList();
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
   bool get hasError => _errorMessage.isNotEmpty;
@@ -83,6 +87,14 @@ class WardrobeProvider extends ChangeNotifier {
     } catch (e) {
       throw AppException('Failed to update dress: ${e.toString()}');
     }
+  }
+
+  Future<void> markAsSold(int dressId) async {
+    await updateDress(dressId, {'status': 'sold'});
+  }
+
+  Future<void> reactivate(int dressId) async {
+    await updateDress(dressId, {'status': 'active'});
   }
 
   Future<void> deleteDress(int dressId) async {

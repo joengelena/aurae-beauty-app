@@ -142,7 +142,7 @@ class _WardrobePageState extends State<WardrobePage>
                       ),
                       const Spacer(),
                       Text(
-                        '${provider.dresses.length} dress${provider.dresses.length == 1 ? '' : 'es'}',
+                        '${provider.activeDresses.length} dress${provider.activeDresses.length == 1 ? '' : 'es'}',
                         style: TextStyle(
                           fontSize: 12,
                           color: themeTaupe,
@@ -155,7 +155,7 @@ class _WardrobePageState extends State<WardrobePage>
                   Wrap(
                     spacing: AppConstants.spacingMedium,
                     runSpacing: AppConstants.spacingMedium,
-                    children: provider.dresses.map((dress) {
+                    children: provider.activeDresses.map((dress) {
                       return SizedBox(
                         width: itemWidth,
                         child: DressCard(
@@ -165,6 +165,10 @@ class _WardrobePageState extends State<WardrobePage>
                       );
                     }).toList(),
                   ),
+                  if (provider.soldDresses.isNotEmpty) ...[
+                    const SizedBox(height: AppConstants.spacingLarge),
+                    _buildSoldSection(provider, itemWidth),
+                  ],
                   const SizedBox(height: AppConstants.spacingLarge),
                   Divider(color: themePrimary, thickness: 1),
                   const SizedBox(height: AppConstants.spacingMedium),
@@ -174,6 +178,39 @@ class _WardrobePageState extends State<WardrobePage>
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildSoldSection(WardrobeProvider provider, double itemWidth) {
+    return Theme(
+      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        tilePadding: EdgeInsets.zero,
+        childrenPadding: const EdgeInsets.only(top: AppConstants.spacingMedium),
+        title: Text(
+          'Sold (${provider.soldDresses.length})',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: themeTaupe,
+          ),
+        ),
+        children: [
+          Wrap(
+            spacing: AppConstants.spacingMedium,
+            runSpacing: AppConstants.spacingMedium,
+            children: provider.soldDresses.map((dress) {
+              return SizedBox(
+                width: itemWidth,
+                child: DressCard(
+                  dress: dress,
+                  actionButton: DressActionMenu(dress: dress),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }

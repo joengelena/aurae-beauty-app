@@ -20,6 +20,8 @@ class DressActionMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSold = dress.status == 'sold';
+
     return ActionMenuButton(
       options: [
         MenuOption(
@@ -27,6 +29,18 @@ class DressActionMenu extends StatelessWidget {
           title: 'Edit',
           onTap: () => _handleEdit(context),
         ),
+        if (isSold)
+          MenuOption(
+            icon: Icons.replay,
+            title: 'Reactivate',
+            onTap: () => _handleReactivate(context),
+          )
+        else
+          MenuOption(
+            icon: Icons.sell_outlined,
+            title: 'Mark as sold',
+            onTap: () => _handleMarkAsSold(context),
+          ),
         MenuOption(
           icon: Icons.delete,
           title: 'Delete',
@@ -42,6 +56,53 @@ class DressActionMenu extends StatelessWidget {
     final currentRoute = GoRouterState.of(context).uri.path;
     context.read<BackButtonProvider>().pushRoute(currentRoute);
     context.go('/wardrobe/${dress.id}/edit');
+  }
+
+  Future<void> _handleMarkAsSold(BuildContext context) async {
+    final name = dress.internalName ?? '${dress.brand} ${dress.style}';
+    final confirmed = await FeedbackHelpers.showConfirmation(
+      context,
+      title: 'Mark as Sold',
+      message:
+          'Mark "$name" as sold? It will move to your Sold section and disappear from Browse, but its rental history stays intact.',
+      confirmButtonText: 'Mark as Sold',
+    );
+
+    if (!confirmed || !context.mounted) return;
+
+    try {
+      await context.read<WardrobeProvider>().markAsSold(dress.id);
+
+      if (context.mounted) {
+        FeedbackHelpers.showSuccessSnackBar(context, '"$name" marked as sold');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        FeedbackHelpers.showErrorSnackBar(
+          context,
+          'Failed to mark dress as sold: ${e.toString()}',
+        );
+      }
+    }
+  }
+
+  Future<void> _handleReactivate(BuildContext context) async {
+    final name = dress.internalName ?? '${dress.brand} ${dress.style}';
+
+    try {
+      await context.read<WardrobeProvider>().reactivate(dress.id);
+
+      if (context.mounted) {
+        FeedbackHelpers.showSuccessSnackBar(context, '"$name" reactivated');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        FeedbackHelpers.showErrorSnackBar(
+          context,
+          'Failed to reactivate dress: ${e.toString()}',
+        );
+      }
+    }
   }
 
   Future<void> _handleDelete(BuildContext context) async {
