@@ -1,0 +1,74 @@
+# UI & Theming Rules
+
+Full design system: `../../DESIGN.md` (repo root). This file is the enforceable subset.
+
+The feel: **boutique, not backend.** A well-kept dressing room — calm, warm, dress-first. Not a SaaS dashboard, not a loud pink fashion app.
+
+## Hard Rules
+
+1. **NEVER hardcode a color.** Use the named theme values from `utils/theme.dart` or `Theme.of(context).colorScheme`. No `Color(0xFF...)` in a widget file.
+
+2. **NEVER use pure black or cold gray.** `Colors.black`, `Colors.grey`, `#000000` are banned. Text is `themeText` (`#3A2E2A`, warm espresso); secondary text is `themeTaupe` (`#78716C`).
+
+3. **NEVER set `fontFamily` inline.** Poppins is set globally in `appTheme`.
+
+4. **NEVER hardcode spacing.** Use `AppConstants` (`spacingSmall` 8, `spacingMedium` 12, `spacingLarge` 16, `spacingExtraLarge` 64).
+
+5. **NEVER use heavy elevation.** The app is nearly flat — `AppConstants.cardShadowElevation` is `1`. Soft, low-opacity shadows only.
+
+6. **NEVER build a new form field, dialog, or empty state from scratch** without checking `widgets/common/` and `widgets/form_fields/` first.
+
+## Palette (`utils/theme.dart`)
+
+| Name | Hex | Use |
+|---|---|---|
+| `themePrimary` | `#EADFD8` | Primary surface / secondary in `colorScheme` |
+| `themeAccent` | `#F4C6C3` | Accent — buttons, active states |
+| `themeAccentInk` | `#AE5751` | Text/icon on accent where contrast is needed |
+| `themeBackground` | `#FFF8F6` | Scaffold background |
+| `themeText` | `#3A2E2A` | Primary text |
+| `themeTaupe` | `#78716C` | Secondary text |
+| `themeSage` | `#10B981` | Success |
+| `themeRose` | `#F43F5E` | Error / urgent |
+| `themePeach` | `#FB923C` | Warning |
+| `themeLavender` | `#9333EA` | Info |
+
+`themeBlue`/`themeGreen`/`themeRed`/`themeOrange` are aliases kept for older call sites — prefer the named colors above in new code.
+
+`dressColorMap` maps dress color names to swatches. Extend it there, never inline.
+
+## Typography
+
+Set in `appTheme.textTheme` — use `Theme.of(context).textTheme.*`:
+
+`headlineLarge` 28 bold · `headlineMedium` 22 bold · `headlineSmall` 18 w600 · `bodyLarge` 16 · `bodyMedium` 14 · `bodySmall` 12 (taupe)
+
+## Shape & Layout
+
+- Buttons: `borderRadius: 20`, vertical padding 14, horizontal 24
+- Cards: rounded 16–20, elevation 1
+- Dress images: `AppConstants.listingImageAspectRatio` (3/4 portrait) — consistent everywhere
+- Content max width: `AppConstants.contentMaxWidth` (600)
+- Two-column grid breakpoint: `AppConstants.twoColumnBreakpoint` (550)
+
+Web and mobile share one widget tree. Anything full-width must be constrained on wide screens.
+
+## Reusable Widgets — Check Before Building
+
+**`widgets/common/`** — `AppDialog`, `AppEmptyState`, `LoadingButton`, `ActionMenuButton`, `LabeledFab`, `PasswordField`, `PriceActionBar`, `SelectSingleImage`, `CalendarDateRangePicker`
+
+**`widgets/form_fields/`** — `StringFormField`, `NumberFormField`, `DecimalFormField`, `DateFormField`, `DropdownFormField`, `AutocompleteFormField`
+
+**`widgets/listing/`** (Browse side) — `ListingTile`, `InfiniteGrid`, `ImageCarousel`, `FilterBar`, `FilterModalContent`, `FilterSidebar`, `SortSheet`, `RangeFilter`, `AvailabilityCalendar`, `BookingFlowCards`
+
+**`widgets/wardrobe/`** (owner side) — `DressCard`, `BookingCalendar`, `BookingPanel`, `DressActionMenu`, `AttributeDropdownField`, `MultiChipSelector`, `PickerFormField`
+
+**`widgets/scaffold/`** — `AppScaffold`, `AppNavigation`, `TitleAppBar`
+
+## Images
+
+Remote images use `cached_network_image`. Always supply a placeholder and an error widget — R2 URLs can 404 and a bare `Image.network` renders a broken box.
+
+## User Feedback
+
+Use `FeedbackHelpers` (`utils/feedback_helpers.dart`) for snackbars and confirmations rather than raw `ScaffoldMessenger`. Snackbar duration is `AppConstants.snackBarDurationSeconds`.
