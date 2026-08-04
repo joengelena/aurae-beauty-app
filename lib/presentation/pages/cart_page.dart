@@ -47,9 +47,9 @@ class _CartPageState extends State<CartPage> {
 
       final message = result.isFullSuccess
           ? (result.bookingIds.length > 1
-              ? '${result.bookingIds.length} bookings confirmed.'
-              : 'Your booking is confirmed.')
-          : '${result.bookingIds.length} booking${result.bookingIds.length == 1 ? '' : 's'} confirmed. '
+              ? '${result.bookingIds.length} booking requests sent for approval.'
+              : 'Your booking request has been sent to the boutique for approval.')
+          : '${result.bookingIds.length} booking request${result.bookingIds.length == 1 ? '' : 's'} sent for approval. '
               '${result.failedItemNames.join(', ')} ${result.failedItemNames.length == 1 ? 'is' : 'are'} '
               'no longer available and stayed in your cart.';
 
@@ -57,7 +57,7 @@ class _CartPageState extends State<CartPage> {
         context: context,
         barrierDismissible: false,
         builder: (dialogContext) => AppDialog(
-          title: 'Booking confirmed',
+          title: 'Booking request sent',
           message: message,
           type: AppDialogType.success,
           primaryButtonText: 'View my bookings',

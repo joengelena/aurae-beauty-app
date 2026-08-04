@@ -26,6 +26,7 @@ class BusinessDress {
   final List<DateTimeRange> blockedDateRanges;
   final String? notes;
   final int unresolvedDamageCount;
+  final int pendingBookingCount;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -55,6 +56,7 @@ class BusinessDress {
     this.blockedDateRanges = const [],
     this.notes,
     this.unresolvedDamageCount = 0,
+    this.pendingBookingCount = 0,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -105,6 +107,7 @@ class BusinessDress {
           [],
       notes: json['notes'] as String?,
       unresolvedDamageCount: json['unresolvedDamageCount'] as int? ?? 0,
+      pendingBookingCount: json['pendingBookingCount'] as int? ?? 0,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );

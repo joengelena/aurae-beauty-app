@@ -1006,7 +1006,9 @@ class _DressDetailPageState extends State<DressDetailPage>
                     if (booking.status != 'cancelled' && booking.status != 'returned')
                       MenuOption(
                         icon: Icons.cancel_outlined,
-                        title: 'Cancel booking',
+                        title: booking.status == 'pending'
+                            ? 'Decline booking request'
+                            : 'Cancel booking',
                         iconColor: themeRose,
                         titleColor: themeRose,
                         onTap: () => _handleCancelBooking(context, booking, dressId),
@@ -1506,6 +1508,7 @@ class _DressDetailPageState extends State<DressDetailPage>
 
   Widget _statusAdvanceButton(RentalBooking booking, int dressId) {
     final next = _nextStatus(booking.status)!;
+    final isPending = booking.status == 'pending';
     return GestureDetector(
       onTap: () => _handleStatusChange(context, booking, dressId, next),
       behavior: HitTestBehavior.opaque,
@@ -1513,17 +1516,34 @@ class _DressDetailPageState extends State<DressDetailPage>
         constraints: const BoxConstraints(minHeight: 32),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: themeSage.withValues(alpha: 0.16),
+          color: themeSage,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: themeSage.withValues(alpha: 0.4), width: 0.5),
+          boxShadow: [
+            BoxShadow(
+              color: themeSage.withValues(alpha: 0.35),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        child: Text(
-          _nextStatusLabel(booking.status),
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: themeSage,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isPending ? Icons.check_circle_outline : Icons.arrow_forward,
+              size: 14,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              _nextStatusLabel(booking.status),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -1556,11 +1576,14 @@ class _DressDetailPageState extends State<DressDetailPage>
     RentalBooking booking,
     int dressId,
   ) async {
+    final isPending = booking.status == 'pending';
     final confirmed = await FeedbackHelpers.showConfirmation(
       context,
-      title: 'Cancel Booking',
-      message: 'Cancel this booking? The renter will need to be notified separately.',
-      confirmButtonText: 'Cancel Booking',
+      title: isPending ? 'Decline Booking Request' : 'Cancel Booking',
+      message: isPending
+          ? 'Decline this booking request? The renter will need to be notified separately.'
+          : 'Cancel this booking? The renter will need to be notified separately.',
+      confirmButtonText: isPending ? 'Decline Request' : 'Cancel Booking',
     );
     if (!confirmed || !context.mounted) return;
 

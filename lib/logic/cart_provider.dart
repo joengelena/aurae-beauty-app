@@ -79,8 +79,9 @@ class CartProvider extends ChangeNotifier {
   }
 
   // No payment step yet — checkout just turns each cart item into a real
-  // confirmed booking (via the same self-book endpoint the dress detail page
-  // uses) so the rest of the booking flow can be tested end-to-end.
+  // pending booking (via the same self-book endpoint the dress detail page
+  // uses), awaiting the boutique's approval, so the rest of the booking flow
+  // can be tested end-to-end.
   Future<CheckoutResult> checkout() async {
     final bookingIds = <int>[];
     final failedItemNames = <String>[];
