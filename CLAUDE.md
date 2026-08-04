@@ -3,7 +3,20 @@
 Flutter app for AURAE, a dress rental marketplace. Runs on iOS, Android, and Web from one codebase. Serves two audiences: **renters** (Browse, cart, bookings) and **boutique owners** (Wardrobe, inventory, booking management).
 
 Monorepo context and the `user_dresses` data model rule: `../CLAUDE.md`.
-Detailed conventions: `.claude/rules/`.
+
+**Conventions live in `.claude/rules/`:**
+
+| Rule | Covers |
+|---|---|
+| `feature-workflow.md` | **Start here when adding a feature** — ordered checklist, model → service → provider → route → page |
+| `state-management.md` | Provider patterns, the standard `ChangeNotifier` shape, Consumer vs Selector |
+| `data-layer.md` | Services, `ApiClient`, caching, the web/mobile auth split |
+| `models.md` | `fromJson` conventions, the current model inventory |
+| `routing-and-auth.md` | `go_router` config, `_publicPages`, auth flow, the port-8080 rule |
+| `ui-and-theming.md` | Palette, typography, spacing, reusable widget inventory |
+| `ui-states.md` | Loading / error / empty / success handling |
+| `widgets.md` | `const`, `mounted` checks, disposing controllers, rebuild discipline |
+| `code-style.md` | Imports, naming, no magic numbers, logging, formatting |
 
 ---
 

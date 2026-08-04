@@ -33,8 +33,8 @@ class WardrobeProvider extends ChangeNotifier {
   String _errorMessage = '';
   bool _isSignedIn = false;
 
-  // Expose state read-only
-  List<BusinessDress> get dresses => _dresses;
+  // Expose state read-only — never hand out the mutable list
+  List<BusinessDress> get dresses => List.unmodifiable(_dresses);
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
   bool get hasError => _errorMessage.isNotEmpty;
@@ -97,10 +97,47 @@ List<BusinessDress> get soldDresses =>
     _dresses.where((d) => d.status == 'sold').toList();
 ```
 
+## Never Expose Mutable Collections
+
+Return `List.unmodifiable(...)` from list getters. Handing out the internal list lets a widget mutate provider state without a `notifyListeners()`, which produces UI that is silently out of date.
+
 ## Consuming in Widgets
 
 - `context.watch<X>()` / `Consumer<X>` — when the widget should rebuild.
-- `context.read<X>()` — in callbacks and `initState`, never in `build`.
+- `context.read<X>()` — in callbacks, `initState`, and async methods. **Never in `build`.**
 - `Selector<X, T>` — when a large widget only depends on one field.
 
-Never call `context.read<X>().fetchSomething()` directly in `build`. Use `initState` with a post-frame callback, or `didChangeDependencies` with a guard flag.
+`context.watch()` outside `build()` throws at runtime:
+
+```dart
+// ❌ crashes
+void initState() {
+  context.watch<WardrobeProvider>().fetchDresses();
+}
+
+// ✅ post-frame callback, so the widget is mounted
+@override
+void initState() {
+  super.initState();
+  SchedulerBinding.instance.addPostFrameCallback((_) {
+    context.read<WardrobeProvider>().fetchDresses();
+  });
+}
+```
+
+## Selector Over Consumer for Single Fields
+
+```dart
+// ❌ rebuilds the whole page when any WardrobeProvider field changes
+Consumer<WardrobeProvider>(
+  builder: (context, provider, _) => Text('${provider.dresses.length} dresses'),
+)
+
+// ✅ rebuilds only when the count changes
+Selector<WardrobeProvider, int>(
+  selector: (_, provider) => provider.dresses.length,
+  builder: (context, count, _) => Text('$count dresses'),
+)
+```
+
+Rebuilding an entire page because an unrelated field changed is a performance bug, not a style preference.
