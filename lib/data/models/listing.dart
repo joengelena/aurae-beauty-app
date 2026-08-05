@@ -16,6 +16,10 @@ class Listing {
   final String brand;
   final String style;
   final String size;
+  // Every size this dress group is available in, when the Browse feed has
+  // collapsed same-brand/style/owner size variants into one tile. Falls back
+  // to [size] when the API doesn't return it (e.g. a single-size dress).
+  final List<String> availableSizes;
   final String? color;
   final String? dressType;
   final String? fitNote;
@@ -41,6 +45,7 @@ class Listing {
     required this.brand,
     required this.style,
     required this.size,
+    this.availableSizes = const [],
     this.color,
     this.dressType,
     this.fitNote,
@@ -68,6 +73,10 @@ class Listing {
       brand: json['brand'] as String,
       style: json['style'] as String,
       size: json['size'] as String,
+      availableSizes: (json['availableSizes'] as List?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [json['size'] as String],
       color: json['color'] as String?,
       dressType: json['dressType'] as String?,
       fitNote: json['fitNote'] as String?,
@@ -105,6 +114,7 @@ class Listing {
     String? brand,
     String? style,
     String? size,
+    List<String>? availableSizes,
     String? color,
     String? dressType,
     String? fitNote,
@@ -130,6 +140,7 @@ class Listing {
       brand: brand ?? this.brand,
       style: style ?? this.style,
       size: size ?? this.size,
+      availableSizes: availableSizes ?? this.availableSizes,
       color: color ?? this.color,
       dressType: dressType ?? this.dressType,
       fitNote: fitNote ?? this.fitNote,

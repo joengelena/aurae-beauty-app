@@ -6,6 +6,7 @@ import 'package:shine_app/data/models/user.dart';
 import 'package:shine_app/data/services/dress_services.dart';
 import 'package:shine_app/data/services/user_services.dart';
 import 'package:shine_app/utils/secure_storage.dart';
+import 'package:shine_app/utils/size_utils.dart';
 
 class ListingDetailProvider extends ChangeNotifier {
   ListingDetailProvider();
@@ -97,11 +98,19 @@ class ListingDetailProvider extends ChangeNotifier {
           'brand': current.brand,
           'style': current.style,
           'limit': '20',
+          // Bypass the Browse-feed grouping — this lookup needs every size
+          // row for the switcher, not one representative row per group.
+          'ungrouped': 'true',
         },
       );
       final variants = result.data.toList();
       if (!variants.any((l) => l.id == current.id)) variants.add(current);
-      variants.sort((a, b) => a.size.compareTo(b.size));
+      variants.sort((a, b) {
+        final rankA = sizeRank(a.size);
+        final rankB = sizeRank(b.size);
+        if (rankA != rankB) return rankA.compareTo(rankB);
+        return a.size.compareTo(b.size);
+      });
       sizeVariants = variants;
     } catch (e) {
       sizeVariants = [current];

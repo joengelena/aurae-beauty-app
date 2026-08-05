@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/models/listing.dart';
 import 'package:shine_app/logic/back_button_provider.dart';
 import 'package:shine_app/utils/constants.dart';
+import 'package:shine_app/utils/size_utils.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
@@ -39,6 +40,13 @@ class ListingTile extends StatelessWidget {
   final Widget? topRightButton;
 
   const ListingTile({super.key, required this.listing, this.topRightButton});
+
+  String get _sizeLabel {
+    if (listing.availableSizes.length <= 1) return 'Size ${listing.size}';
+    final sorted = List<String>.from(listing.availableSizes)
+      ..sort((a, b) => sizeRank(a).compareTo(sizeRank(b)));
+    return 'Sizes ${sorted.join(', ')}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +148,7 @@ class ListingTile extends StatelessWidget {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                'Size ${listing.size}',
+                                _sizeLabel,
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: themeTaupe,
