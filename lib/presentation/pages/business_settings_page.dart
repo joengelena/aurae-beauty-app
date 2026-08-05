@@ -81,9 +81,10 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
             ),
           ),
           IconButton(
-            onPressed: (provider.isSaving || days <= 1)
-                ? null
-                : () => _updateCleaningBuffer(context, provider, days - 1),
+            onPressed:
+                (provider.isSaving || days <= 1)
+                    ? null
+                    : () => _updateCleaningBuffer(context, provider, days - 1),
             icon: const Icon(Icons.remove_circle_outline),
           ),
           SizedBox(
@@ -99,9 +100,10 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
             ),
           ),
           IconButton(
-            onPressed: provider.isSaving
-                ? null
-                : () => _updateCleaningBuffer(context, provider, days + 1),
+            onPressed:
+                provider.isSaving
+                    ? null
+                    : () => _updateCleaningBuffer(context, provider, days + 1),
             icon: const Icon(Icons.add_circle_outline),
           ),
         ],
@@ -121,9 +123,11 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
     if (!ok && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(provider.errorMessage.isNotEmpty
-              ? provider.errorMessage
-              : 'Failed to save settings'),
+          content: Text(
+            provider.errorMessage.isNotEmpty
+                ? provider.errorMessage
+                : 'Failed to save settings',
+          ),
           duration: const Duration(seconds: 3),
         ),
       );
@@ -132,19 +136,19 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
 
   Widget _buildAccountOptions(BuildContext context) {
     final items = [
-      (Icons.edit_outlined, 'Edit profile', '/profile/edit'),
       (Icons.lock_outline, 'Change password', '/profile/change-password'),
     ];
 
     return Column(
-      children: items.map((item) {
-        final (icon, label, route) = item;
-        return SettingsRow(
-          icon: icon,
-          label: label,
-          onTap: () => context.push(route),
-        );
-      }).toList(),
+      children:
+          items.map((item) {
+            final (icon, label, route) = item;
+            return SettingsRow(
+              icon: icon,
+              label: label,
+              onTap: () => context.push(route),
+            );
+          }).toList(),
     );
   }
 
@@ -166,10 +170,7 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          description,
-          style: TextStyle(fontSize: 13, color: themeTaupe),
-        ),
+        Text(description, style: TextStyle(fontSize: 13, color: themeTaupe)),
         const SizedBox(height: 16),
         child,
         const SizedBox(height: 32),
@@ -203,15 +204,16 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
     ];
 
     return Column(
-      children: options.map((opt) {
-        final selected = provider.settings.deliveryOption == opt.value;
-        return _DeliveryTile(
-          option: opt,
-          selected: selected,
-          saving: provider.isSaving,
-          onTap: () => _selectDelivery(context, provider, opt.value),
-        );
-      }).toList(),
+      children:
+          options.map((opt) {
+            final selected = provider.settings.deliveryOption == opt.value;
+            return _DeliveryTile(
+              option: opt,
+              selected: selected,
+              saving: provider.isSaving,
+              onTap: () => _selectDelivery(context, provider, opt.value),
+            );
+          }).toList(),
     );
   }
 
@@ -227,9 +229,11 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
     if (!ok && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(provider.errorMessage.isNotEmpty
-              ? provider.errorMessage
-              : 'Failed to save settings'),
+          content: Text(
+            provider.errorMessage.isNotEmpty
+                ? provider.errorMessage
+                : 'Failed to save settings',
+          ),
           duration: const Duration(seconds: 3),
         ),
       );
@@ -286,9 +290,10 @@ class _DeliveryTile extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: selected
-                    ? themeAccent.withValues(alpha: 0.35)
-                    : const Color(0xFFF5F0ED),
+                color:
+                    selected
+                        ? themeAccent.withValues(alpha: 0.35)
+                        : const Color(0xFFF5F0ED),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -306,8 +311,7 @@ class _DeliveryTile extends StatelessWidget {
                     option.label,
                     style: TextStyle(
                       fontSize: 14,
-                      fontWeight:
-                          selected ? FontWeight.w600 : FontWeight.w500,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                       color: themeText,
                     ),
                   ),
@@ -322,8 +326,11 @@ class _DeliveryTile extends StatelessWidget {
             if (selected)
               Icon(Icons.check_circle_rounded, color: themeAccent, size: 20)
             else
-              Icon(Icons.radio_button_unchecked,
-                  color: const Color(0xFFD0C8C0), size: 20),
+              Icon(
+                Icons.radio_button_unchecked,
+                color: const Color(0xFFD0C8C0),
+                size: 20,
+              ),
           ],
         ),
       ),
