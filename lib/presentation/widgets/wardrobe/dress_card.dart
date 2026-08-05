@@ -153,6 +153,44 @@ class DressCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                  if (dress.pendingBookingCount > 0)
+                    Positioned(
+                      top: 8 +
+                          ((isSold || dress.listingType == 'sell') ? 28 : 0) +
+                          (dress.unresolvedDamageCount > 0 ? 28 : 0),
+                      left: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: themeAccent.withValues(alpha: 0.92),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.hourglass_empty,
+                              size: 11,
+                              color: themeText,
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              dress.pendingBookingCount > 1
+                                  ? '${dress.pendingBookingCount} bookings to review'
+                                  : '1 booking to review',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: themeText,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                 ],
               ),
 

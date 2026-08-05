@@ -4,7 +4,7 @@ import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/utils.dart';
 
 // Priority order matters — higher index wins when days overlap
-enum _DayStatus { none, past, booked, active, overdue }
+enum _DayStatus { none, past, pending, booked, active, overdue }
 
 enum _ViewMode { day, week, month }
 
@@ -71,7 +71,8 @@ class _BookingCalendarState extends State<BookingCalendar> {
       final status = switch (b.status) {
         'active' =>
           _isOverdue(b) ? _DayStatus.overdue : _DayStatus.active,
-        'confirmed' || 'pending' => _DayStatus.booked,
+        'confirmed' => _DayStatus.booked,
+        'pending' => _DayStatus.pending,
         'returned' => _DayStatus.past,
         _ => _DayStatus.none,
       };
@@ -477,6 +478,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
       case _DayStatus.booked:
         fill = themeAccent.withValues(alpha: 0.30);
         textColor = themeText;
+      case _DayStatus.pending:
+        fill = themeAccent.withValues(alpha: 0.12);
+        textColor = themeTaupe;
       case _DayStatus.overdue:
         fill = themeRose.withValues(alpha: 0.20);
         textColor = themeRose;
@@ -540,6 +544,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
       runSpacing: 6,
       children: [
         _legendItem(themeAccent.withValues(alpha: 0.30), 'Booked'),
+        _legendItem(themeAccent.withValues(alpha: 0.12), 'Pending'),
         _legendItem(themePeach.withValues(alpha: 0.22), 'Out for rent'),
         _legendItem(themeRose.withValues(alpha: 0.20), 'Overdue'),
         _legendItem(themePrimary.withValues(alpha: 0.55), 'Returned'),
