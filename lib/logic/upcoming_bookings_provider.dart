@@ -15,18 +15,6 @@ class UpcomingBookingsProvider extends ChangeNotifier {
   String get errorMessage => _errorMessage;
   bool get hasError => _errorMessage.isNotEmpty;
 
-  DateTime get weekStart {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final daysUntilMonday = (DateTime.monday - today.weekday + 7) % 7;
-    return today.add(Duration(days: daysUntilMonday));
-  }
-
-  DateTime get weekEnd => weekStart.add(const Duration(days: 6));
-
-  List<DateTime> get weekDays =>
-      List.generate(7, (i) => weekStart.add(Duration(days: i)));
-
   List<UpcomingBooking> bookingsForDay(DateTime day) {
     final d = DateTime(day.year, day.month, day.day);
     return _bookings.where((b) {
