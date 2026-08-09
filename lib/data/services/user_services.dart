@@ -141,6 +141,7 @@ class UserServices {
   Future<void> _clearAuthData() async {
     try {
       await SecureStorage.delete('userId');
+      await SecureStorage.delete('activeProfileIsBusiness');
 
       if (!kIsWeb) {
         await SecureStorage.delete('accessToken');
@@ -480,6 +481,7 @@ class UserServices {
   Future<void> clearAuthData() async {
     try {
       await SecureStorage.delete('userId');
+      await SecureStorage.delete('activeProfileIsBusiness');
 
       if (!kIsWeb) {
         await SecureStorage.delete('accessToken');

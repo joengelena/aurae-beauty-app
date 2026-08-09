@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shine_app/app_router.dart';
 import 'package:shine_app/env_constants.dart';
+import 'package:shine_app/logic/active_profile_provider.dart';
 import 'package:shine_app/logic/auth_provider.dart';
 import 'package:shine_app/logic/back_button_provider.dart';
 import 'package:shine_app/logic/filtering_provider.dart';
@@ -45,6 +46,13 @@ void main() async {
           update: (context, authProvider, profileProvider) {
             profileProvider!.updateAuthStatus(authProvider.isSignedIn);
             return profileProvider;
+          },
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, ActiveProfileProvider>(
+          create: (_) => ActiveProfileProvider(),
+          update: (context, authProvider, activeProfileProvider) {
+            activeProfileProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return activeProfileProvider;
           },
         ),
         ChangeNotifierProvider<FilteringProvider>(

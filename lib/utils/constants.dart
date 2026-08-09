@@ -77,4 +77,7 @@ class CacheKeys {
   static const String userBookings = '/user/dress-bookings';
   static const String myBookings = '/user/my-bookings';
   static const String businessSettings = '/user/settings';
+
+  // Business / profiles
+  static const String myBusiness = '/business/mine';
 }

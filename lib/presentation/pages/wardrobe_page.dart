@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shine_app/logic/active_profile_provider.dart';
 import 'package:shine_app/logic/auth_provider.dart';
 import 'package:shine_app/logic/back_button_provider.dart';
 import 'package:shine_app/logic/wardrobe_provider.dart';
 import 'package:shine_app/logic/week_schedule_provider.dart';
+import 'package:shine_app/presentation/widgets/common/app_empty_state.dart';
 import 'package:shine_app/presentation/widgets/common/labeled_fab.dart';
 import 'package:shine_app/presentation/widgets/profile/week_schedule_widget.dart';
 import 'package:shine_app/presentation/widgets/sign_in_to_access.dart';
@@ -68,6 +70,31 @@ class _WardrobePageState extends State<WardrobePage>
         icon: Icons.checkroom_outlined,
         title: 'Your wardrobe',
         subtitle: 'Sign in to manage your dresses, track rentals, and list items for others to borrow.',
+      );
+    }
+
+    final activeProfileProvider = context.watch<ActiveProfileProvider>();
+    if (!activeProfileProvider.isBusinessActive) {
+      return Center(
+        child: AppEmptyState(
+          icon: Icons.storefront_outlined,
+          title: activeProfileProvider.hasBusiness
+              ? 'Switch to your business'
+              : 'No business profile yet',
+          body: activeProfileProvider.hasBusiness
+              ? 'Switch to ${activeProfileProvider.business!.name} to manage your wardrobe.'
+              : 'Add a business profile to start listing dresses.',
+          action: FilledButton(
+            onPressed: () => activeProfileProvider.hasBusiness
+                ? activeProfileProvider.setActiveProfile(true)
+                : context.push('/profile/add-business'),
+            child: Text(
+              activeProfileProvider.hasBusiness
+                  ? 'Switch now'
+                  : 'Add a business profile',
+            ),
+          ),
+        ),
       );
     }
 

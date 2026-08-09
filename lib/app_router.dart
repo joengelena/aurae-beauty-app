@@ -4,9 +4,13 @@ import 'package:shine_app/logic/auth_provider.dart';
 import 'package:shine_app/logic/listing_detail_provider.dart';
 import 'package:shine_app/logic/profile_provider.dart';
 import 'package:shine_app/presentation/pages/onboarding_page.dart';
+import 'package:shine_app/presentation/pages/profile/add_business_profile_page.dart';
 import 'package:shine_app/presentation/pages/profile/change_password_page.dart';
+import 'package:shine_app/presentation/pages/profile/create_business_page.dart';
 import 'package:shine_app/presentation/pages/profile/delete_account_page.dart';
 import 'package:shine_app/presentation/pages/profile/edit_profile_page.dart';
+import 'package:shine_app/presentation/pages/profile/invite_team_member_page.dart';
+import 'package:shine_app/presentation/pages/profile/join_business_page.dart';
 import 'package:shine_app/presentation/pages/profile/email_verification_page.dart';
 import 'package:shine_app/presentation/pages/profile/forgot_password_page.dart';
 import 'package:shine_app/presentation/pages/listing_detail_page.dart';
@@ -318,6 +322,32 @@ GoRouter getAppRouter(AuthProvider authProvider, ProfileProvider profileProvider
                 path: 'delete-account',
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: DeleteAccountPage());
+                },
+              ),
+              GoRoute(
+                path: 'add-business',
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: AddBusinessProfilePage());
+                },
+                routes: [
+                  GoRoute(
+                    path: 'create',
+                    pageBuilder: (context, state) {
+                      return NoTransitionPage(child: CreateBusinessPage());
+                    },
+                  ),
+                  GoRoute(
+                    path: 'join',
+                    pageBuilder: (context, state) {
+                      return NoTransitionPage(child: JoinBusinessPage());
+                    },
+                  ),
+                ],
+              ),
+              GoRoute(
+                path: 'invite',
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: InviteTeamMemberPage());
                 },
               ),
             ],

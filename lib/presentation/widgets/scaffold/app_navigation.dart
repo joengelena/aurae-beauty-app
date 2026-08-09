@@ -1,24 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shine_app/logic/active_profile_provider.dart';
 import 'package:shine_app/logic/back_button_provider.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
+
+class _NavDestination {
+  final String route;
+  final IconData icon;
+  final IconData selectedIcon;
+  final String label;
+
+  const _NavDestination({
+    required this.route,
+    required this.icon,
+    required this.selectedIcon,
+    required this.label,
+  });
+}
 
 class AppNavigation extends StatelessWidget {
   final GoRouterState state;
 
   const AppNavigation({super.key, required this.state});
 
-  int _calculateIndex(String uri) {
-    if (uri.startsWith('/watchlist')) return 1;
-    if (uri.startsWith('/wardrobe')) return 2;
-    if (uri.startsWith('/profile')) return 3;
+  static const _browse = _NavDestination(
+    route: '/listings',
+    icon: Icons.grid_view_rounded,
+    selectedIcon: Icons.grid_view_rounded,
+    label: 'Browse',
+  );
+  static const _favorites = _NavDestination(
+    route: '/watchlist',
+    icon: Icons.favorite_border_rounded,
+    selectedIcon: Icons.favorite_rounded,
+    label: 'Favorites',
+  );
+  // Only shown while browsing as the business (Owner/Staff) — a Customer
+  // can only view and rent dresses, never list them, so there's nothing
+  // for them to do on this tab.
+  static const _wardrobe = _NavDestination(
+    route: '/wardrobe',
+    icon: Icons.checkroom_outlined,
+    selectedIcon: Icons.checkroom,
+    label: 'Wardrobe',
+  );
+  static const _profile = _NavDestination(
+    route: '/profile',
+    icon: Icons.person_outline_rounded,
+    selectedIcon: Icons.person_rounded,
+    label: 'Profile',
+  );
+
+  int _calculateIndex(String uri, List<_NavDestination> destinations) {
+    for (var i = 1; i < destinations.length; i++) {
+      if (uri.startsWith(destinations[i].route)) return i;
+    }
     return 0;
   }
 
   @override
   Widget build(BuildContext context) {
     final uri = state.uri.toString();
+    final isBusinessActive = context.watch<ActiveProfileProvider>().isBusinessActive;
+
+    final destinations = [
+      _browse,
+      _favorites,
+      if (isBusinessActive) _wardrobe,
+      _profile,
+    ];
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -54,45 +105,18 @@ class AppNavigation extends StatelessWidget {
                 onDestinationSelected: (index) {
                   // Reset back button provider when navigating via navbar
                   context.read<BackButtonProvider>().reset();
-
-                  switch (index) {
-                    case 0:
-                      context.go('/listings');
-                      break;
-                    case 1:
-                      context.go('/watchlist');
-                      break;
-                    case 2:
-                      context.go('/wardrobe');
-                      break;
-                    case 3:
-                      context.go('/profile');
-                      break;
-                  }
+                  context.go(destinations[index].route);
                 },
-                selectedIndex: _calculateIndex(uri),
-                destinations: const [
-                  NavigationDestination(
-                    icon: Icon(Icons.grid_view_rounded),
-                    selectedIcon: Icon(Icons.grid_view_rounded),
-                    label: 'Browse',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.favorite_border_rounded),
-                    selectedIcon: Icon(Icons.favorite_rounded),
-                    label: 'Favorites',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.checkroom_outlined),
-                    selectedIcon: Icon(Icons.checkroom),
-                    label: 'Wardrobe',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.person_outline_rounded),
-                    selectedIcon: Icon(Icons.person_rounded),
-                    label: 'Profile',
-                  ),
-                ],
+                selectedIndex: _calculateIndex(uri, destinations),
+                destinations: destinations
+                    .map(
+                      (d) => NavigationDestination(
+                        icon: Icon(d.icon),
+                        selectedIcon: Icon(d.selectedIcon),
+                        label: d.label,
+                      ),
+                    )
+                    .toList(),
               ),
             ),
           ),

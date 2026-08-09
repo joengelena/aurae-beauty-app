@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shine_app/logic/upcoming_bookings_provider.dart';
 import 'package:shine_app/presentation/widgets/profile/account_menu.dart';
+import 'package:shine_app/presentation/widgets/profile/active_profile_card.dart';
 import 'package:shine_app/presentation/widgets/profile/upcoming_bookings_widget.dart';
 import 'package:shine_app/presentation/widgets/profile/user_profile.dart';
 import 'package:shine_app/utils/theme.dart';
@@ -31,7 +32,12 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             SizedBox(height: 24),
             UserProfile(),
-            SizedBox(height: 32),
+            SizedBox(height: 20),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: ActiveProfileCard(),
+            ),
+            SizedBox(height: 20),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: AccountMenu(),
