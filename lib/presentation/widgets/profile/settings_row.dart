@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shine_app/presentation/widgets/common/app_card.dart';
 import 'package:shine_app/utils/theme.dart';
 
 /// A tappable row for account/settings screens: icon in a soft square,
@@ -25,42 +26,35 @@ class SettingsRow extends StatelessWidget {
     final iconColor = destructive ? themeRose : themeTaupe;
     final labelColor = destructive ? themeRose : themeText;
 
-    return GestureDetector(
+    return AppCard(
       onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFEADFD8)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF5F0ED),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, size: 20, color: iconColor),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: themeSurfaceMuted,
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: labelColor,
-                ),
+            child: Icon(icon, size: 20, color: iconColor),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: labelColor,
               ),
             ),
-            if (showChevron)
-              Icon(Icons.chevron_right, color: themeTaupe, size: 20),
-          ],
-        ),
+          ),
+          if (showChevron)
+            Icon(Icons.chevron_right, color: themeTaupe, size: 20),
+        ],
       ),
     );
   }

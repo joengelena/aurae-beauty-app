@@ -220,7 +220,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: 13,
+          fontSize: 12,
           fontWeight: FontWeight.w600,
           color: themeTaupe,
           letterSpacing: 0.8,
@@ -272,7 +272,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: _isPublic ? const Color(0xFFEAD9D5) : const Color(0xFFF5EFED),
+          color: _isPublic ? const Color(0xFFEAD9D5) : themeSurfaceMuted,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _isPublic ? const Color(0xFFD4A89A) : const Color(0xFFDDD4CF),
@@ -293,7 +293,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
                   Text(
                     _isPublic ? 'Visible on Browse' : 'Private (Wardrobe only)',
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: _isPublic ? const Color(0xFF8B4A3C) : themeText,
                     ),
@@ -302,7 +302,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
                     _isPublic
                         ? 'Renters can see this damage report'
                         : 'Only visible to you',
-                    style: TextStyle(fontSize: 11, color: themeTaupe),
+                    style: TextStyle(fontSize: 12, color: themeTaupe),
                   ),
                 ],
               ),
@@ -324,7 +324,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: _resolved ? themeSage.withValues(alpha: 0.12) : const Color(0xFFF5EFED),
+          color: _resolved ? themeSage.withValues(alpha: 0.12) : themeSurfaceMuted,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _resolved ? themeSage.withValues(alpha: 0.4) : const Color(0xFFDDD4CF),
@@ -342,7 +342,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
               child: Text(
                 _resolved ? 'Resolved' : 'Unresolved',
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: _resolved ? themeSage : themeText,
                 ),
@@ -396,7 +396,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
                     height: 96,
                     margin: const EdgeInsets.only(right: 8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF5EFED),
+                      color: themeSurfaceMuted,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: const Color(0xFFDDD4CF)),
                     ),
@@ -424,7 +424,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
               imageUrl: url,
               fit: BoxFit.cover,
               errorWidget: (_, __, ___) => Container(
-                color: const Color(0xFFF5EFED),
+                color: themeSurfaceMuted,
                 child: Icon(Icons.broken_image_outlined, color: themeTaupe),
               ),
             ),

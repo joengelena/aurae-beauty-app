@@ -85,13 +85,13 @@ class ListingTile extends StatelessWidget {
                       child: AspectRatio(
                         aspectRatio: AppConstants.listingImageAspectRatio,
                         child: ColoredBox(
-                          color: const Color(0xFFF5EFED),
+                          color: themeSurfaceMuted,
                           child: CachedNetworkImage(
                             imageUrl: listing.previewImgUrl,
                             fit: BoxFit.contain,
                             errorWidget: (context, url, error) {
                               return Container(
-                                color: const Color(0xFFF5EFED),
+                                color: themeSurfaceMuted,
                                 child: Icon(
                                   Icons.broken_image,
                                   color: themeTaupe,
@@ -120,7 +120,7 @@ class ListingTile extends StatelessWidget {
                             Text(
                               listing.location,
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: 12,
                                 color: themeTaupe,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -129,7 +129,7 @@ class ListingTile extends StatelessWidget {
                             listing.name ?? listing.style,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              fontSize: 13,
+                              fontSize: 14,
                               color: themeText,
                             ),
                             maxLines: 1,
@@ -137,7 +137,7 @@ class ListingTile extends StatelessWidget {
                           ),
                           Text(
                             listing.brand,
-                            style: TextStyle(fontSize: 11, color: themeTaupe),
+                            style: TextStyle(fontSize: 12, color: themeTaupe),
                           ),
                           Row(
                             children: [
@@ -150,7 +150,7 @@ class ListingTile extends StatelessWidget {
                               Text(
                                 _sizeLabel,
                                 style: TextStyle(
-                                  fontSize: 11,
+                                  fontSize: 12,
                                   color: themeTaupe,
                                 ),
                               ),
@@ -165,7 +165,7 @@ class ListingTile extends StatelessWidget {
                                 child: Text(
                                   listing.condition,
                                   style: TextStyle(
-                                    fontSize: 11,
+                                    fontSize: 12,
                                     color: themeTaupe,
                                   ),
                                   overflow: TextOverflow.ellipsis,
@@ -187,7 +187,7 @@ class ListingTile extends StatelessWidget {
                                 : 'From ${formatPrice(listing.pricePerDay)}/day',
                             style: const TextStyle(
                               fontWeight: FontWeight.w700,
-                              fontSize: 15,
+                              fontSize: 14,
                             ),
                           ),
                         ],
@@ -215,7 +215,7 @@ class ListingTile extends StatelessWidget {
                           listing.status.substring(1),
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 11,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.2,
                       ),

@@ -79,7 +79,7 @@ class ListingPreview extends StatelessWidget {
                     aspectRatio: AppConstants.listingImageAspectRatio,
                     child: listing.previewImgUrl.isNotEmpty
                         ? ColoredBox(
-                            color: const Color(0xFFF5EFED),
+                            color: themeSurfaceMuted,
                             child: CachedNetworkImage(
                               imageUrl: listing.previewImgUrl,
                               fit: BoxFit.contain,
@@ -219,7 +219,7 @@ class ListingPreview extends StatelessWidget {
                     listing.name ?? listing.style,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      fontSize: 13,
+                      fontSize: 14,
                       color: themeText,
                       height: 1.3,
                     ),
@@ -232,7 +232,7 @@ class ListingPreview extends StatelessWidget {
                   Text(
                     listing.brand,
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 12,
                       color: themeTaupe,
                       height: 1.3,
                     ),
@@ -246,7 +246,7 @@ class ListingPreview extends StatelessWidget {
                     children: [
                       Text(
                         'Size ${listing.size}',
-                        style: TextStyle(fontSize: 11, color: themeTaupe),
+                        style: TextStyle(fontSize: 12, color: themeTaupe),
                       ),
                       if (listing.color != null) ...[
                         const SizedBox(width: 8),
@@ -255,7 +255,7 @@ class ListingPreview extends StatelessWidget {
                         Expanded(
                           child: Text(
                             listing.color!,
-                            style: TextStyle(fontSize: 11, color: themeTaupe),
+                            style: TextStyle(fontSize: 12, color: themeTaupe),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -271,7 +271,7 @@ class ListingPreview extends StatelessWidget {
                       if (listing.listingType != 'sell')
                         Text(
                           'From ',
-                          style: TextStyle(fontSize: 11, color: themeTaupe),
+                          style: TextStyle(fontSize: 12, color: themeTaupe),
                         ),
                       Text(
                         formatPrice(listing.pricePerDay),
@@ -285,7 +285,7 @@ class ListingPreview extends StatelessWidget {
                         Text(
                           '/day',
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 12,
                             color: themeTaupe,
                           ),
                         ),
@@ -302,7 +302,7 @@ class ListingPreview extends StatelessWidget {
 
   Widget _imagePlaceholder() {
     return Container(
-      color: const Color(0xFFF5EFED),
+      color: themeSurfaceMuted,
       child: Center(
         child: Icon(Icons.checkroom_outlined, color: themeTaupe, size: 32),
       ),

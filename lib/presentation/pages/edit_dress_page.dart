@@ -9,6 +9,7 @@ import 'package:shine_app/data/models/booked_range.dart';
 import 'package:shine_app/data/models/business_dress.dart';
 import 'package:shine_app/logic/filtering_provider.dart';
 import 'package:shine_app/logic/wardrobe_provider.dart';
+import 'package:shine_app/presentation/widgets/common/app_card.dart';
 import 'package:shine_app/presentation/widgets/common/calendar_date_range_picker.dart';
 import 'package:shine_app/presentation/widgets/listing/availability_calendar.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/multi_chip_selector.dart';
@@ -421,7 +422,7 @@ class _EditDressPageState extends State<EditDressPage> {
       padding: const EdgeInsets.only(bottom: 12),
       child: Text(
         text,
-        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: themeTaupe),
+        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: themeTaupe),
       ),
     );
   }
@@ -455,7 +456,7 @@ class _EditDressPageState extends State<EditDressPage> {
   Widget _buildListingTypeToggle() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF5EFED),
+        color: themeSurfaceMuted,
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.all(4),
@@ -474,7 +475,7 @@ class _EditDressPageState extends State<EditDressPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: _isPublic ? const Color(0xFFEAD9D5) : const Color(0xFFF5EFED),
+          color: _isPublic ? const Color(0xFFEAD9D5) : themeSurfaceMuted,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _isPublic ? const Color(0xFFD4A89A) : const Color(0xFFDDD4CF),
@@ -495,7 +496,7 @@ class _EditDressPageState extends State<EditDressPage> {
                   Text(
                     _isPublic ? 'Visible on Browse' : 'Private (Wardrobe only)',
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: _isPublic ? const Color(0xFF8B4A3C) : themeText,
                     ),
@@ -504,7 +505,7 @@ class _EditDressPageState extends State<EditDressPage> {
                     _isPublic
                         ? 'Anyone can browse and book this dress'
                         : 'Only visible in your wardrobe',
-                    style: TextStyle(fontSize: 11, color: themeTaupe),
+                    style: TextStyle(fontSize: 12, color: themeTaupe),
                   ),
                 ],
               ),
@@ -540,7 +541,7 @@ class _EditDressPageState extends State<EditDressPage> {
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
               color: selected ? themeText : themeTaupe,
             ),
@@ -576,7 +577,7 @@ class _EditDressPageState extends State<EditDressPage> {
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: _photoError ? themeRose.withValues(alpha: 0.06) : const Color(0xFFF5EFED),
+                      color: _photoError ? themeRose.withValues(alpha: 0.06) : themeSurfaceMuted,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: _photoError ? themeRose : const Color(0xFFDDD4CF),
@@ -587,7 +588,7 @@ class _EditDressPageState extends State<EditDressPage> {
                       children: [
                         Icon(Icons.add_photo_alternate_outlined, size: 32, color: _photoError ? themeRose : themeTaupe),
                         const SizedBox(height: 6),
-                        Text('Add photos (min 1)', style: TextStyle(color: _photoError ? themeRose : themeTaupe, fontSize: 13)),
+                        Text('Add photos (min 1)', style: TextStyle(color: _photoError ? themeRose : themeTaupe, fontSize: 12)),
                       ],
                     ),
                   ),
@@ -609,7 +610,7 @@ class _EditDressPageState extends State<EditDressPage> {
                           height: 120,
                           margin: const EdgeInsets.only(right: 8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF5EFED),
+                            color: themeSurfaceMuted,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: const Color(0xFFDDD4CF)),
                           ),
@@ -645,7 +646,7 @@ class _EditDressPageState extends State<EditDressPage> {
               imageUrl: url,
               fit: BoxFit.cover,
               errorWidget: (_, __, ___) => Container(
-                color: const Color(0xFFF5EFED),
+                color: themeSurfaceMuted,
                 child: Icon(Icons.broken_image_outlined, color: themeTaupe),
               ),
             ),
@@ -797,7 +798,7 @@ class _EditDressPageState extends State<EditDressPage> {
                     Expanded(
                       child: Text(
                         '${fmt.format(r.start)} – ${fmt.format(r.end)}',
-                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: themeText),
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: themeText),
                       ),
                     ),
                     GestureDetector(
@@ -818,13 +819,8 @@ class _EditDressPageState extends State<EditDressPage> {
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
+                      AppCard(
                         padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: themePrimary),
-                        ),
                         child: AvailabilityCalendar(
                           bookedRanges: _blockedDateRanges
                               .map((r) => BookedRange(
@@ -869,7 +865,7 @@ class _EditDressPageState extends State<EditDressPage> {
                           Text(
                             'Add dates',
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 12,
                               fontWeight: FontWeight.w500,
                               color: themeAccent,
                             ),

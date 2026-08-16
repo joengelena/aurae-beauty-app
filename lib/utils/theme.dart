@@ -16,6 +16,12 @@ final themeSage = Color(0xFF10B981);        // Success (sage green)
 final themePeach = Color(0xFFFB923C);       // Warning (soft peach)
 final themeTaupe = Color(0xFF78716C);       // Secondary text (taupe)
 
+// Muted neutral surface — chip backgrounds, photo placeholders, icon
+// squares. Per the Tinted-Neutral Rule, this is the one shared near-white
+// tint; don't hand-type a new one (previously drifted between #F5EFED and
+// #F5F0ED depending on the file).
+final themeSurfaceMuted = Color(0xFFF5EFED);
+
 // Dress color palette — maps color name strings to display colors
 const Map<String, Color> dressColorMap = {
   'Black':     Color(0xFF1C1C1C),
@@ -176,7 +182,7 @@ final ThemeData appTheme = ThemeData(
     elevation: 0,
     shadowColor: Colors.black.withValues(alpha:0.05),
     titleTextStyle: TextStyle(
-      fontSize: 20,
+      fontSize: 22,
       fontWeight: FontWeight.w600,
       color: themeText,
       fontFamily: 'Poppins',
@@ -190,6 +196,23 @@ final ThemeData appTheme = ThemeData(
     elevation: 0,
   ),
   dividerColor: const Color(0xFFE0D5D0),
+  // Material 3 derives modal/sheet backgrounds from ColorScheme's
+  // surfaceContainer* roles, which this ColorScheme.light() call never sets —
+  // they silently fall back to Flutter's cool lavender-gray M3 defaults,
+  // completely disconnected from the warm Petal White palette. Pinning the
+  // background explicitly (and zeroing surfaceTintColor, M3's automatic
+  // elevation color-wash) keeps every bottom sheet — filters, sort, pickers —
+  // the same warm tone as the rest of the app instead of a mismatched white.
+  bottomSheetTheme: BottomSheetThemeData(
+    backgroundColor: themeBackground,
+    modalBackgroundColor: themeBackground,
+    surfaceTintColor: Colors.transparent,
+    elevation: 0,
+    modalElevation: 2,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+  ),
   inputDecorationTheme: InputDecorationTheme(
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(16),

@@ -366,7 +366,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
                   if (isToday)
                     Text(
                       'Today',
-                      style: TextStyle(fontSize: 11, color: themeAccent, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 12, color: themeAccent, fontWeight: FontWeight.w600),
                     ),
                 ],
               ),
@@ -428,14 +428,14 @@ class _BookingCalendarState extends State<BookingCalendar> {
                 Text(
                   b.renterName.isNotEmpty ? b.renterName : b.bookingType,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: themeText,
                   ),
                 ),
                 Text(
                   '${formatDate(b.startDate)} – ${formatDate(b.endDate)} · $label',
-                  style: TextStyle(fontSize: 11, color: themeTaupe),
+                  style: TextStyle(fontSize: 12, color: themeTaupe),
                 ),
               ],
             ),
@@ -567,7 +567,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
         const SizedBox(width: 5),
         Text(
           label,
-          style: TextStyle(fontSize: 11, color: themeTaupe),
+          style: TextStyle(fontSize: 12, color: themeTaupe),
         ),
       ],
     );

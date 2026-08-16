@@ -43,7 +43,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
       return AspectRatio(
         aspectRatio: AppConstants.listingImageAspectRatio,
         child: Container(
-          color: const Color(0xFFF5EFED),
+          color: themeSurfaceMuted,
           child: Center(
             child: Icon(Icons.checkroom_outlined, color: themeTaupe, size: 48),
           ),
@@ -66,7 +66,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
                   itemCount: widget.imageUrls.length,
                   itemBuilder: (context, index) {
                     return ColoredBox(
-                      color: const Color(0xFFF5EFED),
+                      color: themeSurfaceMuted,
                       child: CachedNetworkImage(
                         imageUrl: widget.imageUrls[index] as String,
                         fit: BoxFit.contain,

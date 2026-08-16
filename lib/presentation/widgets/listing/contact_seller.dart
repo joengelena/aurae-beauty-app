@@ -49,7 +49,7 @@ class ContactSeller extends StatelessWidget {
                     Text(
                       '${seller.firstName} ${seller.lastName}',
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: themeText,
                       ),
@@ -64,7 +64,7 @@ class ContactSeller extends StatelessWidget {
             ),
 
             SizedBox(height: 14),
-            Divider(height: 1, color: Color(0xFFEEE8E4)),
+            Divider(height: 1, color: themePrimary.withValues(alpha: 0.6)),
             SizedBox(height: 12),
 
             // Phone
@@ -126,7 +126,7 @@ class _ContactRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: TextStyle(fontSize: 13, color: themeText),
+              style: TextStyle(fontSize: 14, color: themeText),
               overflow: TextOverflow.ellipsis,
             ),
           ),

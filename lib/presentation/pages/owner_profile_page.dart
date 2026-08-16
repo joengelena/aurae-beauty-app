@@ -77,7 +77,7 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
                           ? 'No dresses listed yet'
                           : '${dresses.length} ${dresses.length == 1 ? "piece" : "pieces"} available',
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 12,
                         color: themeTaupe,
                         fontWeight: FontWeight.w500,
                       ),
@@ -156,7 +156,7 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
               children: [
                 Icon(Icons.location_on_outlined, size: 13, color: themeTaupe),
                 const SizedBox(width: 4),
-                Text(owner.location, style: TextStyle(fontSize: 13, color: themeTaupe)),
+                Text(owner.location, style: TextStyle(fontSize: 12, color: themeTaupe)),
               ],
             ),
           ],
@@ -302,7 +302,7 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
             const SizedBox(height: 8),
             Text(
               'Check your connection and try again',
-              style: TextStyle(fontSize: 13, color: themeTaupe),
+              style: TextStyle(fontSize: 12, color: themeTaupe),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -365,7 +365,7 @@ class _ListingCard extends StatelessWidget {
                   Text(
                     listing.name ?? listing.brand,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: themeText,
                       height: 1.3,
@@ -376,7 +376,7 @@ class _ListingCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     '${listing.brand} · ${listing.style}',
-                    style: TextStyle(fontSize: 11, color: themeTaupe, height: 1.3),
+                    style: TextStyle(fontSize: 12, color: themeTaupe, height: 1.3),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -396,7 +396,7 @@ class _ListingCard extends StatelessWidget {
                         ? formatPrice(listing.pricePerDay)
                         : '${formatPrice(listing.pricePerDay)}/day',
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: listing.listingType == 'sell'
                           ? const Color(0xFFD4AF37)
@@ -414,7 +414,7 @@ class _ListingCard extends StatelessWidget {
 
   Widget _photoPlaceholder() {
     return Container(
-      color: const Color(0xFFF5EFED),
+      color: themeSurfaceMuted,
       child: Center(
         child: Icon(Icons.checkroom_outlined, color: themeTaupe, size: 40),
       ),
@@ -425,10 +425,10 @@ class _ListingCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5EFED),
+        color: themeSurfaceMuted,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(label, style: TextStyle(fontSize: 11, color: themeTaupe)),
+      child: Text(label, style: TextStyle(fontSize: 12, color: themeTaupe)),
     );
   }
 
@@ -443,13 +443,13 @@ class _ListingCard extends StatelessWidget {
       bg = themePeach.withValues(alpha: 0.12);
       fg = themePeach;
     } else {
-      bg = const Color(0xFFF5EFED);
+      bg = themeSurfaceMuted;
       fg = themeTaupe;
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12)),
-      child: Text(condition, style: TextStyle(fontSize: 11, color: fg)),
+      child: Text(condition, style: TextStyle(fontSize: 12, color: fg)),
     );
   }
 }

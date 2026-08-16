@@ -261,7 +261,7 @@ class _DressDetailPageState extends State<DressDetailPage>
             Text(
               'Rental bookings',
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: themeTaupe,
                 letterSpacing: 0.2,
@@ -272,7 +272,7 @@ class _DressDetailPageState extends State<DressDetailPage>
               Text(
                 '${dress.rentalCount} total',
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 12,
                   color: themeTaupe,
                   letterSpacing: 0.2,
                 ),
@@ -307,10 +307,10 @@ class _DressDetailPageState extends State<DressDetailPage>
       children: [
         Text(
           primaryLabel,
-          style: const TextStyle(
-            fontSize: 26,
+          style: TextStyle(
+            fontSize: 28,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF3A2E2A),
+            color: themeText,
             height: 1.15,
             letterSpacing: 0.15,
           ),
@@ -319,13 +319,13 @@ class _DressDetailPageState extends State<DressDetailPage>
           const SizedBox(height: 2),
           Text(
             '(${dress.internalName})',
-            style: TextStyle(fontSize: 13, color: themeTaupe, letterSpacing: 0.1),
+            style: TextStyle(fontSize: 12, color: themeTaupe, letterSpacing: 0.1),
           ),
         ],
         const SizedBox(height: 4),
         Text(
           '${dress.brand} · ${dress.style}',
-          style: TextStyle(fontSize: 13, color: themeTaupe, letterSpacing: 0.1),
+          style: TextStyle(fontSize: 12, color: themeTaupe, letterSpacing: 0.1),
         ),
       ],
     );
@@ -419,7 +419,7 @@ class _DressDetailPageState extends State<DressDetailPage>
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: fg,
                 ),
@@ -428,7 +428,7 @@ class _DressDetailPageState extends State<DressDetailPage>
                 Text(
                   sublabel,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 12,
                     color: fg.withValues(alpha: 0.7),
                   ),
                 ),
@@ -454,7 +454,7 @@ class _DressDetailPageState extends State<DressDetailPage>
             Text(
               'Damage history',
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: themeTaupe,
                 letterSpacing: 0.2,
@@ -465,7 +465,7 @@ class _DressDetailPageState extends State<DressDetailPage>
               Text(
                 '$unresolvedCount unresolved',
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 12,
                   color: themeRose,
                   letterSpacing: 0.2,
                 ),
@@ -518,7 +518,7 @@ class _DressDetailPageState extends State<DressDetailPage>
       child: Center(
         child: Text(
           'No damage reported for this dress.',
-          style: TextStyle(fontSize: 13, color: themeTaupe),
+          style: TextStyle(fontSize: 12, color: themeTaupe),
         ),
       ),
     );
@@ -584,7 +584,7 @@ class _DressDetailPageState extends State<DressDetailPage>
                   child: Text(
                     formatDate(incident.occurredAt),
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: themeText,
                     ),
@@ -613,7 +613,7 @@ class _DressDetailPageState extends State<DressDetailPage>
             const SizedBox(height: 4),
             Text(
               incident.description,
-              style: TextStyle(fontSize: 13, color: themeText, height: 1.4),
+              style: TextStyle(fontSize: 14, color: themeText, height: 1.4),
             ),
             const SizedBox(height: 6),
             Row(
@@ -626,7 +626,7 @@ class _DressDetailPageState extends State<DressDetailPage>
                 const SizedBox(width: 4),
                 Text(
                   incident.isPublic ? 'Visible on Browse' : 'Private',
-                  style: TextStyle(fontSize: 11, color: themeTaupe),
+                  style: TextStyle(fontSize: 12, color: themeTaupe),
                 ),
               ],
             ),
@@ -651,7 +651,7 @@ class _DressDetailPageState extends State<DressDetailPage>
                               imageUrl: url,
                               fit: BoxFit.cover,
                               errorWidget: (_, __, ___) => Container(
-                                color: const Color(0xFFF5EFED),
+                                color: themeSurfaceMuted,
                                 child: Icon(
                                   Icons.broken_image_outlined,
                                   size: 16,
@@ -683,7 +683,7 @@ class _DressDetailPageState extends State<DressDetailPage>
       child: Text(
         resolved ? 'Resolved' : 'Unresolved',
         style: TextStyle(
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: FontWeight.w600,
           color: resolved ? themeSage : themeRose,
           letterSpacing: 0.1,
@@ -714,7 +714,7 @@ class _DressDetailPageState extends State<DressDetailPage>
           const SizedBox(height: 6),
           Text(
             notes,
-            style: TextStyle(fontSize: 13, color: themeText, height: 1.5),
+            style: TextStyle(fontSize: 14, color: themeText, height: 1.5),
           ),
         ],
       ),
@@ -795,7 +795,7 @@ class _DressDetailPageState extends State<DressDetailPage>
               child: Text(
                 'Past rentals',
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: themeTaupe,
                   letterSpacing: 0.2,
@@ -856,7 +856,7 @@ class _DressDetailPageState extends State<DressDetailPage>
           Text(
             'Add a booking to start tracking rentals for this dress.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, color: themeTaupe, height: 1.4),
+            style: TextStyle(fontSize: 12, color: themeTaupe, height: 1.4),
           ),
           const SizedBox(height: 16),
           GestureDetector(
@@ -874,7 +874,7 @@ class _DressDetailPageState extends State<DressDetailPage>
               child: Text(
                 'Add first booking',
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: themeText,
                 ),
@@ -968,7 +968,7 @@ class _DressDetailPageState extends State<DressDetailPage>
                       child: Text(
                         booking.notes!,
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 12,
                           color: themeTaupe,
                           fontStyle: FontStyle.italic,
                           height: 1.4,
@@ -982,7 +982,7 @@ class _DressDetailPageState extends State<DressDetailPage>
                   Text(
                     formatPrice(booking.totalCost.toInt()),
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: themeText,
                     ),
@@ -1034,10 +1034,10 @@ class _DressDetailPageState extends State<DressDetailPage>
     final bg = switch (status) {
       'confirmed' => themeSage.withValues(alpha: 0.12),
       'active' => themePeach.withValues(alpha: 0.12),
-      'returned' => const Color(0xFFF5EFED),
+      'returned' => themeSurfaceMuted,
       'pending' => themeAccent.withValues(alpha: 0.18),
       'cancelled' => themeRose.withValues(alpha: 0.10),
-      _ => const Color(0xFFF5EFED),
+      _ => themeSurfaceMuted,
     };
     final fg = switch (status) {
       'confirmed' => themeSage,
@@ -1064,7 +1064,7 @@ class _DressDetailPageState extends State<DressDetailPage>
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: FontWeight.w600,
           color: fg,
           letterSpacing: 0.1,
@@ -1080,9 +1080,9 @@ class _DressDetailPageState extends State<DressDetailPage>
         color: themeText,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Text(
+      child: Text(
         'For Sale',
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFFFFF8F6)),
+        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: themeBackground),
       ),
     );
   }
@@ -1091,10 +1091,10 @@ class _DressDetailPageState extends State<DressDetailPage>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5EFED),
+        color: themeSurfaceMuted,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(label, style: TextStyle(fontSize: 11, color: themeTaupe)),
+      child: Text(label, style: TextStyle(fontSize: 12, color: themeTaupe)),
     );
   }
 
@@ -1109,7 +1109,7 @@ class _DressDetailPageState extends State<DressDetailPage>
       bg = themePeach.withValues(alpha: 0.12);
       text = themePeach;
     } else {
-      bg = const Color(0xFFF5EFED);
+      bg = themeSurfaceMuted;
       text = themeTaupe;
     }
     return Container(
@@ -1118,7 +1118,7 @@ class _DressDetailPageState extends State<DressDetailPage>
         color: bg,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(condition, style: TextStyle(fontSize: 11, color: text)),
+      child: Text(condition, style: TextStyle(fontSize: 12, color: text)),
     );
   }
 

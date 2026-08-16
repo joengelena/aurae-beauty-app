@@ -59,7 +59,7 @@ class _SpecChip extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: FontWeight.w500,
               color: fg,
             ),
@@ -213,11 +213,11 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                           const SizedBox(height: 24),
                           _buildAboutSection(listing),
                           const SizedBox(height: 28),
-                          const Divider(color: Color(0xFFEEE8E4)),
+                          Divider(color: themePrimary.withValues(alpha: 0.6)),
                           const SizedBox(height: 20),
                           _buildAvailabilityCalendar(provider),
                           const SizedBox(height: 28),
-                          const Divider(color: Color(0xFFEEE8E4)),
+                          Divider(color: themePrimary.withValues(alpha: 0.6)),
                           const SizedBox(height: 20),
                           _buildOwnerRow(provider),
                           _buildDescriptionSection(listing),
@@ -276,7 +276,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                         children: [
                           _buildAboutSection(listing),
                           const SizedBox(height: 28),
-                          const Divider(color: Color(0xFFEEE8E4)),
+                          Divider(color: themePrimary.withValues(alpha: 0.6)),
                           const SizedBox(height: 20),
                           _buildOwnerRow(provider),
                           _buildDescriptionSection(listing),
@@ -322,7 +322,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                       const SizedBox(height: 28),
                       _buildAboutSection(listing),
                       const SizedBox(height: 28),
-                      const Divider(color: Color(0xFFEEE8E4)),
+                      Divider(color: themePrimary.withValues(alpha: 0.6)),
                       const SizedBox(height: 20),
                       _buildOwnerRow(provider),
                       _buildDescriptionSection(listing),
@@ -381,7 +381,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
           onSizeSelected: (size) => provider.selectSize(size),
         ),
         const SizedBox(height: 24),
-        const Divider(color: Color(0xFFEEE8E4)),
+        Divider(color: themePrimary.withValues(alpha: 0.6)),
         const SizedBox(height: 24),
         DeliveryChoiceCard(
           ownerDeliveryOption: provider.listingOwner?.deliveryOption,
@@ -389,7 +389,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
           onChanged: (option) => setState(() => _selectedDelivery = option),
         ),
         const SizedBox(height: 24),
-        const Divider(color: Color(0xFFEEE8E4)),
+        Divider(color: themePrimary.withValues(alpha: 0.6)),
         const SizedBox(height: 24),
         BookingDatesCard(
           bookings: provider.bookings,
@@ -458,7 +458,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
               Expanded(
                 child: Text(
                   listing.location,
-                  style: TextStyle(fontSize: 13, color: themeTaupe),
+                  style: TextStyle(fontSize: 12, color: themeTaupe),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -504,15 +504,15 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                     Icon(
                       Icons.sell_outlined,
                       size: 14,
-                      color: Color(0xFFFFF8F6),
+                      color: themeBackground,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'For Sale',
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFFFFF8F6),
+                        color: themeBackground,
                       ),
                     ),
                   ],
@@ -595,7 +595,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
           Text(
             label,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: FontWeight.w500,
               color: themeTaupe,
             ),
@@ -646,7 +646,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 28),
-        const Divider(color: Color(0xFFEEE8E4)),
+        Divider(color: themePrimary.withValues(alpha: 0.6)),
         const SizedBox(height: 20),
         _buildGarmentFeatures(
           listing.description.isNotEmpty ? listing.description : '-',
@@ -686,7 +686,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 28),
-        const Divider(color: Color(0xFFEEE8E4)),
+        Divider(color: themePrimary.withValues(alpha: 0.6)),
         const SizedBox(height: 20),
         Text(
           'Damage history',
@@ -736,7 +736,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                 child: Text(
                   formatDate(incident.occurredAt),
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: themeText,
                   ),
@@ -754,7 +754,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                 child: Text(
                   incident.resolved ? 'Resolved' : 'Unresolved',
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: incident.resolved ? themeSage : themeRose,
                   ),
@@ -765,7 +765,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
           const SizedBox(height: 6),
           Text(
             incident.description,
-            style: TextStyle(fontSize: 13, color: themeText, height: 1.4),
+            style: TextStyle(fontSize: 14, color: themeText, height: 1.4),
           ),
           if (incident.photoUrls.isNotEmpty) ...[
             const SizedBox(height: 8),
@@ -790,7 +790,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
                                 fit: BoxFit.cover,
                                 errorWidget:
                                     (_, __, ___) => Container(
-                                      color: const Color(0xFFF5EFED),
+                                      color: themeSurfaceMuted,
                                       child: Icon(
                                         Icons.broken_image_outlined,
                                         size: 16,

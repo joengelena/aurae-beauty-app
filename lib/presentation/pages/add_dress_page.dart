@@ -324,7 +324,7 @@ class _AddDressPageState extends State<AddDressPage> {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: 13,
+          fontSize: 12,
           fontWeight: FontWeight.w600,
           color: themeTaupe,
         ),
@@ -366,7 +366,7 @@ class _AddDressPageState extends State<AddDressPage> {
   Widget _buildListingTypeToggle() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF5EFED),
+        color: themeSurfaceMuted,
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.all(4),
@@ -385,7 +385,7 @@ class _AddDressPageState extends State<AddDressPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: _isPublic ? const Color(0xFFEAD9D5) : const Color(0xFFF5EFED),
+          color: _isPublic ? const Color(0xFFEAD9D5) : themeSurfaceMuted,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _isPublic ? const Color(0xFFD4A89A) : const Color(0xFFDDD4CF),
@@ -406,7 +406,7 @@ class _AddDressPageState extends State<AddDressPage> {
                   Text(
                     _isPublic ? 'Visible on Browse' : 'Private (Wardrobe only)',
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: _isPublic ? const Color(0xFF8B4A3C) : themeText,
                     ),
@@ -415,7 +415,7 @@ class _AddDressPageState extends State<AddDressPage> {
                     _isPublic
                         ? 'Anyone can browse and book this dress'
                         : 'Only visible in your wardrobe',
-                    style: TextStyle(fontSize: 11, color: themeTaupe),
+                    style: TextStyle(fontSize: 12, color: themeTaupe),
                   ),
                 ],
               ),
@@ -451,7 +451,7 @@ class _AddDressPageState extends State<AddDressPage> {
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
               color: selected ? themeText : themeTaupe,
             ),
@@ -469,7 +469,7 @@ class _AddDressPageState extends State<AddDressPage> {
         children: [
           Text.rich(
             TextSpan(
-              style: const TextStyle(fontSize: 14, color: Color(0xFF3A2E2A)),
+              style: TextStyle(fontSize: 14, color: themeText),
               children: [
                 const TextSpan(text: 'Color  '),
                 TextSpan(text: '*', style: TextStyle(color: themeRose)),
@@ -579,7 +579,7 @@ class _AddDressPageState extends State<AddDressPage> {
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: _photoError ? themeRose.withValues(alpha: 0.06) : const Color(0xFFF5EFED),
+                      color: _photoError ? themeRose.withValues(alpha: 0.06) : themeSurfaceMuted,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: _photoError ? themeRose : const Color(0xFFDDD4CF),
@@ -590,7 +590,7 @@ class _AddDressPageState extends State<AddDressPage> {
                       children: [
                         Icon(Icons.add_photo_alternate_outlined, size: 32, color: _photoError ? themeRose : themeTaupe),
                         const SizedBox(height: 6),
-                        Text('Add photos (min 1)', style: TextStyle(color: _photoError ? themeRose : themeTaupe, fontSize: 13)),
+                        Text('Add photos (min 1)', style: TextStyle(color: _photoError ? themeRose : themeTaupe, fontSize: 12)),
                       ],
                     ),
                   ),
@@ -607,7 +607,7 @@ class _AddDressPageState extends State<AddDressPage> {
                           height: 120,
                           margin: const EdgeInsets.only(right: 8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF5EFED),
+                            color: themeSurfaceMuted,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: const Color(0xFFDDD4CF)),
                           ),

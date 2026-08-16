@@ -176,7 +176,7 @@ class _CalendarDateRangePickerState extends State<CalendarDateRangePicker> {
                   child: Text(
                     _label,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       color: widget.hasError
                           ? themeRose
                           : (_hasSelection ? themeText : themeTaupe),
@@ -293,7 +293,7 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
                   child: Text(
                     widget.rangeMode ? 'Select dates' : 'Select date',
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: themeText,
                       fontFamily: 'Poppins',

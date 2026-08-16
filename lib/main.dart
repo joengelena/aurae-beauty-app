@@ -15,7 +15,7 @@ import 'package:shine_app/logic/cart_provider.dart';
 import 'package:shine_app/logic/wardrobe_provider.dart';
 import 'package:shine_app/logic/dress_detail_provider.dart';
 import 'package:shine_app/logic/owner_profile_provider.dart';
-import 'package:shine_app/logic/upcoming_bookings_provider.dart';
+import 'package:shine_app/logic/my_bookings_provider.dart';
 import 'package:shine_app/logic/week_schedule_provider.dart';
 import 'package:shine_app/logic/business_settings_provider.dart';
 import 'package:shine_app/data/cache_manager.dart';
@@ -86,17 +86,10 @@ void main() async {
             return dressDetailProvider;
           },
         ),
-        ChangeNotifierProxyProvider2<
-          AuthProvider,
-          ProfileProvider,
-          ListingsProvider
-        >(
+        ChangeNotifierProxyProvider<AuthProvider, ListingsProvider>(
           create: (_) => ListingsProvider(),
-          update: (context, authProvider, profileProvider, listingsProvider) {
+          update: (context, authProvider, listingsProvider) {
             listingsProvider!.updateAuthStatus(authProvider.isSignedIn);
-            listingsProvider.updateUserLocation(
-              profileProvider.currentUser?.location,
-            );
             return listingsProvider;
           },
         ),
@@ -117,11 +110,11 @@ void main() async {
         ChangeNotifierProvider<OwnerProfileProvider>(
           create: (_) => OwnerProfileProvider(),
         ),
-        ChangeNotifierProxyProvider<AuthProvider, UpcomingBookingsProvider>(
-          create: (_) => UpcomingBookingsProvider(),
-          update: (context, authProvider, upcomingBookingsProvider) {
-            upcomingBookingsProvider!.updateAuthStatus(authProvider.isSignedIn);
-            return upcomingBookingsProvider;
+        ChangeNotifierProxyProvider<AuthProvider, MyBookingsProvider>(
+          create: (_) => MyBookingsProvider(),
+          update: (context, authProvider, myBookingsProvider) {
+            myBookingsProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return myBookingsProvider;
           },
         ),
         ChangeNotifierProvider<BusinessSettingsProvider>(

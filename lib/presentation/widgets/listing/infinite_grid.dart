@@ -187,9 +187,10 @@ class _InfiniteGridState extends State<InfiniteGrid>
 
       await listingsProvider.getNewListings();
     } catch (e) {
-      if (mounted) {
-        // TODO: Show error state to user
-      }
+      // getNewListings() already catches its own fetch errors into
+      // ListingsProvider.errorMessage (rendered via _buildErrorState below);
+      // this only catches _waitForAttributes failing outright.
+      debugPrint('⚠️ Failed to initialize listings: $e');
     }
   }
 
@@ -237,6 +238,18 @@ class _InfiniteGridState extends State<InfiniteGrid>
     );
   }
 
+  Widget _buildErrorState(ListingsProvider provider) {
+    return AppEmptyState(
+      icon: Icons.error_outline,
+      title: 'Something went wrong',
+      body: provider.errorMessage,
+      action: FilledButton(
+        onPressed: provider.getNewListings,
+        child: const Text('Try again'),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ListingsProvider>();
@@ -247,6 +260,12 @@ class _InfiniteGridState extends State<InfiniteGrid>
     // Skeleton grid during initial load
     if (provider.listings.isEmpty && provider.isLoading) {
       return _buildSkeletonGrid(crossAxisCount, itemWidth);
+    }
+
+    // Error state — a failed fetch is not the same as a genuine zero
+    // results, and must not be presented as "adjust your filters"
+    if (provider.listings.isEmpty && provider.hasError) {
+      return _buildErrorState(provider);
     }
 
     // Empty state
@@ -307,7 +326,7 @@ class _InfiniteGridState extends State<InfiniteGrid>
                 const SizedBox(height: 4),
                 Text(
                   '${provider.totalListings} dress${provider.totalListings == 1 ? '' : 'es'} available',
-                  style: TextStyle(fontSize: 13, color: themeTaupe),
+                  style: TextStyle(fontSize: 12, color: themeTaupe),
                 ),
                 const SizedBox(height: 64),
               ],

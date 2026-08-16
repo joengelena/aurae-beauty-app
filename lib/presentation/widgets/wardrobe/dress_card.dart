@@ -54,7 +54,7 @@ class DressCard extends StatelessWidget {
                       child:
                           dress.dressPhotoUrl != null
                               ? ColoredBox(
-                                color: const Color(0xFFF5EFED),
+                                color: themeSurfaceMuted,
                                 child: CachedNetworkImage(
                                   imageUrl: dress.dressPhotoUrl!,
                                   fit: BoxFit.contain,
@@ -234,14 +234,14 @@ class DressCard extends StatelessWidget {
                                 Text(
                                   'From ',
                                   style: TextStyle(
-                                    fontSize: 11,
+                                    fontSize: 12,
                                     color: themeTaupe,
                                   ),
                                 ),
                               Text(
                                 formatPrice(dress.rentalPricePerDay!),
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                   color: themeText,
                                 ),
@@ -250,7 +250,7 @@ class DressCard extends StatelessWidget {
                                 Text(
                                   '/day',
                                   style: TextStyle(
-                                    fontSize: 11,
+                                    fontSize: 12,
                                     color: themeTaupe,
                                   ),
                                 ),
@@ -261,7 +261,7 @@ class DressCard extends StatelessWidget {
                               Text(
                                 '${dress.rentalCount} rental${dress.rentalCount != 1 ? 's' : ''}',
                                 style: TextStyle(
-                                  fontSize: 11,
+                                  fontSize: 12,
                                   color: themeTaupe,
                                 ),
                               ),
@@ -295,7 +295,7 @@ class DressCard extends StatelessWidget {
               TextSpan(
                 text: primaryLabel,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: themeText,
                   height: 1.3,
@@ -317,7 +317,7 @@ class DressCard extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           '${dress.brand} · ${dress.style}',
-          style: TextStyle(fontSize: 11, color: themeTaupe, height: 1.3),
+          style: TextStyle(fontSize: 12, color: themeTaupe, height: 1.3),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -329,10 +329,10 @@ class DressCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5EFED),
+        color: themeSurfaceMuted,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(label, style: TextStyle(fontSize: 11, color: themeTaupe)),
+      child: Text(label, style: TextStyle(fontSize: 12, color: themeTaupe)),
     );
   }
 
@@ -347,7 +347,7 @@ class DressCard extends StatelessWidget {
       bg = themePeach.withValues(alpha: 0.12);
       text = themePeach;
     } else {
-      bg = const Color(0xFFF5EFED);
+      bg = themeSurfaceMuted;
       text = themeTaupe;
     }
     return Container(
@@ -356,13 +356,13 @@ class DressCard extends StatelessWidget {
         color: bg,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(condition, style: TextStyle(fontSize: 11, color: text)),
+      child: Text(condition, style: TextStyle(fontSize: 12, color: text)),
     );
   }
 
   Widget _photoPlaceholder() {
     return Container(
-      color: const Color(0xFFF5EFED),
+      color: themeSurfaceMuted,
       child: Center(
         child: Icon(Icons.checkroom_outlined, color: themeTaupe, size: 40),
       ),

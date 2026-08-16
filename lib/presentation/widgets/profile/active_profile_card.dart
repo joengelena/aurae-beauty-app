@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shine_app/logic/active_profile_provider.dart';
+import 'package:shine_app/presentation/widgets/common/app_card.dart';
 import 'package:shine_app/utils/theme.dart';
 
 /// Shows which context the account is currently browsing as — Customer, or
@@ -120,13 +121,9 @@ class _CardShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: highlighted ? themeAccent.withValues(alpha: 0.15) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFEADFD8)),
-      ),
+      color: highlighted ? themeAccent.withValues(alpha: 0.15) : Colors.white,
       child: child,
     );
   }

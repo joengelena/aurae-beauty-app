@@ -9,6 +9,7 @@ import 'package:shine_app/presentation/pages/profile/change_password_page.dart';
 import 'package:shine_app/presentation/pages/profile/create_business_page.dart';
 import 'package:shine_app/presentation/pages/profile/delete_account_page.dart';
 import 'package:shine_app/presentation/pages/profile/edit_profile_page.dart';
+import 'package:shine_app/presentation/pages/profile/my_bookings_page.dart';
 import 'package:shine_app/presentation/pages/profile/invite_team_member_page.dart';
 import 'package:shine_app/presentation/pages/profile/join_business_page.dart';
 import 'package:shine_app/presentation/pages/profile/email_verification_page.dart';
@@ -316,6 +317,12 @@ GoRouter getAppRouter(AuthProvider authProvider, ProfileProvider profileProvider
                 path: 'edit',
                 pageBuilder: (context, state) {
                   return NoTransitionPage(child: EditProfilePage());
+                },
+              ),
+              GoRoute(
+                path: 'bookings',
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: MyBookingsPage());
                 },
               ),
               GoRoute(

@@ -355,7 +355,7 @@ class DressServices {
           'startDate': startDate.toIso8601String().split('T')[0],
           'endDate': endDate.toIso8601String().split('T')[0],
         },
-        invalidateCacheKeys: ['public_bookings_$dressId'],
+        invalidateCacheKeys: ['public_bookings_$dressId', CacheKeys.myBookings],
       );
 
       if (response.statusCode == HttpStatus.conflict) {
@@ -526,6 +526,33 @@ class DressServices {
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
       throw NetworkException('Network error fetching my bookings', details: e.toString());
+    }
+  }
+
+  Future<void> cancelMyBooking(int bookingId) async {
+    try {
+      final response = await apiClient.patch(
+        '/user/my-bookings/$bookingId/cancel',
+        {},
+        invalidateCacheKeys: [CacheKeys.myBookings],
+      );
+
+      if (response.statusCode == HttpStatus.notFound) {
+        throw NotFoundException(extractErrorMessage(response.body));
+      }
+      if (response.statusCode == HttpStatus.forbidden) {
+        throw ForbiddenException(extractErrorMessage(response.body));
+      }
+      if (response.statusCode != HttpStatus.ok) {
+        throw NetworkException(
+          extractErrorMessage(response.body),
+          statusCode: response.statusCode,
+          details: response.body,
+        );
+      }
+    } catch (e) {
+      if (e is NotFoundException || e is ForbiddenException || e is NetworkException) rethrow;
+      throw NetworkException('Network error cancelling booking', details: e.toString());
     }
   }
 

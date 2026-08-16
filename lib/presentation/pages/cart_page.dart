@@ -218,7 +218,7 @@ class _CartItemTile extends StatelessWidget {
                   width: 90,
                   height: 110,
                   child: ColoredBox(
-                    color: const Color(0xFFF5EFED),
+                    color: themeSurfaceMuted,
                     child: item.dressPhotoUrl.isEmpty
                         ? Icon(Icons.checkroom_outlined, color: themeTaupe)
                         : CachedNetworkImage(
@@ -320,7 +320,7 @@ class _CartSummaryBar extends StatelessWidget {
                 Text(
                   formatPrice(total),
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 22,
                     fontWeight: FontWeight.w700,
                     color: themeText,
                   ),
@@ -345,20 +345,20 @@ class _CartSummaryBar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(26),
                 ),
                 child: isProcessing
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 18,
                         height: 18,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: Color(0xFFFFF8F6),
+                          color: themeBackground,
                         ),
                       )
-                    : const Text(
+                    : Text(
                         'Checkout',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFFFFF8F6),
+                          color: themeBackground,
                         ),
                       ),
               ),
