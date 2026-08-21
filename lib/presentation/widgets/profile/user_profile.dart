@@ -27,11 +27,11 @@ class UserProfile extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline, size: 48, color: themeRed),
+              Icon(Icons.error_outline, size: 48, color: themeRose),
               SizedBox(height: 16),
               Text(
                 profileProvider.errorMessage,
-                style: TextStyle(color: themeRed),
+                style: TextStyle(color: themeRose),
                 textAlign: TextAlign.center,
               ),
             ],

@@ -135,7 +135,7 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
   Widget _buildToggle() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF5EFED),
+        color: themeSurfaceMuted,
         borderRadius: BorderRadius.circular(10),
       ),
       padding: const EdgeInsets.all(3),
@@ -180,8 +180,7 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
           child: Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
               fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
               color: selected ? themeText : themeTaupe,
             ),

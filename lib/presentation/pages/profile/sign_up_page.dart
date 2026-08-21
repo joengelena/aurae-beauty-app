@@ -288,11 +288,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   children: [
                     Text(
                       '+64',
-                      style: TextStyle(
-                        color: themeText,
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
-                      ),
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -441,7 +437,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 padding: const EdgeInsets.only(left: 12, top: 4),
                 child: Text(
                   'You must agree to continue.',
-                  style: TextStyle(color: themeRose, fontSize: 12),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: themeRose),
                 ),
               ),
             const SizedBox(height: 24),
@@ -520,7 +516,7 @@ class _SignUpPageState extends State<SignUpPage> {
           Expanded(
             child: Text(
               message,
-              style: TextStyle(color: themeRose, fontSize: 14),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: themeRose),
             ),
           ),
         ],

@@ -45,9 +45,8 @@ class SettingsRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
                 color: labelColor,
               ),
             ),

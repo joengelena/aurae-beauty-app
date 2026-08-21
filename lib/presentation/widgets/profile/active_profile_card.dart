@@ -36,7 +36,7 @@ class ActiveProfileCard extends StatelessWidget {
             Expanded(
               child: Text(
                 provider.errorMessage,
-                style: TextStyle(fontSize: 12, color: themeTaupe),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
             TextButton(
@@ -80,16 +80,14 @@ class ActiveProfileCard extends StatelessWidget {
               children: [
                 Text(
                   heading,
-                  style: TextStyle(
-                    fontSize: 14,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: themeText,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: TextStyle(fontSize: 12, color: themeTaupe),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),

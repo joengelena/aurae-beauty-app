@@ -27,7 +27,7 @@ class _ColorDot extends StatelessWidget {
         color: color,
         shape: BoxShape.circle,
         border: isLight
-            ? Border.all(color: const Color(0xFFD0C8C0), width: 0.8)
+            ? Border.all(color: themeBorderMuted, width: 0.8)
             : null,
       ),
     );
@@ -100,7 +100,7 @@ class ListingPreview extends StatelessWidget {
                         color: Colors.white.withValues(alpha: 0.92),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: const Color(0xFFD0C8C0),
+                          color: themeBorderMuted,
                           width: 0.75,
                         ),
                       ),

@@ -102,7 +102,7 @@ class DressCard extends StatelessWidget {
                           color: Colors.white.withValues(alpha: 0.92),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: const Color(0xFFD0C8C0),
+                            color: themeBorderMuted,
                             width: 0.75,
                           ),
                         ),

@@ -255,7 +255,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Text(
                     authProvider.resetPasswordMessage,
-                    style: const TextStyle(color: Colors.red, fontSize: 14),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: themeRose),
                     textAlign: TextAlign.center,
                   ),
                 ),

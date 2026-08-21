@@ -57,10 +57,10 @@ class _EmailVerificationExpiredState extends State<EmailVerificationExpired> {
                   height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: themeOrange, width: 6),
+                    border: Border.all(color: themePeach, width: 6),
                   ),
                   child: Center(
-                    child: Icon(Icons.link_off, size: 64, color: themeOrange),
+                    child: Icon(Icons.link_off, size: 64, color: themePeach),
                   ),
                 ),
 
@@ -130,7 +130,7 @@ class _EmailVerificationExpiredState extends State<EmailVerificationExpired> {
                     'Back to Sign In',
                     style: Theme.of(
                       context,
-                    ).textTheme.bodySmall?.copyWith(color: Colors.blue[700]),
+                    ).textTheme.bodySmall?.copyWith(color: themeLavender),
                   ),
                 ),
               ],

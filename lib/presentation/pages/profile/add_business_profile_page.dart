@@ -28,7 +28,7 @@ class AddBusinessProfilePage extends StatelessWidget {
             const SizedBox(height: AppConstants.spacingSmall),
             Text(
               'Own a boutique, or joining one as staff? Pick one below.',
-              style: TextStyle(color: themeTaupe, fontSize: 14),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: themeTaupe),
             ),
             const SizedBox(height: AppConstants.spacingLarge),
             SettingsRow(

@@ -117,7 +117,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Text(
                             authProvider.changePasswordMessage,
-                            style: TextStyle(color: themeRed, fontSize: 14),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: themeRose),
                             textAlign: TextAlign.center,
                           ),
                         ),

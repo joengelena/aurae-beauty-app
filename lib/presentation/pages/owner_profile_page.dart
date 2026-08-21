@@ -395,12 +395,9 @@ class _ListingCard extends StatelessWidget {
                     listing.listingType == 'sell'
                         ? formatPrice(listing.pricePerDay)
                         : '${formatPrice(listing.pricePerDay)}/day',
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: listing.listingType == 'sell'
-                          ? const Color(0xFFD4AF37)
-                          : themeText,
+                      color: themeText,
                     ),
                   ),
                 ],

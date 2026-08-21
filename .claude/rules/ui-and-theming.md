@@ -32,6 +32,8 @@ The feel: **boutique, not backend.** A well-kept dressing room — calm, warm, d
 | `themeRose` | `#F43F5E` | Error / urgent |
 | `themePeach` | `#FB923C` | Warning |
 | `themeLavender` | `#9333EA` | Info |
+| `themeSurfaceMuted` | `#F5EFED` | Muted neutral surface — chip backgrounds, photo placeholders, icon squares |
+| `themeBorderMuted` | `#DDD4CF` | Inert edge — disabled buttons, empty photo-upload placeholders. Not for active borders (that's `themePrimary`) |
 
 `themeBlue`/`themeGreen`/`themeRed`/`themeOrange` are aliases kept for older call sites — prefer the named colors above in new code.
 
@@ -42,6 +44,10 @@ The feel: **boutique, not backend.** A well-kept dressing room — calm, warm, d
 Set in `appTheme.textTheme` — use `Theme.of(context).textTheme.*`:
 
 `headlineLarge` 28 bold · `headlineMedium` 22 bold · `headlineSmall` 18 w600 · `bodyLarge` 16 · `bodyMedium` 14 · `bodySmall` 12 (taupe)
+
+Aliases onto the same scale, for M3 role names that call sites reach for: `titleLarge` = `headlineMedium`, `titleMedium` = `headlineSmall`, `titleSmall` = 14 w600. **Any role not defined in `appTheme` silently falls back to Flutter's M3 defaults** — off-scale sizes and w500 weights. If you use a new role name, define it in `appTheme` first.
+
+Weights are 400 / 600 / 700 only. `w500` is not in the system (Weight Bridge Rule: adjacent roles differ by ≥200).
 
 ## Shape & Layout
 
@@ -55,7 +61,9 @@ Web and mobile share one widget tree. Anything full-width must be constrained on
 
 ## Reusable Widgets — Check Before Building
 
-**`widgets/common/`** — `AppDialog`, `AppEmptyState`, `LoadingButton`, `ActionMenuButton`, `LabeledFab`, `PasswordField`, `PriceActionBar`, `SelectSingleImage`, `CalendarDateRangePicker`
+**`widgets/common/`** — `AppCard`, `AppDialog`, `AppEmptyState`, `LoadingButton`, `ActionMenuButton`, `LabeledFab`, `PasswordField`, `PriceActionBar`, `SelectSingleImage`, `CalendarDateRangePicker`
+
+**`AppCard` is the one card idiom.** White surface, 16px radius, the "Raised" shadow, no border. Never hand-roll a `Container` + `BoxDecoration` for a card surface — the app previously drifted into two competing card styles that way.
 
 **`widgets/form_fields/`** — `StringFormField`, `NumberFormField`, `DecimalFormField`, `DateFormField`, `DropdownFormField`, `AutocompleteFormField`
 

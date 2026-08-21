@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shine_app/logic/business_settings_provider.dart';
+import 'package:shine_app/presentation/widgets/common/app_card.dart';
 import 'package:shine_app/presentation/widgets/profile/settings_row.dart';
 import 'package:shine_app/utils/secure_storage.dart';
 import 'package:shine_app/utils/theme.dart';
@@ -61,22 +62,15 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
   ) {
     final days = provider.settings.cleaningBufferDays;
 
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFEADFD8)),
-      ),
       child: Row(
         children: [
           Expanded(
             child: Text(
               'Cleaning buffer',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: themeText,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -92,10 +86,8 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
             child: Text(
               '$days',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 15,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: themeText,
               ),
             ),
           ),
@@ -162,15 +154,14 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 13,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
             color: themeTaupe,
             letterSpacing: 0.8,
           ),
         ),
         const SizedBox(height: 4),
-        Text(description, style: TextStyle(fontSize: 13, color: themeTaupe)),
+        Text(description, style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 16),
         child,
         const SizedBox(height: 32),
@@ -280,7 +271,7 @@ class _DeliveryTile extends StatelessWidget {
           color: selected ? themeAccent.withValues(alpha: 0.18) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected ? themeAccent : const Color(0xFFEADFD8),
+            color: selected ? themeAccent : themePrimary,
             width: selected ? 1.5 : 1,
           ),
         ),
@@ -293,7 +284,7 @@ class _DeliveryTile extends StatelessWidget {
                 color:
                     selected
                         ? themeAccent.withValues(alpha: 0.35)
-                        : const Color(0xFFF5F0ED),
+                        : themeSurfaceMuted,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -309,16 +300,15 @@ class _DeliveryTile extends StatelessWidget {
                 children: [
                   Text(
                     option.label,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                      color: themeText,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight:
+                          selected ? FontWeight.w600 : FontWeight.w400,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     option.subtitle,
-                    style: TextStyle(fontSize: 12, color: themeTaupe),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
@@ -328,7 +318,7 @@ class _DeliveryTile extends StatelessWidget {
             else
               Icon(
                 Icons.radio_button_unchecked,
-                color: const Color(0xFFD0C8C0),
+                color: themeBorderMuted,
                 size: 20,
               ),
           ],

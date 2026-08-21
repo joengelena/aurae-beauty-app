@@ -106,17 +106,17 @@ class _SignInPageState extends State<SignInPage> {
                           children: [
                             Icon(
                               Icons.error_outline,
-                              color: themeRed,
+                              color: themeRose,
                               size: 20,
                             ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 authProvider.signInErrorMessage,
-                                style: TextStyle(
-                                  color: themeRed,
-                                  fontSize: 14,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: themeRose),
                               ),
                             ),
                           ],

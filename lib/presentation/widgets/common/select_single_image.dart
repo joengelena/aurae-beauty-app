@@ -109,7 +109,7 @@ class _SelectSingleImageState extends State<SelectSingleImage> {
                       fit: BoxFit.cover,
                       errorWidget: (context, url, error) {
                         return Container(
-                          color: const Color(0xFFF5EFED),
+                          color: themeSurfaceMuted,
                           child: Icon(
                             Icons.broken_image,
                             size: 48,

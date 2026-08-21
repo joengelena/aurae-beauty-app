@@ -79,7 +79,7 @@ class _InviteTeamMemberPageState extends State<InviteTeamMemberPage> {
             const SizedBox(height: AppConstants.spacingSmall),
             Text(
               'Generate a code and share it with them — it expires in 7 days and works once.',
-              style: TextStyle(color: themeTaupe, fontSize: 14),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: themeTaupe),
             ),
             const SizedBox(height: AppConstants.spacingLarge),
             if (_generatedCode == null) ...[
@@ -123,11 +123,10 @@ class _InviteTeamMemberPageState extends State<InviteTeamMemberPage> {
                   children: [
                     Text(
                       _generatedCode!,
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 4,
-                      ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineLarge
+                          ?.copyWith(letterSpacing: 4),
                     ),
                     const SizedBox(height: AppConstants.spacingSmall),
                     TextButton.icon(
@@ -176,14 +175,14 @@ class _RoleChip extends StatelessWidget {
           color: selected ? themeAccent.withValues(alpha: 0.35) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? themeAccentInk : const Color(0xFFEADFD8),
+            color: selected ? themeAccentInk : themePrimary,
           ),
         ),
         child: Text(
           label,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
             color: selected ? themeAccentInk : themeText,
           ),
         ),

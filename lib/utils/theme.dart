@@ -22,6 +22,12 @@ final themeTaupe = Color(0xFF78716C);       // Secondary text (taupe)
 // #F5F0ED depending on the file).
 final themeSurfaceMuted = Color(0xFFF5EFED);
 
+// Inert edge — the border/fill for things that are switched off or awaiting
+// input: disabled buttons, empty photo-upload placeholders. Deliberately a
+// step darker than themePrimary (#EADFD8, the *resting* input border) so
+// "inert" and "resting" stay visually distinguishable. Not for active borders.
+final themeBorderMuted = Color(0xFFDDD4CF);
+
 // Dress color palette — maps color name strings to display colors
 const Map<String, Color> dressColorMap = {
   'Black':     Color(0xFF1C1C1C),
@@ -84,6 +90,31 @@ final ThemeData appTheme = ThemeData(
       letterSpacing: 0.2,
       height: 1.3,
     ),
+    // The M3 `title*` roles are pinned onto the documented scale because call
+    // sites do use them (dialogs, menus, section headings). Left undefined they
+    // fall through to Flutter's M3 defaults — titleLarge at 22/w400 and
+    // titleSmall at 14/w500 — which are off the 6-step scale and carry the w500
+    // weight the Weight Bridge Rule bans. Aliases, not new steps.
+    titleLarge: TextStyle(       // = Title, same as headlineMedium
+      fontSize: 22,
+      fontWeight: FontWeight.bold,
+      color: themeText,
+      letterSpacing: 0.3,
+      height: 1.3,
+    ),
+    titleMedium: TextStyle(      // = Subtitle, same as headlineSmall
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      color: themeText,
+      letterSpacing: 0.2,
+      height: 1.3,
+    ),
+    titleSmall: TextStyle(       // = Body Small at heading weight
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      color: themeText,
+      height: 1.5,
+    ),
     bodyLarge: TextStyle(
       fontSize: 16,
       color: themeText,
@@ -105,7 +136,7 @@ final ThemeData appTheme = ThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: themeAccent,
       foregroundColor: themeText,
-      disabledBackgroundColor: Color(0xFFDDD4CF),
+      disabledBackgroundColor: themeBorderMuted,
       disabledForegroundColor: Color(0xFFA89E99),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -124,7 +155,7 @@ final ThemeData appTheme = ThemeData(
     style: FilledButton.styleFrom(
       backgroundColor: themeAccent,
       foregroundColor: themeText,
-      disabledBackgroundColor: Color(0xFFDDD4CF),
+      disabledBackgroundColor: themeBorderMuted,
       disabledForegroundColor: Color(0xFFA89E99),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -142,7 +173,7 @@ final ThemeData appTheme = ThemeData(
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       foregroundColor: themeText,
-      side: BorderSide(color: Color(0xFFEADFD8), width: 1.5),
+      side: BorderSide(color: themePrimary, width: 1.5),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),

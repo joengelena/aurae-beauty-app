@@ -25,7 +25,7 @@ class _ColorDot extends StatelessWidget {
         shape: BoxShape.circle,
         border:
             isLight
-                ? Border.all(color: const Color(0xFFD0C8C0), width: 0.8)
+                ? Border.all(color: themeBorderMuted, width: 0.8)
                 : null,
       ),
     );

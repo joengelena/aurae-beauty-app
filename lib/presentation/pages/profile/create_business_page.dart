@@ -69,7 +69,7 @@ class _CreateBusinessPageState extends State<CreateBusinessPage> {
               const SizedBox(height: AppConstants.spacingSmall),
               Text(
                 "What's your boutique called? You can change this later.",
-                style: TextStyle(color: themeTaupe, fontSize: 14),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: themeTaupe),
               ),
               const SizedBox(height: AppConstants.spacingLarge),
               TextFormField(

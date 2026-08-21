@@ -70,7 +70,7 @@ class _JoinBusinessPageState extends State<JoinBusinessPage> {
               const SizedBox(height: AppConstants.spacingSmall),
               Text(
                 'Enter the invite code the business owner shared with you.',
-                style: TextStyle(color: themeTaupe, fontSize: 14),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: themeTaupe),
               ),
               const SizedBox(height: AppConstants.spacingLarge),
               TextFormField(

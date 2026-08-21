@@ -107,7 +107,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              style: FilledButton.styleFrom(backgroundColor: themeRed),
+              style: FilledButton.styleFrom(backgroundColor: themeRose),
               child: const Text('Delete Permanently'),
             ),
           ],
@@ -132,7 +132,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 spacing: 24,
                 children: [
-                  Icon(Icons.warning_amber_rounded, size: 64, color: themeRed),
+                  Icon(Icons.warning_amber_rounded, size: 64, color: themeRose),
 
                   Text(
                     'Delete Account',
@@ -142,10 +142,10 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: themeRed.withValues(alpha: 0.1),
+                      color: themeRose.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: themeRed.withValues(alpha: 0.3),
+                        color: themeRose.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Column(
@@ -157,7 +157,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                             context,
                           ).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: themeRed,
+                            color: themeRose,
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -172,7 +172,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                         Text(
                           'This action cannot be undone.',
                           style: TextStyle(
-                            color: themeRed,
+                            color: themeRose,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -184,17 +184,17 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: themeRed.withValues(alpha: 0.1),
+                        color: themeRose.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_outline, color: themeRed, size: 20),
+                          Icon(Icons.error_outline, color: themeRose, size: 20),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               errorMessage,
-                              style: TextStyle(color: themeRed, fontSize: 14),
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: themeRose),
                             ),
                           ),
                         ],
@@ -249,9 +249,9 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                                 ? null
                                 : _handleDeleteAccount,
                         style: FilledButton.styleFrom(
-                          backgroundColor: themeRed,
+                          backgroundColor: themeRose,
                           foregroundColor: Colors.white,
-                          disabledBackgroundColor: themeRed.withValues(alpha: 0.4),
+                          disabledBackgroundColor: themeRose.withValues(alpha: 0.4),
                         ),
                         child:
                             isLoading
@@ -284,12 +284,12 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.close, size: 16, color: themeRed),
+          Icon(Icons.close, size: 16, color: themeRose),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(color: themeRed.withValues(alpha: 0.9)),
+              style: TextStyle(color: themeRose.withValues(alpha: 0.9)),
             ),
           ),
         ],

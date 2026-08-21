@@ -101,10 +101,8 @@ class BookingListCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         label,
-                        style: TextStyle(
-                          fontSize: 14,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: themeText,
                         ),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
@@ -119,8 +117,7 @@ class BookingListCard extends StatelessWidget {
                       ),
                       child: Text(
                         status.label,
-                        style: TextStyle(
-                          fontSize: 12,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: status.foreground,
                         ),
@@ -131,12 +128,12 @@ class BookingListCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   '${_fmtDate(booking.startDate)} – ${_fmtDate(booking.endDate)}',
-                  style: TextStyle(fontSize: 12, color: themeTaupe),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 2),
                 Text(
                   formatPrice(booking.totalCost.toInt()),
-                  style: TextStyle(fontSize: 12, color: themeTaupe),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 if (showCancel) ...[
                   const SizedBox(height: 8),
@@ -150,9 +147,12 @@ class BookingListCard extends StatelessWidget {
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
-                      child: const Text(
+                      child: Text(
                         'Cancel booking',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),

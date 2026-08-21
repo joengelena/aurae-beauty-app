@@ -272,10 +272,10 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: _isPublic ? const Color(0xFFEAD9D5) : themeSurfaceMuted,
+          color: _isPublic ? themePrimary : themeSurfaceMuted,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _isPublic ? const Color(0xFFD4A89A) : const Color(0xFFDDD4CF),
+            color: _isPublic ? themeAccent : themeBorderMuted,
           ),
         ),
         child: Row(
@@ -283,7 +283,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
             Icon(
               _isPublic ? Icons.public : Icons.lock_outline,
               size: 20,
-              color: _isPublic ? const Color(0xFF8B4A3C) : themeTaupe,
+              color: _isPublic ? themeAccentInk : themeTaupe,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -295,7 +295,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: _isPublic ? const Color(0xFF8B4A3C) : themeText,
+                      color: _isPublic ? themeAccentInk : themeText,
                     ),
                   ),
                   Text(
@@ -310,7 +310,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
             Switch(
               value: _isPublic,
               onChanged: (v) => setState(() => _isPublic = v),
-              activeColor: const Color(0xFF8B4A3C),
+              activeColor: themeAccentInk,
             ),
           ],
         ),
@@ -327,7 +327,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
           color: _resolved ? themeSage.withValues(alpha: 0.12) : themeSurfaceMuted,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _resolved ? themeSage.withValues(alpha: 0.4) : const Color(0xFFDDD4CF),
+            color: _resolved ? themeSage.withValues(alpha: 0.4) : themeBorderMuted,
           ),
         ),
         child: Row(
@@ -398,7 +398,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
                     decoration: BoxDecoration(
                       color: themeSurfaceMuted,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFFDDD4CF)),
+                      border: Border.all(color: themeBorderMuted),
                     ),
                     child: Icon(Icons.add_photo_alternate_outlined, color: themeTaupe),
                   ),

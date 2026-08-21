@@ -29,14 +29,15 @@ class MyBookingsPreviewCard extends StatelessWidget {
               child: Row(
                 children: [
                   Expanded(
-                    child: Text('Bookings', style: Theme.of(context).textTheme.titleLarge),
+                    child: Text(
+                      'Bookings',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
                   ),
                   Text(
                     'View all',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: themeTaupe,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   Icon(Icons.chevron_right, size: 20, color: themeTaupe),
@@ -54,7 +55,7 @@ class MyBookingsPreviewCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
                 provider.errorMessage,
-                style: TextStyle(color: themeRose, fontSize: 12),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: themeRose),
               ),
             )
           else if (provider.upcomingWithinMonth.isEmpty)
@@ -62,7 +63,7 @@ class MyBookingsPreviewCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
                 'No upcoming bookings in the next month',
-                style: TextStyle(color: themeTaupe, fontSize: 12),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             )
           else

@@ -110,7 +110,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       padding: EdgeInsets.symmetric(vertical: 8.0),
                       child: Text(
                         authProvider.forgotPasswordMessage,
-                        style: TextStyle(color: themeRed, fontSize: 14),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: themeRose),
                         textAlign: TextAlign.center,
                       ),
                     ),

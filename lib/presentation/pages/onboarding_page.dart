@@ -210,7 +210,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
             Center(
               child: Text(
                 'Upload failed — tap to retry',
-                style: TextStyle(color: themeRose, fontSize: 13),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: themeRose),
               ),
             ),
           ],
@@ -455,7 +458,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           color: selected ? themeAccent.withValues(alpha: 0.18) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected ? themeAccent : const Color(0xFFEADFD8),
+            color: selected ? themeAccent : themePrimary,
             width: selected ? 1.5 : 1,
           ),
         ),
@@ -467,7 +470,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               decoration: BoxDecoration(
                 color: selected
                     ? themeAccent.withValues(alpha: 0.35)
-                    : const Color(0xFFF5F0ED),
+                    : themeSurfaceMuted,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -483,17 +486,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 children: [
                   Text(
                     opt.label,
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight:
-                          selected ? FontWeight.w600 : FontWeight.w500,
-                      color: themeText,
+                          selected ? FontWeight.w600 : FontWeight.w400,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     opt.subtitle,
-                    style: TextStyle(fontSize: 12, color: themeTaupe),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
@@ -501,9 +502,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
             if (selected)
               Icon(Icons.check_circle_rounded, color: themeAccent, size: 20)
             else
-              const Icon(
+              Icon(
                 Icons.radio_button_unchecked,
-                color: Color(0xFFD0C8C0),
+                color: themeBorderMuted,
                 size: 20,
               ),
           ],

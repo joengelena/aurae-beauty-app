@@ -146,7 +146,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           padding: EdgeInsets.symmetric(vertical: 8.0),
                           child: Text(
                             profileProvider.updateErrorMessage,
-                            style: TextStyle(color: themeRed, fontSize: 14),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: themeRose),
                             textAlign: TextAlign.center,
                           ),
                         ),

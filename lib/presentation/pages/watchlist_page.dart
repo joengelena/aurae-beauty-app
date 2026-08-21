@@ -42,7 +42,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
           children: [
             Text(
               watchlistProvider.errorMessage!,
-              style: TextStyle(color: themeRed),
+              style: TextStyle(color: themeRose),
             ),
             SizedBox(height: 16),
             FilledButton(
