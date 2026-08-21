@@ -8,6 +8,7 @@ import 'package:shine_app/logic/listings_provider.dart';
 import 'package:shine_app/utils/auth_prompt.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
+import 'package:shine_app/presentation/widgets/listing/watchlist_heart_button.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
@@ -145,8 +146,9 @@ class ListingPreview extends StatelessWidget {
                 Positioned(
                   top: 6,
                   right: 6,
-                  child: GestureDetector(
-                    onTap: () async {
+                  child: WatchlistHeartButton(
+                    isSaved: isInWatchlist,
+                    onPressed: () async {
                       if (!requireAuth(context, reason: 'Join to save and collect the dresses you love.')) return;
                       final watchlistProvider =
                           context.read<WatchlistProvider>();
@@ -190,20 +192,6 @@ class ListingPreview extends StatelessWidget {
                         }
                       }
                     },
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.88),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        isInWatchlist
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: isInWatchlist ? themeRose : themeTaupe,
-                        size: 18,
-                      ),
-                    ),
                   ),
                 ),
               ],

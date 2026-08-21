@@ -67,7 +67,9 @@ Web and mobile share one widget tree. Anything full-width must be constrained on
 
 **`widgets/form_fields/`** — `StringFormField`, `NumberFormField`, `DecimalFormField`, `DateFormField`, `DropdownFormField`, `AutocompleteFormField`
 
-**`widgets/listing/`** (Browse side) — `ListingTile`, `InfiniteGrid`, `ImageCarousel`, `FilterBar`, `FilterModalContent`, `FilterSidebar`, `SortSheet`, `RangeFilter`, `AvailabilityCalendar`, `BookingFlowCards`
+**`widgets/listing/`** (Browse side) — `ListingTile`, `ListingPreview`, `WatchlistHeartButton`, `InfiniteGrid`, `ImageCarousel`, `FilterBar`, `FilterModalContent`, `FilterSidebar`, `SortSheet`, `RangeFilter`, `AvailabilityCalendar`, `BookingFlowCards`
+
+**`WatchlistHeartButton` is the only favourite/save heart.** Browse and Favourites each had their own and drifted (18px vs 24px, rose vs blush, disc vs no disc). Pass `isSaved` for the filled/outlined state; don't rebuild it.
 
 **`widgets/wardrobe/`** (owner side) — `DressCard`, `BookingCalendar`, `BookingPanel`, `DressActionMenu`, `AttributeDropdownField`, `MultiChipSelector`, `PickerFormField`
 

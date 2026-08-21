@@ -17,6 +17,14 @@ class AppConstants {
   static const double spacingLarge = 16;
   static const double spacingExtraLarge = 64;
 
+  /// Minimum touch target, per DESIGN.md ("minimum 44pt tap targets
+  /// throughout"). Small icon buttons need this as an explicit constraint —
+  /// their visual size is usually well under it.
+  static const double minTapTarget = 44;
+
+  /// Icon size for the shared favourite/save heart on Browse and Favourites.
+  static const double heartIconSize = 24;
+
   static const Duration snackBarDurationSeconds = Duration(seconds: 3);
 }
 

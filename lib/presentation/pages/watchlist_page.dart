@@ -4,6 +4,7 @@ import 'package:shine_app/logic/watchlist_provider.dart';
 import 'package:shine_app/presentation/widgets/common/app_empty_state.dart';
 import 'package:shine_app/presentation/widgets/sign_in_to_access.dart';
 import 'package:shine_app/presentation/widgets/listing/listing_tile.dart';
+import 'package:shine_app/presentation/widgets/listing/watchlist_heart_button.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shine_app/utils/theme.dart';
@@ -84,7 +85,8 @@ class _WatchlistPageState extends State<WatchlistPage> {
 
               return ListingTile(
                 listing: listing,
-                topRightButton: IconButton(
+                topRightButton: WatchlistHeartButton(
+                  isSaved: true,
                   onPressed: () async {
                     try {
                       await watchlistProvider.removeFromWatchlist(listing.id);
@@ -103,8 +105,6 @@ class _WatchlistPageState extends State<WatchlistPage> {
                       }
                     }
                   },
-                  icon: const Icon(Icons.favorite),
-                  color: Theme.of(context).colorScheme.primary,
                 ),
               );
             },
