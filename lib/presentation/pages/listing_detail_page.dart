@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/models/booked_range.dart';
 import 'package:shine_app/data/models/dress_damage_incident.dart';
 import 'package:shine_app/data/models/listing.dart';
+import 'package:shine_app/logic/active_profile_provider.dart';
 import 'package:shine_app/logic/cart_provider.dart';
 import 'package:shine_app/logic/listing_detail_provider.dart';
 import 'package:shine_app/presentation/widgets/common/price_action_bar.dart';
@@ -145,7 +146,12 @@ class _ListingDetailPageState extends State<ListingDetailPage>
     // The owner previewing their own public listing gets a simple "Manage
     // Dress" shortcut back into the Wardrobe — not a real booking/purchase
     // flow, so it keeps its original single-column layout.
-    if (provider.isOwnListing) {
+    //
+    // Only while the business profile is active, though. Acting as a
+    // customer, your own dress behaves like any other and you get the full
+    // booking flow — booking your own dresses is deliberately allowed.
+    if (provider.isOwnListing &&
+        !context.watch<ActiveProfileProvider>().canActAsRenter) {
       return _buildOwnListingContent(provider, listing);
     }
 
@@ -403,6 +409,26 @@ class _ListingDetailPageState extends State<ListingDetailPage>
 
   Widget _buildPriceActionBar(ListingDetailProvider provider, Listing listing) {
     final isForBuy = listing.listingType == 'sell';
+    // Under the business profile the dress stays fully viewable — pricing
+    // included, which is the point of letting a boutique browse the market —
+    // but renting is a customer action. Say so plainly rather than silently
+    // removing the button, so it doesn't read as a bug.
+    final canActAsRenter =
+        context.watch<ActiveProfileProvider>().canActAsRenter;
+    if (!canActAsRenter) {
+      return PriceActionBar(
+        price: isForBuy
+            ? (listing.purchasePrice ?? listing.pricePerDay)
+            : listing.pricePerDay,
+        priceLabel: isForBuy ? 'to purchase' : 'per day',
+        pricePrefix: isForBuy ? null : 'From ',
+        buttonLabel: 'Switch to Customer to book',
+        buttonIcon: Icons.swap_horiz_rounded,
+        enabled: false,
+        onTap: null,
+      );
+    }
+
     final hasSelection = _bookingStart != null && _bookingEnd != null;
     // A rental is a whole day that goes overnight, so a stay from the 23rd
     // to the 24th is one night, not two.

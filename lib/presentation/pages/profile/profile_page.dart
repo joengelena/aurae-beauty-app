@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shine_app/logic/my_bookings_provider.dart';
+import 'package:shine_app/logic/active_profile_provider.dart';
 import 'package:shine_app/presentation/widgets/profile/account_menu.dart';
 import 'package:shine_app/presentation/widgets/profile/active_profile_card.dart';
 import 'package:shine_app/presentation/widgets/profile/my_bookings_preview_card.dart';
@@ -16,15 +16,14 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MyBookingsProvider>().load();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // Bookings belong to the Customer profile. Under the business profile
+    // they're hidden outright — a boutique owner managing their wardrobe
+    // shouldn't see the rentals they made as a customer sitting in the
+    // same screen.
+    final canActAsRenter =
+        context.watch<ActiveProfileProvider>().canActAsRenter;
+
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 600),
@@ -33,8 +32,10 @@ class _ProfilePageState extends State<ProfilePage> {
             SizedBox(height: 24),
             UserProfile(),
             SizedBox(height: 28),
-            MyBookingsPreviewCard(),
-            SizedBox(height: 16),
+            if (canActAsRenter) ...[
+              MyBookingsPreviewCard(),
+              SizedBox(height: 16),
+            ],
             Divider(color: themePrimary, thickness: 1, indent: 20, endIndent: 20),
             SizedBox(height: 16),
             Padding(

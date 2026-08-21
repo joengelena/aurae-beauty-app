@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shine_app/logic/active_profile_provider.dart';
 import 'package:shine_app/logic/auth_provider.dart';
 import 'package:shine_app/logic/listing_detail_provider.dart';
 import 'package:shine_app/logic/profile_provider.dart';
@@ -50,11 +51,30 @@ const _authPages = [
 // Public pages accessible to unauthenticated users
 const _publicPages = ['/listings', '/watchlist', '/wardrobe', '/privacy'];
 
-GoRouter getAppRouter(AuthProvider authProvider, ProfileProvider profileProvider) {
+// Renter-only pages, and where to send someone who lands on one while the
+// business profile is active — by deep link, or by switching profile while
+// already sitting on the page. Hiding the entry points isn't enough on its
+// own; without this you can still be looking at your cart as a boutique.
+const _renterOnlyPages = <String, String>{
+  '/cart': '/listings',
+  '/profile/bookings': '/profile',
+};
+
+GoRouter getAppRouter(
+  AuthProvider authProvider,
+  ProfileProvider profileProvider,
+  ActiveProfileProvider activeProfileProvider,
+) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/splash',
-    refreshListenable: Listenable.merge([authProvider, profileProvider]),
+    // ActiveProfileProvider is in here so switching profiles re-runs the
+    // redirect immediately, rather than only on the next navigation.
+    refreshListenable: Listenable.merge([
+      authProvider,
+      profileProvider,
+      activeProfileProvider,
+    ]),
     errorBuilder: (context, state) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         context.go('/listings');
@@ -115,6 +135,14 @@ GoRouter getAppRouter(AuthProvider authProvider, ProfileProvider profileProvider
       if (needsOnboarding && path != '/onboarding') return '/onboarding';
       if (path == '/onboarding' && !needsOnboarding) {
         return isSignedIn ? '/listings' : '/profile/signin';
+      }
+
+      // Renter-only pages are unreachable while acting as the business.
+      // Note this is UI scoping, not authorization — the same account can
+      // switch to Customer and open these legitimately a second later.
+      if (!activeProfileProvider.canActAsRenter) {
+        final fallback = _renterOnlyPages[path];
+        if (fallback != null) return fallback;
       }
 
       return null;

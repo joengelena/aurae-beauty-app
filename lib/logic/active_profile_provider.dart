@@ -25,6 +25,17 @@ class ActiveProfileProvider extends ChangeNotifier {
   Business? get business => _business;
   String? get role => _role;
   bool get isBusinessActive => _isBusinessActive;
+
+  /// Whether renter-side actions — booking, cart, My Bookings — are available
+  /// right now. Every gate in the app reads this rather than negating
+  /// [isBusinessActive] in a dozen places.
+  ///
+  /// This is a **mode, not a permission.** Any account can switch to its
+  /// Customer profile in one tap and book legitimately, including an owner
+  /// booking their own dresses. So this is never enforced server-side; it
+  /// scopes what the app shows so the two contexts don't bleed into each
+  /// other. Don't reach for it as a security boundary — it isn't one.
+  bool get canActAsRenter => !_isBusinessActive;
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
   bool get hasError => _errorMessage.isNotEmpty;

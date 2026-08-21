@@ -45,7 +45,12 @@ class AccountMenu extends StatelessWidget {
 
     return Column(
       children: [
-        if (activeProfileProvider.hasBusiness)
+        // Gated on the business profile being *active*, not merely on the
+        // account having a business. Scoping cuts both ways: business
+        // management shouldn't sit in the menu while you're shopping as a
+        // customer, any more than your rentals should show while you're
+        // running the boutique.
+        if (activeProfileProvider.isBusinessActive)
           SettingsRow(
             icon: Icons.tune_rounded,
             label: 'Business settings',
@@ -54,7 +59,8 @@ class AccountMenu extends StatelessWidget {
               context.push('/settings');
             },
           ),
-        if (activeProfileProvider.role == 'owner')
+        if (activeProfileProvider.isBusinessActive &&
+            activeProfileProvider.role == 'owner')
           SettingsRow(
             icon: Icons.group_add_outlined,
             label: 'Invite a team member',

@@ -9,8 +9,26 @@ import 'package:shine_app/utils/theme.dart';
 /// (including pending review) starting within the next 30 days, dress-first,
 /// plus a link to the full My Bookings history. Full management (all
 /// bookings, cancel) lives on that page.
-class MyBookingsPreviewCard extends StatelessWidget {
+class MyBookingsPreviewCard extends StatefulWidget {
   const MyBookingsPreviewCard({super.key});
+
+  @override
+  State<MyBookingsPreviewCard> createState() => _MyBookingsPreviewCardState();
+}
+
+class _MyBookingsPreviewCardState extends State<MyBookingsPreviewCard> {
+  // Loads on mount rather than from ProfilePage, so that switching from the
+  // business profile back to Customer — which re-inserts this card into the
+  // tree — refetches. Driving it from the page's initState meant the card
+  // came back empty after a profile switch.
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<MyBookingsProvider>().load();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

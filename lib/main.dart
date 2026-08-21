@@ -140,7 +140,11 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     final auth = context.read<AuthProvider>();
-    _router = getAppRouter(auth, context.read<ProfileProvider>());
+    _router = getAppRouter(
+      auth,
+      context.read<ProfileProvider>(),
+      context.read<ActiveProfileProvider>(),
+    );
 
     // Check auth silently on startup for refresh scenarios
     // This allows users who refresh to stay authenticated without going through splash

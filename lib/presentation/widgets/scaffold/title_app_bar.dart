@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shine_app/logic/back_button_provider.dart';
+import 'package:shine_app/logic/active_profile_provider.dart';
 import 'package:shine_app/logic/cart_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -51,8 +52,13 @@ class TitleAppBar extends StatelessWidget implements PreferredSizeWidget {
         !_rootRoutes.contains(currentRoute) && !_authRoutes.contains(currentRoute);
     final showProfileIcon =
         currentRoute != '/profile' && !_authRoutes.contains(currentRoute);
-    final showCartIcon =
-        currentRoute != '/cart' && !_authRoutes.contains(currentRoute);
+    // The cart is a renter-side action, so it disappears under the business
+    // profile. Cart contents aren't cleared — they live server-side and come
+    // back as soon as the Customer profile is active again.
+    final canActAsRenter = context.watch<ActiveProfileProvider>().canActAsRenter;
+    final showCartIcon = canActAsRenter &&
+        currentRoute != '/cart' &&
+        !_authRoutes.contains(currentRoute);
     final cartCount = context.watch<CartProvider>().itemCount;
 
     return Center(
