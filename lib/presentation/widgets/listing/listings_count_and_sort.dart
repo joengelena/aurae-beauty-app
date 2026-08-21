@@ -47,40 +47,30 @@ class ListingsCountAndSort extends StatelessWidget {
         children: [
           Text(
             "${listingsProvider.totalListings} dress${listingsProvider.totalListings == 1 ? '' : 'es'}",
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 12,
-              color: themeTaupe,
-            ),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
+          // Deliberately unchrome-d: no fill, no border, no pill. This is a
+          // text action, not a button — the leading sort icon carries the
+          // affordance. Keep it that way.
           Material(
             color: Colors.transparent,
             child: InkWell(
               onTap: () => _showSortSheet(context),
               borderRadius: BorderRadius.circular(20),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: themePrimary, width: 1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.swap_vert_rounded, size: 15, color: themeTaupe),
+                    Icon(Icons.swap_vert_rounded, size: 16, color: themeTaupe),
                     const SizedBox(width: 4),
                     Text(
                       currentLabel,
-                      style: TextStyle(
-                        fontSize: 12,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: themeText,
                       ),
                     ),
-                    const SizedBox(width: 2),
-                    Icon(Icons.keyboard_arrow_down_rounded,
-                        size: 16, color: themeTaupe),
                   ],
                 ),
               ),
