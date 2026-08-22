@@ -21,6 +21,16 @@ class CartProvider extends ChangeNotifier {
 
   int get itemCount => items.length;
 
+  List<CartItem> get availableItems =>
+      items.where((item) => item.isAvailable).toList();
+
+  bool get hasUnavailableItems => items.any((item) => !item.isAvailable);
+
+  /// Only bookable lines count towards the total — an unavailable dress isn't
+  /// something the renter is about to pay for.
+  int get total =>
+      availableItems.fold<int>(0, (sum, item) => sum + item.totalPrice);
+
   void updateAuthStatus(bool isSignedIn) {
     if (isSignedIn && !_isSignedIn) {
       fetchCart();
@@ -87,6 +97,14 @@ class CartProvider extends ChangeNotifier {
     final failedItemNames = <String>[];
 
     for (final item in List<CartItem>.from(items)) {
+      // Skipped rather than attempted: the cart already shows these as
+      // unavailable, so firing a request we know will 409 would only turn a
+      // clear state into a failure message.
+      if (!item.isAvailable) {
+        failedItemNames.add(item.name ?? item.style);
+        continue;
+      }
+
       try {
         final result = await DressServices().selfBook(
           dressId: item.dressIdFk,

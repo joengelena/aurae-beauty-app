@@ -130,7 +130,7 @@ class _CartPageState extends State<CartPage> {
       );
     }
 
-    final total = cartProvider.items.fold<int>(0, (sum, item) => sum + item.totalPrice);
+    final total = cartProvider.total;
 
     return Column(
       children: [
@@ -176,6 +176,9 @@ class _CartPageState extends State<CartPage> {
         _CartSummaryBar(
           total: total,
           isProcessing: _isCheckingOut,
+          unavailableCount: cartProvider.items.length -
+              cartProvider.availableItems.length,
+          canCheckout: cartProvider.availableItems.isNotEmpty,
           onCheckout: () => _handleCheckout(cartProvider),
         ),
       ],
@@ -214,20 +217,23 @@ class _CartItemTile extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(14),
-                child: SizedBox(
-                  width: 90,
-                  height: 110,
-                  child: ColoredBox(
-                    color: themeSurfaceMuted,
-                    child: item.dressPhotoUrl.isEmpty
-                        ? Icon(Icons.checkroom_outlined, color: themeTaupe)
-                        : CachedNetworkImage(
-                            imageUrl: item.dressPhotoUrl,
-                            fit: BoxFit.cover,
-                            errorWidget: (context, url, error) {
-                              return Icon(Icons.broken_image, color: themeTaupe);
-                            },
-                          ),
+                child: Opacity(
+                  opacity: item.isAvailable ? 1 : 0.45,
+                  child: SizedBox(
+                    width: 90,
+                    height: 110,
+                    child: ColoredBox(
+                      color: themeSurfaceMuted,
+                      child: item.dressPhotoUrl.isEmpty
+                          ? Icon(Icons.checkroom_outlined, color: themeTaupe)
+                          : CachedNetworkImage(
+                              imageUrl: item.dressPhotoUrl,
+                              fit: BoxFit.cover,
+                              errorWidget: (context, url, error) {
+                                return Icon(Icons.broken_image, color: themeTaupe);
+                              },
+                            ),
+                    ),
                   ),
                 ),
               ),
@@ -261,14 +267,37 @@ class _CartItemTile extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Text(
-                      '${item.nights} ${item.nights == 1 ? 'day' : 'days'} · ${formatPrice(item.totalPrice)}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                        color: themeText,
+                    if (item.isAvailable)
+                      Text(
+                        '${item.nights} ${item.nights == 1 ? 'day' : 'days'} · ${formatPrice(item.totalPrice)}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          color: themeText,
+                        ),
+                      )
+                    else
+                      Row(
+                        children: [
+                          Icon(Icons.event_busy_outlined, size: 14, color: themeRed),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              'These dates are no longer free',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                                color: themeRed,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
+                    if (!item.isAvailable)
+                      Text(
+                        'Tap to pick new dates, or remove it.',
+                        style: TextStyle(fontSize: 12, color: themeTaupe),
+                      ),
                   ],
                 ),
               ),
@@ -289,11 +318,15 @@ class _CartItemTile extends StatelessWidget {
 class _CartSummaryBar extends StatelessWidget {
   final int total;
   final bool isProcessing;
+  final int unavailableCount;
+  final bool canCheckout;
   final VoidCallback onCheckout;
 
   const _CartSummaryBar({
     required this.total,
     required this.isProcessing,
+    required this.unavailableCount,
+    required this.canCheckout,
     required this.onCheckout,
   });
 
@@ -326,8 +359,13 @@ class _CartSummaryBar extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Estimated total',
-                  style: TextStyle(fontSize: 12, color: themeTaupe),
+                  unavailableCount == 0
+                      ? 'Estimated total'
+                      : '$unavailableCount item${unavailableCount == 1 ? '' : 's'} unavailable, not included',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: unavailableCount == 0 ? themeTaupe : themeRed,
+                  ),
                 ),
               ],
             ),
@@ -335,9 +373,9 @@ class _CartSummaryBar extends StatelessWidget {
           // No payment integration yet — checkout confirms the booking
           // directly (see CartProvider.checkout()).
           GestureDetector(
-            onTap: isProcessing ? null : onCheckout,
+            onTap: (isProcessing || !canCheckout) ? null : onCheckout,
             child: Opacity(
-              opacity: isProcessing ? 0.6 : 1,
+              opacity: (isProcessing || !canCheckout) ? 0.6 : 1,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                 decoration: BoxDecoration(

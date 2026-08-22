@@ -12,6 +12,12 @@ class CartItem {
   final String dressPhotoUrl;
   final String location;
 
+  /// Whether these dates are still free. Recomputed server-side on every cart
+  /// fetch, because a cart holds its dates over time and the dress can be taken
+  /// in between. Defaults to true so an API that doesn't send it yet doesn't
+  /// grey out the whole cart.
+  final bool isAvailable;
+
   CartItem({
     required this.id,
     required this.dressIdFk,
@@ -25,6 +31,7 @@ class CartItem {
     required this.size,
     required this.dressPhotoUrl,
     required this.location,
+    this.isAvailable = true,
   });
 
   factory CartItem.fromJson(json) {
@@ -41,6 +48,7 @@ class CartItem {
       size: json['size'] as String,
       dressPhotoUrl: json['dressPhotoUrl'] as String? ?? '',
       location: json['location'] as String? ?? '',
+      isAvailable: json['isAvailable'] as bool? ?? true,
     );
   }
 
