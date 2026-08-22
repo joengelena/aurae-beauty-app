@@ -216,15 +216,16 @@ class _AddBookingPageState extends State<AddBookingPage> {
       );
     }
 
-    // Cleaning buffer after each active/upcoming booking — mirrors the
-    // server-side conflict check so the picker doesn't offer dates that
-    // would be rejected on save. Buffer is a business-wide setting, not
-    // per-dress.
+    // Cleaning buffer after each booking — mirrors the server-side conflict
+    // check so the picker doesn't offer dates that would be rejected on save.
+    // Returned bookings keep their buffer: the dress being back is exactly
+    // when the turnaround starts, not when it ends. Buffer is a business-wide
+    // setting, not per-dress.
     final bufferDays = context.watch<BusinessSettingsProvider>().settings.cleaningBufferDays;
     if (bufferDays > 0) {
       bookedRanges.addAll(
         bookings
-            .where((b) => b.status != 'cancelled' && b.status != 'returned')
+            .where((b) => b.status != 'cancelled')
             .map(
               (b) => BookedRange(
                 startDate: b.endDate.add(const Duration(days: 1)),
