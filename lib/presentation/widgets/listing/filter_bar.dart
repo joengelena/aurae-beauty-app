@@ -180,30 +180,44 @@ class FilterBar extends StatelessWidget {
     final endDate = appliedFilters['endDate'];
     final hasDateFilter = startDate != null && endDate != null;
 
+    final activeFilterCount = categorizedFilters.equalFilters.length +
+        categorizedFilters.rangeFilters.length +
+        (hasDateFilter ? 1 : 0);
+    final hasActiveFilters = activeFilterCount > 0;
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         spacing: 8,
         children: [
-          // Filters button
-          OutlinedButton.icon(
-            onPressed: () {
-              if (!requireAuth(context, reason: 'Join to filter by size, colour, and availability.')) return;
-              _showFiltersBottomSheet(context);
-            },
-            icon: Icon(Icons.tune, color: themeText, size: 18),
-            label: Text(
-              'Filters',
-              style: TextStyle(color: themeText, fontSize: 13),
-            ),
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: themePrimary, width: 1),
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
+          // Filters button — carries its own count badge so "N filters are
+          // active" reads even if the badge row below scrolls out of view.
+          Badge(
+            label: Text('$activeFilterCount'),
+            isLabelVisible: hasActiveFilters,
+            backgroundColor: themeAccentInk,
+            child: OutlinedButton.icon(
+              onPressed: () {
+                if (!requireAuth(context, reason: 'Join to filter by size, colour, and availability.')) return;
+                _showFiltersBottomSheet(context);
+              },
+              icon: Icon(Icons.tune, color: themeText, size: 18),
+              label: Text(
+                'Filters',
+                style: TextStyle(color: themeText, fontSize: 13),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
-              backgroundColor: Colors.white,
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(
+                  color: hasActiveFilters ? themeAccent : themePrimary,
+                  width: hasActiveFilters ? 1.5 : 1,
+                ),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
+                backgroundColor: Colors.white,
+              ),
             ),
           ),
           // Date range badge (always first when active)
