@@ -463,7 +463,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
       enabled: enabled,
       isLoading: _isAddingToCart,
       onTap:
-          (enabled && !isForBuy) ? () => _addToCart(context, provider) : null,
+          (enabled && !isForBuy) ? () => _addToCart(provider) : null,
     );
   }
 
@@ -930,10 +930,10 @@ class _ListingDetailPageState extends State<ListingDetailPage>
 
   // Cart requires a signed-in user; anonymous visitors get sent to sign in
   // instead of hitting the API and failing.
-  Future<void> _addToCart(
-    BuildContext context,
-    ListingDetailProvider provider,
-  ) async {
+  // Takes no BuildContext: using the State's own context is what makes the
+  // `mounted` checks below actually guard it. With a context passed in, the
+  // analyser can't tie the two together and flags every use after an await.
+  Future<void> _addToCart(ListingDetailProvider provider) async {
     if (_bookingStart == null || _bookingEnd == null) return;
 
     if (provider.currentUserId == null) {
