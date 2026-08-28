@@ -25,33 +25,12 @@ class ListingsProvider extends ChangeNotifier {
 
   Map<String, String> equalFilters = {};
   bool _isSignedIn = false;
-  String? _userLocation;
 
   void updateAuthStatus(bool isSignedIn) {
     if (!isSignedIn && _isSignedIn) {
       reset();
     }
     _isSignedIn = isSignedIn;
-  }
-
-  void updateUserLocation(String? userLocation) {
-    final bool locationChanged = _userLocation != userLocation;
-    _userLocation = userLocation;
-
-    if (!locationChanged) return;
-
-    // Apply default location filter if user is signed in
-    if (_isSignedIn && _userLocation != null) {
-      // Check if location filter hasn't been explicitly set or removed by user
-      final hasNoLocationFilter =
-          !equalFilters.containsKey('location') ||
-          equalFilters['location'] == null ||
-          equalFilters['location'] == 'Any';
-
-      if (hasNoLocationFilter) {
-        equalFilters['location'] = _userLocation!;
-      }
-    }
   }
 
   bool get onLastPage => currentPage >= totalPages;
@@ -170,7 +149,6 @@ class ListingsProvider extends ChangeNotifier {
     searchController.clear();
     sortBy = 'uploadDateDesc';
     equalFilters = {};
-    _userLocation = null;
     isLoading = false;
     isLoadingLatest = false;
     notifyListeners();
