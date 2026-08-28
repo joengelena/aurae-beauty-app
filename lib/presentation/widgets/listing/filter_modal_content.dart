@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shine_app/logic/filtering_provider.dart';
 import 'package:shine_app/logic/listings_provider.dart';
 import 'package:shine_app/presentation/widgets/common/calendar_date_range_picker.dart';
+import 'package:shine_app/presentation/widgets/listing/filter_picker_field.dart';
 import 'package:shine_app/presentation/widgets/listing/range_filter.dart';
 import 'package:shine_app/utils/filter_utils.dart';
 import 'package:shine_app/utils/theme.dart';
@@ -37,6 +38,7 @@ class _FilterModalContentState extends State<FilterModalContent> {
     FilteringProvider provider,
   ) {
     final validValue = options.contains(selectedValue) ? selectedValue : 'Any';
+    final displayName = FilterUtils.filterDisplayNames[filterKey] ?? filterKey;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -45,7 +47,7 @@ class _FilterModalContentState extends State<FilterModalContent> {
           Expanded(
             flex: 2,
             child: Text(
-              FilterUtils.filterDisplayNames[filterKey] ?? filterKey,
+              displayName,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -55,38 +57,11 @@ class _FilterModalContentState extends State<FilterModalContent> {
           ),
           Expanded(
             flex: 3,
-            child: Container(
-              height: 44,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: themePrimary, width: 1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: validValue,
-                  isExpanded: true,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: themeText,
-                    fontFamily: 'Poppins',
-                  ),
-                  dropdownColor: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  items: options.map((val) {
-                    return DropdownMenuItem<String>(
-                      value: val,
-                      child: Text(val),
-                    );
-                  }).toList(),
-                  onChanged: (newVal) {
-                    if (newVal != null) {
-                      provider.updateEqualFilter(filterKey, newVal);
-                    }
-                  },
-                ),
-              ),
+            child: FilterPickerField(
+              label: displayName,
+              options: options,
+              selectedValue: validValue,
+              onChanged: (newVal) => provider.updateEqualFilter(filterKey, newVal),
             ),
           ),
         ],

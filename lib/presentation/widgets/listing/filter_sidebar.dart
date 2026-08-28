@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shine_app/logic/filtering_provider.dart';
 import 'package:shine_app/logic/listings_provider.dart';
 import 'package:shine_app/presentation/widgets/common/calendar_date_range_picker.dart';
+import 'package:shine_app/presentation/widgets/listing/filter_picker_field.dart';
 import 'package:shine_app/presentation/widgets/listing/range_filter.dart';
 import 'package:shine_app/utils/auth_prompt.dart';
 import 'package:shine_app/utils/filter_utils.dart';
@@ -50,7 +51,7 @@ class FilterSidebar extends StatelessWidget {
     context.read<ListingsProvider>().applyFilters(filteringProvider.getAllFilters());
   }
 
-  // Same dropdown control as FilterModalContent (label + outlined select),
+  // Same field control as FilterModalContent (label + FilterPickerField),
   // stacked instead of side-by-side since the sidebar column is much
   // narrower than the bottom sheet — matches RangeFilter's label-above-field
   // layout already used lower in this panel.
@@ -77,38 +78,17 @@ class FilterSidebar extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Container(
-            height: 44,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: themePrimary, width: 1),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: validValue,
-                isExpanded: true,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: themeText,
-                  fontFamily: 'Poppins',
-                ),
-                dropdownColor: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                items: options.map((val) {
-                  return DropdownMenuItem<String>(value: val, child: Text(val));
-                }).toList(),
-                onChanged: (newVal) {
-                  if (newVal == null) return;
-                  if (!requireAuth(context, reason: _authReason)) return;
-                  filteringProvider.updateEqualFilter(filterKey, newVal);
-                  context
-                      .read<ListingsProvider>()
-                      .applyFilters(filteringProvider.getAllFilters());
-                },
-              ),
-            ),
+          FilterPickerField(
+            label: FilterUtils.filterDisplayNames[filterKey] ?? filterKey,
+            options: options,
+            selectedValue: validValue,
+            onChanged: (newVal) {
+              if (!requireAuth(context, reason: _authReason)) return;
+              filteringProvider.updateEqualFilter(filterKey, newVal);
+              context
+                  .read<ListingsProvider>()
+                  .applyFilters(filteringProvider.getAllFilters());
+            },
           ),
         ],
       ),
@@ -132,8 +112,11 @@ class FilterSidebar extends StatelessWidget {
 
     return Container(
       width: width,
+      // Petal White, matching the page it sits beside — a flat divider line
+      // separates it from the grid instead of a distinct white card block,
+      // so the panel reads as part of the room rather than a floating slab.
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: themeBackground,
         border: Border(
           right: BorderSide(color: themePrimary.withValues(alpha: 0.6)),
         ),
