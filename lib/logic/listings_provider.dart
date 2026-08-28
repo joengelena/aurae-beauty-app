@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shine_app/data/exceptions/app_exception.dart';
 import 'package:shine_app/data/models/listing.dart';
 import 'package:shine_app/data/services/dress_services.dart';
 import 'package:shine_app/utils/filter_utils.dart';
@@ -25,6 +26,10 @@ class ListingsProvider extends ChangeNotifier {
 
   Map<String, String> equalFilters = {};
   bool _isSignedIn = false;
+  String _errorMessage = '';
+
+  String get errorMessage => _errorMessage;
+  bool get hasError => _errorMessage.isNotEmpty;
 
   void updateAuthStatus(bool isSignedIn) {
     if (!isSignedIn && _isSignedIn) {
@@ -55,6 +60,7 @@ class ListingsProvider extends ChangeNotifier {
   }
 
   Future<void> fetchListings() async {
+    _errorMessage = '';
     try {
       final filters = _getFiltersWithDefault();
       final allQueries = <String, dynamic>{
@@ -75,8 +81,12 @@ class ListingsProvider extends ChangeNotifier {
       totalPages = res.totalPages;
       currentPage = res.pageNumber;
       totalListings = res.totalRows;
+    } on AppException catch (e) {
+      debugPrint('⚠️ Failed to fetch listings: ${e.message}');
+      _errorMessage = e.message;
     } catch (e) {
       debugPrint('⚠️ Failed to fetch listings: $e');
+      _errorMessage = 'An unexpected error occurred while loading dresses.';
     } finally {
       isLoading = false;
       notifyListeners();
@@ -149,6 +159,7 @@ class ListingsProvider extends ChangeNotifier {
     searchController.clear();
     sortBy = 'uploadDateDesc';
     equalFilters = {};
+    _errorMessage = '';
     isLoading = false;
     isLoadingLatest = false;
     notifyListeners();
