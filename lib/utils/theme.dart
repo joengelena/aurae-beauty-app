@@ -16,6 +16,12 @@ final themeSage = Color(0xFF10B981);        // Success (sage green)
 final themePeach = Color(0xFFFB923C);       // Warning (soft peach)
 final themeTaupe = Color(0xFF78716C);       // Secondary text (taupe)
 
+// Turnaround — the dress is unavailable but nobody has booked it. Deliberately
+// the one cool colour in a warm palette: every other calendar state is a
+// customer commitment, and this one is the owner's own laundry. It reads as
+// "not yours to sell yet" rather than "someone else has this".
+final themeSky = Color(0xFF0EA5E9);
+
 // Muted neutral surface — chip backgrounds, photo placeholders, icon
 // squares. Per the Tinted-Neutral Rule, this is the one shared near-white
 // tint; don't hand-type a new one (previously drifted between #F5EFED and
