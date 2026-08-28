@@ -19,6 +19,7 @@ import 'package:shine_app/logic/my_bookings_provider.dart';
 import 'package:shine_app/logic/week_schedule_provider.dart';
 import 'package:shine_app/logic/business_settings_provider.dart';
 import 'package:shine_app/data/cache_manager.dart';
+import 'package:shine_app/utils/app_preferences.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -29,6 +30,9 @@ void main() async {
   // Initialize Hive for caching (works on all platforms)
   await Hive.initFlutter();
   await CacheManager.instance.initialize();
+  // Opened at startup so preference reads can be synchronous and a page never
+  // renders the wrong layout for a frame before correcting itself.
+  await AppPreferences.initialize();
 
   await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
 
