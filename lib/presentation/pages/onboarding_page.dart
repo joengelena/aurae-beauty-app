@@ -49,6 +49,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
     final bytes = await image.readAsBytes();
     final mimeType = image.mimeType ?? 'image/jpeg';
+    // Re-checked after the read: the guard above ran before it, and someone can
+    // leave onboarding while a photo is being decoded.
+    if (!mounted) return;
 
     setState(() {
       _photoBytes = bytes;
@@ -77,6 +80,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
   Future<void> _saveAndRedirect(String option) async {
     try {
       final userId = await SecureStorage.read('userId') ?? '';
+      // _handleDone waits 2.8s before calling this, and the storage read above
+      // is async too — comfortably long enough to navigate away first, and
+      // context.read on a disposed widget throws.
+      if (!mounted) return;
       await context.read<BusinessSettingsProvider>().save(
         BusinessSettings(deliveryOption: option),
         userId,
