@@ -4,15 +4,31 @@ import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/utils.dart';
 import 'package:shine_app/utils/booking_status.dart';
 
-// Priority order matters — higher index wins when days overlap
-enum _DayStatus { none, past, pending, booked, active, overdue }
+// Priority order matters — higher index wins when days overlap. Buffer and
+// blocked sit below the booking states deliberately: if a turnaround happens to
+// overlap the next booking's wear dates, the wear dates are the more important
+// thing to show.
+enum _DayStatus { none, past, buffer, blocked, pending, booked, active, overdue }
 
 enum _ViewMode { day, week, month }
 
 class BookingCalendar extends StatefulWidget {
   final List<RentalBooking> bookings;
 
-  const BookingCalendar({super.key, required this.bookings});
+  /// Days the dress stays unavailable after each rental ends. Painted as its
+  /// own state rather than folded into the booking, so the owner can see why a
+  /// dress she thinks is free still can't be booked.
+  final int cleaningBufferDays;
+
+  /// Owner-declared unavailability that isn't a booking at all.
+  final List<DateTimeRange> blockedRanges;
+
+  const BookingCalendar({
+    super.key,
+    required this.bookings,
+    this.cleaningBufferDays = 0,
+    this.blockedRanges = const [],
+  });
 
   @override
   State<BookingCalendar> createState() => _BookingCalendarState();
@@ -89,7 +105,46 @@ class _BookingCalendarState extends State<BookingCalendar> {
       if (best == _DayStatus.overdue) break;
     }
 
+    if (best.index < _DayStatus.blocked.index) {
+      for (final r in widget.blockedRanges) {
+        final start = DateTime(r.start.year, r.start.month, r.start.day);
+        final end = DateTime(r.end.year, r.end.month, r.end.day);
+        if (!d.isBefore(start) && !d.isAfter(end)) {
+          best = _DayStatus.blocked;
+          break;
+        }
+      }
+    }
+
+    if (best.index < _DayStatus.buffer.index && _bufferBookingOn(d) != null) {
+      best = _DayStatus.buffer;
+    }
+
     return best;
+  }
+
+  /// The booking whose turnaround covers [day], if any.
+  ///
+  /// The window runs from the day after the dress is due back — a booking
+  /// ending on the 9th with a one-day buffer blocks the 10th, not the 9th —
+  /// which mirrors what the API computes in SQL.
+  RentalBooking? _bufferBookingOn(DateTime day) {
+    if (widget.cleaningBufferDays <= 0) return null;
+    final d = DateTime(day.year, day.month, day.day);
+
+    for (final b in widget.bookings) {
+      if (!BookingStatus.holdsDates(b.status)) continue;
+      // Built by constructor rather than by adding a Duration: a Duration is a
+      // fixed number of hours, so across a daylight-saving change it lands at
+      // 23:00 or 01:00 instead of midnight and the comparison against a
+      // midnight-normalised day slips by one. DateTime rolls day overflow into
+      // the next month correctly, and always gives local midnight.
+      final end = DateTime(b.endDate.year, b.endDate.month, b.endDate.day);
+      final from = DateTime(end.year, end.month, end.day + 1);
+      final to = DateTime(end.year, end.month, end.day + widget.cleaningBufferDays);
+      if (!d.isBefore(from) && !d.isAfter(to)) return b;
+    }
+    return null;
   }
 
   List<RentalBooking> _bookingsOnDay(DateTime day) {
@@ -386,7 +441,27 @@ class _BookingCalendarState extends State<BookingCalendar> {
           ],
         ),
         const SizedBox(height: 14),
-        if (bookings.isEmpty)
+        if (bookings.isEmpty && _bufferBookingOn(_focusedDay) != null)
+          _dayNote(
+            icon: Icons.local_laundry_service_outlined,
+            color: themePeach,
+            title: 'Cleaning turnaround',
+            detail: () {
+              final b = _bufferBookingOn(_focusedDay)!;
+              final who = b.renterName.isNotEmpty ? b.renterName : 'a rental';
+              return 'Back from $who on '
+                  '${b.endDate.day} ${_monthAbbrev[b.endDate.month - 1]}. '
+                  'Not bookable until the turnaround finishes.';
+            }(),
+          )
+        else if (bookings.isEmpty && _getStatus(_focusedDay) == _DayStatus.blocked)
+          _dayNote(
+            icon: Icons.block_outlined,
+            color: themeTaupe,
+            title: 'Blocked',
+            detail: 'You marked this date unavailable.',
+          )
+        else if (bookings.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Center(
@@ -496,6 +571,15 @@ class _BookingCalendarState extends State<BookingCalendar> {
       case _DayStatus.past:
         fill = themePrimary.withValues(alpha: 0.55);
         textColor = themeTaupe;
+      case _DayStatus.blocked:
+        fill = themeTaupe.withValues(alpha: 0.28);
+        textColor = themeText;
+      case _DayStatus.buffer:
+        // Hatched rather than solid: a turnaround day is unavailable, but it is
+        // the owner's own admin rather than someone else's booking, and it
+        // should not read as busy as a rental.
+        fill = themePeach.withValues(alpha: 0.10);
+        textColor = themeTaupe;
       case _DayStatus.none:
         fill = Colors.transparent;
         textColor = themeText;
@@ -547,6 +631,51 @@ class _BookingCalendarState extends State<BookingCalendar> {
     );
   }
 
+  /// Explains an unavailable day that has no booking on it — otherwise the day
+  /// view says "no bookings" for a date the owner cannot actually sell.
+  Widget _dayNote({
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String detail,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: themeText,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  detail,
+                  style: TextStyle(fontSize: 12, color: themeTaupe, height: 1.35),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildLegend() {
     return Wrap(
       spacing: 14,
@@ -557,6 +686,8 @@ class _BookingCalendarState extends State<BookingCalendar> {
         _legendItem(themePeach.withValues(alpha: 0.22), 'Out for rent'),
         _legendItem(themeRose.withValues(alpha: 0.20), 'Overdue'),
         _legendItem(themePrimary.withValues(alpha: 0.55), 'Returned'),
+        _legendItem(themePeach.withValues(alpha: 0.10), 'Cleaning'),
+        _legendItem(themeTaupe.withValues(alpha: 0.28), 'Blocked'),
       ],
     );
   }

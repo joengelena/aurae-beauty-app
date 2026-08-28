@@ -16,6 +16,7 @@ import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:shine_app/utils/booking_status.dart';
+import 'package:shine_app/logic/business_settings_provider.dart';
 
 class DressDetailPage extends StatefulWidget {
   final String dressId;
@@ -46,6 +47,10 @@ class _DressDetailPageState extends State<DressDetailPage>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() => _hasFiredLoad = true);
       context.read<DressDetailProvider>().loadDress(int.parse(widget.dressId));
+      // The calendar paints the cleaning turnaround from this. Without loading
+      // it the provider sits on its default of one day, so an owner who set
+      // three would see the wrong window shaded.
+      context.read<BusinessSettingsProvider>().load();
     });
   }
 

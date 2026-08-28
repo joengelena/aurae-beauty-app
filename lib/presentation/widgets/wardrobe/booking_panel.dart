@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/data/models/business_dress.dart';
 import 'package:shine_app/data/models/rental_booking.dart';
+import 'package:shine_app/logic/business_settings_provider.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/booking_calendar.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/purchase_availability_calendar.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/utils.dart';
+import 'package:provider/provider.dart';
 
 // The primary booking/purchase surface for a dress: price, an availability
 // calendar (rental status or purchase availability, depending on
@@ -52,7 +54,16 @@ class BookingPanel extends StatelessWidget {
           ],
           isForSale
               ? PurchaseAvailabilityCalendar(availableFrom: dress.availableFrom)
-              : BookingCalendar(bookings: bookings),
+              : BookingCalendar(
+                  bookings: bookings,
+                  // Business-wide, not per-dress — the same setting the API
+                  // applies when it refuses a conflicting booking.
+                  cleaningBufferDays: context
+                      .watch<BusinessSettingsProvider>()
+                      .settings
+                      .cleaningBufferDays,
+                  blockedRanges: dress.blockedDateRanges,
+                ),
           const SizedBox(height: 16),
           _buildCta(isForSale),
         ],
