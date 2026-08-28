@@ -1,3 +1,5 @@
+import 'package:shine_app/utils/booking_status.dart';
+
 class UpcomingBooking {
   final int id;
   final int dressIdFk;
@@ -47,7 +49,7 @@ class UpcomingBooking {
       renterEmail: json['renterEmail'] as String?,
       totalCost: json['totalCost'] != null ? (json['totalCost'] as num).toDouble() : 0.0,
       depositPaid: json['depositPaid'] != null ? (json['depositPaid'] as num).toDouble() : null,
-      status: json['status'] as String? ?? 'confirmed',
+      status: json['status'] as String? ?? BookingStatus.approved,
       notes: json['notes'] as String?,
       dressBrand: json['dressBrand'] as String? ?? '',
       dressStyle: json['dressStyle'] as String? ?? '',

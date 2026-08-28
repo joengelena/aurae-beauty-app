@@ -8,6 +8,7 @@ import 'package:shine_app/presentation/widgets/common/calendar_date_range_picker
 import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
+import 'package:shine_app/utils/booking_status.dart';
 
 class AddBookingPage extends StatefulWidget {
   final int dressId;
@@ -30,14 +31,22 @@ class _AddBookingPageState extends State<AddBookingPage> {
   final _notesController = TextEditingController();
 
   String _bookingType = 'rental';
-  String _status = 'pending';
+  String _status = BookingStatus.pending;
   DateTime? _startDate;
   DateTime? _endDate;
   bool _isSubmitting = false;
   bool _dateError = false;
 
   static const _bookingTypes = ['rental', 'event', 'photoshoot', 'other'];
-  static const _statuses = ['pending', 'confirmed', 'active', 'returned'];
+  // Only the states an owner can sensibly open a manual booking in. The rest
+  // of the ladder is reached by advancing the booking, not by picking from a
+  // list — and the database refuses anything else anyway.
+  static const _statuses = [
+    BookingStatus.pending,
+    BookingStatus.approved,
+    BookingStatus.collected,
+    BookingStatus.returned,
+  ];
 
   @override
   void initState() {
@@ -123,7 +132,8 @@ class _AddBookingPageState extends State<AddBookingPage> {
                     _dropdown('Booking type', _bookingType, _bookingTypes,
                         (v) => setState(() => _bookingType = v!)),
                     _dropdown('Status', _status, _statuses,
-                        (v) => setState(() => _status = v!)),
+                        (v) => setState(() => _status = v!),
+                        labelFor: BookingStatus.label),
                     const SizedBox(height: 20),
                     _sectionLabel('Dates'),
                     _buildDatePicker(context),
@@ -199,7 +209,7 @@ class _AddBookingPageState extends State<AddBookingPage> {
     final dress = detailProvider.dress;
 
     final bookedRanges = bookings
-        .where((b) => b.status != 'cancelled')
+        .where((b) => BookingStatus.holdsDates(b.status))
         .map((b) => BookedRange(
               startDate: b.startDate,
               endDate: b.endDate,
@@ -225,7 +235,7 @@ class _AddBookingPageState extends State<AddBookingPage> {
     if (bufferDays > 0) {
       bookedRanges.addAll(
         bookings
-            .where((b) => b.status != 'cancelled')
+            .where((b) => BookingStatus.holdsDates(b.status))
             .map(
               (b) => BookedRange(
                 startDate: b.endDate.add(const Duration(days: 1)),
@@ -304,18 +314,26 @@ class _AddBookingPageState extends State<AddBookingPage> {
     );
   }
 
+  /// [labelFor] keeps the stored value and the shown text apart — statuses are
+  /// snake_case on the wire and shouldn't be read that way by an owner.
   Widget _dropdown(
     String label,
     String value,
     List<String> items,
-    void Function(String?) onChanged,
-  ) {
+    void Function(String?) onChanged, {
+    String Function(String)? labelFor,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: DropdownButtonFormField<String>(
         value: value,
         decoration: InputDecoration(labelText: label),
-        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+        items: items
+            .map((e) => DropdownMenuItem(
+                  value: e,
+                  child: Text(labelFor != null ? labelFor(e) : e),
+                ))
+            .toList(),
         onChanged: onChanged,
       ),
     );

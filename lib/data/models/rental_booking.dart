@@ -1,3 +1,5 @@
+import 'package:shine_app/utils/booking_status.dart';
+
 class RentalBooking {
   final int id;
   final int dressIdFk;
@@ -49,7 +51,7 @@ class RentalBooking {
       endDate: DateTime.parse(json['endDate'] as String),
       totalCost: json['totalCost'] != null ? (json['totalCost'] as num).toDouble() : 0.0,
       depositPaid: json['depositPaid'] != null ? (json['depositPaid'] as num).toDouble() : null,
-      status: json['status'] as String? ?? 'pending',
+      status: json['status'] as String? ?? BookingStatus.pending,
       notes: json['notes'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),

@@ -15,6 +15,7 @@ import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:shine_app/utils/booking_status.dart';
 
 class DressDetailPage extends StatefulWidget {
   final String dressId;
@@ -80,11 +81,10 @@ class _DressDetailPageState extends State<DressDetailPage>
     final now = DateTime.now();
     final allBookings = provider.bookings;
 
-    // Overdue actives (endDate passed but never marked returned) still need
-    // action, so they stay in the actionable "upcoming" group rather than
-    // fading into past rentals.
+    // A dress that is out and past its date still needs chasing, so it stays
+    // in the actionable "upcoming" group rather than fading into past rentals.
     bool isOverdueActive(RentalBooking b) =>
-        b.status == 'active' && !b.endDate.isAfter(now);
+        BookingStatus.isOut(b.status) && !b.endDate.isAfter(now);
 
     final upcoming = allBookings
         .where((b) => b.endDate.isAfter(now) || isOverdueActive(b))
@@ -332,9 +332,9 @@ class _DressDetailPageState extends State<DressDetailPage>
   }
 
   Widget _buildStatusPill(List<RentalBooking> bookings, DateTime now) {
-    // Overdue: active but end date has already passed
+    // Overdue: physically out, and past its date
     final overdueMatches = bookings.where(
-      (b) => b.status == 'active' && b.endDate.isBefore(now),
+      (b) => BookingStatus.isOut(b.status) && b.endDate.isBefore(now),
     );
     if (overdueMatches.isNotEmpty) {
       final b = overdueMatches.first;
@@ -348,9 +348,13 @@ class _DressDetailPageState extends State<DressDetailPage>
     }
 
     // Currently out for rent
+    // Out with the customer, or promised and already inside its wear window.
     final activeMatches = bookings.where(
       (b) =>
-          (b.status == 'active' || b.status == 'confirmed') &&
+          (BookingStatus.isOut(b.status) ||
+              b.status == BookingStatus.approved ||
+              b.status == BookingStatus.readyForPickup ||
+              b.status == BookingStatus.readyToShip) &&
           b.startDate.isBefore(now) &&
           b.endDate.isAfter(now),
     );
@@ -370,7 +374,8 @@ class _DressDetailPageState extends State<DressDetailPage>
         .where(
           (b) =>
               b.startDate.isAfter(now) &&
-              (b.status == 'confirmed' || b.status == 'pending'),
+              (b.status == BookingStatus.approved ||
+                  b.status == BookingStatus.pending),
         )
         .toList()
       ..sort((a, b) => a.startDate.compareTo(b.startDate));
@@ -1003,12 +1008,10 @@ class _DressDetailPageState extends State<DressDetailPage>
                 ActionMenuButton(
                   sheetTitle: null,
                   options: [
-                    if (booking.status != 'cancelled' && booking.status != 'returned')
+                    if (BookingStatus.ownerCanCancel(booking.status))
                       MenuOption(
                         icon: Icons.cancel_outlined,
-                        title: booking.status == 'pending'
-                            ? 'Decline booking request'
-                            : 'Cancel booking',
+                        title: BookingStatus.ownerCancelLabel(booking.status),
                         iconColor: themeRose,
                         titleColor: themeRose,
                         onTap: () => _handleCancelBooking(context, booking, dressId),
@@ -1031,30 +1034,37 @@ class _DressDetailPageState extends State<DressDetailPage>
   }
 
   Widget _statusChip(String status) {
+    // Grouped by what the owner has to do, not by how far along the booking is:
+    // waiting on her is accent, agreed is sage, out of her hands is peach,
+    // finished is muted, called off is rose.
     final bg = switch (status) {
-      'confirmed' => themeSage.withValues(alpha: 0.12),
-      'active' => themePeach.withValues(alpha: 0.12),
-      'returned' => themeSurfaceMuted,
-      'pending' => themeAccent.withValues(alpha: 0.18),
-      'cancelled' => themeRose.withValues(alpha: 0.10),
+      BookingStatus.pending => themeAccent.withValues(alpha: 0.18),
+      BookingStatus.approved ||
+      BookingStatus.readyForPickup ||
+      BookingStatus.readyToShip =>
+        themeSage.withValues(alpha: 0.12),
+      BookingStatus.collected || BookingStatus.shipped =>
+        themePeach.withValues(alpha: 0.12),
+      BookingStatus.declined ||
+      BookingStatus.cancelledByCustomer ||
+      BookingStatus.cancelledByOwner =>
+        themeRose.withValues(alpha: 0.10),
       _ => themeSurfaceMuted,
     };
     final fg = switch (status) {
-      'confirmed' => themeSage,
-      'active' => themePeach,
-      'returned' => themeTaupe,
-      'pending' => themeText,
-      'cancelled' => themeRose,
+      BookingStatus.pending => themeText,
+      BookingStatus.approved ||
+      BookingStatus.readyForPickup ||
+      BookingStatus.readyToShip =>
+        themeSage,
+      BookingStatus.collected || BookingStatus.shipped => themePeach,
+      BookingStatus.declined ||
+      BookingStatus.cancelledByCustomer ||
+      BookingStatus.cancelledByOwner =>
+        themeRose,
       _ => themeTaupe,
     };
-    final label = switch (status) {
-      'confirmed' => 'Confirmed',
-      'active' => 'Out for rent',
-      'returned' => 'Returned',
-      'pending' => 'Pending',
-      'cancelled' => 'Cancelled',
-      _ => status,
-    };
+    final label = BookingStatus.label(status);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
@@ -1489,22 +1499,15 @@ class _DressDetailPageState extends State<DressDetailPage>
   }
 
   // ─── Booking status lifecycle ───────────────────────────────────────────────
-  // pending → confirmed → active → returned. "Cancelled" is reachable from
-  // any non-terminal state via the overflow menu instead of this ladder.
+  // The ladder and its labels live in BookingStatus, alongside the definitions
+  // the rest of the app reads, so the steps offered here cannot drift from the
+  // transitions the database will actually accept. Declining and cancelling sit
+  // outside the ladder, in the overflow menu.
 
-  String? _nextStatus(String status) => switch (status) {
-    'pending' => 'confirmed',
-    'confirmed' => 'active',
-    'active' => 'returned',
-    _ => null,
-  };
+  String? _nextStatus(String status) => BookingStatus.nextStatus(status);
 
-  String _nextStatusLabel(String status) => switch (status) {
-    'pending' => 'Confirm',
-    'confirmed' => 'Mark out for rent',
-    'active' => 'Mark returned',
-    _ => '',
-  };
+  String _nextStatusLabel(String status) =>
+      BookingStatus.nextLabel(status) ?? '';
 
   Widget _statusAdvanceButton(RentalBooking booking, int dressId) {
     final next = _nextStatus(booking.status)!;
@@ -1587,6 +1590,13 @@ class _DressDetailPageState extends State<DressDetailPage>
     );
     if (!confirmed || !context.mounted) return;
 
-    await _handleStatusChange(context, booking, dressId, 'cancelled');
+    // Declined and cancelled_by_owner are different events to the person on the
+    // other end, and the audit trail keeps them apart.
+    await _handleStatusChange(
+      context,
+      booking,
+      dressId,
+      BookingStatus.ownerCancelStatus(booking.status),
+    );
   }
 }

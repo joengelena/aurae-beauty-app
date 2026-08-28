@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shine_app/data/models/rental_booking.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/utils.dart';
+import 'package:shine_app/utils/booking_status.dart';
 
 // Priority order matters — higher index wins when days overlap
 enum _DayStatus { none, past, pending, booked, active, overdue }
@@ -50,7 +51,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
   bool _isOverdue(RentalBooking b) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    return b.status == 'active' &&
+    return BookingStatus.isOut(b.status) &&
         DateTime(b.endDate.year, b.endDate.month, b.endDate.day)
             .isBefore(today);
   }
@@ -60,7 +61,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
     _DayStatus best = _DayStatus.none;
 
     for (final b in widget.bookings) {
-      if (b.status == 'cancelled') continue;
+      if (!BookingStatus.holdsDates(b.status)) continue;
 
       final start =
           DateTime(b.startDate.year, b.startDate.month, b.startDate.day);
@@ -69,11 +70,18 @@ class _BookingCalendarState extends State<BookingCalendar> {
       if (d.isBefore(start) || d.isAfter(end)) continue;
 
       final status = switch (b.status) {
-        'active' =>
+        BookingStatus.collected || BookingStatus.shipped =>
           _isOverdue(b) ? _DayStatus.overdue : _DayStatus.active,
-        'confirmed' => _DayStatus.booked,
-        'pending' => _DayStatus.pending,
-        'returned' => _DayStatus.past,
+        BookingStatus.approved ||
+        BookingStatus.readyForPickup ||
+        BookingStatus.readyToShip =>
+          _DayStatus.booked,
+        BookingStatus.pending => _DayStatus.pending,
+        BookingStatus.returned ||
+        BookingStatus.inspected ||
+        BookingStatus.completed ||
+        BookingStatus.completedWithDamage =>
+          _DayStatus.past,
         _ => _DayStatus.none,
       };
 
@@ -87,7 +95,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
   List<RentalBooking> _bookingsOnDay(DateTime day) {
     final d = DateTime(day.year, day.month, day.day);
     return widget.bookings.where((b) {
-      if (b.status == 'cancelled') return false;
+      if (!BookingStatus.holdsDates(b.status)) return false;
       final start = DateTime(b.startDate.year, b.startDate.month, b.startDate.day);
       final end = DateTime(b.endDate.year, b.endDate.month, b.endDate.day);
       return !d.isBefore(start) && !d.isAfter(end);
@@ -397,18 +405,19 @@ class _BookingCalendarState extends State<BookingCalendar> {
   Widget _dayBookingRow(RentalBooking b) {
     final overdue = _isOverdue(b);
     final Color dot = switch (b.status) {
-      'active' => overdue ? themeRose : themePeach,
-      'confirmed' || 'pending' => themeAccent,
-      'returned' => themeTaupe,
+      BookingStatus.collected ||
+      BookingStatus.shipped =>
+        overdue ? themeRose : themePeach,
+      BookingStatus.approved ||
+      BookingStatus.readyForPickup ||
+      BookingStatus.readyToShip ||
+      BookingStatus.pending =>
+        themeAccent,
       _ => themeTaupe,
     };
-    final label = switch (b.status) {
-      'active' => overdue ? 'Overdue' : 'Out for rent',
-      'confirmed' => 'Confirmed',
-      'pending' => 'Pending',
-      'returned' => 'Returned',
-      _ => b.status,
-    };
+    final label = BookingStatus.isOut(b.status) && overdue
+        ? 'Overdue'
+        : BookingStatus.label(b.status);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),

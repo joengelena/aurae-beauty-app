@@ -6,6 +6,7 @@ import 'package:shine_app/presentation/widgets/common/app_card.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/utils.dart';
+import 'package:shine_app/utils/booking_status.dart';
 
 class _StatusStyle {
   const _StatusStyle(this.background, this.foreground, this.label);
@@ -15,19 +16,24 @@ class _StatusStyle {
 }
 
 _StatusStyle _statusStyle(String status) {
+  final label = BookingStatus.label(status);
   switch (status) {
-    case 'active':
-      return _StatusStyle(themePeach.withValues(alpha: 0.22), themeText, 'Active');
-    case 'confirmed':
-      return _StatusStyle(themeAccent.withValues(alpha: 0.30), themeText, 'Confirmed');
-    case 'pending':
-      return _StatusStyle(themeAccent.withValues(alpha: 0.18), themeText, 'Pending approval');
-    case 'returned':
-      return _StatusStyle(themeSurfaceMuted, themeTaupe, 'Returned');
-    case 'cancelled':
-      return _StatusStyle(themeRose.withValues(alpha: 0.10), themeRose, 'Cancelled');
+    case BookingStatus.collected:
+    case BookingStatus.shipped:
+      return _StatusStyle(themePeach.withValues(alpha: 0.22), themeText, label);
+    case BookingStatus.approved:
+    case BookingStatus.readyForPickup:
+    case BookingStatus.readyToShip:
+      return _StatusStyle(themeAccent.withValues(alpha: 0.30), themeText, label);
+    case BookingStatus.pending:
+      return _StatusStyle(
+          themeAccent.withValues(alpha: 0.18), themeText, 'Pending approval');
+    case BookingStatus.declined:
+    case BookingStatus.cancelledByCustomer:
+    case BookingStatus.cancelledByOwner:
+      return _StatusStyle(themeRose.withValues(alpha: 0.10), themeRose, label);
     default:
-      return _StatusStyle(themePrimary.withValues(alpha: 0.55), themeTaupe, status);
+      return _StatusStyle(themeSurfaceMuted, themeTaupe, label);
   }
 }
 

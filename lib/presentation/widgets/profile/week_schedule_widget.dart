@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shine_app/logic/week_schedule_provider.dart';
 import 'package:shine_app/utils/theme.dart';
+import 'package:shine_app/utils/booking_status.dart';
 
 enum _ScheduleViewMode { day, week, month }
 
@@ -277,12 +278,15 @@ class _WeekScheduleWidgetState extends State<WeekScheduleWidget> {
     final String statusLabel;
 
     switch (b.booking.status) {
-      case 'active':
+      case BookingStatus.collected:
+      case BookingStatus.shipped:
         bgColor = themePeach.withValues(alpha: 0.22);
         textColor = themeText;
         statusLabel = 'Out';
-      case 'confirmed':
-      case 'pending':
+      case BookingStatus.approved:
+      case BookingStatus.readyForPickup:
+      case BookingStatus.readyToShip:
+      case BookingStatus.pending:
         bgColor = themeAccent.withValues(alpha: 0.30);
         textColor = themeText;
         statusLabel = 'Booked';

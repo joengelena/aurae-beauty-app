@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:shine_app/data/exceptions/app_exception.dart';
 import 'package:shine_app/data/models/upcoming_booking.dart';
 import 'package:shine_app/data/services/dress_services.dart';
+import 'package:shine_app/utils/booking_status.dart';
 
-const _openStatuses = ['pending', 'confirmed'];
-const _closedStatuses = ['returned', 'cancelled'];
 const _previewWindowDays = 30;
 
+/// The renter can call it off while it is still only a request or a promise.
+/// Past that the owner has started fulfilling, and the API refuses too.
 bool isBookingCancellable(UpcomingBooking booking) =>
-    _openStatuses.contains(booking.status);
+    booking.status == BookingStatus.pending ||
+    booking.status == BookingStatus.approved;
 
 class MyBookingsProvider extends ChangeNotifier {
   final DressServices _dressServices = DressServices();
@@ -25,7 +27,7 @@ class MyBookingsProvider extends ChangeNotifier {
   /// Not yet returned or cancelled — soonest first.
   List<UpcomingBooking> get upcoming {
     final list = _bookings
-        .where((b) => !_closedStatuses.contains(b.status))
+        .where((b) => BookingStatus.isOpen(b.status))
         .toList()
       ..sort((a, b) => a.startDate.compareTo(b.startDate));
     return List.unmodifiable(list);
@@ -34,7 +36,7 @@ class MyBookingsProvider extends ChangeNotifier {
   /// Returned or cancelled — most recent first.
   List<UpcomingBooking> get past {
     final list = _bookings
-        .where((b) => _closedStatuses.contains(b.status))
+        .where((b) => BookingStatus.isClosed(b.status))
         .toList()
       ..sort((a, b) => b.startDate.compareTo(a.startDate));
     return List.unmodifiable(list);
