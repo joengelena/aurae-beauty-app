@@ -108,8 +108,8 @@ class _RangeFilterState extends State<RangeFilter> {
               ? [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))]
               : [FilteringTextInputFormatter.digitsOnly],
       decoration: InputDecoration(
-        hintText: labelText,
-        hintStyle: TextStyle(color: themeTaupe, fontSize: 13),
+        labelText: labelText,
+        labelStyle: TextStyle(color: themeTaupe, fontSize: 13),
         prefixText: widget.prefixText,
         prefixStyle: TextStyle(color: themeText, fontSize: 14),
         contentPadding: const EdgeInsets.symmetric(
