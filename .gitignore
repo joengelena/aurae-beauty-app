@@ -48,3 +48,7 @@ app.*.map.json
 *.jks
 *.keystore
 key.properties
+
+# Claude Code local settings — per-machine tool permissions with absolute
+# paths. The shared conventions in .claude/rules/ stay tracked.
+.claude/settings.local.json
