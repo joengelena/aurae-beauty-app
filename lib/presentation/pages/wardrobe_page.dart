@@ -140,9 +140,6 @@ class _WardrobePageState extends State<WardrobePage>
         child: LayoutBuilder(
           builder: (context, constraints) {
             final availableWidth = constraints.maxWidth;
-            final crossAxisCount =
-                availableWidth >= AppConstants.twoColumnBreakpoint ? 2 : 1;
-            final itemWidth = _calculateItemWidth(availableWidth, crossAxisCount);
 
             return RefreshIndicator(
               onRefresh: () async {
@@ -164,7 +161,7 @@ class _WardrobePageState extends State<WardrobePage>
                   Divider(color: themePrimary, thickness: 1),
                   const SizedBox(height: AppConstants.spacingLarge),
 
-                  // Heading aligned with the card grid
+                  // Heading aligned with the rail below it
                   Row(
                     children: [
                       Text(
@@ -173,35 +170,43 @@ class _WardrobePageState extends State<WardrobePage>
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const Spacer(),
+                      const SizedBox(width: AppConstants.spacingSmall),
                       Text(
-                        '${provider.activeDresses.length} dress${provider.activeDresses.length == 1 ? '' : 'es'}',
+                        '${provider.activeDresses.length}',
                         style: TextStyle(
                           fontSize: 12,
                           color: themeTaupe,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: _handleViewAllDresses,
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          minimumSize: const Size(0, 36),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'View all',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: themeText,
+                              ),
+                            ),
+                            const SizedBox(width: 2),
+                            Icon(Icons.chevron_right, size: 18, color: themeText),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: AppConstants.spacingMedium),
-                  Wrap(
-                    spacing: AppConstants.spacingMedium,
-                    runSpacing: AppConstants.spacingMedium,
-                    children: provider.activeDresses.map((dress) {
-                      return SizedBox(
-                        width: itemWidth,
-                        child: DressCard(
-                          dress: dress,
-                          actionButton: DressActionMenu(dress: dress),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  if (provider.soldDresses.isNotEmpty) ...[
-                    const SizedBox(height: AppConstants.spacingLarge),
-                    _buildSoldSection(provider, itemWidth),
-                  ],
+                  _buildDressRail(provider, availableWidth),
                   const SizedBox(height: AppConstants.spacingLarge),
                   Divider(color: themePrimary, thickness: 1),
                   const SizedBox(height: AppConstants.spacingMedium),
@@ -215,34 +220,41 @@ class _WardrobePageState extends State<WardrobePage>
     );
   }
 
-  Widget _buildSoldSection(WardrobeProvider provider, double itemWidth) {
-    return Theme(
-      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-      child: ExpansionTile(
-        tilePadding: EdgeInsets.zero,
-        childrenPadding: const EdgeInsets.only(top: AppConstants.spacingMedium),
-        title: Text(
-          'Sold (${provider.soldDresses.length})',
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: themeTaupe,
-          ),
-        ),
+  /// A horizontal strip of the first few dresses, with the ones needing
+  /// attention at the front. The overview is a glance, not the inventory —
+  /// the whole wardrobe lives behind "View all".
+  ///
+  /// Cards are sized so the next one is partly visible: a strip that ends
+  /// flush with the screen edge doesn't read as scrollable. A Row inside a
+  /// SingleChildScrollView rather than a horizontal ListView, because the card
+  /// has no fixed height and this lets the strip take its tallest child's
+  /// height instead of guessing one.
+  Widget _buildDressRail(WardrobeProvider provider, double availableWidth) {
+    final dresses = provider.overviewDresses;
+    // 2.2 cards across, so the third is cut off and the strip reads as
+    // scrollable. toDouble() because num.clamp is typed to return num, and
+    // SizedBox.width wants a double.
+    final cardWidth = ((availableWidth - _horizontalPadding) / 2.2)
+        .clamp(140.0, 200.0)
+        .toDouble();
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: EdgeInsets.zero,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Wrap(
-            spacing: AppConstants.spacingMedium,
-            runSpacing: AppConstants.spacingMedium,
-            children: provider.soldDresses.map((dress) {
-              return SizedBox(
-                width: itemWidth,
-                child: DressCard(
-                  dress: dress,
-                  actionButton: DressActionMenu(dress: dress),
-                ),
-              );
-            }).toList(),
-          ),
+          for (var i = 0; i < dresses.length; i++) ...[
+            SizedBox(
+              width: cardWidth,
+              child: DressCard(
+                dress: dresses[i],
+                actionButton: DressActionMenu(dress: dresses[i]),
+              ),
+            ),
+            if (i < dresses.length - 1)
+              const SizedBox(width: AppConstants.spacingMedium),
+          ],
         ],
       ),
     );
@@ -431,5 +443,11 @@ class _WardrobePageState extends State<WardrobePage>
     final currentRoute = GoRouterState.of(context).uri.path;
     context.read<BackButtonProvider>().pushRoute(currentRoute);
     context.go('/wardrobe/add');
+  }
+
+  void _handleViewAllDresses() {
+    final currentRoute = GoRouterState.of(context).uri.path;
+    context.read<BackButtonProvider>().pushRoute(currentRoute);
+    context.go('/wardrobe/dresses');
   }
 }

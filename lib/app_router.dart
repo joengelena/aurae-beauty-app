@@ -24,6 +24,7 @@ import 'package:shine_app/presentation/pages/profile/sign_up_page.dart';
 import 'package:shine_app/presentation/pages/splash_page.dart';
 import 'package:shine_app/presentation/pages/watchlist_page.dart';
 import 'package:shine_app/presentation/pages/cart_page.dart';
+import 'package:shine_app/presentation/pages/wardrobe_dresses_page.dart';
 import 'package:shine_app/presentation/pages/wardrobe_page.dart';
 import 'package:shine_app/presentation/pages/add_dress_page.dart';
 import 'package:shine_app/presentation/pages/edit_dress_page.dart';
@@ -213,6 +214,14 @@ GoRouter getAppRouter(
                 path: 'add',
                 pageBuilder:
                     (context, state) => NoTransitionPage(child: AddDressPage()),
+              ),
+              // Must stay above ':dressId' — go_router matches in declaration
+              // order, so a dynamic segment declared first would swallow this
+              // and try to open a dress with the id "dresses".
+              GoRoute(
+                path: 'dresses',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: WardrobeDressesPage()),
               ),
               GoRoute(
                 path: ':dressId',

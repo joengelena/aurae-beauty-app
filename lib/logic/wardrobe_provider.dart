@@ -17,6 +17,36 @@ class WardrobeProvider extends ChangeNotifier {
       _dresses.where((d) => d.status != 'sold').toList();
   List<BusinessDress> get soldDresses =>
       _dresses.where((d) => d.status == 'sold').toList();
+
+  /// How many dresses the Wardrobe overview shows before "View all".
+  static const int overviewDressCount = 5;
+
+  /// A dress the owner has something to do about: a booking request waiting on
+  /// her, or damage she hasn't closed off.
+  static bool _needsAttention(BusinessDress d) =>
+      d.pendingBookingCount > 0 || d.unresolvedDamageCount > 0;
+
+  /// Active dresses with the ones needing attention first.
+  ///
+  /// Partitioned rather than sorted: Dart's sort isn't stable, and the API
+  /// already returns newest-first, so splitting the list preserves recency
+  /// inside each group without a second sort key.
+  List<BusinessDress> get dressesByAttention {
+    final active = activeDresses;
+    return [
+      ...active.where(_needsAttention),
+      ...active.where((d) => !_needsAttention(d)),
+    ];
+  }
+
+  /// The slice shown on the overview rail.
+  List<BusinessDress> get overviewDresses =>
+      dressesByAttention.take(overviewDressCount).toList();
+
+  /// True once there is more inventory than the rail can show, which is the
+  /// only time "View all" has anything extra behind it.
+  bool get hasMoreThanOverview =>
+      activeDresses.length > overviewDressCount || soldDresses.isNotEmpty;
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
   bool get hasError => _errorMessage.isNotEmpty;
