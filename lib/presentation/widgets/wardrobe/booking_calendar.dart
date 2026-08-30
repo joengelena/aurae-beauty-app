@@ -8,7 +8,7 @@ import 'package:shine_app/utils/booking_status.dart';
 // blocked sit below the booking states deliberately: if a turnaround happens to
 // overlap the next booking's wear dates, the wear dates are the more important
 // thing to show.
-enum _DayStatus { none, past, buffer, blocked, pending, booked, active, overdue }
+enum _DayStatus { none, past, buffer, blocked, pending, booked, overdue }
 
 enum _ViewMode { day, week, month }
 
@@ -86,8 +86,13 @@ class _BookingCalendarState extends State<BookingCalendar> {
       if (d.isBefore(start) || d.isAfter(end)) continue;
 
       final status = switch (b.status) {
+        // Committed and physically gone look the same here on purpose. On a
+        // calendar the distinction barely appears — a future date can only ever
+        // be committed — and it is only as truthful as the owner remembering to
+        // tap "Mark collected". Overdue is the one case where the dress having
+        // actually left changes what she has to do, so it keeps its own colour.
         BookingStatus.collected || BookingStatus.shipped =>
-          _isOverdue(b) ? _DayStatus.overdue : _DayStatus.active,
+          _isOverdue(b) ? _DayStatus.overdue : _DayStatus.booked,
         BookingStatus.approved ||
         BookingStatus.readyForPickup ||
         BookingStatus.readyToShip =>
@@ -556,9 +561,6 @@ class _BookingCalendarState extends State<BookingCalendar> {
     final Color fill;
     final Color textColor;
     switch (status) {
-      case _DayStatus.active:
-        fill = themePeach.withValues(alpha: 0.22);
-        textColor = themeText;
       case _DayStatus.booked:
         fill = themeAccent.withValues(alpha: 0.30);
         textColor = themeText;
@@ -683,7 +685,6 @@ class _BookingCalendarState extends State<BookingCalendar> {
       children: [
         _legendItem(themeAccent.withValues(alpha: 0.30), 'Booked'),
         _legendItem(themeAccent.withValues(alpha: 0.12), 'Pending'),
-        _legendItem(themePeach.withValues(alpha: 0.22), 'Out for rent'),
         _legendItem(themeRose.withValues(alpha: 0.20), 'Overdue'),
         _legendItem(themePrimary.withValues(alpha: 0.55), 'Returned'),
         _legendItem(themeSky.withValues(alpha: 0.18), 'Cleaning'),
