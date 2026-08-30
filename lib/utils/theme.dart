@@ -20,7 +20,13 @@ final themeTaupe = Color(0xFF78716C);       // Secondary text (taupe)
 // the one cool colour in a warm palette: every other calendar state is a
 // customer commitment, and this one is the owner's own laundry. It reads as
 // "not yours to sell yet" rather than "someone else has this".
-final themeSky = Color(0xFF0EA5E9);
+//
+// Light enough to use as a calendar fill straight off. Same split as
+// themeAccent/themeAccentInk: this one is for surfaces, the Ink for anything
+// drawn on top of them — #7DD3FC on a pale blue fill is 2.3:1, which is not a
+// legible icon.
+final themeSky = Color(0xFF7DD3FC);
+final themeSkyInk = Color(0xFF0369A1);
 
 // Muted neutral surface — chip backgrounds, photo placeholders, icon
 // squares. Per the Tinted-Neutral Rule, this is the one shared near-white

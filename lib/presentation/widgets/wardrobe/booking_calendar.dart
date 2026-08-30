@@ -449,7 +449,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
         if (bookings.isEmpty && _bufferBookingOn(_focusedDay) != null)
           _dayNote(
             icon: Icons.local_laundry_service_outlined,
-            color: themeSky,
+            color: themeSkyInk,
             title: 'Cleaning turnaround',
             detail: () {
               final b = _bufferBookingOn(_focusedDay)!;
@@ -580,7 +580,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
         // The one cool colour on the calendar. A turnaround is unavailable but
         // uncommitted, and sharing peach with "out for rent" made the two read
         // as the same kind of busy when they are not.
-        fill = themeSky.withValues(alpha: 0.18);
+        fill = themeSky.withValues(alpha: 0.40);
         textColor = themeText;
       case _DayStatus.none:
         fill = Colors.transparent;
@@ -687,7 +687,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
         _legendItem(themeAccent.withValues(alpha: 0.12), 'Pending'),
         _legendItem(themeRose.withValues(alpha: 0.20), 'Overdue'),
         _legendItem(themePrimary.withValues(alpha: 0.55), 'Returned'),
-        _legendItem(themeSky.withValues(alpha: 0.18), 'Cleaning'),
+        _legendItem(themeSky.withValues(alpha: 0.40), 'Cleaning'),
         _legendItem(themeTaupe.withValues(alpha: 0.28), 'Blocked'),
       ],
     );
