@@ -21,11 +21,15 @@ final themeTaupe = Color(0xFF78716C);       // Secondary text (taupe)
 // customer commitment, and this one is the owner's own laundry. It reads as
 // "not yours to sell yet" rather than "someone else has this".
 //
-// Light enough to use as a calendar fill straight off. Same split as
-// themeAccent/themeAccentInk: this one is for surfaces, the Ink for anything
-// drawn on top of them — #7DD3FC on a pale blue fill is 2.3:1, which is not a
-// legible icon.
-final themeSky = Color(0xFF7DD3FC);
+// Pitched to sit in the same band as the other calendar fills. At 40% over
+// white it renders #E3F5FE, just above Booked — a stronger blue read as one
+// weight darker than everything around it, which made the turnaround look more
+// urgent than the bookings it follows.
+//
+// Same split as themeAccent/themeAccentInk: this one is for surfaces, the Ink
+// for anything drawn on top of them, since a fill this pale cannot carry its
+// own colour as a mark.
+final themeSky = Color(0xFFBAE6FD);
 final themeSkyInk = Color(0xFF0369A1);
 
 // Muted neutral surface — chip backgrounds, photo placeholders, icon
