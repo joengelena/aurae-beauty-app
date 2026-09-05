@@ -70,3 +70,16 @@ String? extractUserIdFromJWT(String token) {
 }
 
 final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
+/// Move a calendar date by whole days.
+///
+/// Not `date.add(Duration(days: n))`. A Duration is a fixed number of hours, so
+/// across a daylight-saving change the result lands at 23:00 or 01:00 rather
+/// than midnight — and every date comparison in the app normalises to midnight
+/// first, so the day silently shifts by one. New Zealand switches in late
+/// September and early April, both inside wedding season.
+///
+/// The DateTime constructor rolls day overflow into the next month on its own
+/// (day 32 becomes the 1st) and always returns local midnight.
+DateTime addDays(DateTime date, int days) =>
+    DateTime(date.year, date.month, date.day + days);

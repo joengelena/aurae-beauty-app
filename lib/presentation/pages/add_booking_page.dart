@@ -9,6 +9,7 @@ import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:shine_app/utils/booking_status.dart';
+import 'package:shine_app/utils/utils.dart';
 
 class AddBookingPage extends StatefulWidget {
   final int dressId;
@@ -238,8 +239,8 @@ class _AddBookingPageState extends State<AddBookingPage> {
             .where((b) => BookingStatus.holdsDates(b.status))
             .map(
               (b) => BookedRange(
-                startDate: b.endDate.add(const Duration(days: 1)),
-                endDate: b.endDate.add(Duration(days: bufferDays)),
+                startDate: addDays(b.endDate, 1),
+                endDate: addDays(b.endDate, bufferDays),
                 status: 'blocked',
               ),
             ),

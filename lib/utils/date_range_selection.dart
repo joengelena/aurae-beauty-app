@@ -1,4 +1,5 @@
 import 'package:shine_app/data/models/booked_range.dart';
+import 'package:shine_app/utils/utils.dart';
 
 /// Shared tap-selection logic for rental date-range calendars.
 ///
@@ -27,7 +28,10 @@ class DateRangeSelection {
     DateTime day,
     List<BookedRange> bookedRanges,
   ) {
-    final next = day.add(const Duration(days: 1));
+    // addDays, not a Duration: this value becomes the booking's end date and is
+    // sent to the API. On a daylight-saving change a Duration lands at 23:00 of
+    // the same day, which would submit a booking that ends before it starts.
+    final next = addDays(day, 1);
     if (conflicts(bookedRanges, day, next)) return (day, null);
     return (day, next);
   }

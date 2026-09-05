@@ -139,14 +139,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
 
     for (final b in widget.bookings) {
       if (!BookingStatus.holdsDates(b.status)) continue;
-      // Built by constructor rather than by adding a Duration: a Duration is a
-      // fixed number of hours, so across a daylight-saving change it lands at
-      // 23:00 or 01:00 instead of midnight and the comparison against a
-      // midnight-normalised day slips by one. DateTime rolls day overflow into
-      // the next month correctly, and always gives local midnight.
       final end = DateTime(b.endDate.year, b.endDate.month, b.endDate.day);
-      final from = DateTime(end.year, end.month, end.day + 1);
-      final to = DateTime(end.year, end.month, end.day + widget.cleaningBufferDays);
+      final from = addDays(end, 1);
+      final to = addDays(end, widget.cleaningBufferDays);
       if (!d.isBefore(from) && !d.isAfter(to)) return b;
     }
     return null;
