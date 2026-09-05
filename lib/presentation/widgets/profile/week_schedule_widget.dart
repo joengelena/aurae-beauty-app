@@ -277,23 +277,34 @@ class _WeekScheduleWidgetState extends State<WeekScheduleWidget> {
     final Color textColor;
     final String statusLabel;
 
-    switch (b.booking.status) {
-      case BookingStatus.collected:
-      case BookingStatus.shipped:
-        bgColor = themePeach.withValues(alpha: 0.22);
-        textColor = themeText;
-        statusLabel = 'Out';
-      case BookingStatus.approved:
-      case BookingStatus.readyForPickup:
-      case BookingStatus.readyToShip:
-      case BookingStatus.pending:
-        bgColor = themeAccent.withValues(alpha: 0.30);
-        textColor = themeText;
-        statusLabel = 'Booked';
-      default:
-        bgColor = themePrimary.withValues(alpha: 0.55);
-        textColor = themeTaupe;
-        statusLabel = b.booking.status;
+    // Overdue is checked before the status groups below, because a late booking
+    // is 'collected' too — and being late is the thing worth seeing.
+    if (BookingStatus.isOverdue(b.booking.status, b.booking.endDate)) {
+      bgColor = themeRose.withValues(alpha: 0.20);
+      textColor = themeRose;
+      statusLabel = 'Overdue';
+    } else {
+      switch (b.booking.status) {
+        // Committed and physically gone read the same here, matching the dress
+        // calendar. Whether the dress has left is only as accurate as the owner
+        // remembering to tap "Mark collected", and either way the week strip is
+        // answering "what is happening this week", not "where is it right now".
+        case BookingStatus.collected:
+        case BookingStatus.shipped:
+        case BookingStatus.approved:
+        case BookingStatus.readyForPickup:
+        case BookingStatus.readyToShip:
+        case BookingStatus.pending:
+          bgColor = themeAccent.withValues(alpha: 0.30);
+          textColor = themeText;
+          statusLabel = 'Booked';
+        default:
+          bgColor = themePrimary.withValues(alpha: 0.55);
+          textColor = themeTaupe;
+          // Through BookingStatus rather than raw, so a chip never shows
+          // 'cancelled_by_customer' at someone.
+          statusLabel = BookingStatus.label(b.booking.status);
+      }
     }
 
     final dressName = [b.dress.brand, b.dress.style]
