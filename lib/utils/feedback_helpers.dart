@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shine_app/data/exceptions/app_exception.dart';
 import 'package:shine_app/presentation/widgets/common/app_dialog.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/theme.dart';
+
+// userMessage lives with the exceptions it reads, but it is reached for
+// alongside the snackbars below, so it stays importable from here too.
+export 'package:shine_app/data/exceptions/app_exception.dart' show userMessage;
 
 /// Helper class for user feedback operations like confirmation dialogs and snackbars
 class FeedbackHelpers {
@@ -125,7 +130,8 @@ class FeedbackHelpers {
       if (context.mounted) {
         showErrorSnackBar(
           context,
-          errorMessage ?? 'Failed to delete $itemName: ${e.toString()}',
+          errorMessage ??
+              userMessage(e, fallback: 'Could not delete $itemName. Please try again.'),
         );
       }
     }

@@ -31,13 +31,27 @@ String formatPrice(int price) {
 /// Extracts error message from API response body
 /// Attempts to parse JSON and extract the 'message' field
 /// Returns the original body if parsing fails
-String extractErrorMessage(String responseBody) {
+/// Pull the written message out of an error response.
+///
+/// Falls back to [fallback] rather than to the raw body.
+/// The body of a failed request is not reliably ours — it can be a proxy's HTML
+/// error page, a stack trace, or a socket error — and handing any of that to
+/// someone as an explanation is worse than saying nothing. Callers supply their
+/// own wording for that case.
+String extractErrorMessage(
+  String responseBody, {
+  String fallback = 'Something went wrong. Please try again.',
+}) {
   try {
-    final errorData = json.decode(responseBody) as Map<String, dynamic>;
-    return errorData['message'] as String? ?? responseBody;
-  } catch (e) {
-    return responseBody;
+    final decoded = json.decode(responseBody);
+    if (decoded is Map<String, dynamic>) {
+      final message = decoded['message'];
+      if (message is String && message.trim().isNotEmpty) return message.trim();
+    }
+  } catch (_) {
+    // Not JSON. Nothing quotable in here.
   }
+  return fallback;
 }
 
 /// Extracts user ID from a JWT token

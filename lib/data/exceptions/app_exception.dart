@@ -1,3 +1,23 @@
+/// Turn anything thrown into a sentence worth showing someone.
+///
+/// Our own exceptions already carry a written message, so they pass through.
+/// Anything else — a raw Exception, a platform error, a parse failure — has a
+/// developer's words in it, and the honest thing is to say something true and
+/// general rather than hand a renter `FormatException: Unexpected character`.
+///
+/// [fallback] lets a caller say what was being attempted, so the generic case
+/// still tells the person which thing didn't work.
+String userMessage(
+  Object error, {
+  String fallback = 'Something went wrong. Please try again.',
+}) {
+  if (error is AppException) {
+    final message = error.message.trim();
+    if (message.isNotEmpty) return message;
+  }
+  return fallback;
+}
+
 /// Base exception class for all application exceptions
 class AppException implements Exception {
   final String message;
@@ -6,12 +26,23 @@ class AppException implements Exception {
 
   AppException(this.message, {this.details, this.stackTrace});
 
+  /// What to show a person.
+  ///
+  /// toString() is what the UI reaches for, so it returns the message alone.
+  /// It used to append `details`, which services set to the raw response body —
+  /// so a refused booking read "Those dates are no longer available:
+  /// {"message":"Those dates are no longer available"}".
+  ///
+  /// Diagnostics have not gone anywhere; they moved to [diagnostic], which is
+  /// what belongs in a log.
   @override
-  String toString() {
-    if (details != null) {
-      return '$message: $details';
-    }
-    return message;
+  String toString() => message;
+
+  /// Everything known about the failure, for logs and bug reports. Never shown.
+  String get diagnostic {
+    final parts = <String>['$runtimeType: $message'];
+    if (details != null) parts.add('details: $details');
+    return parts.join(' | ');
   }
 }
 
@@ -31,12 +62,14 @@ class NetworkException extends AppException {
     super.stackTrace,
   });
 
+  /// Inherits the message-only toString. The status code is a fact about the
+  /// transport, not something a renter can act on — it lives in [diagnostic].
   @override
-  String toString() {
-    if (statusCode != null) {
-      return 'NetworkException ($statusCode): $message${details != null ? ' - $details' : ''}';
-    }
-    return super.toString();
+  String get diagnostic {
+    final parts = <String>['$runtimeType: $message'];
+    if (statusCode != null) parts.add('status: $statusCode');
+    if (details != null) parts.add('details: $details');
+    return parts.join(' | ');
   }
 }
 
