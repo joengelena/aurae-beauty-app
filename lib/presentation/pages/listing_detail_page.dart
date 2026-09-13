@@ -958,10 +958,9 @@ class _ListingDetailPageState extends State<ListingDetailPage>
     } catch (e) {
       if (!mounted) return;
       setState(() => _isAddingToCart = false);
-      final msg = e.toString().replaceFirst('Exception: ', '');
       FeedbackHelpers.showErrorSnackBar(
         context,
-        msg.isNotEmpty ? msg : 'Could not add to cart. Try again.',
+        userMessage(e, fallback: 'Could not add to cart. Please try again.'),
       );
     }
   }

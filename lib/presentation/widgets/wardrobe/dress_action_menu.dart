@@ -80,7 +80,7 @@ class DressActionMenu extends StatelessWidget {
       if (context.mounted) {
         FeedbackHelpers.showErrorSnackBar(
           context,
-          'Failed to mark dress as sold: ${e.toString()}',
+          userMessage(e, fallback: 'Could not mark this dress as sold. Please try again.'),
         );
       }
     }
@@ -99,7 +99,7 @@ class DressActionMenu extends StatelessWidget {
       if (context.mounted) {
         FeedbackHelpers.showErrorSnackBar(
           context,
-          'Failed to reactivate dress: ${e.toString()}',
+          userMessage(e, fallback: 'Could not reactivate this dress. Please try again.'),
         );
       }
     }
@@ -127,7 +127,7 @@ class DressActionMenu extends StatelessWidget {
       if (context.mounted) {
         FeedbackHelpers.showErrorSnackBar(
           context,
-          'Failed to delete dress: ${e.toString()}',
+          userMessage(e, fallback: 'Could not delete this dress. Please try again.'),
         );
       }
     }
