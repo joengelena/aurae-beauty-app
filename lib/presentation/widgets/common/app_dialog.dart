@@ -126,11 +126,25 @@ class AppDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconData = _getIconData();
-    final iconColor = _getIconColor();
+    final colors = _colors();
 
     return AlertDialog(
-      icon: Icon(iconData, color: iconColor, size: 48),
+      backgroundColor: themeBackground,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      // A bare 48px saturated glyph floating above the title was the loudest
+      // thing in the dialog. Sitting it in its own tinted disc gives it an
+      // edge to belong to, and matches the snackbars.
+      icon: Container(
+        width: _badgeSize,
+        height: _badgeSize,
+        decoration: BoxDecoration(
+          color: colors.tint,
+          shape: BoxShape.circle,
+          border: Border.all(color: colors.border),
+        ),
+        child: Icon(_getIconData(), color: colors.ink, size: _badgeIconSize),
+      ),
       title: Text(
         title,
         textAlign: TextAlign.center,
@@ -139,36 +153,45 @@ class AppDialog extends StatelessWidget {
       content: Text(
         message,
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodyMedium,
+        // Taupe rather than full-strength themeText: the title is the thing
+        // being said, and this is the sentence explaining it.
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: themeTaupe, height: 1.45),
       ),
       actions: _buildActions(context),
       actionsAlignment: MainAxisAlignment.center,
     );
   }
 
+  /// Badge sized so the icon keeps its old visual weight while gaining a
+  /// surface — the glyph shrinks from 48 to 28, the mark as a whole grows.
+  static const double _badgeSize = 64;
+  static const double _badgeIconSize = 28;
+
   IconData _getIconData() {
     switch (type) {
       case AppDialogType.success:
-        return Icons.check_circle;
+        return Icons.check_circle_outline;
       case AppDialogType.error:
-        return Icons.error;
+        return Icons.error_outline;
       case AppDialogType.warning:
-        return Icons.warning;
+        return Icons.warning_amber_rounded;
       case AppDialogType.info:
-        return Icons.info;
+        return Icons.info_outline;
     }
   }
 
-  Color _getIconColor() {
+  AlertColors _colors() {
     switch (type) {
       case AppDialogType.success:
-        return themeGreen;
+        return alertSuccess;
       case AppDialogType.error:
-        return themeRed;
+        return alertError;
       case AppDialogType.warning:
-        return themeOrange;
+        return alertWarning;
       case AppDialogType.info:
-        return themeBlue;
+        return alertInfo;
     }
   }
 
