@@ -90,7 +90,9 @@ class WardrobeProvider extends ChangeNotifier {
     } on AppException {
       rethrow;
     } catch (e) {
-      throw AppException('Failed to add dress: ${e.toString()}');
+      throw AppException(
+        userMessage(e, fallback: "Could not add that dress. Please try again."),
+      );
     }
   }
 
@@ -115,7 +117,9 @@ class WardrobeProvider extends ChangeNotifier {
     } on AppException {
       rethrow;
     } catch (e) {
-      throw AppException('Failed to update dress: ${e.toString()}');
+      throw AppException(
+        userMessage(e, fallback: "Could not update that dress. Please try again."),
+      );
     }
   }
 
@@ -135,7 +139,9 @@ class WardrobeProvider extends ChangeNotifier {
     } on AppException {
       rethrow;
     } catch (e) {
-      throw AppException('Failed to delete dress: ${e.toString()}');
+      throw AppException(
+        userMessage(e, fallback: "Could not delete that dress. Please try again."),
+      );
     }
   }
 

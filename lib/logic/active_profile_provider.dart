@@ -84,7 +84,9 @@ class ActiveProfileProvider extends ChangeNotifier {
     } on AppException {
       rethrow;
     } catch (e) {
-      throw AppException('Failed to create business: ${e.toString()}');
+      throw AppException(
+        userMessage(e, fallback: "Could not set up your business. Please try again."),
+      );
     }
   }
 
@@ -97,7 +99,9 @@ class ActiveProfileProvider extends ChangeNotifier {
     } on AppException {
       rethrow;
     } catch (e) {
-      throw AppException('Failed to redeem invite code: ${e.toString()}');
+      throw AppException(
+        userMessage(e, fallback: "That invite code could not be redeemed. Check it and try again."),
+      );
     }
   }
 
@@ -111,7 +115,9 @@ class ActiveProfileProvider extends ChangeNotifier {
     } on AppException {
       rethrow;
     } catch (e) {
-      throw AppException('Failed to create invite: ${e.toString()}');
+      throw AppException(
+        userMessage(e, fallback: "Could not create an invite. Please try again."),
+      );
     }
   }
 

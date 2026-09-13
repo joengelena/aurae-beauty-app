@@ -78,7 +78,9 @@ class MyBookingsProvider extends ChangeNotifier {
     } on AppException {
       rethrow;
     } catch (e) {
-      throw AppException('Failed to cancel booking: ${e.toString()}');
+      throw AppException(
+        userMessage(e, fallback: "Could not cancel that booking. Please try again."),
+      );
     }
   }
 

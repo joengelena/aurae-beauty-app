@@ -70,7 +70,9 @@ class DressDetailProvider extends ChangeNotifier {
     } on AppException {
       rethrow;
     } catch (e) {
-      throw AppException('Failed to add booking: ${e.toString()}');
+      throw AppException(
+        userMessage(e, fallback: "Could not save that booking. Please try again."),
+      );
     }
   }
 
@@ -89,7 +91,9 @@ class DressDetailProvider extends ChangeNotifier {
     } on AppException {
       rethrow;
     } catch (e) {
-      throw AppException('Failed to update booking: ${e.toString()}');
+      throw AppException(
+        userMessage(e, fallback: "Could not update that booking. Please try again."),
+      );
     }
   }
 
@@ -101,7 +105,9 @@ class DressDetailProvider extends ChangeNotifier {
     } on AppException {
       rethrow;
     } catch (e) {
-      throw AppException('Failed to delete booking: ${e.toString()}');
+      throw AppException(
+        userMessage(e, fallback: "Could not delete that booking. Please try again."),
+      );
     }
   }
 
@@ -131,7 +137,9 @@ class DressDetailProvider extends ChangeNotifier {
     } on AppException {
       rethrow;
     } catch (e) {
-      throw AppException('Failed to add damage incident: ${e.toString()}');
+      throw AppException(
+        userMessage(e, fallback: "Could not save that damage report. Please try again."),
+      );
     }
   }
 
@@ -157,7 +165,9 @@ class DressDetailProvider extends ChangeNotifier {
     } on AppException {
       rethrow;
     } catch (e) {
-      throw AppException('Failed to update damage incident: ${e.toString()}');
+      throw AppException(
+        userMessage(e, fallback: "Could not update that damage report. Please try again."),
+      );
     }
   }
 
@@ -169,7 +179,9 @@ class DressDetailProvider extends ChangeNotifier {
     } on AppException {
       rethrow;
     } catch (e) {
-      throw AppException('Failed to delete damage incident: ${e.toString()}');
+      throw AppException(
+        userMessage(e, fallback: "Could not delete that damage report. Please try again."),
+      );
     }
   }
 
