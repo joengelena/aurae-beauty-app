@@ -61,42 +61,108 @@ class FeedbackHelpers {
     return result ?? false;
   }
 
-  /// Shows a success snackbar
+  /// The one place a snackbar is built.
+  ///
+  /// Everything visible about an alert is decided here so the three public
+  /// wrappers below stay one line each and cannot drift apart.
+  static void _showSnackBar(
+    BuildContext context, {
+    required String message,
+    required AlertColors colors,
+    required IconData icon,
+    required Duration duration,
+    required bool dismissible,
+  }) {
+    final messenger = ScaffoldMessenger.of(context);
+
+    // Snackbars queue by default, so a screen that reports two failures makes
+    // the person sit through the first before seeing the second. The newest
+    // message is the one worth reading.
+    messenger.hideCurrentSnackBar();
+
+    // contentMaxWidth is a cap, not a width. Handing SnackBar a width wider
+    // than the screen is how a floating bar ends up cut off on a phone.
+    final available =
+        MediaQuery.sizeOf(context).width - (AppConstants.snackBarSideGutter * 2);
+    final width =
+        available < AppConstants.contentMaxWidth
+            ? available
+            : AppConstants.contentMaxWidth;
+
+    messenger.showSnackBar(
+      SnackBar(
+        content: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Colour is the whole signal in the old design, which leaves out
+            // anyone who cannot separate rose from peach. The icon says which
+            // kind of message this is without relying on that.
+            Icon(icon, color: colors.ink, size: 20),
+            const SizedBox(width: AppConstants.spacingMedium),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: themeText,
+                  fontSize: 14,
+                  height: 1.35,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: colors.tint,
+        // The tint is close enough to themeBackground that the bar loses its
+        // shape against the page without an edge.
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: colors.border),
+        ),
+        elevation: 2,
+        behavior: SnackBarBehavior.floating,
+        duration: duration,
+        width: width,
+        showCloseIcon: dismissible,
+        closeIconColor: colors.ink,
+      ),
+    );
+  }
+
+  /// Confirms something worked. Quiet and brief — it needs noticing, not reading.
   static void showSuccessSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: themeGreen,
-        behavior: SnackBarBehavior.floating,
-        duration: AppConstants.snackBarDurationSeconds,
-        width: AppConstants.contentMaxWidth,
-      ),
+    _showSnackBar(
+      context,
+      message: message,
+      colors: alertSuccess,
+      icon: Icons.check_circle_outline,
+      duration: AppConstants.snackBarDurationSeconds,
+      dismissible: false,
     );
   }
 
-  /// Shows an error snackbar
+  /// Reports a failure. Stays longer and can be dismissed, because it carries
+  /// a sentence the person is meant to act on rather than an acknowledgement.
   static void showErrorSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: themeRed,
-        behavior: SnackBarBehavior.floating,
-        duration: AppConstants.snackBarDurationSeconds,
-        width: AppConstants.contentMaxWidth,
-      ),
+    _showSnackBar(
+      context,
+      message: message,
+      colors: alertError,
+      icon: Icons.error_outline,
+      duration: AppConstants.snackBarErrorDuration,
+      dismissible: true,
     );
   }
 
-  /// Shows a success snackbar
+  /// Neutral notice — nothing went wrong and nothing was achieved.
   static void showInfoSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: themeBlue,
-        behavior: SnackBarBehavior.floating,
-        duration: AppConstants.snackBarDurationSeconds,
-        width: AppConstants.contentMaxWidth,
-      ),
+    _showSnackBar(
+      context,
+      message: message,
+      colors: alertInfo,
+      icon: Icons.info_outline,
+      duration: AppConstants.snackBarDurationSeconds,
+      dismissible: false,
     );
   }
 
