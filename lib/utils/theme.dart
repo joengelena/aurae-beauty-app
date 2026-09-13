@@ -65,6 +65,58 @@ const Map<String, Color> dressColorMap = {
   'Nude':      Color(0xFFE5C9B0),
 };
 
+// Alert palette — the tinted surfaces behind snackbars and dialog badges.
+//
+// The semantic colours above are sign-writing: #F43F5E across a whole snackbar
+// is a shout, and on a #FFF8F6 page three of those in a row are the loudest
+// thing in the app. A success message in particular has no business shouting.
+// So each alert is the status colour washed down to a surface, with the colour
+// itself surviving only in the icon.
+//
+// Derived, not eyeballed, so they can be re-checked: tint is the status colour
+// at 12% over themeBackground, border at 28%, and ink is the status colour
+// darkened until it clears 4.5:1 against its own tint. themeText on every tint
+// lands above 10:1.
+class AlertColors {
+  /// The surface the alert sits on.
+  final Color tint;
+
+  /// 1px edge. The tint alone is close enough to themeBackground that a
+  /// floating alert loses its shape against the page without this.
+  final Color border;
+
+  /// The icon, and anything else that has to read as coloured rather than
+  /// tinted. Safe for text on [tint] as well, though we use themeText there.
+  final Color ink;
+
+  const AlertColors({
+    required this.tint,
+    required this.border,
+    required this.ink,
+  });
+}
+
+const alertError = AlertColors(
+  tint: Color(0xFFFEE2E4),
+  border: Color(0xFFFCC4CB),
+  ink: Color(0xFFC1324A),
+);
+const alertSuccess = AlertColors(
+  tint: Color(0xFFE2F0E8),
+  border: Color(0xFFBCE6D5),
+  ink: Color(0xFF0B7A55),
+);
+const alertWarning = AlertColors(
+  tint: Color(0xFFFFECE0),
+  border: Color(0xFFFEDBC2),
+  ink: Color(0xFF9E5C26),
+);
+const alertInfo = AlertColors(
+  tint: Color(0xFFF2E0F5),
+  border: Color(0xFFE1C1F3),
+  ink: Color(0xFF8F31E3),
+);
+
 // Legacy color names for backward compatibility during migration
 final themeBlue = themeLavender;
 final themeGreen = themeSage;

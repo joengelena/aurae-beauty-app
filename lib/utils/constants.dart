@@ -25,7 +25,20 @@ class AppConstants {
   /// Icon size for the shared favourite/save heart on Browse and Favourites.
   static const double heartIconSize = 24;
 
+  /// How long a confirmation stays up. Three seconds is enough to notice
+  /// something worked; nobody needs to read "Dress added" twice.
   static const Duration snackBarDurationSeconds = Duration(seconds: 3);
+
+  /// Errors get longer. They carry a full sentence, sometimes two — "Couldn't
+  /// reach the server while loading your dresses. Check your connection and
+  /// try again." does not fit in three seconds, and unlike a success message
+  /// there is something the person is meant to do about it.
+  static const Duration snackBarErrorDuration = Duration(seconds: 6);
+
+  /// Gutter either side of a floating snackbar on a narrow screen. The bar is
+  /// capped at [contentMaxWidth], but on a phone that cap is wider than the
+  /// screen, so the width has to come off the viewport instead.
+  static const double snackBarSideGutter = 16;
 }
 
 /// HTTP cache duration constants
