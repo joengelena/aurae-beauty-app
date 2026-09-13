@@ -8,6 +8,8 @@ import 'package:shine_app/data/http_client.dart';
 import 'package:shine_app/data/cache_manager.dart';
 import 'package:shine_app/env_constants.dart';
 import 'package:shine_app/utils/secure_storage.dart';
+import 'package:shine_app/data/exceptions/app_exception.dart';
+import 'package:shine_app/utils/utils.dart';
 
 class ApiClient {
   late final http.Client _client;
@@ -184,14 +186,31 @@ class ApiClient {
               final headers = await _buildHeaders();
               return await _client.get(uri, headers: headers);
             } catch (e) {
-              return http.Response('Network error: ${e.toString()}', 500);
+              debugPrint('⚠️ Request failed: $e');
+              return http.Response(
+                // JSON, so extractErrorMessage finds a written message here the
+                // same way it does on a real API error. The exception text goes
+                // to the log, not into the body.
+                json.encode({
+                  'message':
+                      "Can't reach the server right now. Check your connection and try again.",
+                }),
+                503,
+              );
             }
           }, skipRetry: _shouldSkipRetry(path));
 
           if (response.statusCode >= 200 && response.statusCode < 300) {
             return json.decode(response.body);
           } else {
-            throw Exception('HTTP ${response.statusCode}: ${response.body}');
+            // A NetworkException rather than a bare Exception: its message is
+            // written for a person, and the status code and body it carries go
+            // to diagnostic instead of into whatever snackbar catches this.
+            throw NetworkException(
+              extractErrorMessage(response.body),
+              statusCode: response.statusCode,
+              details: response.body,
+            );
           }
         },
         fromJson: (data) => data,
@@ -208,7 +227,17 @@ class ApiClient {
           final headers = await _buildHeaders();
           return await _client.get(uri, headers: headers);
         } catch (e) {
-          return http.Response('Network error: ${e.toString()}', 500);
+          debugPrint('⚠️ Request failed: $e');
+              return http.Response(
+                // JSON, so extractErrorMessage finds a written message here the
+                // same way it does on a real API error. The exception text goes
+                // to the log, not into the body.
+                json.encode({
+                  'message':
+                      "Can't reach the server right now. Check your connection and try again.",
+                }),
+                503,
+              );
         }
       }, skipRetry: _shouldSkipRetry(path));
     }
@@ -231,7 +260,17 @@ class ApiClient {
           body: json.encode(data),
         );
       } catch (e) {
-        return http.Response('Network error: ${e.toString()}', 500);
+        debugPrint('⚠️ Request failed: $e');
+              return http.Response(
+                // JSON, so extractErrorMessage finds a written message here the
+                // same way it does on a real API error. The exception text goes
+                // to the log, not into the body.
+                json.encode({
+                  'message':
+                      "Can't reach the server right now. Check your connection and try again.",
+                }),
+                503,
+              );
       }
     }, skipRetry: _shouldSkipRetry(path));
 
@@ -258,7 +297,17 @@ class ApiClient {
           body: json.encode(data),
         );
       } catch (e) {
-        return http.Response('Network error: ${e.toString()}', 500);
+        debugPrint('⚠️ Request failed: $e');
+              return http.Response(
+                // JSON, so extractErrorMessage finds a written message here the
+                // same way it does on a real API error. The exception text goes
+                // to the log, not into the body.
+                json.encode({
+                  'message':
+                      "Can't reach the server right now. Check your connection and try again.",
+                }),
+                503,
+              );
       }
     }, skipRetry: _shouldSkipRetry(path));
 
@@ -285,7 +334,17 @@ class ApiClient {
           body: json.encode(data),
         );
       } catch (e) {
-        return http.Response('Network error: ${e.toString()}', 500);
+        debugPrint('⚠️ Request failed: $e');
+              return http.Response(
+                // JSON, so extractErrorMessage finds a written message here the
+                // same way it does on a real API error. The exception text goes
+                // to the log, not into the body.
+                json.encode({
+                  'message':
+                      "Can't reach the server right now. Check your connection and try again.",
+                }),
+                503,
+              );
       }
     }, skipRetry: _shouldSkipRetry(path));
 
@@ -343,7 +402,17 @@ class ApiClient {
         return await http.Response.fromStream(streamedResponse);
       } catch (e) {
         debugPrint('❌ Multipart request error: $e');
-        return http.Response('Network error: ${e.toString()}', 500);
+        debugPrint('⚠️ Request failed: $e');
+              return http.Response(
+                // JSON, so extractErrorMessage finds a written message here the
+                // same way it does on a real API error. The exception text goes
+                // to the log, not into the body.
+                json.encode({
+                  'message':
+                      "Can't reach the server right now. Check your connection and try again.",
+                }),
+                503,
+              );
       }
     }, skipRetry: _shouldSkipRetry(path));
 
@@ -401,7 +470,17 @@ class ApiClient {
         return await http.Response.fromStream(streamedResponse);
       } catch (e) {
         debugPrint('❌ Multipart PATCH error: $e');
-        return http.Response('Network error: ${e.toString()}', 500);
+        debugPrint('⚠️ Request failed: $e');
+              return http.Response(
+                // JSON, so extractErrorMessage finds a written message here the
+                // same way it does on a real API error. The exception text goes
+                // to the log, not into the body.
+                json.encode({
+                  'message':
+                      "Can't reach the server right now. Check your connection and try again.",
+                }),
+                503,
+              );
       }
     }, skipRetry: _shouldSkipRetry(path));
 
