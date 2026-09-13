@@ -33,7 +33,7 @@ class WatchlistServices {
         return body.map((item) => Listing.fromJson(item)).toList();
       } catch (e) {
         throw DataParseException(
-          'Failed to parse watchlist data',
+          "The server sent something we couldn't read. Please try again.",
           details: e.toString(),
         );
       }
@@ -42,7 +42,7 @@ class WatchlistServices {
         rethrow;
       }
       throw NetworkException(
-        'Network error getting watchlist',
+        "Couldn't reach the server while loading your watchlist. Check your connection and try again.",
         details: e.toString(),
       );
     }
@@ -77,7 +77,7 @@ class WatchlistServices {
     } catch (e) {
       if (e is UnauthenticatedException || e is NetworkException) rethrow;
       throw NetworkException(
-        'Network error adding to watchlist',
+        "Couldn't reach the server while adding to your watchlist. Check your connection and try again.",
         details: e.toString(),
       );
     }
@@ -112,7 +112,7 @@ class WatchlistServices {
     } catch (e) {
       if (e is UnauthenticatedException || e is NetworkException) rethrow;
       throw NetworkException(
-        'Network error removing from watchlist',
+        "Couldn't reach the server while removing from your watchlist. Check your connection and try again.",
         details: e.toString(),
       );
     }

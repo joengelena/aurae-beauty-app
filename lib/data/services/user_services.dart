@@ -45,14 +45,14 @@ class UserServices {
         return json.decode(response.body) as Map<String, dynamic>;
       } catch (e) {
         throw DataParseException(
-          'Invalid signup response format',
+          "The server sent something we couldn't read. Please try again.",
           details: e.toString(),
         );
       }
     } catch (e) {
       if (e is AuthException || e is DataParseException) rethrow;
       throw NetworkException(
-        'Network error during sign up',
+        "Couldn't reach the server while signing you up. Check your connection and try again.",
         details: e.toString(),
       );
     }
@@ -76,14 +76,14 @@ class UserServices {
         return data;
       } catch (e) {
         throw DataParseException(
-          'Invalid response format',
+          "The server sent something we couldn't read. Please try again.",
           details: e.toString(),
         );
       }
     } catch (e) {
       if (e is AuthException || e is DataParseException) rethrow;
       throw NetworkException(
-        'Network error during sign in',
+        "Couldn't reach the server while signing you in. Check your connection and try again.",
         details: e.toString(),
       );
     }
@@ -132,7 +132,7 @@ class UserServices {
     } catch (e) {
       if (e is UnauthenticatedException || e is AuthException) rethrow;
       throw NetworkException(
-        'Network error during sign out',
+        "Couldn't reach the server while signing you out. Check your connection and try again.",
         details: e.toString(),
       );
     }
@@ -177,7 +177,7 @@ class UserServices {
         return User.fromJsonString(response.body);
       } catch (e) {
         throw DataParseException(
-          'Failed to parse user data',
+          "The server sent something we couldn't read. Please try again.",
           details: e.toString(),
         );
       }
@@ -188,7 +188,7 @@ class UserServices {
         rethrow;
       }
       throw NetworkException(
-        'Network error getting user',
+        "Couldn't reach the server while loading your account. Check your connection and try again.",
         details: e.toString(),
       );
     }
@@ -210,7 +210,7 @@ class UserServices {
     } catch (e) {
       if (e is AuthException) rethrow;
       throw NetworkException(
-        'Network error resending verification email',
+        "Couldn't reach the server while resending the verification email. Check your connection and try again.",
         details: e.toString(),
       );
     }
@@ -231,7 +231,7 @@ class UserServices {
     } catch (e) {
       if (e is AuthException) rethrow;
       throw NetworkException(
-        'Network error during password reset request',
+        "Couldn't reach the server while requesting a password reset. Check your connection and try again.",
         details: e.toString(),
       );
     }
@@ -252,7 +252,7 @@ class UserServices {
     } catch (e) {
       if (e is AuthException) rethrow;
       throw NetworkException(
-        'Network error during password reset',
+        "Couldn't reach the server while resetting your password. Check your connection and try again.",
         details: e.toString(),
       );
     }
@@ -294,7 +294,7 @@ class UserServices {
         await _storeAuthData(data);
       } catch (e) {
         throw DataParseException(
-          'Failed to parse refresh response',
+          "The server sent something we couldn't read. Please try again.",
           details: e.toString(),
         );
       }
@@ -305,7 +305,7 @@ class UserServices {
         rethrow;
       }
       throw NetworkException(
-        'Network error during session refresh',
+        "Couldn't reach the server while refreshing your session. Check your connection and try again.",
         details: e.toString(),
       );
     }
@@ -331,7 +331,7 @@ class UserServices {
     } catch (e) {
       if (e is UnauthenticatedException || e is AuthException) rethrow;
       throw NetworkException(
-        'Network error during password change',
+        "Couldn't reach the server while changing your password. Check your connection and try again.",
         details: e.toString(),
       );
     }
@@ -372,7 +372,7 @@ class UserServices {
         rethrow;
       }
       throw NetworkException(
-        'Network error during account deletion',
+        "Couldn't reach the server while deleting your account. Check your connection and try again.",
         details: e.toString(),
       );
     }
@@ -395,11 +395,11 @@ class UserServices {
         final data = json.decode(response.body) as Map<String, dynamic>;
         return BusinessSettings.fromJson(data);
       } catch (e) {
-        throw DataParseException('Invalid settings response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is NetworkException || e is DataParseException) rethrow;
-      throw NetworkException('Network error loading settings', details: e.toString());
+      throw NetworkException("Couldn't reach the server while loading your settings. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -430,11 +430,11 @@ class UserServices {
         final data = json.decode(response.body) as Map<String, dynamic>;
         return BusinessSettings.fromJson(data);
       } catch (e) {
-        throw DataParseException('Invalid settings response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is NetworkException || e is DataParseException) rethrow;
-      throw NetworkException('Network error saving settings', details: e.toString());
+      throw NetworkException("Couldn't reach the server while saving your settings. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -583,7 +583,7 @@ class UserServices {
     } catch (e) {
       if (e is UnauthenticatedException || e is NetworkException) rethrow;
       throw NetworkException(
-        'Network error during profile update',
+        "Couldn't reach the server while updating your profile. Check your connection and try again.",
         details: e.toString(),
       );
     }

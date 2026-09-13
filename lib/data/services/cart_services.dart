@@ -33,7 +33,7 @@ class CartServices {
         return body.map((item) => CartItem.fromJson(item)).toList();
       } catch (e) {
         throw DataParseException(
-          'Failed to parse cart data',
+          "The server sent something we couldn't read. Please try again.",
           details: e.toString(),
         );
       }
@@ -42,7 +42,7 @@ class CartServices {
         rethrow;
       }
       throw NetworkException(
-        'Network error getting cart',
+        "Couldn't reach the server while loading your cart. Check your connection and try again.",
         details: e.toString(),
       );
     }
@@ -81,7 +81,7 @@ class CartServices {
     } catch (e) {
       if (e is UnauthenticatedException || e is NetworkException) rethrow;
       throw NetworkException(
-        'Network error adding to cart',
+        "Couldn't reach the server while adding to your cart. Check your connection and try again.",
         details: e.toString(),
       );
     }
@@ -112,7 +112,7 @@ class CartServices {
     } catch (e) {
       if (e is UnauthenticatedException || e is NetworkException) rethrow;
       throw NetworkException(
-        'Network error removing from cart',
+        "Couldn't reach the server while removing from your cart. Check your connection and try again.",
         details: e.toString(),
       );
     }

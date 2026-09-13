@@ -90,11 +90,11 @@ class DressServices {
       try {
         return json.decode(response.body) as Map<String, dynamic>;
       } catch (e) {
-        throw DataParseException('Invalid response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
-      throw NetworkException('Network error while adding dress', details: e.toString());
+      throw NetworkException("Couldn't reach the server while adding that dress. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -117,11 +117,11 @@ class DressServices {
             .map((d) => BusinessDress.fromJson(d as Map<String, dynamic>))
             .toList();
       } catch (e) {
-        throw DataParseException('Invalid response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
-      throw NetworkException('Network error while fetching dresses', details: e.toString());
+      throw NetworkException("Couldn't reach the server while loading your dresses. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -142,11 +142,11 @@ class DressServices {
         final data = json.decode(response.body) as Map<String, dynamic>;
         return BusinessDress.fromJson(data);
       } catch (e) {
-        throw DataParseException('Invalid response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
-      throw NetworkException('Network error while fetching dress', details: e.toString());
+      throw NetworkException("Couldn't reach the server while loading that dress. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -207,7 +207,7 @@ class DressServices {
       }
     } catch (e) {
       if (e is NotFoundException || e is ForbiddenException || e is NetworkException) rethrow;
-      throw NetworkException('Network error updating dress', details: e.toString());
+      throw NetworkException("Couldn't reach the server while updating that dress. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -234,7 +234,7 @@ class DressServices {
       }
     } catch (e) {
       if (e is NotFoundException || e is ForbiddenException || e is NetworkException) rethrow;
-      throw NetworkException('Network error deleting dress', details: e.toString());
+      throw NetworkException("Couldn't reach the server while removing that dress. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -257,11 +257,11 @@ class DressServices {
             .map((b) => RentalBooking.fromJson(b as Map<String, dynamic>))
             .toList();
       } catch (e) {
-        throw DataParseException('Invalid response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
-      throw NetworkException('Network error fetching bookings', details: e.toString());
+      throw NetworkException("Couldn't reach the server while loading bookings. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -283,11 +283,11 @@ class DressServices {
             .map((b) => BookedRange.fromJson(b as Map<String, dynamic>))
             .toList();
       } catch (e) {
-        throw DataParseException('Invalid response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
-      throw NetworkException('Network error fetching availability', details: e.toString());
+      throw NetworkException("Couldn't reach the server while loading availability. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -309,11 +309,11 @@ class DressServices {
             .map((i) => DressDamageIncident.fromJson(i as Map<String, dynamic>))
             .toList();
       } catch (e) {
-        throw DataParseException('Invalid response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
-      throw NetworkException('Network error fetching damage incidents', details: e.toString());
+      throw NetworkException("Couldn't reach the server while loading damage reports. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -335,11 +335,11 @@ class DressServices {
       try {
         return json.decode(response.body) as Map<String, dynamic>;
       } catch (e) {
-        throw DataParseException('Invalid response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
-      throw NetworkException('Network error while adding booking', details: e.toString());
+      throw NetworkException("Couldn't reach the server while saving that booking. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -368,11 +368,11 @@ class DressServices {
       try {
         return json.decode(response.body) as Map<String, dynamic>;
       } catch (e) {
-        throw DataParseException('Invalid response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
-      throw NetworkException('Network error while creating booking', details: e.toString());
+      throw NetworkException("Couldn't reach the server while creating that booking. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -403,11 +403,11 @@ class DressServices {
           (json) => Listing.fromJson(json),
         );
       } catch (e) {
-        throw DataParseException('Failed to parse dresses', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is NetworkException || e is DataParseException) rethrow;
-      throw NetworkException('Network error fetching dresses', details: e.toString());
+      throw NetworkException("Couldn't reach the server while loading your dresses. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -434,11 +434,11 @@ class DressServices {
       try {
         return Listing.fromJsonString(response.body);
       } catch (e) {
-        throw DataParseException('Failed to parse dress data', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is NotFoundException || e is NetworkException || e is DataParseException) rethrow;
-      throw NetworkException('Network error fetching dress', details: e.toString());
+      throw NetworkException("Couldn't reach the server while loading that dress. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -467,11 +467,11 @@ class DressServices {
             )
             .toList();
       } catch (e) {
-        throw DataParseException('Failed to parse dress attributes', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is NetworkException || e is DataParseException) rethrow;
-      throw NetworkException('Network error fetching dress attributes', details: e.toString());
+      throw NetworkException("Couldn't reach the server while loading dress details. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -494,11 +494,11 @@ class DressServices {
             .map((b) => RentalBooking.fromJson(b as Map<String, dynamic>))
             .toList();
       } catch (e) {
-        throw DataParseException('Invalid response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
-      throw NetworkException('Network error fetching user bookings', details: e.toString());
+      throw NetworkException("Couldn't reach the server while loading those bookings. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -521,11 +521,11 @@ class DressServices {
             .map((b) => UpcomingBooking.fromJson(b as Map<String, dynamic>))
             .toList();
       } catch (e) {
-        throw DataParseException('Invalid response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
-      throw NetworkException('Network error fetching my bookings', details: e.toString());
+      throw NetworkException("Couldn't reach the server while loading your bookings. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -552,7 +552,7 @@ class DressServices {
       }
     } catch (e) {
       if (e is NotFoundException || e is ForbiddenException || e is NetworkException) rethrow;
-      throw NetworkException('Network error cancelling booking', details: e.toString());
+      throw NetworkException("Couldn't reach the server while cancelling that booking. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -587,7 +587,7 @@ class DressServices {
       }
     } catch (e) {
       if (e is NotFoundException || e is ForbiddenException || e is NetworkException) rethrow;
-      throw NetworkException('Network error updating booking', details: e.toString());
+      throw NetworkException("Couldn't reach the server while updating that booking. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -610,11 +610,11 @@ class DressServices {
             .map((i) => DressDamageIncident.fromJson(i as Map<String, dynamic>))
             .toList();
       } catch (e) {
-        throw DataParseException('Invalid response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
-      throw NetworkException('Network error fetching damage incidents', details: e.toString());
+      throw NetworkException("Couldn't reach the server while loading damage reports. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -658,7 +658,7 @@ class DressServices {
       }
     } catch (e) {
       if (e is AppException || e is DataParseException) rethrow;
-      throw NetworkException('Network error while adding damage incident', details: e.toString());
+      throw NetworkException("Couldn't reach the server while saving that damage report. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -705,7 +705,7 @@ class DressServices {
       }
     } catch (e) {
       if (e is NotFoundException || e is ForbiddenException || e is NetworkException) rethrow;
-      throw NetworkException('Network error updating damage incident', details: e.toString());
+      throw NetworkException("Couldn't reach the server while updating that damage report. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -732,7 +732,7 @@ class DressServices {
       }
     } catch (e) {
       if (e is NotFoundException || e is ForbiddenException || e is NetworkException) rethrow;
-      throw NetworkException('Network error deleting damage incident', details: e.toString());
+      throw NetworkException("Couldn't reach the server while removing that damage report. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -759,7 +759,7 @@ class DressServices {
       }
     } catch (e) {
       if (e is NotFoundException || e is ForbiddenException || e is NetworkException) rethrow;
-      throw NetworkException('Network error deleting booking', details: e.toString());
+      throw NetworkException("Couldn't reach the server while removing that booking. Check your connection and try again.", details: e.toString());
     }
   }
 }

@@ -30,11 +30,11 @@ class BusinessServices {
           role: data['role'] as String?,
         );
       } catch (e) {
-        throw DataParseException('Invalid business response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is NetworkException || e is DataParseException) rethrow;
-      throw NetworkException('Network error loading your business', details: e.toString());
+      throw NetworkException("Couldn't reach the server while loading your business. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -55,11 +55,11 @@ class BusinessServices {
         final data = json.decode(response.body) as Map<String, dynamic>;
         return Business.fromJson(data['business'] as Map<String, dynamic>);
       } catch (e) {
-        throw DataParseException('Invalid business response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is NetworkException || e is DataParseException) rethrow;
-      throw NetworkException('Network error creating business', details: e.toString());
+      throw NetworkException("Couldn't reach the server while setting up your business. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -78,11 +78,11 @@ class BusinessServices {
         final data = json.decode(response.body) as Map<String, dynamic>;
         return data['code'] as String;
       } catch (e) {
-        throw DataParseException('Invalid invite response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is NetworkException || e is DataParseException) rethrow;
-      throw NetworkException('Network error creating invite', details: e.toString());
+      throw NetworkException("Couldn't reach the server while creating that invite. Check your connection and try again.", details: e.toString());
     }
   }
 
@@ -106,11 +106,11 @@ class BusinessServices {
           role: data['role'] as String,
         );
       } catch (e) {
-        throw DataParseException('Invalid invite response format', details: e.toString());
+        throw DataParseException("The server sent something we couldn't read. Please try again.", details: e.toString());
       }
     } catch (e) {
       if (e is NetworkException || e is DataParseException) rethrow;
-      throw NetworkException('Network error redeeming invite', details: e.toString());
+      throw NetworkException("Couldn't reach the server while redeeming that invite code. Check your connection and try again.", details: e.toString());
     }
   }
 }
