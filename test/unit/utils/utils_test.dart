@@ -86,7 +86,7 @@ void main() {
         current = addDays(current, 1);
       }
       expect(visited, expected);
-      expect(visited, contains([_dstEnd2027.month, _dstEnd2027.day]));
+      expect(visited, anyElement(equals([_dstEnd2027.month, _dstEnd2027.day])));
     });
 
     test('rolls over month and year ends', () {
