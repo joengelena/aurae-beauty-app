@@ -41,8 +41,6 @@ dependencies:
     hive: ^2.2.3
     hive_flutter: ^1.1.0
     http_parser: 4.1.2
-    flutter_local_notifications: 18.0.1
-    timezone: 0.9.4
     supabase_flutter: ^2.8.0
     permission_handler: ^11.0.0
     table_calendar: ^3.1.2
