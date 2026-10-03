@@ -53,7 +53,7 @@ lib/
 ├── logic/               15 providers
 ├── presentation/
 │   ├── pages/           16 top-level pages + pages/profile/
-│   └── widgets/         common/ form_fields/ listing/ profile/ scaffold/ wardrobe/
+│   └── widgets/         common/ listing/ profile/ scaffold/ wardrobe/
 └── utils/               theme, constants, secure_storage, helpers
 ```
 
@@ -79,7 +79,6 @@ Registered in `main.dart`. Most are `ChangeNotifierProxyProvider<AuthProvider, X
 | `BusinessSettingsProvider` | `business_settings` (delivery option, cleaning buffer). |
 | `OwnerProfileProvider` | Public boutique profile. |
 | `BackButtonProvider` | Navigation back-state. |
-| `FormDataProvider` | Shared form scratch state. |
 
 There is no `BookingProvider` — booking state lives in `DressDetailProvider` and `WeekScheduleProvider`.
 
@@ -87,11 +86,11 @@ There is no `BookingProvider` — booking state lives in `DressDetailProvider` a
 
 ## Models (`lib/data/models/`)
 
-`business_dress.dart` (**`BusinessDress`** — the main dress model, mirrors `user_dresses`), `rental_booking.dart`, `dress_damage_incident.dart`, `cart_item.dart`, `business_settings.dart`, `upcoming_booking.dart`, `booked_range.dart`, `dress_listing.dart`, `listing.dart`, `listing_attribute.dart`, `pagination.dart`, `user.dart`.
+`business_dress.dart` (**`BusinessDress`** — the main dress model, mirrors `user_dresses`), `rental_booking.dart`, `dress_damage_incident.dart`, `cart_item.dart`, `business_settings.dart`, `upcoming_booking.dart`, `booked_range.dart`, `listing.dart`, `listing_attribute.dart`, `pagination.dart`, `user.dart`.
 
 `BusinessDress` fields include `status` (`active`/`sold`), `isPublic`, `blockedDateRanges` (`List<DateTimeRange>`), `unresolvedDamageCount`, `pendingBookingCount`, `dressPhotoUrls`, `rentalPricePerDay`.
 
-`listing.dart` / `dress_listing.dart` are the **public Browse-side** representations and are still live — don't delete them as "legacy". Only the old `/listings` *API* was retired.
+`listing.dart` is the **public Browse-side** representation and is live — don't delete it as "legacy". Only the old `/listings` *API* was retired.
 
 ---
 

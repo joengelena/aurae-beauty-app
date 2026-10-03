@@ -16,7 +16,7 @@ The feel: **boutique, not backend.** A well-kept dressing room — calm, warm, d
 
 5. **NEVER use heavy elevation.** The app is nearly flat — `AppConstants.cardShadowElevation` is `1`. Soft, low-opacity shadows only.
 
-6. **NEVER build a new form field, dialog, or empty state from scratch** without checking `widgets/common/` and `widgets/form_fields/` first.
+6. **NEVER build a new form field, dialog, or empty state from scratch** without checking `widgets/common/` first.
 
 ## Palette (`utils/theme.dart`)
 
@@ -65,7 +65,6 @@ Web and mobile share one widget tree. Anything full-width must be constrained on
 
 **`AppCard` is the one card idiom.** White surface, 16px radius, the "Raised" shadow, no border. Never hand-roll a `Container` + `BoxDecoration` for a card surface — the app previously drifted into two competing card styles that way.
 
-**`widgets/form_fields/`** — `StringFormField`, `NumberFormField`, `DecimalFormField`, `DateFormField`, `DropdownFormField`, `AutocompleteFormField`
 
 **`widgets/listing/`** (Browse side) — `ListingTile`, `ListingPreview`, `WatchlistHeartButton`, `InfiniteGrid`, `ImageCarousel`, `FilterBar`, `FilterModalContent`, `FilterSidebar`, `SortSheet`, `RangeFilter`, `AvailabilityCalendar`, `BookingFlowCards`
 

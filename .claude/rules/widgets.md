@@ -2,7 +2,7 @@
 
 ## Keep Widgets Small
 
-If a `build` method exceeds ~50 lines, split it into private widgets or extract a file into the matching `presentation/widgets/` subfolder (`common/`, `form_fields/`, `listing/`, `wardrobe/`, `profile/`, `scaffold/`).
+If a `build` method exceeds ~50 lines, split it into private widgets or extract a file into the matching `presentation/widgets/` subfolder (`common/`, `listing/`, `wardrobe/`, `profile/`, `scaffold/`).
 
 ## Prefer StatelessWidget
 
@@ -95,4 +95,4 @@ The post-frame callback matters: calling `context.read` directly in `initState` 
 
 ## Reuse Before Building
 
-Check `presentation/widgets/common/` and `form_fields/` before writing a new dialog, button, empty state, or input. See `ui-and-theming.md` for the full inventory.
+Check `presentation/widgets/common/` before writing a new dialog, button, empty state, or input. See `ui-and-theming.md` for the full inventory.

@@ -65,7 +65,7 @@ See `ui-states.md`.
 
 ## 9. Extract Reusable UI
 
-Pull repeated pieces into the right `presentation/widgets/` subfolder. Check `common/` and `form_fields/` before building anything new — see `ui-and-theming.md` for the inventory.
+Pull repeated pieces into the right `presentation/widgets/` subfolder. Check `common/` before building anything new — see `ui-and-theming.md` for the inventory.
 
 ## 10. Verify
 

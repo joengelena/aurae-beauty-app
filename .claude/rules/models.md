@@ -48,14 +48,14 @@ Required fields (`id`, `brand`, `size`, `condition`, `createdAt`) may cast direc
 | `cart_item.dart` | `CartItem` | Transient cart row. |
 | `business_settings.dart` | `BusinessSettings` | `deliveryOption`, `cleaningBufferDays`. |
 | `upcoming_booking.dart` | `UpcomingBooking` | Flattened booking for the profile/schedule widgets. |
-| `listing.dart`, `dress_listing.dart` | `Listing`, `DressListing` | **Public Browse-side** representations. Still live. |
+| `listing.dart` | `Listing` | **Public Browse-side** representation. Live. |
 | `listing_attribute.dart` | `ListingAttribute` | Dropdown/filter options from `dress_attribute`. |
 | `pagination.dart` | `Pagination` | `totalRows`, `totalPages`, `pageNumber`. |
 | `user.dart` | `User` | Profile. |
 
 ## On "Listing" Naming
 
-`listing.dart` and `dress_listing.dart` are **not** legacy leftovers — they model the public Browse view of a dress. Only the old `/listings` *API routes* and the `dress`/`dress_photo` *tables* were retired (Phase 2, 2026-07-28). Don't delete these models as cleanup.
+`listing.dart` is **not** a legacy leftover — it models the public Browse view of a dress. Only the old `/listings` *API routes* and the `dress`/`dress_photo` *tables* were retired (Phase 2, 2026-07-28). Don't delete these models as cleanup.
 
 ## Dates
 
