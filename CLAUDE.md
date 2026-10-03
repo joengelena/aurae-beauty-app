@@ -118,6 +118,8 @@ Config is compile-time via `--dart-define` (`API_BASE_URL`, `SUPABASE_URL`, `SUP
 
 ## Testing
 
+**Before pushing:** `./scripts/check.sh` (`flutter analyze`, then the whole suite with NZ time).
+
 ```bash
 flutter test                                   # whole suite
 flutter test test/unit                         # fast pure-logic tests only

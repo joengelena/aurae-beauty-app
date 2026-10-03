@@ -76,12 +76,14 @@ class CacheKeys {
     return '$path?$queryString';
   }
 
-  // Listings
-  static const String listingAttribute = '/listings/attributes';
+  // Listings: the public Browse side. Keyed on the real /dresses endpoints so
+  // the '*/dresses*' wildcard that dress writes send also clears the public
+  // detail page; the old /listings keys matched nothing and went stale.
+  static const String listingAttribute = '/dresses/attributes';
   static String listings(Map<String, dynamic>? queryParameters) =>
-      buildCacheKey('/listings', queryParameters: queryParameters);
-  static String listing(int id) => '/listings/$id';
-  static String allListingsCache = '*listings*';
+      buildCacheKey('/dresses', queryParameters: queryParameters);
+  static String listing(int id) => '/dresses/$id';
+  static String allListingsCache = '*/dresses*';
 
   // User
   static String userDetails(String id) => '/users/$id';

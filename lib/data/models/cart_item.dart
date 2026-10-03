@@ -56,9 +56,14 @@ class CartItem {
   // the 24th is one night, not two. Counted on UTC calendar dates: a local
   // difference across NZ daylight-saving start is 23 hours, which inDays
   // truncates to one night short.
-  int get nights => DateTime.utc(endDate.year, endDate.month, endDate.day)
-      .difference(DateTime.utc(startDate.year, startDate.month, startDate.day))
-      .inDays;
+  // A same-day line is still one night: the server prices max(1, nights),
+  // and the cart has to show what the renter will actually be charged.
+  int get nights {
+    final days = DateTime.utc(endDate.year, endDate.month, endDate.day)
+        .difference(DateTime.utc(startDate.year, startDate.month, startDate.day))
+        .inDays;
+    return days < 1 ? 1 : days;
+  }
 
   int get totalPrice => nights * pricePerDay;
 }

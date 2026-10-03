@@ -78,7 +78,10 @@ String? extractUserIdFromJWT(String token) {
   }
 }
 
-final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+// Allows plus-addressing (mia+aurae@gmail.com) and long TLDs (.studio,
+// .travel). The server and Supabase do the real validation; this only has to
+// avoid rejecting addresses that work.
+final emailRegex = RegExp(r'^[\w.+-]+@([\w-]+\.)+[\w-]{2,}$');
 
 /// Move a calendar date by whole days.
 ///
