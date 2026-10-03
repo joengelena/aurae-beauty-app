@@ -131,6 +131,6 @@ Config is compile-time via `--dart-define` (`API_BASE_URL`, `SUPABASE_URL`, `SUP
 
 ## Known Issues
 
-- `BookingCalendar` (per-dress month view) doesn't visually paint the cleaning buffer or manually blocked dates. The validation is enforced server-side; only the Add Booking date picker renders it.
-- `dress_listing.dart` still falls back to a `vehicleCondition` JSON key. Cosmetic Motorix leftover — safe to remove once you've confirmed no endpoint still returns it.
+- The Add Booking picker and `BookingCalendar` use today's business cleaning buffer for existing bookings; the server uses each booking's snapshotted `cleaning_days`. `RentalBooking` doesn't expose it yet, so the server's 409 is the backstop if the owner changed the buffer since.
+- `keepPhotoUrls` in `DressServices.updateDress` / `updateDamageIncident` is nullable on purpose: pass a list only when editing photos. Sending `[]` deletes every photo.
 - Test coverage is thin — two test files (`health_service_test.dart`, `splash_page_test.dart`).
