@@ -108,11 +108,25 @@ Every service holds `static final ApiClient apiClient = ApiClient();`, throws `A
 
 ```bash
 flutter analyze          # must be clean before committing
-flutter test             # test/data/, test/presentation/
+flutter test             # everything: test/unit/, test/data/, test/presentation/
 flutter pub get
 ```
 
 Config is compile-time via `--dart-define` (`API_BASE_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `APP_BASE_URL`, `ENVIRONMENT`). Defaults in `env_constants.dart` point at `http://localhost:4941/api/v1`.
+
+---
+
+## Testing
+
+```bash
+flutter test                                   # whole suite
+flutter test test/unit                         # fast pure-logic tests only
+TZ=Pacific/Auckland flutter test test/unit     # run the NZ daylight-saving cases for real
+```
+
+- `test/unit/` mirrors `lib/` (`test/unit/utils/booking_status_test.dart` tests `lib/utils/booking_status.dart`). It covers utils, models (`fromJson` against JSON shaped like the API mappers), and the few providers that run without platform channels or network.
+- **Tests describe intended behaviour, not current output.** Expectations come from the API contract (`shine_api` routes, `ajvSchema.json`, `repositories/**/map*.ts`), the booking transition table in `postgresql-db-tool/sql/shine/init/99_triggers.sql`, and the product rules. A failing test means the code or the test is wrong. Never change an expectation just to match what the code returns.
+- Unit tests must not touch Hive, `SecureStorage`, Supabase or the network. Services build their own `ApiClient`, so anything that calls a service isn't unit-testable yet.
 
 ---
 
@@ -132,4 +146,4 @@ Config is compile-time via `--dart-define` (`API_BASE_URL`, `SUPABASE_URL`, `SUP
 
 - The Add Booking picker and `BookingCalendar` use today's business cleaning buffer for existing bookings; the server uses each booking's snapshotted `cleaning_days`. `RentalBooking` doesn't expose it yet, so the server's 409 is the backstop if the owner changed the buffer since.
 - `keepPhotoUrls` in `DressServices.updateDress` / `updateDamageIncident` is nullable on purpose: pass a list only when editing photos. Sending `[]` deletes every photo.
-- Test coverage is thin — two test files (`health_service_test.dart`, `splash_page_test.dart`).
+- Test coverage is thin outside `test/unit/`. Services and most providers have no tests because `ApiClient` can't be injected.
