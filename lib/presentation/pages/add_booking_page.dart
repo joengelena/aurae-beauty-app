@@ -205,20 +205,58 @@ class _AddBookingPageState extends State<AddBookingPage> {
   }
 
   Widget _buildDatePicker(BuildContext context) {
-    final detailProvider = context.read<DressDetailProvider>();
-    final bookings = detailProvider.bookings;
-    final dress = detailProvider.dress;
-
-    final bookedRanges = bookings
+    // watch, not read: on a cold load (a refresh on this route) the dress and
+    // its bookings arrive after the first build, and the picker has to see them.
+    final detailProvider = context.watch<DressDetailProvider>();
+    final bookings = detailProvider.bookings
         .where((b) => BookingStatus.holdsDates(b.status))
-        .map((b) => BookedRange(
-              startDate: b.startDate,
-              endDate: b.endDate,
-              status: b.status,
-            ))
         .toList();
+    final dress = detailProvider.dress;
+    final settingsBuffer =
+        context.watch<BusinessSettingsProvider>().settings.cleaningBufferDays;
 
-    // Manual owner blocks are always unavailable.
+    // Turnaround as the database applies it: a purchase keeps nothing back.
+    // An existing booking keeps the buffer it was snapshotted with, which the
+    // booking model doesn't carry yet, so today's setting stands in for it.
+    int bufferFor(String bookingType) =>
+        bookingType == 'purchase' ? 0 : settingsBuffer;
+    final ownBuffer = bufferFor(_bookingType);
+
+    // Mirrors the server-side check so the picker doesn't offer dates that
+    // would be rejected on save: the new booking's window [start, end + its own
+    // buffer] must not touch any existing booking's [start, end + its buffer].
+    final bookedRanges = <BookedRange>[];
+    for (final b in bookings) {
+      bookedRanges.add(
+        BookedRange(startDate: b.startDate, endDate: b.endDate, status: b.status),
+      );
+      final buffer = bufferFor(b.bookingType);
+      if (buffer > 0) {
+        bookedRanges.add(
+          BookedRange(
+            startDate: addDays(b.endDate, 1),
+            endDate: addDays(b.endDate, buffer),
+            status: 'blocked',
+          ),
+        );
+      }
+      // The new booking's own turnaround runs past its end date, so it can't
+      // end in the days just before an existing booking starts. Marking those
+      // days unavailable is the same test as extending the selection's end by
+      // its buffer, without the shared picker needing to know about buffers.
+      if (ownBuffer > 0) {
+        bookedRanges.add(
+          BookedRange(
+            startDate: addDays(b.startDate, -ownBuffer),
+            endDate: addDays(b.startDate, -1),
+            status: 'blocked',
+          ),
+        );
+      }
+    }
+
+    // Manual owner blocks are always unavailable. The server tests them against
+    // the wear dates only, so the new booking's buffer isn't applied here.
     if (dress != null) {
       bookedRanges.addAll(
         dress.blockedDateRanges.map(
@@ -227,29 +265,10 @@ class _AddBookingPageState extends State<AddBookingPage> {
       );
     }
 
-    // Cleaning buffer after each booking — mirrors the server-side conflict
-    // check so the picker doesn't offer dates that would be rejected on save.
-    // Returned bookings keep their buffer: the dress being back is exactly
-    // when the turnaround starts, not when it ends. Buffer is a business-wide
-    // setting, not per-dress.
-    final bufferDays = context.watch<BusinessSettingsProvider>().settings.cleaningBufferDays;
-    if (bufferDays > 0) {
-      bookedRanges.addAll(
-        bookings
-            .where((b) => BookingStatus.holdsDates(b.status))
-            .map(
-              (b) => BookedRange(
-                startDate: addDays(b.endDate, 1),
-                endDate: addDays(b.endDate, bufferDays),
-                status: 'blocked',
-              ),
-            ),
-      );
-    }
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: CalendarDateRangePicker(
+        allowPast: true,
         initialStart: _startDate,
         initialEnd: _endDate,
         bookedRanges: bookedRanges,

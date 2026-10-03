@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/data/models/booked_range.dart';
 import 'package:shine_app/utils/theme.dart';
+import 'package:shine_app/utils/utils.dart';
 
 enum _DayState { past, unavailable, available }
 
@@ -13,6 +14,11 @@ class AvailabilityCalendar extends StatefulWidget {
   final void Function(DateTime day)? onDayTapped;
   final bool showLegend;
 
+  /// Lets days before today be tapped. Off by default: a renter can never
+  /// book the past. The owner can — recording a rental that already started,
+  /// or a damage incident found after the fact.
+  final bool allowPast;
+
   const AvailabilityCalendar({
     super.key,
     required this.bookedRanges,
@@ -20,6 +26,7 @@ class AvailabilityCalendar extends StatefulWidget {
     this.selectionEnd,
     this.onDayTapped,
     this.showLegend = true,
+    this.allowPast = false,
   });
 
   @override
@@ -49,7 +56,7 @@ class _AvailabilityCalendarState extends State<AvailabilityCalendar> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
-    if (d.isBefore(today)) return _DayState.past;
+    if (!widget.allowPast && d.isBefore(today)) return _DayState.past;
 
     for (final range in widget.bookedRanges) {
       if (!range.isUnavailable) continue;
@@ -85,8 +92,8 @@ class _AvailabilityCalendarState extends State<AvailabilityCalendar> {
   String _unavailableRangeType(DateTime day) {
     final isMonday = day.weekday == DateTime.monday;
     final isSunday = day.weekday == DateTime.sunday;
-    final prev = day.subtract(const Duration(days: 1));
-    final next = day.add(const Duration(days: 1));
+    final prev = addDays(day, -1);
+    final next = addDays(day, 1);
 
     final connectLeft = !isMonday &&
         prev.month == day.month &&

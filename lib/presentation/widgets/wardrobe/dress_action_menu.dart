@@ -58,8 +58,20 @@ class DressActionMenu extends StatelessWidget {
     context.go('/wardrobe/${dress.id}/edit');
   }
 
+  /// A context that outlives this menu, for feedback after an await.
+  ///
+  /// Marking sold, reactivating or deleting refreshes the wardrobe, which moves
+  /// or removes the card this menu sits on — so by the time the request
+  /// returns, the menu's own context is unmounted and a `context.mounted`
+  /// check silently swallows the snackbar. The root navigator sits below the
+  /// app's ScaffoldMessenger and lives as long as the app, so feedback shown
+  /// through it always lands.
+  static BuildContext _feedbackContext(BuildContext context) =>
+      Navigator.of(context, rootNavigator: true).context;
+
   Future<void> _handleMarkAsSold(BuildContext context) async {
     final name = dress.internalName ?? '${dress.brand} ${dress.style}';
+    final feedbackContext = _feedbackContext(context);
     final confirmed = await FeedbackHelpers.showConfirmation(
       context,
       title: 'Mark as Sold',
@@ -73,13 +85,16 @@ class DressActionMenu extends StatelessWidget {
     try {
       await context.read<WardrobeProvider>().markAsSold(dress.id);
 
-      if (context.mounted) {
-        FeedbackHelpers.showSuccessSnackBar(context, '"$name" marked as sold');
+      if (feedbackContext.mounted) {
+        FeedbackHelpers.showSuccessSnackBar(
+          feedbackContext,
+          '"$name" marked as sold',
+        );
       }
     } catch (e) {
-      if (context.mounted) {
+      if (feedbackContext.mounted) {
         FeedbackHelpers.showErrorSnackBar(
-          context,
+          feedbackContext,
           userMessage(e, fallback: 'Could not mark this dress as sold. Please try again.'),
         );
       }
@@ -88,17 +103,21 @@ class DressActionMenu extends StatelessWidget {
 
   Future<void> _handleReactivate(BuildContext context) async {
     final name = dress.internalName ?? '${dress.brand} ${dress.style}';
+    final feedbackContext = _feedbackContext(context);
 
     try {
       await context.read<WardrobeProvider>().reactivate(dress.id);
 
-      if (context.mounted) {
-        FeedbackHelpers.showSuccessSnackBar(context, '"$name" reactivated');
+      if (feedbackContext.mounted) {
+        FeedbackHelpers.showSuccessSnackBar(
+          feedbackContext,
+          '"$name" reactivated',
+        );
       }
     } catch (e) {
-      if (context.mounted) {
+      if (feedbackContext.mounted) {
         FeedbackHelpers.showErrorSnackBar(
-          context,
+          feedbackContext,
           userMessage(e, fallback: 'Could not reactivate this dress. Please try again.'),
         );
       }
@@ -107,6 +126,7 @@ class DressActionMenu extends StatelessWidget {
 
   Future<void> _handleDelete(BuildContext context) async {
     final name = dress.internalName ?? '${dress.brand} ${dress.style}';
+    final feedbackContext = _feedbackContext(context);
     final confirmed = await FeedbackHelpers.showDeleteConfirmation(
       context,
       title: 'Delete Dress',
@@ -119,14 +139,17 @@ class DressActionMenu extends StatelessWidget {
     try {
       await context.read<WardrobeProvider>().deleteDress(dress.id);
 
-      if (context.mounted) {
-        FeedbackHelpers.showSuccessSnackBar(context, 'Dress deleted successfully');
-        if (redirectAfterDelete) context.go('/wardrobe');
+      if (feedbackContext.mounted) {
+        FeedbackHelpers.showSuccessSnackBar(
+          feedbackContext,
+          'Dress deleted successfully',
+        );
+        if (redirectAfterDelete) feedbackContext.go('/wardrobe');
       }
     } catch (e) {
-      if (context.mounted) {
+      if (feedbackContext.mounted) {
         FeedbackHelpers.showErrorSnackBar(
-          context,
+          feedbackContext,
           userMessage(e, fallback: 'Could not delete this dress. Please try again.'),
         );
       }

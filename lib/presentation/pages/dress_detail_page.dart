@@ -84,20 +84,27 @@ class _DressDetailPageState extends State<DressDetailPage>
   Widget _buildContent(DressDetailProvider provider) {
     final dress = provider.dress!;
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     final allBookings = provider.bookings;
+
+    // Compared as calendar days: a booking ending today is still running, not
+    // past, even after its midnight timestamp has gone by.
+    bool endsTodayOrLater(RentalBooking b) =>
+        !DateTime(b.endDate.year, b.endDate.month, b.endDate.day)
+            .isBefore(today);
 
     // A dress that is out and past its date still needs chasing, so it stays
     // in the actionable "upcoming" group rather than fading into past rentals.
     bool isOverdueActive(RentalBooking b) =>
-        BookingStatus.isOut(b.status) && !b.endDate.isAfter(now);
+        BookingStatus.isOverdue(b.status, b.endDate);
 
     final upcoming = allBookings
-        .where((b) => b.endDate.isAfter(now) || isOverdueActive(b))
+        .where((b) => endsTodayOrLater(b) || isOverdueActive(b))
         .toList()
       ..sort((a, b) => a.startDate.compareTo(b.startDate));
 
     final past = allBookings
-        .where((b) => !b.endDate.isAfter(now) && !isOverdueActive(b))
+        .where((b) => !endsTodayOrLater(b) && !isOverdueActive(b))
         .toList()
       ..sort((a, b) => b.startDate.compareTo(a.startDate));
 
@@ -337,9 +344,15 @@ class _DressDetailPageState extends State<DressDetailPage>
   }
 
   Widget _buildStatusPill(List<RentalBooking> bookings, DateTime now) {
+    // Booking dates are calendar days, so compare them as days. Against the
+    // clock, a booking due back today read as overdue from the first minute of
+    // its last day, and a request starting today showed "Available now".
+    final today = DateTime(now.year, now.month, now.day);
+    DateTime dayOf(DateTime d) => DateTime(d.year, d.month, d.day);
+
     // Overdue: physically out, and past its date
     final overdueMatches = bookings.where(
-      (b) => BookingStatus.isOut(b.status) && b.endDate.isBefore(now),
+      (b) => BookingStatus.isOverdue(b.status, b.endDate),
     );
     if (overdueMatches.isNotEmpty) {
       final b = overdueMatches.first;
@@ -360,8 +373,8 @@ class _DressDetailPageState extends State<DressDetailPage>
               b.status == BookingStatus.approved ||
               b.status == BookingStatus.readyForPickup ||
               b.status == BookingStatus.readyToShip) &&
-          b.startDate.isBefore(now) &&
-          b.endDate.isAfter(now),
+          !dayOf(b.startDate).isAfter(today) &&
+          !dayOf(b.endDate).isBefore(today),
     );
     if (activeMatches.isNotEmpty) {
       final b = activeMatches.first;
@@ -378,7 +391,7 @@ class _DressDetailPageState extends State<DressDetailPage>
     final nextMatches = bookings
         .where(
           (b) =>
-              b.startDate.isAfter(now) &&
+              !dayOf(b.startDate).isBefore(today) &&
               (b.status == BookingStatus.approved ||
                   b.status == BookingStatus.pending),
         )
@@ -900,8 +913,20 @@ class _DressDetailPageState extends State<DressDetailPage>
     final dateRange =
         '${formatDate(booking.startDate)} – ${formatDate(booking.endDate)}';
     // A rental is a whole day that goes overnight, so a stay from the 23rd
-    // to the 24th is one day, not two.
-    final days = booking.endDate.difference(booking.startDate).inDays;
+    // to the 24th is one day, not two. Counted on UTC dates: local midnights
+    // are 23 hours apart across a daylight-saving change, and inDays would
+    // truncate that night to zero.
+    final days = DateTime.utc(
+      booking.endDate.year,
+      booking.endDate.month,
+      booking.endDate.day,
+    ).difference(
+      DateTime.utc(
+        booking.startDate.year,
+        booking.startDate.month,
+        booking.startDate.day,
+      ),
+    ).inDays;
 
     return Opacity(
       opacity: faded ? 0.6 : 1.0,
@@ -1007,7 +1032,7 @@ class _DressDetailPageState extends State<DressDetailPage>
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                if (_nextStatus(booking.status) != null)
+                if (_nextStatus(booking) != null)
                   _statusAdvanceButton(booking, dressId),
                 const SizedBox(width: 4),
                 ActionMenuButton(
@@ -1509,13 +1534,16 @@ class _DressDetailPageState extends State<DressDetailPage>
   // transitions the database will actually accept. Declining and cancelling sit
   // outside the ladder, in the overflow menu.
 
-  String? _nextStatus(String status) => BookingStatus.nextStatus(status);
+  // A purchase closes at handover, so its next step differs from a rental's.
+  String? _nextStatus(RentalBooking booking) =>
+      BookingStatus.nextStatus(booking.status, bookingType: booking.bookingType);
 
-  String _nextStatusLabel(String status) =>
-      BookingStatus.nextLabel(status) ?? '';
+  String _nextStatusLabel(RentalBooking booking) =>
+      BookingStatus.nextLabel(booking.status, bookingType: booking.bookingType) ??
+      '';
 
   Widget _statusAdvanceButton(RentalBooking booking, int dressId) {
-    final next = _nextStatus(booking.status)!;
+    final next = _nextStatus(booking)!;
     final isPending = booking.status == 'pending';
     return GestureDetector(
       onTap: () => _handleStatusChange(context, booking, dressId, next),
@@ -1544,7 +1572,7 @@ class _DressDetailPageState extends State<DressDetailPage>
             ),
             const SizedBox(width: 5),
             Text(
-              _nextStatusLabel(booking.status),
+              _nextStatusLabel(booking),
               style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,

@@ -11,23 +11,35 @@ import 'package:shine_app/utils/utils.dart';
 class DateRangeSelection {
   DateRangeSelection._();
 
+  /// Whether a stay from [start] to [end] touches any unavailable range.
+  ///
+  /// Both ranges include both of their end days, because that is how the
+  /// database compares them (a '[]' daterange): a booking ending on the 9th still has
+  /// the dress on the 9th, so a new stay can neither start nor end on it. An
+  /// exclusive test here let a selection end on a blocked day, and made a
+  /// one-day block invisible altogether.
   static bool conflicts(
     List<BookedRange> bookedRanges,
     DateTime start,
     DateTime end,
   ) {
+    final s = DateTime(start.year, start.month, start.day);
+    final e = DateTime(end.year, end.month, end.day);
     return bookedRanges.any((r) {
       if (!r.isUnavailable) return false;
       final rs = DateTime(r.startDate.year, r.startDate.month, r.startDate.day);
       final re = DateTime(r.endDate.year, r.endDate.month, r.endDate.day);
-      return rs.isBefore(end) && re.isAfter(start);
+      return !rs.isAfter(e) && !re.isBefore(s);
     });
   }
 
-  static (DateTime, DateTime?) _freshStart(
+  static (DateTime?, DateTime?) _freshStart(
     DateTime day,
     List<BookedRange> bookedRanges,
   ) {
+    // The tapped day is itself taken, so no stay can start on it.
+    if (conflicts(bookedRanges, day, day)) return (null, null);
+
     // addDays, not a Duration: this value becomes the booking's end date and is
     // sent to the API. On a daylight-saving change a Duration lands at 23:00 of
     // the same day, which would submit a booking that ends before it starts.

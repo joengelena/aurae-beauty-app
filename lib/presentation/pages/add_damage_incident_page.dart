@@ -8,6 +8,7 @@ import 'package:shine_app/data/exceptions/app_exception.dart';
 import 'package:shine_app/data/models/dress_damage_incident.dart';
 import 'package:shine_app/data/models/rental_booking.dart';
 import 'package:shine_app/logic/dress_detail_provider.dart';
+import 'package:shine_app/presentation/widgets/common/app_empty_state.dart';
 import 'package:shine_app/presentation/widgets/common/calendar_date_range_picker.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:shine_app/utils/theme.dart';
@@ -38,6 +39,10 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
   final List<Uint8List> _newPhotoBytes = [];
   final List<String?> _newPhotoMimeTypes = [];
   bool _isSubmitting = false;
+  // In edit mode the form stays hidden until the incident is found: saving a
+  // blank form would wipe its photos and description.
+  bool _isLoaded = false;
+  bool _loadFailed = false;
 
   bool get _isEditing => widget.incidentId != null;
 
@@ -49,13 +54,32 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
     }
   }
 
-  void _prefill() {
-    final incidents = context.read<DressDetailProvider>().damageIncidents;
-    try {
-      _existing = incidents.firstWhere((i) => i.id == widget.incidentId);
-    } catch (_) {
+  DressDamageIncident? _findIncident(DressDetailProvider detail) {
+    if (detail.dress?.id != widget.dressId) return null;
+    for (final i in detail.damageIncidents) {
+      if (i.id == widget.incidentId) return i;
+    }
+    return null;
+  }
+
+  Future<void> _prefill() async {
+    final detail = context.read<DressDetailProvider>();
+    var found = _findIncident(detail);
+
+    // Cold load (a refresh on this route): nothing is in the provider yet, so
+    // fetch this dress and its incidents instead of showing a blank form.
+    if (found == null) {
+      setState(() => _loadFailed = false);
+      await detail.loadDress(widget.dressId);
+      if (!mounted) return;
+      found = _findIncident(detail);
+    }
+
+    if (found == null) {
+      setState(() => _loadFailed = true);
       return;
     }
+    _existing = found;
 
     _descriptionController.text = _existing!.description;
     _resolutionNotesController.text = _existing!.resolutionNotes ?? '';
@@ -65,7 +89,10 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
     _bookingIdFk = _existing!.bookingIdFk;
     _existingPhotoUrls = List.from(_existing!.photoUrls);
 
-    setState(() {});
+    setState(() {
+      _isLoaded = true;
+      _loadFailed = false;
+    });
   }
 
   @override
@@ -84,6 +111,8 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
     if (picked == null) return;
     final bytes = await picked.readAsBytes();
     final mimeType = 'image/${picked.name.split('.').last.toLowerCase()}';
+    // The picker can be open for a while; the page may be gone when it returns.
+    if (!mounted) return;
     setState(() {
       _newPhotoBytes.add(bytes);
       _newPhotoMimeTypes.add(mimeType);
@@ -102,6 +131,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
   }
 
   Future<void> _submit() async {
+    if (_isEditing && !_isLoaded) return;
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSubmitting = true);
 
@@ -164,6 +194,28 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
   @override
   Widget build(BuildContext context) {
     final bookings = context.watch<DressDetailProvider>().bookings;
+
+    if (_isEditing && _loadFailed) {
+      return Scaffold(
+        body: AppEmptyState(
+          icon: Icons.error_outline,
+          title: 'Unable to load damage report',
+          body: 'Something went wrong. Please try again.',
+          action: FilledButton(
+            onPressed: () {
+              setState(() => _loadFailed = false);
+              _prefill();
+            },
+            child: const Text('Try again'),
+          ),
+        ),
+      );
+    }
+    if (_isEditing && !_isLoaded) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       body: Form(
@@ -235,6 +287,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
       child: CalendarDateRangePicker(
         rangeMode: false,
         popup: true,
+        allowPast: true,
         initialStart: _occurredAt,
         placeholder: 'Date of incident',
         labelFormat: DateFormat('MMM d, yyyy'),
@@ -507,7 +560,7 @@ class _AddDamageIncidentPageState extends State<AddDamageIncidentPage> {
         ),
       ),
       child: FilledButton(
-        onPressed: _isSubmitting ? null : _submit,
+        onPressed: (_isSubmitting || (_isEditing && !_isLoaded)) ? null : _submit,
         style: FilledButton.styleFrom(minimumSize: const Size(double.infinity, 52)),
         child: _isSubmitting
             ? const SizedBox(

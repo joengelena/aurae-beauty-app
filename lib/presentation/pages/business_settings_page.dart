@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shine_app/logic/business_settings_provider.dart';
 import 'package:shine_app/presentation/widgets/common/app_card.dart';
+import 'package:shine_app/presentation/widgets/common/app_empty_state.dart';
 import 'package:shine_app/presentation/widgets/profile/settings_row.dart';
 import 'package:shine_app/utils/secure_storage.dart';
 import 'package:shine_app/utils/theme.dart';
@@ -15,11 +16,27 @@ class BusinessSettingsPage extends StatefulWidget {
 }
 
 class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
+  // Tracked here rather than read from provider.hasError: the provider also
+  // sets its error on a failed save, and that must not hide settings that did
+  // load. Until a load succeeds the controls stay hidden — what the provider
+  // holds is its defaults, and tapping + would save them over the real values.
+  bool _hasLoaded = false;
+  bool _loadFailed = false;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<BusinessSettingsProvider>().load();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+  }
+
+  Future<void> _load() async {
+    final provider = context.read<BusinessSettingsProvider>();
+    setState(() => _loadFailed = false);
+    await provider.load();
+    if (!mounted) return;
+    setState(() {
+      _hasLoaded = !provider.hasError;
+      _loadFailed = provider.hasError;
     });
   }
 
@@ -27,18 +44,40 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
   Widget build(BuildContext context) {
     return Consumer<BusinessSettingsProvider>(
       builder: (context, provider, _) {
-        if (provider.isLoading) {
+        if (!_hasLoaded && !_loadFailed) {
           return const Center(child: CircularProgressIndicator());
+        }
+
+        final account = _buildSection(
+          label: 'Account',
+          description: 'Manage your profile and login credentials.',
+          child: _buildAccountOptions(context),
+        );
+
+        if (!_hasLoaded) {
+          return ListView(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+            children: [
+              account,
+              AppEmptyState(
+                icon: Icons.error_outline,
+                title: 'Couldn\'t load your settings',
+                body: provider.errorMessage.isNotEmpty
+                    ? provider.errorMessage
+                    : 'Something went wrong. Please try again.',
+                action: FilledButton(
+                  onPressed: _load,
+                  child: const Text('Try again'),
+                ),
+              ),
+            ],
+          );
         }
 
         return ListView(
           padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
           children: [
-            _buildSection(
-              label: 'Account',
-              description: 'Manage your profile and login credentials.',
-              child: _buildAccountOptions(context),
-            ),
+            account,
             _buildSection(
               label: 'Delivery Options',
               description: 'Let renters know how they can receive dresses.',
@@ -61,6 +100,7 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
     BusinessSettingsProvider provider,
   ) {
     final days = provider.settings.cleaningBufferDays;
+    final busy = provider.isSaving || provider.isLoading;
 
     return AppCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -76,7 +116,7 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
           ),
           IconButton(
             onPressed:
-                (provider.isSaving || days <= 1)
+                (busy || days <= 1)
                     ? null
                     : () => _updateCleaningBuffer(context, provider, days - 1),
             icon: const Icon(Icons.remove_circle_outline),
@@ -93,7 +133,7 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
           ),
           IconButton(
             onPressed:
-                provider.isSaving
+                busy
                     ? null
                     : () => _updateCleaningBuffer(context, provider, days + 1),
             icon: const Icon(Icons.add_circle_outline),
@@ -108,7 +148,7 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
     BusinessSettingsProvider provider,
     int days,
   ) async {
-    if (days < 1) return;
+    if (days < 1 || !_hasLoaded) return;
     final updated = provider.settings.copyWith(cleaningBufferDays: days);
     final userId = await SecureStorage.read('userId') ?? '';
     final ok = await provider.save(updated, userId);
@@ -201,7 +241,7 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
             return _DeliveryTile(
               option: opt,
               selected: selected,
-              saving: provider.isSaving,
+              saving: provider.isSaving || provider.isLoading,
               onTap: () => _selectDelivery(context, provider, opt.value),
             );
           }).toList(),
@@ -213,7 +253,8 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
     BusinessSettingsProvider provider,
     String value,
   ) async {
-    if (provider.isSaving || provider.settings.deliveryOption == value) return;
+    if (!_hasLoaded || provider.isSaving || provider.isLoading) return;
+    if (provider.settings.deliveryOption == value) return;
     final updated = provider.settings.copyWith(deliveryOption: value);
     final userId = await SecureStorage.read('userId') ?? '';
     final ok = await provider.save(updated, userId);

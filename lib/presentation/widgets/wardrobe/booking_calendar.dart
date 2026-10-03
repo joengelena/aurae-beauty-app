@@ -61,7 +61,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
 
   DateTime get _weekStart {
     final daysFromMonday = _focusedDay.weekday - DateTime.monday;
-    return _focusedDay.subtract(Duration(days: daysFromMonday));
+    return addDays(_focusedDay, -daysFromMonday);
   }
 
   bool _isOverdue(RentalBooking b) {
@@ -139,6 +139,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
 
     for (final b in widget.bookings) {
       if (!BookingStatus.holdsDates(b.status)) continue;
+      // A sale has no turnaround: the database snapshots zero cleaning days
+      // for purchase bookings, so nothing is blocked after one.
+      if (b.bookingType == 'purchase') continue;
       final end = DateTime(b.endDate.year, b.endDate.month, b.endDate.day);
       final from = addDays(end, 1);
       final to = addDays(end, widget.cleaningBufferDays);
@@ -165,8 +168,8 @@ class _BookingCalendarState extends State<BookingCalendar> {
     final isMonday = day.weekday == DateTime.monday;
     final isSunday = day.weekday == DateTime.sunday;
 
-    final prev = day.subtract(const Duration(days: 1));
-    final next = day.add(const Duration(days: 1));
+    final prev = addDays(day, -1);
+    final next = addDays(day, 1);
 
     final connectLeft = !isMonday &&
         (!breakAtMonthEdge || prev.month == day.month) &&
@@ -349,8 +352,8 @@ class _BookingCalendarState extends State<BookingCalendar> {
 
   Widget _buildWeekView() {
     final start = _weekStart;
-    final end = start.add(const Duration(days: 6));
-    final days = List.generate(7, (i) => start.add(Duration(days: i)));
+    final end = addDays(start, 6);
+    final days = List.generate(7, (i) => addDays(start, i));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -359,7 +362,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
           children: [
             _navButton(
               Icons.chevron_left,
-              () => setState(() => _focusedDay = _focusedDay.subtract(const Duration(days: 7))),
+              () => setState(() => _focusedDay = addDays(_focusedDay, -7)),
             ),
             Expanded(
               child: Text(
@@ -377,7 +380,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
             ),
             _navButton(
               Icons.chevron_right,
-              () => setState(() => _focusedDay = _focusedDay.add(const Duration(days: 7))),
+              () => setState(() => _focusedDay = addDays(_focusedDay, 7)),
             ),
           ],
         ),
@@ -411,7 +414,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
           children: [
             _navButton(
               Icons.chevron_left,
-              () => setState(() => _focusedDay = _focusedDay.subtract(const Duration(days: 1))),
+              () => setState(() => _focusedDay = addDays(_focusedDay, -1)),
             ),
             Expanded(
               child: Column(
@@ -436,7 +439,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
             ),
             _navButton(
               Icons.chevron_right,
-              () => setState(() => _focusedDay = _focusedDay.add(const Duration(days: 1))),
+              () => setState(() => _focusedDay = addDays(_focusedDay, 1)),
             ),
           ],
         ),

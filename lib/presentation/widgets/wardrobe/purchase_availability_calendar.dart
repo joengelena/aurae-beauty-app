@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shine_app/utils/theme.dart';
+import 'package:shine_app/utils/utils.dart';
 
 // Priority order matters — a day can only be one of these, in this precedence
 enum _DayStatus { none, notYetAvailable, past }
@@ -59,8 +60,8 @@ class _PurchaseAvailabilityCalendarState
     final isMonday = day.weekday == DateTime.monday;
     final isSunday = day.weekday == DateTime.sunday;
 
-    final prev = day.subtract(const Duration(days: 1));
-    final next = day.add(const Duration(days: 1));
+    final prev = addDays(day, -1);
+    final next = addDays(day, 1);
 
     final connectLeft = !isMonday &&
         prev.month == day.month &&

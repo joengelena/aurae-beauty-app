@@ -37,6 +37,10 @@ class CalendarDateRangePicker extends StatefulWidget {
   /// of expanding it inline.
   final bool popup;
 
+  /// When true, past days can be picked (owner-side records such as a
+  /// booking that already happened or a damage incident).
+  final bool allowPast;
+
   const CalendarDateRangePicker({
     super.key,
     this.initialStart,
@@ -48,6 +52,7 @@ class CalendarDateRangePicker extends StatefulWidget {
     this.rangeMode = true,
     this.labelFormat,
     this.popup = false,
+    this.allowPast = false,
   });
 
   @override
@@ -111,6 +116,7 @@ class _CalendarDateRangePickerState extends State<CalendarDateRangePicker> {
         initialEnd: _end,
         bookedRanges: widget.bookedRanges,
         rangeMode: widget.rangeMode,
+        allowPast: widget.allowPast,
       ),
     );
     if (result == null) return;
@@ -216,6 +222,7 @@ class _CalendarDateRangePickerState extends State<CalendarDateRangePicker> {
                       selectionEnd: _end,
                       onDayTapped: _onDayTapped,
                       showLegend: widget.bookedRanges.isNotEmpty,
+                      allowPast: widget.allowPast,
                     ),
                   )
                 : const SizedBox.shrink(),
@@ -232,12 +239,14 @@ class _CalendarPickerDialog extends StatefulWidget {
   final DateTime? initialEnd;
   final List<BookedRange> bookedRanges;
   final bool rangeMode;
+  final bool allowPast;
 
   const _CalendarPickerDialog({
     this.initialStart,
     this.initialEnd,
     required this.bookedRanges,
     required this.rangeMode,
+    this.allowPast = false,
   });
 
   @override
@@ -314,6 +323,7 @@ class _CalendarPickerDialogState extends State<_CalendarPickerDialog> {
               selectionEnd: _end,
               onDayTapped: _onDayTapped,
               showLegend: widget.bookedRanges.isNotEmpty,
+              allowPast: widget.allowPast,
             ),
             if (_start != null)
               Align(

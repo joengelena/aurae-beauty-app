@@ -90,37 +90,70 @@ class BookingStatus {
 
   /// What the owner does next, and what the button says.
   ///
-  /// Only the pickup path is wired up: the shipping branch needs a fulfilment
-  /// column on the booking to know which way a booking is going, and a tracking
-  /// number before it can be marked shipped. Both arrive with the buffer
-  /// snapshot work — until then the DB accepts the shipping transitions, but
-  /// nothing in the app offers them.
-  static String? nextStatus(String status, {String bookingType = 'rental'}) =>
-      switch (status) {
+  /// Mirrors dress_bookings_enforce_transition() in 99_triggers.sql. A rental
+  /// runs the full cycle — out, back, inspected, closed — while a purchase
+  /// closes at handover: nothing comes back, so nothing is inspected.
+  ///
+  /// Only the pickup path is offered from approved: the shipping branch needs a
+  /// fulfilment column on the booking to know which way a booking is going, and
+  /// a tracking number before it can be marked shipped. A booking that is
+  /// already shipped still gets its next step, which the database accepts.
+  static String? nextStatus(String status, {String bookingType = 'rental'}) {
+    if (bookingType == 'purchase') {
+      return switch (status) {
         pending => approved,
         approved => readyForPickup,
         readyForPickup => collected,
-        collected => bookingType == 'purchase' ? completed : returned,
-        returned => inspected,
-        inspected => completed,
+        collected || shipped => completed,
         _ => null,
       };
+    }
+    return switch (status) {
+      pending => approved,
+      approved => readyForPickup,
+      readyForPickup => collected,
+      collected || shipped => returned,
+      returned => inspected,
+      inspected => completed,
+      _ => null,
+    };
+  }
 
-  static String? nextLabel(String status, {String bookingType = 'rental'}) =>
-      switch (status) {
+  static String? nextLabel(String status, {String bookingType = 'rental'}) {
+    if (bookingType == 'purchase') {
+      return switch (status) {
         pending => 'Approve',
         approved => 'Mark ready for pickup',
         readyForPickup => 'Mark collected',
-        collected => bookingType == 'purchase' ? 'Complete' : 'Mark returned',
-        returned => 'Mark inspected',
-        inspected => 'Complete',
+        collected || shipped => 'Complete',
         _ => null,
       };
+    }
+    return switch (status) {
+      pending => 'Approve',
+      approved => 'Mark ready for pickup',
+      readyForPickup => 'Mark collected',
+      collected || shipped => 'Mark returned',
+      returned => 'Mark inspected',
+      inspected => 'Complete',
+      _ => null,
+    };
+  }
+
+  /// Statuses the owner can still call off, per the transition table: before
+  /// the dress has changed hands, for rentals and purchases alike. Once it is
+  /// collected or shipped the database refuses any cancellation.
+  static const Set<String> ownerCancellable = {
+    pending,
+    approved,
+    readyForPickup,
+    readyToShip,
+  };
 
   /// Whether the owner can still call the booking off, and what that is called
   /// at this point in the flow — declining a request and cancelling a booking
   /// she already agreed to are different things to the person receiving them.
-  static bool ownerCanCancel(String status) => isOpen(status);
+  static bool ownerCanCancel(String status) => ownerCancellable.contains(status);
 
   static String ownerCancelLabel(String status) =>
       status == pending ? 'Decline booking request' : 'Cancel booking';

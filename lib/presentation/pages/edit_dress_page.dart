@@ -7,9 +7,11 @@ import 'package:intl/intl.dart';
 import 'package:shine_app/data/exceptions/app_exception.dart';
 import 'package:shine_app/data/models/booked_range.dart';
 import 'package:shine_app/data/models/business_dress.dart';
+import 'package:shine_app/logic/dress_detail_provider.dart';
 import 'package:shine_app/logic/filtering_provider.dart';
 import 'package:shine_app/logic/wardrobe_provider.dart';
 import 'package:shine_app/presentation/widgets/common/app_card.dart';
+import 'package:shine_app/presentation/widgets/common/app_empty_state.dart';
 import 'package:shine_app/presentation/widgets/common/calendar_date_range_picker.dart';
 import 'package:shine_app/presentation/widgets/listing/availability_calendar.dart';
 import 'package:shine_app/presentation/widgets/wardrobe/multi_chip_selector.dart';
@@ -66,6 +68,10 @@ class _EditDressPageState extends State<EditDressPage> {
   bool _isSubmitting = false;
   bool _photoError = false;
   BusinessDress? _dress;
+  // Saving before the dress is loaded would send empty photos and blocked
+  // dates, wiping the real ones — so the form stays hidden until then.
+  bool _isLoaded = false;
+  bool _loadFailed = false;
 
   List<DateTimeRange> _blockedDateRanges = [];
   bool _addingBlockedDates = false;
@@ -87,16 +93,38 @@ class _EditDressPageState extends State<EditDressPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _prefill());
   }
 
-  void _prefill() {
+  Future<void> _prefill() async {
     final id = int.tryParse(widget.dressId);
-    if (id == null) return;
-
-    final dresses = context.read<WardrobeProvider>().dresses;
-    try {
-      _dress = dresses.firstWhere((d) => d.id == id);
-    } catch (_) {
+    if (id == null) {
+      setState(() => _loadFailed = true);
       return;
     }
+
+    BusinessDress? found;
+    for (final d in context.read<WardrobeProvider>().dresses) {
+      if (d.id == id) {
+        found = d;
+        break;
+      }
+    }
+
+    // Cold load (a refresh on this route): the wardrobe list is empty, so
+    // fetch this one dress rather than showing a blank form that saves blanks.
+    if (found == null) {
+      final detail = context.read<DressDetailProvider>();
+      if (detail.dress?.id != id) {
+        setState(() => _loadFailed = false);
+        await detail.loadDress(id);
+        if (!mounted) return;
+      }
+      if (detail.dress?.id == id) found = detail.dress;
+    }
+
+    if (found == null) {
+      setState(() => _loadFailed = true);
+      return;
+    }
+    _dress = found;
 
     _nameController.text = _dress!.name ?? '';
     _brandValue = _dress!.brand;
@@ -132,7 +160,10 @@ class _EditDressPageState extends State<EditDressPage> {
     _existingPhotoUrls = List.from(_dress!.dressPhotoUrls);
     _blockedDateRanges = List.from(_dress!.blockedDateRanges);
 
-    setState(() {});
+    setState(() {
+      _isLoaded = true;
+      _loadFailed = false;
+    });
   }
 
   @override
@@ -156,6 +187,8 @@ class _EditDressPageState extends State<EditDressPage> {
     if (picked == null) return;
     final bytes = await picked.readAsBytes();
     final mimeType = 'image/${picked.name.split('.').last.toLowerCase()}';
+    // The picker can be open for a while; the page may be gone when it returns.
+    if (!mounted) return;
     setState(() {
       _newPhotoBytes.add(bytes);
       _newPhotoMimeTypes.add(mimeType);
@@ -175,6 +208,7 @@ class _EditDressPageState extends State<EditDressPage> {
   }
 
   Future<void> _submit() async {
+    if (!_isLoaded) return;
     if (_totalPhotoCount == 0) setState(() => _photoError = true);
     if (_size.isEmpty) setState(() => _sizeError = true);
     if (!_formKey.currentState!.validate() || _totalPhotoCount == 0 || _size.isEmpty) {
@@ -257,6 +291,28 @@ class _EditDressPageState extends State<EditDressPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_loadFailed) {
+      return Scaffold(
+        body: AppEmptyState(
+          icon: Icons.error_outline,
+          title: 'Unable to load dress',
+          body: 'Something went wrong. Please try again.',
+          action: FilledButton(
+            onPressed: () {
+              setState(() => _loadFailed = false);
+              _prefill();
+            },
+            child: const Text('Try again'),
+          ),
+        ),
+      );
+    }
+    if (!_isLoaded) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       body: Form(
         key: _formKey,
@@ -286,7 +342,7 @@ class _EditDressPageState extends State<EditDressPage> {
                   const SizedBox(height: 20),
                   _sectionLabel('Dress details'),
                   PickerFormField(
-                    key: ValueKey(_brandPrefill),
+                    key: ValueKey('brand_$_brandPrefill'),
                     label: 'Brand',
                     options: attrOptions('brand'),
                     initialValue: _brandPrefill,
@@ -294,7 +350,7 @@ class _EditDressPageState extends State<EditDressPage> {
                     onChanged: (v) => _brandValue = v,
                   ),
                   PickerFormField(
-                    key: ValueKey(_stylePrefill),
+                    key: ValueKey('style_$_stylePrefill'),
                     label: 'Style',
                     options: attrOptions('style'),
                     initialValue: _stylePrefill,
@@ -302,7 +358,7 @@ class _EditDressPageState extends State<EditDressPage> {
                     onChanged: (v) => _styleValue = v,
                   ),
                   PickerFormField(
-                    key: ValueKey(_dressTypePrefill),
+                    key: ValueKey('dressType_$_dressTypePrefill'),
                     label: 'Dress type',
                     options: attrOptions('dress_type'),
                     initialValue: _dressTypePrefill,
@@ -321,7 +377,7 @@ class _EditDressPageState extends State<EditDressPage> {
                     ),
                   ),
                   SizeRadioSelector(
-                    key: ValueKey('${_sizePrefill}_$_sizeSystem'),
+                    key: ValueKey('size_${_sizePrefill}_$_sizeSystem'),
                     label: 'Size',
                     options: _sizeOptions,
                     initialValue: _sizePrefill,
@@ -339,7 +395,7 @@ class _EditDressPageState extends State<EditDressPage> {
                       ),
                     ),
                   PickerFormField(
-                    key: ValueKey(_fitNotePrefill),
+                    key: ValueKey('fitNote_$_fitNotePrefill'),
                     label: 'Recommended fit',
                     options: _fitNotes,
                     initialValue: _fitNotePrefill,
@@ -353,7 +409,7 @@ class _EditDressPageState extends State<EditDressPage> {
                     onChanged: (v) => _recommendedSizes = v,
                   ),
                   PickerFormField(
-                    key: ValueKey(_conditionPrefill),
+                    key: ValueKey('condition_$_conditionPrefill'),
                     label: 'Condition',
                     options: _conditions,
                     initialValue: _conditionPrefill ?? _condition,
@@ -440,7 +496,7 @@ class _EditDressPageState extends State<EditDressPage> {
         ),
       ),
       child: FilledButton(
-        onPressed: _isSubmitting ? null : _submit,
+        onPressed: (_isSubmitting || !_isLoaded) ? null : _submit,
         style: FilledButton.styleFrom(minimumSize: const Size(double.infinity, 52)),
         child: _isSubmitting
             ? SizedBox(
@@ -748,9 +804,9 @@ class _EditDressPageState extends State<EditDressPage> {
         _pendingEnd = null;
       } else if (d.isBefore(_pendingStart!)) {
         _pendingStart = d;
-      } else if (d == _pendingStart) {
-        _pendingStart = null;
       } else {
+        // Same day twice is a one-day block, the way an owner reads it — not
+        // a way to clear the selection (Cancel does that).
         _pendingEnd = d;
         _blockedDateRanges.add(DateTimeRange(start: _pendingStart!, end: _pendingEnd!));
         _pendingStart = null;

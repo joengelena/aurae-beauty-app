@@ -77,6 +77,8 @@ class _AddDressPageState extends State<AddDressPage> {
     if (picked == null) return;
     final bytes = await picked.readAsBytes();
     final mimeType = 'image/${picked.name.split('.').last.toLowerCase()}';
+    // The picker can be open for a while; the page may be gone when it returns.
+    if (!mounted) return;
     setState(() {
       _photoBytes.add(bytes);
       _photoMimeTypes.add(mimeType);
@@ -140,32 +142,57 @@ class _AddDressPageState extends State<AddDressPage> {
       baseData['notes'] = _notesController.text.trim();
     }
 
-    try {
-      for (final size in _selectedSizes) {
-        await context.read<WardrobeProvider>().addDress(
+    // Each size is its own dress, posted one at a time. A size leaves the
+    // pending list as soon as it is saved, so retrying after a partial failure
+    // posts only the sizes that didn't make it — never a duplicate.
+    final provider = context.read<WardrobeProvider>();
+    final sizes = List<String>.of(_selectedSizes);
+    final added = <String>[];
+    final failed = <String>[];
+    String? failureMessage;
+    for (final size in sizes) {
+      try {
+        await provider.addDress(
           {...baseData, 'size': size},
           photoBytes: _photoBytes,
           photoMimeTypes: _photoMimeTypes,
         );
+        added.add(size);
+      } on AppException catch (e) {
+        failed.add(size);
+        failureMessage ??= e.message;
+      } catch (e) {
+        failed.add(size);
+        failureMessage ??= 'Failed to add dress.';
       }
-      if (mounted) {
-        FeedbackHelpers.showSuccessSnackBar(
-          context,
-          _selectedSizes.length > 1
-              ? '${_selectedSizes.length} dresses added successfully'
-              : 'Dress added successfully',
-        );
-        context.go('/wardrobe');
-      }
-    } on AppException catch (e) {
-      if (mounted) FeedbackHelpers.showErrorSnackBar(context, e.message);
-    } catch (e) {
-      if (mounted) {
-        FeedbackHelpers.showErrorSnackBar(context, 'Failed to add dress.');
-      }
-    } finally {
-      if (mounted) setState(() => _isSubmitting = false);
     }
+
+    if (!mounted) return;
+
+    if (failed.isEmpty) {
+      setState(() => _isSubmitting = false);
+      FeedbackHelpers.showSuccessSnackBar(
+        context,
+        added.length > 1
+            ? '${added.length} dresses added successfully'
+            : 'Dress added successfully',
+      );
+      context.go('/wardrobe');
+      return;
+    }
+
+    setState(() {
+      // A new list, so the size chips re-read it and show only what's left.
+      _selectedSizes = List<String>.of(failed);
+      _isSubmitting = false;
+    });
+    FeedbackHelpers.showErrorSnackBar(
+      context,
+      added.isEmpty
+          ? failureMessage!
+          : 'Added size ${added.join(', ')}. Could not add size '
+              '${failed.join(', ')}: $failureMessage Tap save to retry.',
+    );
   }
 
   @override
@@ -231,6 +258,7 @@ class _AddDressPageState extends State<AddDressPage> {
                           key: ValueKey(_sizeSystem),
                           label: 'Size (select all sizes you have for this design)',
                           options: _sizeOptions,
+                          initialValues: _selectedSizes,
                           onChanged: (v) => setState(() {
                             _selectedSizes = v;
                             _sizeError = false;
