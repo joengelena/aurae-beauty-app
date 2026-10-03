@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shine_app/data/models/business_settings.dart';
 import 'package:shine_app/logic/business_settings_provider.dart';
 import 'package:shine_app/logic/profile_provider.dart';
+import 'package:shine_app/utils/feedback_helpers.dart';
 import 'package:shine_app/utils/secure_storage.dart';
 import 'package:shine_app/utils/theme.dart';
 
@@ -68,32 +69,65 @@ class _OnboardingPageState extends State<OnboardingPage> {
     }
   }
 
+  void _goBack() {
+    if (_step <= 0) return;
+    final previous = _step - 1;
+    setState(() => _step = previous);
+    _pageController.animateToPage(
+      previous,
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
   Future<void> _handleDone(String option) async {
     if (_isSaving) return;
     setState(() => _isSaving = true);
     _advance(); // go to thanks step immediately
     await Future.delayed(const Duration(milliseconds: 2800));
     if (!mounted) return;
-    await _saveAndRedirect(option);
+    final saved = await _saveAndRedirect(option);
+    // The thanks step only ends via the router redirect, so on failure step
+    // back to the delivery choice instead of leaving its spinner up forever.
+    if (!saved && mounted) _goBack();
   }
 
-  Future<void> _saveAndRedirect(String option) async {
+  /// Returns true once the profile shows the saved delivery option, which is
+  /// what makes the router leave onboarding.
+  Future<bool> _saveAndRedirect(String option) async {
+    var succeeded = false;
+    var errorMessage = "We couldn't save your delivery preference. "
+        'Please try again.';
     try {
       final userId = await SecureStorage.read('userId') ?? '';
       // _handleDone waits 2.8s before calling this, and the storage read above
       // is async too — comfortably long enough to navigate away first, and
       // context.read on a disposed widget throws.
-      if (!mounted) return;
-      await context.read<BusinessSettingsProvider>().save(
+      if (!mounted) return false;
+      final settingsProvider = context.read<BusinessSettingsProvider>();
+      final profileProvider = context.read<ProfileProvider>();
+      final saved = await settingsProvider.save(
         BusinessSettings(deliveryOption: option),
         userId,
       );
-      if (!mounted) return;
-      await context.read<ProfileProvider>().fetchUserProfile(userId);
-      // fetchUserProfile → notifyListeners → router sees deliveryOption != null → redirects to /listings
+      if (!saved) {
+        if (settingsProvider.hasError) {
+          errorMessage = settingsProvider.errorMessage;
+        }
+      } else {
+        await profileProvider.fetchUserProfile(userId);
+        // fetchUserProfile → notifyListeners → router sees deliveryOption != null → redirects to /listings
+        succeeded = profileProvider.errorMessage.isEmpty &&
+            profileProvider.currentUser?.deliveryOption != null;
+      }
+    } catch (e) {
+      debugPrint('❌ Onboarding save failed: ${e.runtimeType}');
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
+    if (succeeded) return true;
+    if (mounted) FeedbackHelpers.showErrorSnackBar(context, errorMessage);
+    return false;
   }
 
   Future<void> _skipAll() async {

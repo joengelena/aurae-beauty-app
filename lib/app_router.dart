@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shine_app/logic/active_profile_provider.dart';
 import 'package:shine_app/logic/auth_provider.dart';
-import 'package:shine_app/logic/listing_detail_provider.dart';
 import 'package:shine_app/logic/profile_provider.dart';
 import 'package:shine_app/presentation/pages/onboarding_page.dart';
 import 'package:shine_app/presentation/pages/profile/add_business_profile_page.dart';
@@ -35,7 +34,6 @@ import 'package:shine_app/presentation/pages/owner_profile_page.dart';
 import 'package:shine_app/presentation/pages/business_settings_page.dart';
 import 'package:shine_app/presentation/pages/privacy_policy_page.dart';
 import 'package:shine_app/presentation/widgets/scaffold/app_scaffold.dart';
-import 'package:provider/provider.dart';
 
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -60,6 +58,20 @@ const _renterOnlyPages = <String, String>{
   '/cart': '/listings',
   '/profile/bookings': '/profile',
 };
+
+// Supabase appends its error params as a URL fragment. Depending on how hash
+// routing splits the URL they surface as the route path itself or as a
+// nested fragment; our own redirect forwards them as a query parameter.
+String? _supabaseErrorCode(Uri uri) {
+  final fromQuery = uri.queryParameters['error_code'];
+  if (fromQuery != null) return fromQuery;
+  for (final part in [uri.fragment, uri.path]) {
+    if (!part.contains('error_code=')) continue;
+    final code = Uri.splitQueryString(part)['error_code'];
+    if (code != null) return code;
+  }
+  return null;
+}
 
 GoRouter getAppRouter(
   AuthProvider authProvider,
@@ -94,9 +106,15 @@ GoRouter getAppRouter(
       }
 
       // Handle Supabase email verification errors by redirecting to a dedicated page
-      String? errorCode = Uri.splitQueryString(state.uri.path)['error_code'];
-      if (errorCode != null && path != '/profile/email-verification') {
-        return '/profile/email-verification?error_code=$errorCode';
+      // reset-password reads its own error params from the fragment.
+      final errorCode = _supabaseErrorCode(state.uri);
+      if (errorCode != null &&
+          path != '/profile/email-verification' &&
+          path != '/profile/reset-password') {
+        return Uri(
+          path: '/profile/email-verification',
+          queryParameters: {'error_code': errorCode},
+        ).toString();
       }
 
       final isAuthPage = _authPages.contains(path);
@@ -152,13 +170,19 @@ GoRouter getAppRouter(
       // Splash route - outside ShellRoute to hide bottom navigation
       GoRoute(
         path: '/splash',
-        pageBuilder: (context, state) => NoTransitionPage(child: SplashPage()),
+        pageBuilder: (context, state) => NoTransitionPage(
+          key: state.pageKey,
+          child: const SplashPage(),
+        ),
       ),
       // Onboarding route - outside ShellRoute (no nav bar)
       GoRoute(
         path: '/onboarding',
         pageBuilder: (context, state) =>
-            const NoTransitionPage(child: OnboardingPage()),
+            NoTransitionPage(
+              key: state.pageKey,
+              child: const OnboardingPage(),
+            ),
       ),
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
@@ -170,22 +194,27 @@ GoRouter getAppRouter(
             path: '/listings',
             parentNavigatorKey: _shellNavigatorKey,
             pageBuilder:
-                (context, state) => NoTransitionPage(child: ListingsPage()),
+                (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const ListingsPage(),
+                ),
             routes: [
               GoRoute(
                 path: ':listingId',
                 pageBuilder: (context, state) {
                   final listingId = state.pathParameters['listingId'];
                   if (listingId == null) {
-                    return NoTransitionPage(child: Text('Not Found'));
+                    return NoTransitionPage(
+                      key: state.pageKey,
+                      child: const Text('Not Found'),
+                    );
                   }
 
-                  final listingDetailProvider =
-                      context.read<ListingDetailProvider>();
-
-                  listingDetailProvider.isLoading = true;
-
+                  // No provider side effects here: go_router re-runs
+                  // pageBuilders whenever the match list changes, so the
+                  // page triggers its own fetch instead.
                   return NoTransitionPage(
+                    key: state.pageKey,
                     child: ListingDetailPage(listingId: listingId),
                   );
                 },
@@ -196,24 +225,36 @@ GoRouter getAppRouter(
             path: '/watchlist',
             parentNavigatorKey: _shellNavigatorKey,
             pageBuilder:
-                (context, state) => NoTransitionPage(child: WatchlistPage()),
+                (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const WatchlistPage(),
+                ),
           ),
           GoRoute(
             path: '/cart',
             parentNavigatorKey: _shellNavigatorKey,
             pageBuilder:
-                (context, state) => NoTransitionPage(child: CartPage()),
+                (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const CartPage(),
+                ),
           ),
           GoRoute(
             path: '/wardrobe',
             parentNavigatorKey: _shellNavigatorKey,
             pageBuilder:
-                (context, state) => NoTransitionPage(child: WardrobePage()),
+                (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const WardrobePage(),
+                ),
             routes: [
               GoRoute(
                 path: 'add',
                 pageBuilder:
-                    (context, state) => NoTransitionPage(child: AddDressPage()),
+                    (context, state) => NoTransitionPage(
+                      key: state.pageKey,
+                      child: const AddDressPage(),
+                    ),
               ),
               // Must stay above ':dressId' — go_router matches in declaration
               // order, so a dynamic segment declared first would swallow this
@@ -221,13 +262,17 @@ GoRouter getAppRouter(
               GoRoute(
                 path: 'dresses',
                 pageBuilder: (context, state) =>
-                    NoTransitionPage(child: WardrobeDressesPage()),
+                    NoTransitionPage(
+                      key: state.pageKey,
+                      child: const WardrobeDressesPage(),
+                    ),
               ),
               GoRoute(
                 path: ':dressId',
                 pageBuilder: (context, state) {
                   final dressId = state.pathParameters['dressId']!;
                   return NoTransitionPage(
+                    key: state.pageKey,
                     child: DressDetailPage(dressId: dressId),
                   );
                 },
@@ -237,6 +282,7 @@ GoRouter getAppRouter(
                     pageBuilder: (context, state) {
                       final dressId = state.pathParameters['dressId']!;
                       return NoTransitionPage(
+                        key: state.pageKey,
                         child: EditDressPage(dressId: dressId),
                       );
                     },
@@ -248,6 +294,7 @@ GoRouter getAppRouter(
                         state.pathParameters['dressId']!,
                       );
                       return NoTransitionPage(
+                        key: state.pageKey,
                         child: AddBookingPage(dressId: dressId),
                       );
                     },
@@ -259,6 +306,7 @@ GoRouter getAppRouter(
                         state.pathParameters['dressId']!,
                       );
                       return NoTransitionPage(
+                        key: state.pageKey,
                         child: AddDamageIncidentPage(dressId: dressId),
                       );
                     },
@@ -273,6 +321,7 @@ GoRouter getAppRouter(
                         state.pathParameters['incidentId']!,
                       );
                       return NoTransitionPage(
+                        key: state.pageKey,
                         child: AddDamageIncidentPage(
                           dressId: dressId,
                           incidentId: incidentId,
@@ -288,24 +337,36 @@ GoRouter getAppRouter(
             path: '/profile',
             parentNavigatorKey: _shellNavigatorKey,
             pageBuilder:
-                (context, state) => NoTransitionPage(child: ProfilePage()),
+                (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const ProfilePage(),
+                ),
             routes: [
               GoRoute(
                 path: 'signup',
                 pageBuilder: (context, state) {
-                  return NoTransitionPage(child: SignUpPage());
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: const SignUpPage(),
+                  );
                 },
               ),
               GoRoute(
                 path: 'signin',
                 pageBuilder: (context, state) {
-                  return NoTransitionPage(child: SignInPage());
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: const SignInPage(),
+                  );
                 },
               ),
               GoRoute(
                 path: 'forgot-password',
                 pageBuilder: (context, state) {
-                  return NoTransitionPage(child: ForgotPasswordPage());
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: const ForgotPasswordPage(),
+                  );
                 },
               ),
               GoRoute(
@@ -321,6 +382,7 @@ GoRouter getAppRouter(
                           : <String, String>{};
 
                   return NoTransitionPage(
+                    key: state.pageKey,
                     child: ResetPasswordPage(
                       accessToken: params['access_token'],
                       resetType: params['type'],
@@ -336,10 +398,10 @@ GoRouter getAppRouter(
                 pageBuilder: (context, state) {
                   // error_code may arrive as a query param (forwarded by our
                   // redirect above) or in the fragment (direct Supabase redirect)
-                  final errorCode =
-                      Uri.splitQueryString(state.uri.path)['error_code'];
+                  final errorCode = _supabaseErrorCode(state.uri);
 
                   return NoTransitionPage(
+                    key: state.pageKey,
                     child: EmailVerificationPage(errorCode: errorCode),
                   );
                 },
@@ -347,43 +409,64 @@ GoRouter getAppRouter(
               GoRoute(
                 path: 'change-password',
                 pageBuilder: (context, state) {
-                  return NoTransitionPage(child: ChangePasswordPage());
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: const ChangePasswordPage(),
+                  );
                 },
               ),
               GoRoute(
                 path: 'edit',
                 pageBuilder: (context, state) {
-                  return NoTransitionPage(child: EditProfilePage());
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: const EditProfilePage(),
+                  );
                 },
               ),
               GoRoute(
                 path: 'bookings',
                 pageBuilder: (context, state) {
-                  return NoTransitionPage(child: MyBookingsPage());
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: const MyBookingsPage(),
+                  );
                 },
               ),
               GoRoute(
                 path: 'delete-account',
                 pageBuilder: (context, state) {
-                  return NoTransitionPage(child: DeleteAccountPage());
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: const DeleteAccountPage(),
+                  );
                 },
               ),
               GoRoute(
                 path: 'add-business',
                 pageBuilder: (context, state) {
-                  return NoTransitionPage(child: AddBusinessProfilePage());
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: const AddBusinessProfilePage(),
+                  );
                 },
                 routes: [
                   GoRoute(
                     path: 'create',
                     pageBuilder: (context, state) {
-                      return NoTransitionPage(child: CreateBusinessPage());
+                      return NoTransitionPage(
+                        key: state.pageKey,
+                        child: const CreateBusinessPage(),
+                      );
                     },
                   ),
                   GoRoute(
                     path: 'join',
                     pageBuilder: (context, state) {
-                      return NoTransitionPage(child: JoinBusinessPage());
+                      return NoTransitionPage(
+                        key: state.pageKey,
+                        child: const JoinBusinessPage(),
+                      );
                     },
                   ),
                 ],
@@ -391,7 +474,10 @@ GoRouter getAppRouter(
               GoRoute(
                 path: 'invite',
                 pageBuilder: (context, state) {
-                  return NoTransitionPage(child: InviteTeamMemberPage());
+                  return NoTransitionPage(
+                    key: state.pageKey,
+                    child: const InviteTeamMemberPage(),
+                  );
                 },
               ),
             ],
@@ -401,21 +487,30 @@ GoRouter getAppRouter(
             parentNavigatorKey: _shellNavigatorKey,
             pageBuilder: (context, state) {
               final userId = state.pathParameters['userId']!;
-              return NoTransitionPage(child: OwnerProfilePage(userId: userId));
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: OwnerProfilePage(userId: userId),
+              );
             },
           ),
           GoRoute(
             path: '/settings',
             parentNavigatorKey: _shellNavigatorKey,
             pageBuilder: (context, state) =>
-                const NoTransitionPage(child: BusinessSettingsPage()),
+                NoTransitionPage(
+                  key: state.pageKey,
+                  child: const BusinessSettingsPage(),
+                ),
           ),
           GoRoute(
             path: '/privacy',
             parentNavigatorKey: _shellNavigatorKey,
             pageBuilder:
                 (context, state) =>
-                    NoTransitionPage(child: PrivacyPolicyPage()),
+                    NoTransitionPage(
+                      key: state.pageKey,
+                      child: const PrivacyPolicyPage(),
+                    ),
           ),
         ],
       ),

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shine_app/data/models/listing.dart';
 import 'package:shine_app/logic/back_button_provider.dart';
 import 'package:shine_app/logic/watchlist_provider.dart';
-import 'package:shine_app/logic/listings_provider.dart';
 import 'package:shine_app/utils/auth_prompt.dart';
 import 'package:shine_app/utils/constants.dart';
 import 'package:shine_app/utils/feedback_helpers.dart';
@@ -43,7 +42,12 @@ class ListingPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isInWatchlist = listing.isInWatchlist ?? false;
+    // WatchlistProvider is the single source of truth for hearts: the Browse
+    // feed (/dresses) never sends isInWatchlist, and it would go stale when a
+    // dress is unsaved from the Favourites page anyway.
+    final isInWatchlist = context.select<WatchlistProvider, bool>(
+      (provider) => provider.isInWatchlist(listing.id),
+    );
 
     return GestureDetector(
       onTap: () {
@@ -152,12 +156,6 @@ class ListingPreview extends StatelessWidget {
                       if (!requireAuth(context, reason: 'Join to save and collect the dresses you love.')) return;
                       final watchlistProvider =
                           context.read<WatchlistProvider>();
-                      final listingsProvider = context.read<ListingsProvider>();
-
-                      listingsProvider.toggleWatchlistStatus(
-                        listing.id,
-                        !isInWatchlist,
-                      );
 
                       try {
                         if (isInWatchlist) {
@@ -180,10 +178,7 @@ class ListingPreview extends StatelessWidget {
                           }
                         }
                       } catch (e) {
-                        listingsProvider.toggleWatchlistStatus(
-                          listing.id,
-                          isInWatchlist,
-                        );
+                        debugPrint('❌ Favourite toggle failed: ${e.runtimeType}');
                         if (context.mounted) {
                           FeedbackHelpers.showErrorSnackBar(
                             context,

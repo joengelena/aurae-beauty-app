@@ -129,8 +129,22 @@ class _SignInPageState extends State<SignInPage> {
                               : () async {
                                   final email =
                                       _emailController.text.trim();
-                                  await authProvider
-                                      .resendVerificationEmail(email);
+                                  try {
+                                    await authProvider
+                                        .resendVerificationEmail(email);
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      FeedbackHelpers.showErrorSnackBar(
+                                        context,
+                                        userMessage(
+                                          e,
+                                          fallback:
+                                              "Couldn't resend the verification email. Please try again.",
+                                        ),
+                                      );
+                                    }
+                                    return;
+                                  }
                                   if (context.mounted) {
                                     FeedbackHelpers.showSuccessSnackBar(
                                       context,

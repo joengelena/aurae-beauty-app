@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shine_app/logic/week_schedule_provider.dart';
 import 'package:shine_app/utils/theme.dart';
 import 'package:shine_app/utils/booking_status.dart';
+import 'package:shine_app/utils/utils.dart';
 
 enum _ScheduleViewMode { day, week, month }
 
@@ -39,7 +40,7 @@ class _WeekScheduleWidgetState extends State<WeekScheduleWidget> {
 
   DateTime get _weekStart {
     final daysFromMonday = _focusedDay.weekday - DateTime.monday;
-    return _focusedDay.subtract(Duration(days: daysFromMonday));
+    return addDays(_focusedDay, -daysFromMonday);
   }
 
   void _openDay(DateTime day) {
@@ -155,8 +156,8 @@ class _WeekScheduleWidgetState extends State<WeekScheduleWidget> {
 
   Widget _buildWeekView(BuildContext context, WeekScheduleProvider provider) {
     final start = _weekStart;
-    final end = start.add(const Duration(days: 6));
-    final days = List.generate(7, (i) => start.add(Duration(days: i)));
+    final end = addDays(start, 6);
+    final days = List.generate(7, (i) => addDays(start, i));
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
@@ -167,7 +168,7 @@ class _WeekScheduleWidgetState extends State<WeekScheduleWidget> {
           children: [
             _navButton(
               Icons.chevron_left,
-              () => setState(() => _focusedDay = _focusedDay.subtract(const Duration(days: 7))),
+              () => setState(() => _focusedDay = addDays(_focusedDay, -7)),
             ),
             Expanded(
               child: Text(
@@ -180,7 +181,7 @@ class _WeekScheduleWidgetState extends State<WeekScheduleWidget> {
             ),
             _navButton(
               Icons.chevron_right,
-              () => setState(() => _focusedDay = _focusedDay.add(const Duration(days: 7))),
+              () => setState(() => _focusedDay = addDays(_focusedDay, 7)),
             ),
           ],
         ),
@@ -366,7 +367,7 @@ class _WeekScheduleWidgetState extends State<WeekScheduleWidget> {
           children: [
             _navButton(
               Icons.chevron_left,
-              () => setState(() => _focusedDay = _focusedDay.subtract(const Duration(days: 1))),
+              () => setState(() => _focusedDay = addDays(_focusedDay, -1)),
             ),
             Expanded(
               child: Column(
@@ -386,7 +387,7 @@ class _WeekScheduleWidgetState extends State<WeekScheduleWidget> {
             ),
             _navButton(
               Icons.chevron_right,
-              () => setState(() => _focusedDay = _focusedDay.add(const Duration(days: 1))),
+              () => setState(() => _focusedDay = addDays(_focusedDay, 1)),
             ),
           ],
         ),

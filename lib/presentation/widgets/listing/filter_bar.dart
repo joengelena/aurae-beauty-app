@@ -112,7 +112,11 @@ class FilterBar extends StatelessWidget {
       displayText: filterValue,
       onRemove: () {
         filteringProvider.updateEqualFilter(filterKey, 'Any');
-        listingsProvider.applyFilters(filteringProvider.selectedEqualFilters);
+        // Start from the applied filters, like the date badge: passing only
+        // selectedEqualFilters silently dropped any price/date filter.
+        final updated = Map<String, String>.from(listingsProvider.equalFilters)
+          ..remove(filterKey);
+        listingsProvider.applyFilters(updated);
       },
     );
   }

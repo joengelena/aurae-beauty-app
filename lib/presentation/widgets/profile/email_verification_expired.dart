@@ -27,7 +27,21 @@ class _EmailVerificationExpiredState extends State<EmailVerificationExpired> {
   Future<void> _handleResend(AuthProvider authProvider) async {
     if (!_formKey.currentState!.validate()) return;
 
-    await authProvider.resendVerificationEmail(_emailController.text.trim());
+    try {
+      await authProvider.resendVerificationEmail(_emailController.text.trim());
+    } catch (e) {
+      if (mounted) {
+        FeedbackHelpers.showErrorSnackBar(
+          context,
+          userMessage(
+            e,
+            fallback:
+                "Couldn't resend the verification email. Please try again.",
+          ),
+        );
+      }
+      return;
+    }
 
     if (mounted) {
       FeedbackHelpers.showSuccessSnackBar(

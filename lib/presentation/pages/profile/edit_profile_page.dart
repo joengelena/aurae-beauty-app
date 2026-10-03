@@ -24,32 +24,45 @@ class _EditProfilePageState extends State<EditProfilePage> {
   List<String> locationOptions = [];
   String? selectedLocation;
 
+  // Set once the form has been filled from the profile. After a web refresh
+  // the profile is still loading on the first frame, so filling waits for
+  // the first build that has a user rather than happening in initState.
+  bool _hasPrefilled = false;
+
   @override
   void initState() {
     super.initState();
     _loadLocationOptions();
 
-    // Initialize controllers with current user data
+    firstNameController.addListener(_validateForm);
+    lastNameController.addListener(_validateForm);
+    phoneNumberController.addListener(_validateForm);
+    instagramController.addListener(_validateForm);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final profileProvider = context.read<ProfileProvider>();
-      final user = profileProvider.currentUser;
-
-      if (user != null) {
-        firstNameController.text = user.firstName;
-        lastNameController.text = user.lastName;
-        phoneNumberController.text = user.phoneNumber;
-        instagramController.text = user.instagram ?? '';
-        selectedLocation = user.location;
-
-        // Add listeners after initializing values
-        firstNameController.addListener(_validateForm);
-        lastNameController.addListener(_validateForm);
-        phoneNumberController.addListener(_validateForm);
-        instagramController.addListener(_validateForm);
-      }
-
+      if (!mounted) return;
       // Clear any previous update state
-      profileProvider.clearUpdateState();
+      context.read<ProfileProvider>().clearUpdateState();
+    });
+  }
+
+  // Post-frame: setting controller text notifies listeners, which call
+  // setState, and that isn't allowed during build.
+  void _schedulePrefill() {
+    _hasPrefilled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final user = context.read<ProfileProvider>().currentUser;
+      if (user == null) {
+        _hasPrefilled = false;
+        return;
+      }
+      firstNameController.text = user.firstName;
+      lastNameController.text = user.lastName;
+      phoneNumberController.text = user.phoneNumber;
+      instagramController.text = user.instagram ?? '';
+      setState(() => selectedLocation = user.location);
+      _validateForm();
     });
   }
 
@@ -107,8 +120,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final user = profileProvider.currentUser;
 
     if (user == null) {
+      if (profileProvider.isLoading) {
+        return const Center(child: CircularProgressIndicator());
+      }
       return Center(child: Text('Unable to load profile data'));
     }
+
+    if (!_hasPrefilled) _schedulePrefill();
 
     // Show success message and navigate back
     if (profileProvider.updateSuccess &&

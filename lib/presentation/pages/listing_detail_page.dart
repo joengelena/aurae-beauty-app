@@ -88,6 +88,13 @@ class _ListingDetailPageState extends State<ListingDetailPage>
   String? _lastDeliveryOption;
   bool _hasSyncedDelivery = false;
 
+  // The listing this page should be showing: the route's id, or the size
+  // variant picked here. ListingDetailProvider is shared, so another detail
+  // page pushed on top can replace its listing; on popping back, this page
+  // notices the mismatch and reloads its own.
+  int? _targetListingId;
+  int? _staleReloadFor;
+
   @override
   void initState() {
     super.initState();
@@ -99,12 +106,55 @@ class _ListingDetailPageState extends State<ListingDetailPage>
       parent: _shimmerController,
       curve: Curves.easeInOut,
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() => _hasFiredLoad = true);
-      context.read<ListingDetailProvider>().getListing(
-        int.parse(widget.listingId),
-      );
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadListing());
+  }
+
+  @override
+  void didUpdateWidget(covariant ListingDetailPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // go_router reuses this State when only the :listingId changes, so the
+    // new id needs its own fetch. Post-frame, because the provider notifies
+    // synchronously and that isn't allowed mid-build.
+    if (oldWidget.listingId != widget.listingId) {
+      _hasFiredLoad = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _loadListing());
+    }
+  }
+
+  void _loadListing() {
+    if (!mounted) return;
+    final id = int.tryParse(widget.listingId);
+    setState(() {
+      _hasFiredLoad = true;
+      _targetListingId = id;
+      _staleReloadFor = null;
     });
+    if (id == null) return;
+    context.read<ListingDetailProvider>().getListing(id);
+  }
+
+  void _scheduleStaleReload() {
+    final id = _targetListingId;
+    // Once per target, so a response that somehow never matches can't loop.
+    if (id == null || _staleReloadFor == id) return;
+    _staleReloadFor = id;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _targetListingId != id) return;
+      context.read<ListingDetailProvider>().getListing(id);
+    });
+  }
+
+  void _onSizeSelected(ListingDetailProvider provider, String size) {
+    // Mirrors selectSize's own pick, so the switched-to variant counts as
+    // this page's listing rather than a stale one.
+    for (final variant in provider.sizeVariants) {
+      if (variant.size == size) {
+        _targetListingId = variant.id;
+        _staleReloadFor = null;
+        break;
+      }
+    }
+    provider.selectSize(size);
   }
 
   @override
@@ -128,8 +178,20 @@ class _ListingDetailPageState extends State<ListingDetailPage>
       return _buildSkeleton();
     }
 
-    if (provider.listing == null) {
+    final listing = provider.listing;
+    if (_targetListingId == null || listing == null) {
       return _buildNotFound();
+    }
+
+    // Only the visible page reloads: a covered detail page still rebuilds
+    // offstage, and two pages reloading over each other would ping-pong.
+    if (listing.id == _targetListingId) {
+      _staleReloadFor = null;
+    } else if (!provider.isSwitchingSize &&
+        _staleReloadFor != _targetListingId &&
+        (ModalRoute.of(context)?.isCurrent ?? true)) {
+      _scheduleStaleReload();
+      return _buildSkeleton();
     }
 
     return _buildContent(provider);
@@ -384,7 +446,7 @@ class _ListingDetailPageState extends State<ListingDetailPage>
           listing: listing,
           sizeVariants: provider.sizeVariants,
           isSwitching: provider.isSwitchingSize,
-          onSizeSelected: (size) => provider.selectSize(size),
+          onSizeSelected: (size) => _onSizeSelected(provider, size),
         ),
         const SizedBox(height: 24),
         Divider(color: themePrimary.withValues(alpha: 0.6)),
@@ -431,8 +493,23 @@ class _ListingDetailPageState extends State<ListingDetailPage>
 
     final hasSelection = _bookingStart != null && _bookingEnd != null;
     // A rental is a whole day that goes overnight, so a stay from the 23rd
-    // to the 24th is one night, not two.
-    final nights = hasSelection ? _bookingEnd!.difference(_bookingStart!).inDays : 0;
+    // to the 24th is one night, not two. Counted on UTC dates: local
+    // midnights are 23 or 25 hours apart across an NZ daylight-saving change,
+    // and inDays would truncate the 23-hour night to zero.
+    final nights =
+        hasSelection
+            ? DateTime.utc(
+              _bookingEnd!.year,
+              _bookingEnd!.month,
+              _bookingEnd!.day,
+            ).difference(
+              DateTime.utc(
+                _bookingStart!.year,
+                _bookingStart!.month,
+                _bookingStart!.day,
+              ),
+            ).inDays
+            : 0;
     final estimatedPrice = nights * listing.pricePerDay;
     final showEstimate = !isForBuy && hasSelection && estimatedPrice > 0;
     final price =

@@ -36,6 +36,19 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
   }
 
   @override
+  void didUpdateWidget(covariant OwnerProfilePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // go_router reuses this State when only :userId changes. Post-frame,
+    // because load() notifies synchronously and that isn't allowed mid-build.
+    if (oldWidget.userId != widget.userId) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.read<OwnerProfileProvider>().load(widget.userId);
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final provider = context.watch<OwnerProfileProvider>();
 
