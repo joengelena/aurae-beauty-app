@@ -18,11 +18,6 @@ String formatDate(DateTime date) {
   return DateFormat('d MMM yyyy').format(date);
 }
 
-String formatKilometers(int km) {
-  final formatter = NumberFormat('#,###');
-  return '${formatter.format(km)} km';
-}
-
 String formatPrice(int price) {
   final formatter = NumberFormat('#,###');
   return '\$${formatter.format(price)}';

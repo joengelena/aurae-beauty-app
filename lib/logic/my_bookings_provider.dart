@@ -3,6 +3,7 @@ import 'package:shine_app/data/exceptions/app_exception.dart';
 import 'package:shine_app/data/models/upcoming_booking.dart';
 import 'package:shine_app/data/services/dress_services.dart';
 import 'package:shine_app/utils/booking_status.dart';
+import 'package:shine_app/utils/utils.dart';
 
 const _previewWindowDays = 30;
 
@@ -45,7 +46,7 @@ class MyBookingsProvider extends ChangeNotifier {
   /// Upcoming bookings (any status, including pending review) starting
   /// within the next 30 days — used for the Profile preview card.
   List<UpcomingBooking> get upcomingWithinMonth {
-    final cutoff = DateTime.now().add(const Duration(days: _previewWindowDays));
+    final cutoff = addDays(DateTime.now(), _previewWindowDays);
     return List.unmodifiable(upcoming.where((b) => !b.startDate.isAfter(cutoff)));
   }
 
@@ -73,7 +74,11 @@ class MyBookingsProvider extends ChangeNotifier {
 
   Future<void> cancel(int bookingId) async {
     try {
-      await _dressServices.cancelMyBooking(bookingId);
+      final match = _bookings.where((b) => b.id == bookingId);
+      await _dressServices.cancelMyBooking(
+        bookingId,
+        dressId: match.isEmpty ? null : match.first.dressIdFk,
+      );
       await load();
     } on AppException {
       rethrow;

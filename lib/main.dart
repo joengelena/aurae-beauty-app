@@ -121,8 +121,12 @@ void main() async {
             return myBookingsProvider;
           },
         ),
-        ChangeNotifierProvider<BusinessSettingsProvider>(
+        ChangeNotifierProxyProvider<AuthProvider, BusinessSettingsProvider>(
           create: (_) => BusinessSettingsProvider(),
+          update: (context, authProvider, businessSettingsProvider) {
+            businessSettingsProvider!.updateAuthStatus(authProvider.isSignedIn);
+            return businessSettingsProvider;
+          },
         ),
       ],
       child: MyApp(),

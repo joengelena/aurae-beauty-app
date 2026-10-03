@@ -36,7 +36,14 @@ class ListingDetailProvider extends ChangeNotifier {
     _isSignedIn = isSignedIn;
   }
 
+  // Bumped on every load and on reset. Loads can overlap (tapping sizes
+  // quickly, or navigating between dresses), and only the latest one may
+  // write state — otherwise a slow earlier response lands last and the page
+  // shows dress A's photos with dress B's bookings.
+  int _requestGeneration = 0;
+
   Future<void> getListing(int listingId, {bool silent = false}) async {
+    final generation = ++_requestGeneration;
     try {
       if (!silent) {
         isLoading = true;
@@ -48,31 +55,43 @@ class ListingDetailProvider extends ChangeNotifier {
       final damageIncidentsFuture = DressServices().getPublicDamageIncidents(listingId);
       final userIdFuture = SecureStorage.read('userId');
 
-      listing = await listingFuture;
-      currentUserId = await userIdFuture;
+      final loadedListing = await listingFuture;
+      final loadedUserId = await userIdFuture;
 
-      if (listing?.userIdFk != null && listing!.userIdFk.isNotEmpty) {
+      User? loadedOwner;
+      if (loadedListing.userIdFk.isNotEmpty) {
         try {
-          listingOwner = await UserServices().getUserWithId(listing!.userIdFk);
+          loadedOwner = await UserServices().getUserWithId(loadedListing.userIdFk);
         } catch (e) {
-          listingOwner = null;
+          loadedOwner = null;
         }
       }
 
+      List<BookedRange> loadedBookings;
       try {
-        bookings = await bookingsFuture;
+        loadedBookings = await bookingsFuture;
       } catch (e) {
-        bookings = [];
+        loadedBookings = [];
       }
 
+      List<DressDamageIncident> loadedIncidents;
       try {
-        damageIncidents = await damageIncidentsFuture;
+        loadedIncidents = await damageIncidentsFuture;
       } catch (e) {
-        damageIncidents = [];
+        loadedIncidents = [];
       }
 
-      await _loadSizeVariants();
+      final loadedVariants = await _loadSizeVariants(loadedListing);
+
+      if (generation != _requestGeneration) return;
+      listing = loadedListing;
+      currentUserId = loadedUserId;
+      listingOwner = loadedOwner;
+      bookings = loadedBookings;
+      damageIncidents = loadedIncidents;
+      sizeVariants = loadedVariants;
     } catch (e) {
+      if (generation != _requestGeneration) return;
       listing = null;
       listingOwner = null;
       bookings = [];
@@ -80,17 +99,17 @@ class ListingDetailProvider extends ChangeNotifier {
       sizeVariants = [];
       currentUserId = null;
     } finally {
-      if (!silent) isLoading = false;
-      notifyListeners();
+      // Only the latest load settles the flags: a superseded load finishing
+      // early must not hide the spinner of the one still in flight.
+      if (generation == _requestGeneration) {
+        isLoading = false;
+        isSwitchingSize = false;
+        notifyListeners();
+      }
     }
   }
 
-  Future<void> _loadSizeVariants() async {
-    final current = listing;
-    if (current == null) {
-      sizeVariants = [];
-      return;
-    }
+  Future<List<Listing>> _loadSizeVariants(Listing current) async {
     try {
       final result = await DressServices().getPublicDresses(
         allQueries: {
@@ -111,14 +130,15 @@ class ListingDetailProvider extends ChangeNotifier {
         if (rankA != rankB) return rankA.compareTo(rankB);
         return a.size.compareTo(b.size);
       });
-      sizeVariants = variants;
+      return variants;
     } catch (e) {
-      sizeVariants = [current];
+      return [current];
     }
   }
 
   // Switches the active listing to the size variant matching [size], without
-  // triggering the full-page loading skeleton.
+  // triggering the full-page loading skeleton. getListing clears
+  // isSwitchingSize once the latest load settles.
   Future<void> selectSize(String size) async {
     final match = sizeVariants.where((l) => l.size == size);
     if (match.isEmpty) return;
@@ -127,15 +147,11 @@ class ListingDetailProvider extends ChangeNotifier {
 
     isSwitchingSize = true;
     notifyListeners();
-    try {
-      await getListing(target.id, silent: true);
-    } finally {
-      isSwitchingSize = false;
-      notifyListeners();
-    }
+    await getListing(target.id, silent: true);
   }
 
   void reset() {
+    _requestGeneration++;
     listing = null;
     listingOwner = null;
     bookings = [];

@@ -10,12 +10,22 @@ class BusinessSettingsProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isSaving = false;
   String _errorMessage = '';
+  bool _isSignedIn = false;
 
   BusinessSettings get settings => _settings;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
   String get errorMessage => _errorMessage;
   bool get hasError => _errorMessage.isNotEmpty;
+
+  // Called by ChangeNotifierProxyProvider — reset on sign-out so the next
+  // account never sees the previous one's settings.
+  void updateAuthStatus(bool isSignedIn) {
+    if (!isSignedIn && _isSignedIn) {
+      reset();
+    }
+    _isSignedIn = isSignedIn;
+  }
 
   Future<void> load() async {
     _isLoading = true;
@@ -52,5 +62,13 @@ class BusinessSettingsProvider extends ChangeNotifier {
       _isSaving = false;
       notifyListeners();
     }
+  }
+
+  void reset() {
+    _settings = const BusinessSettings();
+    _isLoading = false;
+    _isSaving = false;
+    _errorMessage = '';
+    notifyListeners();
   }
 }

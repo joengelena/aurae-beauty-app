@@ -53,8 +53,12 @@ class CartItem {
   }
 
   // A rental is a whole day that goes overnight, so a stay from the 23rd to
-  // the 24th is one night, not two.
-  int get nights => endDate.difference(startDate).inDays;
+  // the 24th is one night, not two. Counted on UTC calendar dates: a local
+  // difference across NZ daylight-saving start is 23 hours, which inDays
+  // truncates to one night short.
+  int get nights => DateTime.utc(endDate.year, endDate.month, endDate.day)
+      .difference(DateTime.utc(startDate.year, startDate.month, startDate.day))
+      .inDays;
 
   int get totalPrice => nights * pricePerDay;
 }

@@ -1,8 +1,7 @@
 /// Base interface for providers that manage form data.
 ///
 /// This interface enables form field widgets to work with any provider
-/// that exposes a formData map, regardless of whether it's for listings,
-/// vehicles, or other entities.
+/// that exposes a formData map, regardless of which form it backs.
 abstract class FormDataProvider {
   /// The map containing all form field values.
   ///

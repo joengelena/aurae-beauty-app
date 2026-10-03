@@ -66,7 +66,7 @@ class DressListing {
       previewImgUrl: json['previewImgUrl'] as String,
       imageUrls: json['imageUrls'] as List<dynamic>,
       location: json['location'] as String,
-      condition: json['condition'] as String? ?? json['vehicleCondition'] as String,
+      condition: json['condition'] as String? ?? '',
       rentalPricePerDay: json['rentalPricePerDay'] as int? ?? json['originalPrice'] as int,
       discountedPricePerDay: json['discountedPricePerDay'] as int? ?? json['discountedPrice'] as int?,
       uploadDate: DateTime.parse(json['uploadDate'] as String),

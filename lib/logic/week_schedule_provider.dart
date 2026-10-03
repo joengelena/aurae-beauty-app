@@ -4,6 +4,7 @@ import 'package:shine_app/data/models/business_dress.dart';
 import 'package:shine_app/data/models/rental_booking.dart';
 import 'package:shine_app/data/services/dress_services.dart';
 import 'package:shine_app/utils/booking_status.dart';
+import 'package:shine_app/utils/utils.dart';
 
 class BookingWithDress {
   final RentalBooking booking;
@@ -49,13 +50,13 @@ class WeekScheduleProvider extends ChangeNotifier {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final daysUntilMonday = (DateTime.monday - today.weekday + 7) % 7;
-    return today.add(Duration(days: daysUntilMonday));
+    return addDays(today, daysUntilMonday);
   }
 
-  DateTime get weekEnd => weekStart.add(const Duration(days: 6));
+  DateTime get weekEnd => addDays(weekStart, 6);
 
   List<DateTime> get weekDays =>
-      List.generate(7, (i) => weekStart.add(Duration(days: i)));
+      List.generate(7, (i) => addDays(weekStart, i));
 
   double get totalRevenue => _bookings
       .where((b) => BookingStatus.countsAsRevenue(b.status))

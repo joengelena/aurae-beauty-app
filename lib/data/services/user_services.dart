@@ -72,6 +72,9 @@ class UserServices {
 
       try {
         final data = json.decode(response.body) as Map<String, dynamic>;
+        // Cache keys aren't per-user, so anything cached under a previous
+        // account (or signed-out browsing) must not be served to this one.
+        await _clearCache();
         await _storeAuthData(data);
         return data;
       } catch (e) {
@@ -109,6 +112,9 @@ class UserServices {
     }
   }
 
+  /// Signs out on the server, then always clears local auth data and the
+  /// cache — even if the API call fails — so the stored tokens can't silently
+  /// sign the user back in on the next launch.
   Future<String> signOut() async {
     try {
       final userId = await apiClient.getUserId();
@@ -126,8 +132,6 @@ class UserServices {
         throw AuthException(errorMessage, details: response.body);
       }
 
-      await _clearAuthData();
-
       return response.body;
     } catch (e) {
       if (e is UnauthenticatedException || e is AuthException) rethrow;
@@ -135,21 +139,8 @@ class UserServices {
         "Couldn't reach the server while signing you out. Check your connection and try again.",
         details: e.toString(),
       );
-    }
-  }
-
-  Future<void> _clearAuthData() async {
-    try {
-      await SecureStorage.delete('userId');
-      await SecureStorage.delete('activeProfileIsBusiness');
-
-      if (!kIsWeb) {
-        await SecureStorage.delete('accessToken');
-        await SecureStorage.delete('refreshToken');
-      }
-    } catch (e) {
-      // Log error but don't fail the sign-out
-      debugPrint('⚠️ Failed to clear auth data: $e');
+    } finally {
+      await clearAuthData();
     }
   }
 
@@ -279,14 +270,22 @@ class UserServices {
         requestBody,
       );
 
-      if (response.statusCode == HttpStatus.unauthorized) {
+      // Only a definitive rejection of the session means the tokens are dead.
+      // Anything else — the synthetic 503 ApiClient returns when the network
+      // is down, a 5xx, a rate limit — says nothing about the session, so it
+      // must not cost the user their sign-in.
+      if (response.statusCode == HttpStatus.unauthorized ||
+          response.statusCode == HttpStatus.forbidden) {
         final errorMessage = extractErrorMessage(response.body);
         throw UnauthenticatedException(errorMessage, details: response.body);
       }
 
       if (response.statusCode != HttpStatus.ok) {
-        final errorMessage = extractErrorMessage(response.body);
-        throw AuthException(errorMessage, details: response.body);
+        throw NetworkException(
+          extractErrorMessage(response.body),
+          statusCode: response.statusCode,
+          details: response.body,
+        );
       }
 
       try {
@@ -300,7 +299,7 @@ class UserServices {
       }
     } catch (e) {
       if (e is UnauthenticatedException ||
-          e is AuthException ||
+          e is NetworkException ||
           e is DataParseException) {
         rethrow;
       }
@@ -362,7 +361,7 @@ class UserServices {
         );
       }
 
-      await _clearAuthData();
+      await clearAuthData();
 
       return response.body;
     } catch (e) {
@@ -478,6 +477,9 @@ class UserServices {
     }
   }
 
+  /// Removes every trace of the signed-in account from the device: stored
+  /// tokens and the HTTP cache (whose keys aren't per-user). Used by sign-out,
+  /// delete-account and a rejected session refresh alike.
   Future<void> clearAuthData() async {
     try {
       await SecureStorage.delete('userId');
@@ -490,6 +492,16 @@ class UserServices {
     } catch (e) {
       // Log error but don't fail
       debugPrint('⚠️ Failed to clear auth data: $e');
+    }
+    await _clearCache();
+  }
+
+  Future<void> _clearCache() async {
+    try {
+      await apiClient.clearCache();
+    } catch (e) {
+      // A stale cache is better than a failed sign-in/sign-out
+      debugPrint('⚠️ Failed to clear cache: $e');
     }
   }
 

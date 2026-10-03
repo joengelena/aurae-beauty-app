@@ -14,8 +14,11 @@ import 'package:shine_app/utils/utils.dart';
 class ApiClient {
   late final http.Client _client;
 
-  // Completer to coordinate multiple concurrent token refresh attempts
-  Completer<bool>? _refreshCompleter;
+  // Coordinates concurrent token refresh attempts. Static because every
+  // service holds its own ApiClient: a per-instance completer let simultaneous
+  // 401s from different services each start a refresh, and the losers then
+  // presented an already-rotated refresh token.
+  static Completer<bool>? _refreshCompleter;
 
   // Auth endpoints that should skip retry to avoid infinite loops
   static const _authEndpoints = ['/signin', '/signup', '/refresh-token'];
@@ -218,9 +221,22 @@ class ApiClient {
         cacheDuration: cacheDuration,
       );
 
-      return http.Response(json.encode(cachedData), 200);
+      // Bytes plus an explicit UTF-8 charset: the String constructor without
+      // a content-type encodes as Latin-1 and throws on Korean, emoji or
+      // macrons, which used to push every such response down the fallback.
+      return http.Response.bytes(
+        utf8.encode(json.encode(cachedData)),
+        HttpStatus.ok,
+        headers: {'content-type': 'application/json; charset=utf-8'},
+      );
+    } on AppException {
+      // The request itself already ran (with its 401 refresh/retry) and the
+      // server answered with an error. Replaying it would double the request
+      // and the refresh, so surface the error instead.
+      rethrow;
     } catch (e) {
-      // If caching fails, fall back to direct HTTP request
+      // Only a cache/Hive failure gets here: fall back to a direct request
+      debugPrint('⚠️ Cache unavailable for $cacheKey, fetching directly: $e');
       return _executeWithRetry(() async {
         try {
           final uri = _buildUri(path, queryParameters: queryParameters);

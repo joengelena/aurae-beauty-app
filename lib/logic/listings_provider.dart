@@ -41,25 +41,33 @@ class ListingsProvider extends ChangeNotifier {
   bool get onLastPage => currentPage >= totalPages;
   bool get canLoadMore => !onLastPage && !isLoading;
 
+  // Bumped on every new fetch and on reset. A response whose generation is no
+  // longer current belongs to a superseded query (new search/filter/sort or a
+  // sign-out) and is dropped, so it can't append to or overwrite newer results.
+  int _requestGeneration = 0;
+
   Future<void> getNewListings() async {
+    final generation = ++_requestGeneration;
     listings.clear();
     currentPage = 0;
 
     isLoading = true;
     notifyListeners();
 
-    await fetchListings();
-    return;
+    await _fetchListings(generation);
   }
 
   Future<void> getMoreListings() async {
+    // A fetch already in flight (a new query or the previous page) owns the
+    // pagination state; starting another would request the same page twice.
+    if (isLoading) return;
+    final generation = ++_requestGeneration;
     isLoading = true;
     notifyListeners();
-    await fetchListings();
-    return;
+    await _fetchListings(generation);
   }
 
-  Future<void> fetchListings() async {
+  Future<void> _fetchListings(int generation) async {
     _errorMessage = '';
     try {
       final filters = _getFiltersWithDefault();
@@ -73,6 +81,7 @@ class ListingsProvider extends ChangeNotifier {
       if (q.isNotEmpty) allQueries['q'] = q;
 
       final res = await DressServices().getPublicDresses(allQueries: allQueries);
+      if (generation != _requestGeneration) return;
 
       final fetchedListings = res.data;
 
@@ -83,13 +92,17 @@ class ListingsProvider extends ChangeNotifier {
       totalListings = res.totalRows;
     } on AppException catch (e) {
       debugPrint('⚠️ Failed to fetch listings: ${e.message}');
-      _errorMessage = e.message;
+      if (generation == _requestGeneration) _errorMessage = e.message;
     } catch (e) {
       debugPrint('⚠️ Failed to fetch listings: $e');
-      _errorMessage = 'An unexpected error occurred while loading dresses.';
+      if (generation == _requestGeneration) {
+        _errorMessage = 'An unexpected error occurred while loading dresses.';
+      }
     } finally {
-      isLoading = false;
-      notifyListeners();
+      if (generation == _requestGeneration) {
+        isLoading = false;
+        notifyListeners();
+      }
     }
   }
 
@@ -151,6 +164,7 @@ class ListingsProvider extends ChangeNotifier {
   }
 
   void reset() {
+    _requestGeneration++;
     listings.clear();
     latestListings.clear();
     currentPage = 0;

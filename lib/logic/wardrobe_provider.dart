@@ -101,7 +101,8 @@ class WardrobeProvider extends ChangeNotifier {
     Map<String, Object> updates, {
     List<Uint8List> newPhotoBytes = const [],
     List<String?> newPhotoMimeTypes = const [],
-    List<String> keepPhotoUrls = const [],
+    // Null leaves the photos untouched; a list (even empty) replaces them.
+    List<String>? keepPhotoUrls,
     List<DateTimeRange>? blockedDateRanges,
   }) async {
     try {

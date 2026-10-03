@@ -96,6 +96,11 @@ class CacheKeys {
   static String dressDamageIncidents(int dressId) =>
       '/user/dresses/$dressId/damage-incidents';
   static const String userBookings = '/user/dress-bookings';
+  // Public (renter-side) availability and damage for one dress
+  static String publicDressBookings(int dressId) => 'public_bookings_$dressId';
+  static const String allPublicDressBookings = '*public_bookings_*';
+  static String publicDamageIncidents(int dressId) =>
+      'public_damage_incidents_$dressId';
   static const String myBookings = '/user/my-bookings';
   static const String businessSettings = '/user/settings';
 

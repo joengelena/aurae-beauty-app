@@ -20,6 +20,28 @@ import 'package:shine_app/utils/utils.dart';
 class DressServices {
   static final ApiClient apiClient = ApiClient();
 
+  /// Everything a booking add/update/delete can make stale: the dress's own
+  /// booking list, the wardrobe-wide schedule, the renter's My Bookings, the
+  /// public availability calendar, and the pending-request badge counts
+  /// carried on the dress list and dress detail.
+  static List<String> _bookingChangeCacheKeys(int dressId) => [
+        CacheKeys.dressBookings(dressId),
+        CacheKeys.userBookings,
+        CacheKeys.myBookings,
+        CacheKeys.publicDressBookings(dressId),
+        CacheKeys.dresses,
+        CacheKeys.dress(dressId),
+      ];
+
+  /// A damage incident change alters the dress's incident lists (owner and
+  /// public) and the unresolved-damage badge counts on the dress list/detail.
+  static List<String> _damageChangeCacheKeys(int dressId) => [
+        CacheKeys.dressDamageIncidents(dressId),
+        CacheKeys.publicDamageIncidents(dressId),
+        CacheKeys.dresses,
+        CacheKeys.dress(dressId),
+      ];
+
   static http.MultipartFile _createImageMultipartFile(
     Uint8List imageBytes,
     String? mimeType,
@@ -155,7 +177,9 @@ class DressServices {
     Map<String, Object> dressFields, {
     List<Uint8List> newPhotoBytes = const [],
     List<String?> newPhotoMimeTypes = const [],
-    List<String> keepPhotoUrls = const [],
+    // Null means "photos unchanged": the API only touches photos when
+    // keepPhotoUrls is present, and an empty list deletes every photo.
+    List<String>? keepPhotoUrls,
     List<DateTimeRange>? blockedDateRanges,
   }) async {
     try {
@@ -165,7 +189,9 @@ class DressServices {
       dressFields.forEach((key, value) {
         fields[key] = value is List ? json.encode(value) : value.toString();
       });
-      fields['keepPhotoUrls'] = json.encode(keepPhotoUrls);
+      if (keepPhotoUrls != null) {
+        fields['keepPhotoUrls'] = json.encode(keepPhotoUrls);
+      }
       if (blockedDateRanges != null) {
         fields['blockedDateRanges'] = json.encode(
           blockedDateRanges
@@ -269,7 +295,7 @@ class DressServices {
     try {
       final response = await apiClient.get(
         '/dresses/$dressId/bookings',
-        cacheKey: 'public_bookings_$dressId',
+        cacheKey: CacheKeys.publicDressBookings(dressId),
         cacheDuration: CacheDurations.short,
       );
 
@@ -295,7 +321,7 @@ class DressServices {
     try {
       final response = await apiClient.get(
         '/dresses/$dressId/damage-incidents',
-        cacheKey: 'public_damage_incidents_$dressId',
+        cacheKey: CacheKeys.publicDamageIncidents(dressId),
         cacheDuration: CacheDurations.medium,
       );
 
@@ -324,7 +350,7 @@ class DressServices {
       http.Response response = await apiClient.post(
         '/user/dress-bookings',
         bookingData,
-        invalidateCacheKeys: [CacheKeys.dressBookings(dressId)],
+        invalidateCacheKeys: _bookingChangeCacheKeys(dressId),
       );
 
       if (response.statusCode != HttpStatus.created) {
@@ -355,7 +381,11 @@ class DressServices {
           'startDate': startDate.toIso8601String().split('T')[0],
           'endDate': endDate.toIso8601String().split('T')[0],
         },
-        invalidateCacheKeys: ['public_bookings_$dressId', CacheKeys.myBookings],
+        invalidateCacheKeys: [
+          CacheKeys.publicDressBookings(dressId),
+          CacheKeys.myBookings,
+          CacheKeys.userCart,
+        ],
       );
 
       if (response.statusCode == HttpStatus.conflict) {
@@ -529,12 +559,20 @@ class DressServices {
     }
   }
 
-  Future<void> cancelMyBooking(int bookingId) async {
+  /// [dressId] narrows the availability invalidation to that dress; without
+  /// it every dress's public availability is cleared.
+  Future<void> cancelMyBooking(int bookingId, {int? dressId}) async {
     try {
       final response = await apiClient.patch(
         '/user/my-bookings/$bookingId/cancel',
         {},
-        invalidateCacheKeys: [CacheKeys.myBookings],
+        invalidateCacheKeys: [
+          CacheKeys.myBookings,
+          CacheKeys.userCart,
+          dressId != null
+              ? CacheKeys.publicDressBookings(dressId)
+              : CacheKeys.allPublicDressBookings,
+        ],
       );
 
       if (response.statusCode == HttpStatus.notFound) {
@@ -565,11 +603,7 @@ class DressServices {
       http.Response response = await apiClient.patch(
         '/user/dress-bookings/$bookingId',
         updates,
-        invalidateCacheKeys: [
-          CacheKeys.dressBookings(dressId),
-          CacheKeys.userBookings,
-          CacheKeys.myBookings,
-        ],
+        invalidateCacheKeys: _bookingChangeCacheKeys(dressId),
       );
 
       if (response.statusCode == HttpStatus.notFound) {
@@ -643,13 +677,13 @@ class DressServices {
           '/user/dresses/$dressId/damage-incidents',
           fields,
           multipartFiles,
-          invalidateCacheKeys: [CacheKeys.dressDamageIncidents(dressId), CacheKeys.dress(dressId)],
+          invalidateCacheKeys: _damageChangeCacheKeys(dressId),
         );
       } else {
         response = await apiClient.post(
           '/user/dresses/$dressId/damage-incidents',
           incidentData,
-          invalidateCacheKeys: [CacheKeys.dressDamageIncidents(dressId), CacheKeys.dress(dressId)],
+          invalidateCacheKeys: _damageChangeCacheKeys(dressId),
         );
       }
 
@@ -668,12 +702,16 @@ class DressServices {
     Map<String, dynamic> updates, {
     List<Uint8List> newPhotoBytes = const [],
     List<String?> newPhotoMimeTypes = const [],
-    List<String> keepPhotoUrls = const [],
+    // Null means "photos unchanged" (e.g. toggling resolved); an empty list
+    // deletes every photo on the incident.
+    List<String>? keepPhotoUrls,
   }) async {
     try {
       final fields = <String, String>{};
       updates.forEach((key, value) => fields[key] = value.toString());
-      fields['keepPhotoUrls'] = json.encode(keepPhotoUrls);
+      if (keepPhotoUrls != null) {
+        fields['keepPhotoUrls'] = json.encode(keepPhotoUrls);
+      }
 
       final multipartFiles = List.generate(
         newPhotoBytes.length,
@@ -687,7 +725,7 @@ class DressServices {
         '/user/dresses/$dressId/damage-incidents/$incidentId',
         fields,
         multipartFiles,
-        invalidateCacheKeys: [CacheKeys.dressDamageIncidents(dressId), CacheKeys.dress(dressId)],
+        invalidateCacheKeys: _damageChangeCacheKeys(dressId),
       );
 
       if (response.statusCode == HttpStatus.notFound) {
@@ -714,7 +752,7 @@ class DressServices {
       final response = await apiClient.delete(
         '/user/dresses/$dressId/damage-incidents/$incidentId',
         {},
-        invalidateCacheKeys: [CacheKeys.dressDamageIncidents(dressId), CacheKeys.dress(dressId)],
+        invalidateCacheKeys: _damageChangeCacheKeys(dressId),
       );
 
       if (response.statusCode == HttpStatus.notFound) {
@@ -741,7 +779,7 @@ class DressServices {
       http.Response response = await apiClient.delete(
         '/user/dress-bookings/$bookingId',
         {},
-        invalidateCacheKeys: [CacheKeys.dressBookings(dressId)],
+        invalidateCacheKeys: _bookingChangeCacheKeys(dressId),
       );
 
       if (response.statusCode == HttpStatus.notFound) {

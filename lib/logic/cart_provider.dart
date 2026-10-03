@@ -95,6 +95,7 @@ class CartProvider extends ChangeNotifier {
   Future<CheckoutResult> checkout() async {
     final bookingIds = <int>[];
     final failedItemNames = <String>[];
+    var cartCleanupFailed = false;
 
     for (final item in List<CartItem>.from(items)) {
       // Skipped rather than attempted: the cart already shows these as
@@ -105,21 +106,36 @@ class CartProvider extends ChangeNotifier {
         continue;
       }
 
+      Object? bookingId;
       try {
         final result = await DressServices().selfBook(
           dressId: item.dressIdFk,
           startDate: item.startDate,
           endDate: item.endDate,
         );
-        bookingIds.add(result['bookingId'] as int);
-        await CartServices().removeFromCart(item.id);
-        items.removeWhere((i) => i.id == item.id);
+        bookingId = result['bookingId'];
       } catch (e) {
         failedItemNames.add(item.name ?? item.style);
+        continue;
+      }
+
+      // The booking exists from here on, so this item succeeded whatever
+      // happens to the cart cleanup below.
+      if (bookingId is int) bookingIds.add(bookingId);
+      items.removeWhere((i) => i.id == item.id);
+
+      try {
+        await CartServices().removeFromCart(item.id);
+      } catch (e) {
+        // A leftover cart row is reconciled by the fetchCart below; reporting
+        // it as a failed booking would tell the renter a booked dress wasn't.
+        debugPrint('⚠️ Booked but could not remove cart item ${item.id}: $e');
+        cartCleanupFailed = true;
       }
     }
 
     notifyListeners();
+    if (cartCleanupFailed) await fetchCart();
     return CheckoutResult(bookingIds: bookingIds, failedItemNames: failedItemNames);
   }
 

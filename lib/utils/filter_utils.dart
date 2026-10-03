@@ -66,8 +66,6 @@ class FilterUtils {
   /// Examples:
   /// - "Price: $1000 - $5000"
   /// - "Price: $3000 - Any"
-  /// - "Year: 2015 - 2020"
-  /// - "Kms: 50,000 - 120,000"
   static String formatRangeFilterDisplay(
     String baseKey,
     String minValue,
@@ -84,7 +82,7 @@ class FilterUtils {
         break;
     }
 
-    // Format min and max with thousand separators for kilometers
+    // An open end of the range reads as "Any"
     String formattedMin =
         minValue.isEmpty ? 'Any' : '$prefix$minValue';
     String formattedMax =

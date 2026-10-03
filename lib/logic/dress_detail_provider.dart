@@ -35,6 +35,11 @@ class DressDetailProvider extends ChangeNotifier {
   }
 
   Future<void> loadDress(int dressId) async {
+    // Start from a clean slate so a different dress never shows the previous
+    // one's bookings or damage while (or if) its own fail to load.
+    if (_dress?.id != dressId) _dress = null;
+    _bookings = [];
+    _damageIncidents = [];
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -149,7 +154,7 @@ class DressDetailProvider extends ChangeNotifier {
     Map<String, dynamic> updates, {
     List<Uint8List> newPhotoBytes = const [],
     List<String?> newPhotoMimeTypes = const [],
-    List<String> keepPhotoUrls = const [],
+    List<String>? keepPhotoUrls,
   }) async {
     try {
       await _dressServices.updateDamageIncident(
@@ -189,7 +194,8 @@ class DressDetailProvider extends ChangeNotifier {
     try {
       _bookings = await _dressServices.getBookingsByDressId(dressId);
     } catch (_) {
-      // Non-critical — show empty state
+      // Non-critical — show empty state rather than another dress's bookings
+      _bookings = [];
     }
   }
 
@@ -197,7 +203,8 @@ class DressDetailProvider extends ChangeNotifier {
     try {
       _damageIncidents = await _dressServices.getDamageIncidents(dressId);
     } catch (_) {
-      // Non-critical — show empty state
+      // Non-critical — show empty state rather than another dress's incidents
+      _damageIncidents = [];
     }
   }
 

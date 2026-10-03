@@ -9,6 +9,16 @@ import 'package:shine_app/utils/utils.dart';
 class BusinessServices {
   static final ApiClient apiClient = ApiClient();
 
+  // Joining or creating a business changes which dresses, bookings and
+  // settings the account sees, so everything cached under the old
+  // membership is stale.
+  static const List<String> _membershipChangeCacheKeys = [
+    CacheKeys.myBusiness,
+    CacheKeys.businessSettings,
+    CacheKeys.dresses,
+    CacheKeys.userBookings,
+  ];
+
   Future<({Business? business, String? role})> getMyBusiness() async {
     try {
       final response = await apiClient.get(
@@ -43,7 +53,7 @@ class BusinessServices {
       final response = await apiClient.post(
         '/business',
         {'name': name},
-        invalidateCacheKeys: [CacheKeys.myBusiness],
+        invalidateCacheKeys: _membershipChangeCacheKeys,
       );
 
       if (response.statusCode != HttpStatus.created) {
@@ -91,7 +101,7 @@ class BusinessServices {
       final response = await apiClient.post(
         '/business/invites/redeem',
         {'code': code},
-        invalidateCacheKeys: [CacheKeys.myBusiness],
+        invalidateCacheKeys: _membershipChangeCacheKeys,
       );
 
       if (response.statusCode != HttpStatus.ok) {
